@@ -29,10 +29,17 @@ def grade(src, dst, seed=7):
     a = a / (65535.0 if a.max() > 255 else 255.0)
     a = a[..., :3]
     h, w = a.shape[:2]
+    # 0. levels: put the brightest paper at ~#efeeec, not clipped white (the site ground is #e9ebee-ish)
+    a = a * 0.95
+    # 0b. veiling glare: every real lens scatters ~1-2 % of the mean scene light into the shadows, so a photo of
+    #     a white sweep never holds pure-black holes. Done in linear light; lifts the RJ45 void to about L* 9.
+    lin = np.where(a <= 0.04045, a / 12.92, ((a + 0.055) / 1.055) ** 2.4)
+    lin = lin + 0.015 * float((lin @ np.array([0.2126, 0.7152, 0.0722], np.float32)).mean())
+    a = np.where(lin <= 0.0031308, lin * 12.92, 1.055 * np.power(np.clip(lin, 0, None), 1 / 2.4) - 0.055).astype(np.float32)
     # 1. lens falloff: cos^4-like, very gentle (an 85-100 mm lens at f/8 shows ~0.15 stop at corners)
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     r = np.hypot((xx - w / 2) / (w / 2), (yy - h / 2) / (w / 2))
-    a *= (1 - 0.07 * r ** 2)[..., None]
+    a *= (1 - 0.035 * r ** 2)[..., None]
     # 2. lateral chromatic aberration, sub-pixel: scale R up and B down around centre by ~0.25 px at the corner
     def rescale(ch, k):
         from PIL import Image as I
@@ -70,7 +77,8 @@ SHOT = args[0] if args else 'amigo_hero'
 def opt(k, d):
     return type(d)(args[args.index(k) + 1]) if k in args else d
 SCALE = opt('--scale', 1.0)
-SAMPLES = opt('--samples', 384)
+SAMPLES = opt('--samples', 128)
+TIME_LIMIT = opt('--time', 300.0)   # seconds of path tracing per still; keeps each render under ~6 min on 4 cores
 OUT = opt('--out', os.path.dirname(os.path.abspath(__file__)))
 WIDTH = 2400
 
@@ -86,22 +94,23 @@ def reset():
     sc.render.engine = 'CYCLES'
     sc.cycles.device = 'CPU'
     sc.cycles.use_adaptive_sampling = True
-    sc.cycles.adaptive_threshold = 0.006
+    sc.cycles.adaptive_threshold = 0.015
     sc.cycles.samples = SAMPLES
+    sc.cycles.time_limit = TIME_LIMIT
     sc.cycles.use_denoising = True
     sc.cycles.denoiser = 'OPENIMAGEDENOISE'
     sc.cycles.denoising_input_passes = 'RGB_ALBEDO_NORMAL'
     sc.cycles.denoising_prefilter = 'ACCURATE'
-    sc.cycles.max_bounces = 10
-    sc.cycles.diffuse_bounces = 4
-    sc.cycles.glossy_bounces = 6
+    sc.cycles.max_bounces = 6
+    sc.cycles.diffuse_bounces = 3
+    sc.cycles.glossy_bounces = 3
     sc.cycles.caustics_reflective = False
     sc.cycles.caustics_refractive = False
     sc.cycles.blur_glossy = 0.5
     sc.cycles.use_light_tree = True
     sc.render.threads_mode = 'FIXED'; sc.render.threads = 4
-    sc.view_settings.view_transform = 'AgX'
-    sc.view_settings.look = 'AgX - Base Contrast'
+    sc.view_settings.view_transform = 'Khronos PBR Neutral'
+    sc.view_settings.look = 'None'
     sc.view_settings.exposure = 0.0
     sc.render.image_settings.file_format = 'PNG'
     sc.render.image_settings.color_depth = '16'
@@ -195,11 +204,11 @@ def plastic(name, hexcol, seed=0.0, grain=1.0):
     # Object coords are metres (scale baked into mesh). W offsets decorrelate parts.
     # fine grain ~60-120 um
     n1 = N.new('ShaderNodeTexNoise'); n1.noise_dimensions = '4D'
-    n1.inputs['W'].default_value = seed; n1.inputs['Scale'].default_value = 11000; n1.inputs['Detail'].default_value = 3
-    n1.inputs['Roughness'].default_value = 0.55
+    n1.inputs['W'].default_value = seed; n1.inputs['Scale'].default_value = GRAIN_SCALE; n1.inputs['Detail'].default_value = 6
+    n1.inputs['Roughness'].default_value = 0.62
     # sparse pits (voronoi) to break the noise into an EDM-like crater texture
     v1 = N.new('ShaderNodeTexVoronoi'); v1.voronoi_dimensions = '4D'; v1.feature = 'F1'
-    v1.inputs['W'].default_value = seed; v1.inputs['Scale'].default_value = 7000
+    v1.inputs['W'].default_value = seed; v1.inputs['Scale'].default_value = GRAIN_SCALE * 0.65
     L.new(tc.outputs['Object'], n1.inputs['Vector']); L.new(tc.outputs['Object'], v1.inputs['Vector'])
     hmix = N.new('ShaderNodeMath'); hmix.operation = 'MULTIPLY_ADD'
     L.new(v1.outputs['Distance'], hmix.inputs[0]); hmix.inputs[1].default_value = 0.6; L.new(n1.outputs['Fac'], hmix.inputs[2])
@@ -215,9 +224,9 @@ def plastic(name, hexcol, seed=0.0, grain=1.0):
     L.new(hmix.outputs[0], r2.inputs[0]); r2.inputs[1].default_value = -0.06; L.new(r1.outputs['Result'], r2.inputs[2])
     L.new(r2.outputs[0], b.inputs['Roughness'])
     # edges: bevel normal (0.25 mm) so moulded edges catch light; grain bump on top of it
-    bev = N.new('ShaderNodeBevel'); bev.samples = 8; bev.inputs['Radius'].default_value = 0.00028
+    bev = N.new('ShaderNodeBevel'); bev.samples = BEVEL_SAMPLES; bev.inputs['Radius'].default_value = BEVEL
     bump = N.new('ShaderNodeBump'); bump.inputs['Strength'].default_value = 1.0
-    bump.inputs['Distance'].default_value = 0.000012 * grain
+    bump.inputs['Distance'].default_value = GRAIN_DEPTH * grain
     L.new(hmix.outputs[0], bump.inputs['Height']); L.new(bev.outputs['Normal'], bump.inputs['Normal'])
     L.new(bump.outputs['Normal'], b.inputs['Normal'])
     # tiny base colour variation (same tool, but no moulded part is a flat sRGB value)
@@ -233,7 +242,7 @@ def sweep_mat():
     m = bpy.data.materials.new('paper'); m.use_nodes = True
     nt = m.node_tree; N = nt.nodes; L = nt.links
     b = N['Principled BSDF']
-    b.inputs['Base Color'].default_value = (*srgb('#d9d7d3'), 1)
+    b.inputs['Base Color'].default_value = (*srgb('#e0e0df'), 1)
     b.inputs['Roughness'].default_value = 0.85
     b.inputs['Specular IOR Level'].default_value = 0.25
     tc = N.new('ShaderNodeTexCoord')
@@ -282,14 +291,19 @@ def area(name, loc, look, size, energy, kelvin=5400, shape='RECTANGLE', size_y=N
     ld = bpy.data.lights.new(name, 'AREA'); ld.shape = shape
     ld.size = size; ld.size_y = size_y if size_y else size
     ld.energy = energy * EXPO; ld.spread = math.radians(spread)
-    ld.use_temperature = True if hasattr(ld, 'use_temperature') else False
-    if hasattr(ld, 'temperature'):
-        ld.temperature = kelvin
-    else:
-        ld.color = kelvin_rgb(kelvin)
+    ld.color = tint(kelvin)
+    if hasattr(ld, 'use_temperature'):
+        ld.use_temperature = False
     o = link(bpy.data.objects.new(name, ld)); o.location = loc
     d = Vector(look) - Vector(loc); o.rotation_euler = d.to_track_quat('-Z', 'Y').to_euler()
     return o
+
+
+def tint(k):
+    """Light colour as a plain linear RGB tint: 6500 K is neutral, lower is warmer. Blender's blackbody at 6500 K
+    leaned magenta under Khronos PBR Neutral in round 2, so the rig sets colours directly."""
+    w = max(0.0, min(1.5, (6500 - k) / 1500))
+    return (1.0, 1.0 - 0.030 * w, 1.0 - 0.085 * w)
 
 
 def kelvin_rgb(k):
@@ -315,7 +329,7 @@ def grad_scrim(name, loc, look, sx, sy, strength, kelvin=5400, falloff=1.6):
     pw = N.new('ShaderNodeMath'); pw.operation = 'POWER'; L.new(sep.outputs['Y'], pw.inputs[0]); pw.inputs[1].default_value = falloff
     mul = N.new('ShaderNodeMath'); mul.operation = 'MULTIPLY'; L.new(pw.outputs[0], mul.inputs[0])
     mul.inputs[1].default_value = strength * EXPO
-    em = N.new('ShaderNodeEmission'); em.inputs['Color'].default_value = (*kelvin_rgb(kelvin), 1)
+    em = N.new('ShaderNodeEmission'); em.inputs['Color'].default_value = (*tint(kelvin), 1)
     L.new(mul.outputs[0], em.inputs['Strength'])
     L.new(em.outputs[0], N['Material Output'].inputs['Surface'])
     o.data.materials.append(m)
@@ -351,7 +365,7 @@ def world(strength=0.25, rot=0.0):
     nt.links.new(bg.outputs['Background'], out.inputs['Surface'])
 
 
-def rig(target=(0, 0, 0.01), key_az=150, key=1.0, rake_az=None, rake_el=14, rake=0.0, cam_az=-35):
+def rig(target=(0, 0, 0.01), key_az=150, key=1.0, bg=1.0, fill=1.0, fill_az=20, rake_az=None, rake_el=14, rake=0.0, cam_az=-35):
     """One light plan for every still (photographer's rig, all in metres, azimuth in degrees from +X, CCW).
     - overhead scrim: 1.2 x 1.2 m at 0.9 m, tilted to the back, lays the soft gradient on top faces
     - two tall strips ~120 deg either side of camera: edge highlights
@@ -364,24 +378,24 @@ def rig(target=(0, 0, 0.01), key_az=150, key=1.0, rake_az=None, rake_el=14, rake
         return t + Vector((math.cos(a) * math.cos(e), math.sin(a) * math.cos(e), math.sin(e))) * r
     back = cam_az + 180
     # key: graduated scrim above and behind, just out of frame; bright edge up, feathered to nothing at the bottom
-    grad_scrim('scrim', pol(back, 52, 0.38), t, 0.50, 0.36, 9.0 * key, 5400)
+    grad_scrim('scrim', pol(back, 52, 0.38), t, 0.50, 0.36, 9.0 * key, 5900)
     # edge strips ~120 deg either side of camera
-    area('strip_L', pol(cam_az + 115, 20, 0.45), t, 0.10, 30 * key, 5300, size_y=0.7)
-    area('strip_R', pol(cam_az - 120, 26, 0.5), t, 0.10, 22 * key, 5300, size_y=0.7)
+    area('strip_L', pol(cam_az + 115, 20, 0.45), t, 0.10, 55 * key, 5900, size_y=0.7)
+    area('strip_R', pol(cam_az - 120, 26, 0.5), t, 0.10, 40 * key, 5900, size_y=0.7)
     # soft frontal fill, big and far: opens the shadow side without flattening
-    area('fill', pol(cam_az + 30, 35, 1.3), t, 0.9, 30 * key, 5500, size_y=0.7)
+    area('fill', pol(cam_az + fill_az, 30, 1.1), t, 1.2, 220 * fill, 5900, size_y=0.7)
     # background light: hung over the cove behind the product, aimed down at the wall, narrow spread
     a = math.radians(back)
     bgp = t + Vector((math.cos(a) * 0.28, math.sin(a) * 0.28, 0.75))
     bgt = Vector((math.cos(a) * 0.45, math.sin(a) * 0.45, 0.22))
-    area('bg', bgp, bgt, 0.6, 520, 5300, size_y=0.6, spread=55)
+    area('bg', bgp, bgt, 0.7, 300 * bg, 5900, size_y=0.6, spread=55)
     if rake > 0:
         area('rake', pol(rake_az if rake_az is not None else cam_az + 95, rake_el, 0.5), t, 0.06, rake, 5200, size_y=0.5)
     # negative fill: black flags just outside frame on both sides and above the lens
     card('flag_L', pol(cam_az + 62, 18, 0.30), t, 0.25, 0.18, 0.02)
     card('flag_R', pol(cam_az - 62, 18, 0.30), t, 0.25, 0.18, 0.02)
     card('flag_T', pol(cam_az, 62, 0.40), t, 0.30, 0.20, 0.02)
-    card('bounce', pol(cam_az - 15, 6, 0.40), t, 0.30, 0.10, 0.80)
+    card('bounce', pol(cam_az - 15, 6, 0.40), t, 0.30, 0.10 * fill, 0.80)
 
 
 def camera(loc, look, lens=90, fstop=8.0, focus=None, sensor=36):
@@ -409,8 +423,12 @@ def render(name, w=WIDTH, h=1600):
 
 
 # ---------------- shots ----------------
+BEVEL = 0.00015       # 0.15 mm: edge catch-light without bending the 0.75 mm deboss walls into the letter floor
+BEVEL_SAMPLES = 4
+GRAIN_SCALE = 9000    # spark-erosion grain ~0.1 mm in object space (metres)
+GRAIN_DEPTH = 0.000013
 EXPO = 0.045        # global light level: one number to set exposure, ratios stay physical
-PLASTIC = '#45484d'   # dark grey, not black: holds L* 18-25 on the shadow side
+PLASTIC = '#404143'   # dark grey, not black: holds L* 18-25 on the shadow side
 
 
 def shot_amigo_hero():
@@ -420,31 +438,31 @@ def shot_amigo_hero():
     top.data.materials.append(m_top); bot.data.materials.append(m_bot)
     place(root, rz=math.radians(TAG_RZ))
     tgt = (0, 0, 0.012)
-    rig(tgt, cam_az=-62, rake=6.0, rake_az=-62 + 100, rake_el=16)
+    rig(tgt, cam_az=-62, fill=1.2, rake=6.0, rake_az=-62 + 100, rake_el=16)
     camera(look_from((0, 0, 0.010), -62, 30, 0.47), (0, 0.004, 0.008), lens=90, fstop=8.0, focus=(0, -0.006, 0.020))
     render('amigo_hero')
 
 
 def shot_amigo_logo():
-    sc = reset(); world(0.30, rot=0.6); sweep(-90)
+    sc = reset(); world(0.22, rot=0.6); sweep(-90)
     root, top, bot = amigo()
     top.data.materials.append(plastic('tag_top', PLASTIC, 0.0)); bot.data.materials.append(plastic('tag_bot', PLASTIC, 5.0))
-    place(root, rz=math.radians(TAG_RZ))
+    place(root, loc=(0.001, -0.002, 0), rz=math.radians(TAG_RZ - 4.0))
     tgt = (0, 0, 0.023)
-    rig(tgt, cam_az=-90, rake=9.0, rake_az=165, rake_el=12)
-    # near top-down, a few degrees off axis so it reads photographed, not orthographic
-    camera(look_from((0, 0, 0.023), -90, 78, 0.40), (0, 0, 0.018), lens=100, fstop=8.0, focus=(0, 0, 0.0232))
+    rig(tgt, cam_az=-90, key=0.6, bg=0.5, rake=14.0, rake_az=165, rake_el=12)
+    # macro, near top-down: a few degrees off axis so it reads photographed, not orthographic; the far edge falls soft
+    camera(look_from((0, 0.005, 0.023), -90, 74, 0.27), (0, 0.006, 0.021), lens=100, fstop=8.0, focus=(0, 0, 0.0232))
     render('amigo_logo')
 
 
 def shot_amimo_rj45():
-    sc = reset(); world(0.30, rot=0.6); sweep(-55)
+    sc = reset(); world(0.30, rot=0.6); sweep(-128)
     root, body, cap = amimo()
     m = plastic('anchor', PLASTIC, 2.0)
     body.data.materials.append(m); cap.data.materials.append(plastic('anchor_cap', PLASTIC, 7.0))
     place(root, rz=math.radians(ANC_RZ))
-    rig((0, 0, 0.015), cam_az=-55, rake=0.0)
-    camera(look_from((0, 0, 0.012), -55, 24, 0.55), (0, 0.004, 0.012), lens=90, fstop=8.0, focus=(0, -0.03, 0.02))
+    rig((0, 0, 0.015), cam_az=-128, fill=2.2, fill_az=42, rake=5.0, rake_az=-128 - 95, rake_el=14)
+    camera(look_from((0, 0, 0.012), -128, 24, 0.44), (0.0, 0.0, 0.012), lens=90, fstop=8.0, focus=(0.0, -0.043, 0.014))   # focus on the RJ45 end face
     render('amimo_rj45')
 
 
@@ -452,12 +470,12 @@ def shot_pair_scale():
     sc = reset(); world(0.30, rot=0.6); sweep(-70)
     r1, top, bot = amigo()
     top.data.materials.append(plastic('tag_top', PLASTIC, 0.0)); bot.data.materials.append(plastic('tag_bot', PLASTIC, 5.0))
-    place(r1, loc=(0.052, 0.006, 0), rz=math.radians(TAG_RZ + 8))
+    place(r1, loc=(0.050, 0.004, 0), rz=math.radians(TAG_RZ - 14))
     r2, body, cap = amimo()
     body.data.materials.append(plastic('anchor', PLASTIC, 2.0)); cap.data.materials.append(plastic('anchor_cap', PLASTIC, 7.0))
     place(r2, loc=(-0.045, 0.012, 0), rz=math.radians(ANC_RZ - 6))
-    rig((0, 0, 0.012), cam_az=-70, rake=0.0)
-    camera(look_from((0, 0.01, 0.012), -70, 26, 0.80), (0, 0.006, 0.010), lens=90, fstop=8.0, focus=(0, -0.01, 0.015))
+    rig((0, 0, 0.012), cam_az=-70, fill=1.6, rake=4.0, rake_az=-70 + 100, rake_el=16)
+    camera(look_from((0, 0.01, 0.012), -70, 26, 0.63), (0, 0.004, 0.014), lens=90, fstop=8.0, focus=(0, -0.01, 0.015))
     render('pair_scale')
 
 

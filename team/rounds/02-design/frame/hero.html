@@ -99,7 +99,9 @@ h1{font:600 var(--size-display)/1.0 var(--font-display);letter-spacing:-0.025em;
 h1 span{display:block;white-space:nowrap}
 .lede{font-size:var(--size-lede);line-height:1.5;color:var(--ink-soft);margin:0;max-width:34em;text-wrap:pretty}
 .picture{grid-column:6 / span 7;margin:0 calc(-1 * var(--margin)) 0 0;background:var(--surface);border-radius:var(--radius-picture);overflow:hidden;min-height:0}
-.picture img{width:100%;height:100%;object-fit:cover}
+.picture{background:#e8e8e6}
+.picture picture{display:block;height:100%}
+.picture img{width:100%;height:100%;object-fit:cover;object-position:42% 50%}
 
 /* ---------- Bar below 1024 px: logo, Book a call, Menu ---------- */
 @media (max-width: 1023px){
@@ -118,7 +120,8 @@ h1 span{display:block;white-space:nowrap}
 @media (min-width: 1024px){ .sheet{display:none} }
 /* ---------- Hero stacks below 1024 px: words, then the 1:1 crop ---------- */
 @media (max-width: 1023px){
-  .hero{display:block;height:auto;min-height:0;max-height:none;padding-inline:0}
+  .hero{display:flex;flex-direction:column;height:auto;min-height:0;max-height:none;padding-inline:0}
+  .picture{order:-1}
   .words{padding:var(--s-6) var(--margin) var(--s-7)}
   h1{font-size:min(4.5rem, calc((100vw - 2 * var(--margin)) / 7.6))}
   .picture{aspect-ratio:1/1;margin:0}
@@ -163,13 +166,11 @@ h1 span{display:block;white-space:nowrap}
       <p class="lede">AmIMotion is spatial intelligence for factories and warehouses. A small tag rides on each trolley, bin and tool. Anchors on your columns hear its signal. One live map shows where it went and how long it has waited. You find out from a screen, not a walk.</p>
     </div>
     <figure class="picture">
-      <!-- PICTURE SLOT. No CAD render exists yet in rounds/02-design/renders/.
-           Replace with the camera A poster of the model hall (4:5 master 1600x2000, rendered from the 8K scene),
-           cropped by object-fit to the slot: about 1:1 at 1440x900, 1.08:1 at 2560x1440, 1:1 on the phone.
-           <picture> with AVIF + WebP, srcset 800 to 3200 w, sizes="(max-width:760px) 100vw, 58vw", fetchpriority="high".
-           Alt text (v3, A7): "A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went.
-           Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting."
-           Never a drawing in its place. -->
+      <picture>
+        <source type="image/avif" srcset="img/amigo-800.avif 800w, img/amigo-1600.avif 1600w, img/amigo-2400.avif 2400w" sizes="(max-width:1023px) 100vw, 58vw">
+        <source type="image/webp" srcset="img/amigo-800.webp 800w, img/amigo-1600.webp 1600w, img/amigo-2400.webp 2400w" sizes="(max-width:1023px) 100vw, 58vw">
+        <img src="img/amigo-1600.webp" width="2400" height="1600" fetchpriority="high" decoding="async" alt="The AmIGo tag in dark grey, with amimotion debossed on its top cover and a screw ear at each end.">
+      </picture>
     </figure>
   </section>
 </main>
