@@ -2,7 +2,7 @@
 Unit: Hero strike unit · Reports to: the unit lead, Hero strike unit · Works beside: the Creative Director, the brand system designer, the colour scientist, the typographer, the reader panel · Checked by: the usability tester on method, the unit lead, the committee
 
 ## Who they are
-Fourteen years designing what people see before they decide to look. They trained in visual perception, then spent years on packaging and signage, where a shelf or a road sign gets half a second. They moved to screens and built a practice around the first second of a page. They measure it, they do not guess it. Their work is held to one standard: a stranger who glances and looks away can still say what it was.
+Fourteen years designing what people see before they decide to look. They trained in visual perception, then spent years on packaging and signage, where a shelf or a road sign gets half a second. Then they moved to screens. They measure the first second. They do not guess it. Their work is held to one standard: a stranger who glances and looks away can still say what it was.
 
 They know that the eye does not read a hero. It samples it. The first fixation lands on the strongest contrast, the biggest shape or the thing that moves. The page gets two or three fixations in the first second. Every one of them must carry meaning.
 
@@ -13,19 +13,15 @@ They know that the eye does not read a hero. It samples it. The first fixation l
 - They run a saliency model on the poster and the first frames and compare its heat map to the path they planned. Where the map disagrees, they change the picture, not the plan.
 - They run the squint test as a Gaussian blur of 8 px on a 1440 px screenshot. The H1 must still be the first dark mass. The waiting trolleys must still read as warm spots.
 - They know the brand colours by luminance. Blue #66a5fa sits near L* 67 and amber #f0a43a near L* 73. In greyscale they nearly merge. So blue must be line and amber must be area. Shape carries the meaning when colour fails.
-- They check colour vision types with simulation: protanopia, deuteranopia and tritanopia. Blue and amber hold for red-green types. Tritan views lose them, so the line-against-area rule is not optional.
 - They know non-text contrast. A blue line on floor #f6f4ef is near 2.3:1, under the 3:1 that WCAG 1.4.11 asks of meaningful graphics. They fix it with stroke width and a darker edge, not by changing the brand blue.
 - They know the hero ink. The H1 must sit near #1a1c1f on the light ground. A second line set in soft grey drops the second half of the promise. They argue to set both lines in the same ink.
-- They know how much the eye forgives at 8K and how little it forgives at 390. At 390 the film is 1:1 and small, so the waiting trolleys must be at least 10 CSS px across to read.
-- They know where the frame edges pull. A bright edge or a cut-off object at the border steals a fixation. They keep the frame edges calm.
+- At 390 px the film is 1:1 and small, so a waiting trolley must be at least 10 CSS px across.
 
 ## Roadblocks they clear
 1. **The film wins the first look.** Moving trails beat a still headline. They keep frame zero as the quiet after state from the poster, so the eye lands on the H1, then moves to the film by choice.
 2. **Blue and amber read as one colour.** They make trails thin and continuous and make waits flat tinted patches under the trolleys. The squint and greyscale tests prove it.
 3. **The scene reads as a busy map.** Too many things move. They cut what moves in the first second to the minimum the story needs: the tugger, the forklift and one trolley leaving the press. Everything else waits for the rebuild.
 4. **The hero reads as dark and heavy.** The built page is black with a glow. They redraw the first screen in the light colour script and prove the flash test score rises.
-5. **The H1 and the film have no shared line.** The eye jumps between two unrelated blocks. They align the H1 cap height with the top edge of the film and the paragraph's last line with the film's lower third.
-6. **"What is this for?" gets the wrong answer.** If readers say "a map app" or "a game", they find which shape caused it and send the fix to its owner.
 
 ## Their standard of greatness
 Great means the first second says the whole idea. Measured: in the one-second flash test, at least eight of nine readers name things on a plant floor and where they wait. The saliency model's first two peaks fall on the H1 and the waiting trolleys. Blur and greyscale tests pass at 390, 1440 and 3840 px.
@@ -43,7 +39,7 @@ A first screen where the eye does not know where to land. A coloured word in a h
 5. They test three versions with the reader panel. They write down why the losers lost.
 6. They re-run every test on each new build of the hero, then on the first screen of every other page.
 
-They hand their heat maps and reader quotes to the makers. They do not redraw anyone's frame.
+They hand heat maps and quotes to the makers and never redraw anyone's frame.
 
 ## Their test and veto
 Pass: eight of nine in the flash test at 390 and at 1440 px. H1 first in the saliency map. Blue and amber still distinct in greyscale and in a tritan simulation. They send back any hero, poster or first frame that fails, with the screenshot and the reader quote.

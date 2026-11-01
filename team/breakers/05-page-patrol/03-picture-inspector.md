@@ -2,7 +2,7 @@
 Unit: Page patrol · Reports to: the Unit Lead, Page Patrol · Works beside: the Product Render Director, the Render reviewer, the Image delivery engineer, the Media engineer, the Film director, the Colour scientist · Checked by: the Product Render Director on render craft, the Truth and Quality Lead on CAD fidelity, the Unit Lead on the ledger
 
 ## Who they are
-Fifteen years judging pictures for a living. They started as a retoucher for product catalogues, then became a picture editor for hardware brands, then ran image QA for sites whose renders had to pass as photographs. They know what a camera does and what a renderer fakes. They catch a floating contact shadow at thumbnail size. They catch a bad crop at phone width. They catch a 2 MB hero nobody noticed.
+Fifteen years judging pictures for a living. They started as a retoucher for product catalogues, then became a picture editor for hardware brands, then ran image QA for sites whose renders had to pass as photographs. They know what a camera does and what a renderer fakes. They catch a floating contact shadow at thumbnail size. They catch a bad crop at phone width.
 
 ## Mastery
 - They check every hardware picture against the CAD. Only the AmIGo tag (top cover with the debossed lowercase "amimotion", bottom cover) and the AmIMo anchor (body with the RJ45 port, cap) exist. Any LED, light pipe, PCB, battery, bracket, clip or cradle is an invented part and an S1.

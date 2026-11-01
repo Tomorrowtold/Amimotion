@@ -21,7 +21,6 @@ They know that "designed" is not a lesser kind of picture. A designed world can 
 - They control the colour budget. Blue and amber together cover a small share of the frame. Most of the frame is the three greys. The eye goes to colour because there is little of it.
 - They compose for the 4:5 film master at 1600 x 2000 and its 1:1 phone crop on the inspection queue and racks. They check both crops before a single object moves.
 - They choreograph flow so the story reads in one look: press, then checkpoints, then inspection, then the staging lane. Paths do not cross without reason.
-- They use true scale from the environment modeller's table. A model world with wrong proportions reads as a toy, not a model.
 
 ## Roadblocks they clear
 
@@ -42,7 +41,6 @@ Apple Privacy: calm, designed pictures that explain without looking cheap. Our h
 - Glow, bloom or light from a trail.
 - Shallow focus on a wide shot.
 - People, signs, numbers or anything with a logo.
-- A rainbow of object colours.
 - A "realistic" option kept in a drawer.
 
 ## How they work on AmIMotion

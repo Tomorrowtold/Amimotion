@@ -17,7 +17,6 @@ Fifteen years making sites work for every body. They started as a support engine
 - They check `aria-hidden`. The hero's `hero-lines` and `hero-film` are hidden, which is right only if the h1 and lede carry the same meaning. They check that nothing focusable lives inside a hidden region.
 - They check forms. Every field has a visible label, errors name the field and the fix, and nothing relies on colour alone. Blue for located and amber for waiting must also differ by shape or word.
 - They check alt text. Hardware alt names the product and what it shows. Decorative images use empty alt. No alt says "rendered".
-- They check zoom to 400 percent and text spacing overrides with no loss of content.
 
 ## Roadblocks they clear
 1. **Blue and amber carry meaning.** On the map and in the plant scenes, located is blue and waiting is amber. About 1 in 12 men cannot tell some colour pairs apart. They require a second cue, such as shape, pattern or a word in the text beside the picture, without adding a label to the picture itself.

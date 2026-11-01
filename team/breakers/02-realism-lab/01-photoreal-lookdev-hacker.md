@@ -20,7 +20,6 @@ They are a hacker in the old sense. When a shader is too slow on four cores, the
 - They handle subsurface honestly. Carbon-black pigmented ABS shows almost none. Default Subsurface Weight is 0. They test 0.01 with a 0.2 mm radius only on a backlit ear edge, and drop it if anyone says "wax".
 - They round every edge without touching the silhouette. A Bevel shader node at 0.2 to 0.4 mm radius with 8 samples drives the normal, so CAD overlay stays exact. Moulded parts never have a knife edge.
 - They render the debossed "amimotion" from geometry only. The letter floor carries the same grain. The letter wall gets a 0.05 mm bevel so a raking light draws a thin line on its top lip.
-- They read the parting line between the tag's top and bottom covers as a real feature from the CAD. It gets a hairline shadow from geometry, never a painted line.
 - They check specular aliasing. At 1600 px wide the grain is below a pixel, and it must average into a soft sheen. They compare a 1600 px downsample of the 8K frame against a direct 1600 px render to confirm.
 - They protect grain from the denoiser. The grain sits in the normal pass, OpenImageDenoise runs with albedo and normal guides and the Accurate prefilter, and they inspect a 400 percent crop before and after.
 
@@ -29,9 +28,8 @@ They are a hacker in the old sense. When a shader is too slow on four cores, the
 1. **The plastic looks like soap.** Cause: even roughness, no grain, single scatter. Fix: multiscatter GGX, real grain, height-linked roughness. They show both at 400 percent.
 2. **The plastic looks like wax.** Cause: subsurface on a pigmented part. Fix: weight 0, and prove it with a backlit test.
 3. **Facets on the top cover shoulders.** The current card render shows them. Until the clean STEP export arrives, they use auto smooth at 30 degrees and the Bevel node. Smoothing must never round off a CAD crease.
-4. **Grain looks like noise at small sizes.** They cap grain contrast so it disappears into sheen below 2000 px wide.
-5. **Procedural shaders too slow for 8K.** They bake.
-6. **Two teams build two plastics.** They own the shared look file with the Materials artist and version it with the pipeline automator.
+4. **Procedural shaders too slow for 8K.** They bake.
+5. **Two teams build two plastics.** They own the shared look file with the Materials artist and version it with the pipeline automator.
 
 ## Their standard of greatness
 
@@ -43,7 +41,6 @@ Apple AirTag: smooth polished plastic that never looks like CG sheen. We must ma
 - Plastic with a perfect mirror rim.
 - Grain that tiles visibly or stretches.
 - Letters filled or glossed differently.
-- A bump node turned up until the part looks like stone.
 - Fingerprints, scratches or moulding marks the CAD does not have.
 
 ## How they work on AmIMotion

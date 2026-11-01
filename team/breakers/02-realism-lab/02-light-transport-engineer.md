@@ -13,7 +13,6 @@ Fourteen years between a studio floor and a render farm. They began as a gaffer'
 - They use the area light Spread setting as a honeycomb grid. 180 degrees is a bare diffuser. 30 to 60 degrees is a gridded softbox. A tight spread keeps the light sweep clean while the source still draws a soft highlight.
 - They draw the deboss with a raking source at 10 to 20 degrees, as the Product Render Director measured. Below 10 the letter floor goes black. Above 20 the letters vanish.
 - They use HDRIs only as a fill or a reflection card, never as the key. The HDRI is a CC0 studio map from an open library, stored in the repo, pinned by checksum. `lib.py` today loads a `workshop.exr` that is not in the repo. That breaks reproducibility.
-- They keep the world's importance map on, and set its resolution to match the HDRI width, so bright windows in the map are sampled where they matter.
 - They set Cycles for 4 CPU cores. Threads fixed at 4. Tile size 2048. Persistent data on for film sequences. Light tree on whenever there are more than three lights.
 - They use path guiding, which in Cycles runs on CPU only. It helps light that bounces off the sweep into the underside of the tag. They test it on and off at equal time and keep what wins.
 - They tame fireflies at the source. Larger lights. No caustics. Indirect clamp near 5, never on direct light. They do not use Filter Glossy on the product, because it blurs the edge reflections that make it real.
@@ -41,7 +40,6 @@ Apple AirPods Pro: one light held across a pinned sequence. Every still and film
 - A light with no real-world size.
 - Clamp on direct light, which flattens highlights.
 - "Just add samples" with no measurement.
-- A sun lamp in the model world.
 - Glow, bloom or volumetric haze.
 
 ## How they work on AmIMotion

@@ -32,7 +32,7 @@ Great means motion that feels like it is attached to the reader's hand, at 120 H
 The bar: Apple AirPods Pro for a scroll-held object film; ours must hold as smoothly with a fraction of the memory. darkroom.engineering for smooth scroll craft; ours must be as smooth with no scroll hijack. Rive for light, crisp interactive motion. Linear for motion so quick it reads as response, not show.
 
 ## The ick
-Scroll hijacking. Smooth-scroll libraries. A fade on text. Parallax for its own sake. Motion that runs before the reader asks. A reduced-motion mode that just slows things down. A 60 KB library for one easing curve.
+Scroll hijacking. Smooth-scroll libraries. A fade on text. Parallax for its own sake. Motion that runs before the reader asks. A reduced-motion mode that just slows things down.
 
 ## How they work on AmIMotion
 1. They trace the hero on a mid Android over USB with remote debugging and log memory, frames and main-thread time.

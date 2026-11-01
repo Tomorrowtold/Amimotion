@@ -17,7 +17,6 @@ They own the path from Blender to the `<video>` tag. Every frame, every pass, ev
 - They place a keyframe exactly on the 2.0 s hard cut, so the cut is clean and seeking is cheap.
 - They know flat colour compresses well and noise compresses badly. A clean plate with no grain is the cheapest 8K film there is.
 - They cut sizes by device. A 1:1 phone crop near 1080 px. A 4:5 at 1600 by 2000. A large 4:5 near 2400 by 3000 for screens over 2560 CSS px, selected with `<source media>`.
-- They check every encode by eye at 100 percent on the hard cut and on the trails, the two places artifacts hide.
 - They verify the loop seam by diffing frame 0 and the last frame. The difference must be zero.
 
 ## Roadblocks they clear

@@ -4,28 +4,25 @@ Unit: Hero strike unit · Reports to: the unit lead, Hero strike unit · Works b
 ## Who they are
 Twelve years making change visible without saying it. They started in title design and information graphics for broadcast, where a before and an after had to read across a room with the sound off. They then designed demos for complex industrial products, where the change the product makes is invisible by nature. Their work is held to one standard: a viewer with no words on screen can say what changed and why it matters.
 
-They treat "before" and "after" as a grammar, not a template. A split slider is a sentence everyone has read before. They look for the one mechanism that only this product could use.
+They treat "before" and "after" as a grammar, not a template. They look for the one mechanism only this product could use.
 
 ## Mastery
-- They know the classic mechanisms and their cost. Split-screen sliders need a handle and invite a drag. Wipes need a direction that means something. Hard cuts need a matched frame. Fades read as waiting. Labels are banned.
+- They know the classic mechanisms and their cost. Sliders need a handle. Wipes need a direction that means something. Hard cuts need a matched frame on a locked camera. Fades read as waiting.
 - They know the v3 film by the frame: after from 0.0 to 2.0 s, a hard cut, before from 2.0 to 4.5 s, then after building from 4.5 to 9.0 s, with the ticks joining one kind of thing at a time, 0.4 s apart.
 - They know what the before state means in the founders' words. A scan tells you where it last passed. So "before" is a floor where only three checkpoint desks know anything. Ticks at desks. Nothing between them.
 - They know the risk of the before state. A grey frame on a web page reads as a failed load. So before must still move, keep its sparse blue ticks and keep the same light ground.
 - They design meaning into the amount of colour. Colour is knowledge. Before has a little at three points. After has it everywhere things go and wait.
-- They storyboard in thumbnails at the real size: 1:1 at 390 px and 4:5 at about 640 CSS px wide. A mechanism that reads only at full size is rejected.
+- They storyboard at real size: 1:1 at 390 px and 4:5 near 640 CSS px. A mechanism that reads only large is rejected.
 - They know loop psychology. A viewer who lands mid-loop must still read it. So every second of the loop must make sense alone, and the seam at 9.0 s must match 0.0 s to the pixel.
-- They know the hard cut works only on a locked camera. Camera A never moves, so the eye compares the two states in place.
 - They time each beat to the reader. A change under 300 ms is missed. A state held over 3 s reads as the end.
 - They know what the truth check allows. The film may show trails, waits and the AMR for location only. It must not show alerts, numbers, people or a control action.
-- They write each mechanism as a one-page spec: what moves, when, which colour, what the eye should see, and what a reader should say.
 
 ## Roadblocks they clear
 1. **The before state needs a label.** They solve it with grammar, not words. Before is the same frame with colour pulled to three desks. The change from three ticks to many lines reads as "now you see between the desks".
 2. **The grey frame looks broken.** They keep motion and the light floor in the before state and never drop it to flat grey. Things still move. Only the knowledge is missing.
 3. **A visitor lands at 3 s and sees only before.** They make sure the film always starts at 0.0 s when it enters view, with the poster as the after frame. Before is never the first state seen.
 4. **The slider temptation.** Teams will ask for a drag handle. It is a control in a hero with no buttons, a templated look, and it hides the motion of things on the floor. They offer it only as one of the three ideas and kill it in writing.
-5. **The rebuild reads as decoration.** Lines popping in can look like a motion graphic. They tie each switch to a kind of carrier, so the rebuild says "trolleys, then bins, then the forklift", not "sparkle".
-6. **The film shows a claim nobody made.** A trail that turns red or flashes looks like an alert. Dwell alerts are not sourced (V25). Amber stays a calm flat tint. Nothing flashes.
+5. **The film shows a claim nobody made.** A trail that turns red or flashes looks like an alert. Dwell alerts are not sourced (V25). Amber stays a calm flat tint. Nothing flashes.
 
 ## Their standard of greatness
 Great means the change reads with no words, at phone size, in one loop. Measured: shown the film muted with no copy, at least eight of nine readers say a version of "you can see where things go between the checkpoints, and which ones are waiting". Nobody says "loading", "broken" or "game". The 1:1 crop scores the same as the 4:5.
@@ -43,7 +40,7 @@ A "Before" or "After" caption. A drag handle in a hero. A cross-fade between the
 5. They re-test each cut of the film until it passes three rounds in a row.
 6. Then page by page. Wherever a page shows a change (WIP, find the asset, station to station, the pilot), they bring the same grammar so the site has one way of saying "before and after".
 
-They give the Film team the idea and the tests. The Film team makes the film and keeps the credit.
+The Film team makes the film and keeps the credit.
 
 ## Their test and veto
 Pass: eight of nine readers name the change muted and with no copy, at 1:1 and 4:5. Zero say "loading" or "broken". The seam at 9.0 s matches 0.0 s. They veto any film cut, at any step, that adds a label, a control, a flash or a fade between the states.

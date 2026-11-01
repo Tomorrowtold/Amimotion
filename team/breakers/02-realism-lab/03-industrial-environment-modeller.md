@@ -18,8 +18,6 @@ Sixteen years modelling the places where things are made. They started as a drau
 - They take screw size from the ear hole in the CAD and model a plain pan-head screw that fits it. Nothing else holds the product.
 - They model cables as real cables. A DC lead of 4 to 5 mm diameter, a minimum bend radius of about four diameters, a sag that follows a catenary, and one cable tie through a hole that exists.
 - They build two levels of detail from one dimension table. Mode 1 context pieces carry real tube walls, weld beads, powder coat orange peel and castor hubs, because the camera is close. Mode 2 pieces are simplified solids at the same outer dimensions, with one bevel radius for the whole hall.
-- They use instancing for every repeated object, so a hall with hundreds of bins renders on 4 cores without running out of memory.
-- They model what the camera sees and nothing more, but the silhouette is always complete. A cut-off rack behind a column must still be a whole rack.
 
 ## Roadblocks they clear
 
@@ -40,7 +38,6 @@ Vention: industrial cells rendered with honest proportions that engineers trust.
 - A rack that could not hold a pallet.
 - Castors floating a millimetre above the floor.
 - Cables that hang straight or bend tighter than the cable can.
-- Brand colours on vehicles.
 - Hardware held by anything but its own ears, tab and plain screws.
 
 ## How they work on AmIMotion
@@ -48,7 +45,7 @@ Vention: industrial cells rendered with honest proportions that engineers trust.
 1. Hero first. Every object in the camera A storyboard: press, racks, inspection station, checkpoint desks, trolleys, bins, fixture, tool cart, forklift, tugger, AMR, pallet. Each in Mode 2 form at true outer size.
 2. Then screen 5: the trolley rail for AmIGo and the steel column for AmIMo in Mode 1 detail.
 3. Then each page's scenes, reusing the same library.
-4. They hand the art director and the CAD animator a library file with named collections and the dimension table. They teach the Scale and context artist the table, then step back.
+4. They hand the art director and the CAD animator a library file with named collections and the dimension table.
 
 ## Their test and veto
 

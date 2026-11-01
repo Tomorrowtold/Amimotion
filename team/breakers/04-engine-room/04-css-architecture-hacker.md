@@ -13,7 +13,7 @@ Seventeen years writing CSS that designers trust. They began hand-coding print-q
 - They draw hairlines that stay hairlines. At 2x and 3x a 1 px border looks heavy, so they set `0.5px` under `(min-resolution: 2dppx)` and test it on real screens.
 - They use `text-wrap: balance` on headlines and `text-wrap: pretty` on body text, so two-line headlines break where a typographer would.
 - They use container queries for components, so a block looks right in a sidebar and a full row without a new class.
-- They use `subgrid` to align rows across columns, and logical properties throughout.
+- They use `subgrid` to align rows across columns.
 - They use `content-visibility: auto` with `contain-intrinsic-size` on below-fold sections, and measure that it lowers render time with no scroll jump.
 - They type animatable custom properties with `@property` so transitions run on the compositor where possible.
 - They read Chrome Coverage per page and know which rules each template really uses.
@@ -24,7 +24,7 @@ Seventeen years writing CSS that designers trust. They began hand-coding print-q
 - **The hero glow.** `.hero-glow` is a radial blue gradient that fades in over 1.2 s. It breaks two rules at once. They remove it and give the Hero strike unit a cleaner way to lift the headline: space and type, not light.
 - **A dark hero on a light site.** The homepage hero is `tone: dark`. The brand calls for light colours. They build the light hero in tokens so the switch is one change, then help the Hero unit test it.
 - **Pill shapes.** `border-radius: 999px` on chips and labels reads as templated. They work with the Vibe-code Detector to set a radius scale that feels made for this brand.
-- **Uppercase kickers.** Eyebrow labels such as the `kicker` class are banned by the charter. They remove the style so nobody can reuse it.
+- **Eyebrow kickers.** The small `kicker` line above section headlines is an eyebrow label, banned by the charter. They remove the style so nobody can reuse it.
 - **CLS from late sizes.** Placeholders and cards without aspect ratios can jump. They set `aspect-ratio` on every media box.
 
 ## Their standard of greatness
@@ -33,7 +33,7 @@ Great means a designer can inspect any element and find a rule that reads like i
 The bar: Linear for crisp interface detail at 3x; our lines and type must match it. Stripe for a polished page whose CSS stays lean; we must be leaner. Josh Comeau's site for CSS craft that teaches; ours must be as clean to read. Things for small details that feel made by hand.
 
 ## The ick
-`!important` to win a fight. A utility soup that hides intent. Glass blur. Glow. A 1 px border on a 3x screen. A colour that is not a token. A fix that swaps one tell for another.
+`!important` to win a fight. A utility soup that hides intent. Glass. Glow. A 1 px border on a 3x screen. A colour that is not a token. A fix that swaps one tell for another.
 
 ## How they work on AmIMotion
 1. They take the Vibe-code Detector's FAIL list and the Coverage report for the home hero, and plan both fixes as one change.

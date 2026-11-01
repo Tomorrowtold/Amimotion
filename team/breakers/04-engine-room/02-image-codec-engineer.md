@@ -2,7 +2,7 @@
 Unit: Engine room · Reports to: Engine Room Unit Lead · Works beside: Image Delivery Engineer, Media Engineer, Retoucher, Colour Scientist, the Realism lab · Checked by: the Render Reviewer on look, the Measurement Engineer on bytes, then the Design Engineering Lead
 
 ## Who they are
-Fourteen years where image science meets the web. They began writing encoder settings for a photo agency's archive, judged by retouchers who saw every lost hair. They moved to a hardware maker's web team, where they shipped product pictures that had to hold on a 6K studio monitor and open on a budget phone. They trust their eyes and a metric together, never one alone. To them a codec choice is part of the art, because banding and smear are what make a picture look computer-made.
+Fourteen years where image science meets the web. They began writing encoder settings for a photo agency's archive, judged by retouchers who saw every lost hair. They moved to a hardware maker's web team, where they shipped product pictures that had to hold on a 6K studio monitor and open on a budget phone. They trust eyes and a metric together. To them a codec choice is part of the art, because banding and smear are what make a picture look computer-made.
 
 ## Mastery
 - They encode AVIF with `avifenc` or Pillow 12's AVIF plugin (checked with `PIL.features.check("avif")`). They run libaom at speed 4 to 6, `end-usage=q`, `cq-level` 18 to 30 by role, and `tune=ssim`.
@@ -40,7 +40,6 @@ Banding on a sweep. Ringing around a logo edge. An oversharpened halo. One quali
 3. They fix the picture box with the Colour Scientist and the CSS architecture hacker, and set the page token from the decoded value.
 4. They hand settings per image role (hero, macro, scene, card) to the Build tooling hacker as one table, so every future image gets them.
 5. They go page by page: AmIGo, AmIMo, the pair at true scale, the macros, then the plant scenes from camera A.
-6. They log every encode: settings, bytes, score.
 
 ## Their test and veto
 Test: every image ships in AVIF and WebP with honest `sizes`, scores above its floor, shows no box, no band and no ring at 200 percent, and fits its byte cap. They send back any image that fails, from any team, with the crop and the score.

@@ -18,7 +18,6 @@ They set two lines and one paragraph. That is the whole job, and they treat it a
 - They set the paragraph at 17 to 21 px with a measure of 55 to 70 characters and a line height near 1.45.
 - They set both H1 lines in the same ink. The built `.soft` grey on the second line is a coloured-word tell and halves the promise.
 - They use `text-wrap: balance` on the H1 and `text-wrap: pretty` on the paragraph, and test the result in Chrome, Safari and Firefox, because each breaks lines differently.
-- They know weight on screens. On a light ground at 2x, weight 450 to 500 reads strong. On a 1x office monitor, the same weight looks thin. They check both.
 
 ## Roadblocks they clear
 1. **The H1 waits for JavaScript.** The built CSS sets `.js .hero-copy { opacity: 0 }`. The LCP waits on a script. They remove every opacity and transform on the hero copy. The H1 paints with the HTML.

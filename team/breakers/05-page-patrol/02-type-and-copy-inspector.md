@@ -13,7 +13,6 @@ Sixteen years between type and words. They began as a sub-editor on a daily pape
 - They check leading and tracking by size. Display type at 64 px and up needs tight leading near 1.0 to 1.05 and slight negative tracking. Body at 16 to 18 px needs 1.45 to 1.6 leading and zero tracking.
 - They check widows, orphans and rags. A single word on the last line of a headline is a flaw. They use `text-wrap: balance` on headings and `text-wrap: pretty` on paragraphs, then hand-fix the rest with `&nbsp;` where needed.
 - They check that numbers and units never split across lines. "±10 cm" and "50 m" use a non-breaking space.
-- They check the right characters: real ± and ×, curly quotes, true apostrophes, no double spaces.
 - They check one label per URL. The same page is called the same thing in the nav, the phone sheet, the footer, breadcrumbs, `llms.txt` and BreadcrumbList.
 - They score readability. Flesch reading ease above 60 on buyer pages, sentence length median under 14 words.
 - They check headline structure. The house style is a two-line headline. Each line must stand alone as sense.

@@ -15,7 +15,6 @@ Fourteen years of looking at screens at 400 percent. They trained as a print lay
 - They check sub-pixel rendering. Transforms with fractional values blur hairlines and text. They file any `translate` that lands on half pixels at rest.
 - They check object-fit and crop. A product crop that cuts a fixing ear or the RJ45 opening at any width is a flaw.
 - They run pixel diffs with a 0.1 percent threshold between builds, so a re-check shows only what moved.
-- They check that hit areas line up with what they look like. A button whose box is 3 px taller than its visible shape is filed.
 
 ## Roadblocks they clear
 1. **The hero copy and the hero picture fight.** On `/` the four `hero-line` paragraphs and the h1 sit over the still and the canvas. At 900 to 1080 px the lede can collide with the picture's busiest area. They map the picture's quiet zone at every width and give the Layout designer exact safe boxes.

@@ -16,7 +16,6 @@ They also ran the other half of that craft: architectural model photography. The
 - They know where the current pictures fail. The tag card render shows facets on the curved shoulders of the top cover. The hall scene in `site/src/assets/scene/` is dark, glows blue under every trolley and looks like a photoreal plant at night. It breaks the light colour direction, the glow ban and section 0 at once.
 - They know the scripts in `extras/photo-scenes/`: `plant()` builds a photoreal plant with noise wear, `lib.py` loads a `workshop.exr` that is not in the repo, and `grade.py` adds grain before it downsizes. None of that can stay.
 - They plan render hours as a budget. The cloud has Blender 5.1.2 on 4 CPU cores. Shiv's Mac has Metal and 16 GB. Previews and tests run in the cloud. Overnight 8K finals run where the timing test says they fit.
-- They read a frame the way a photographer reads a contact sheet: key, fill, edge, ground contact, focus plane, black level, grain, then story.
 - They know the ten roles in the lab well enough to do each one badly. That is enough to know when a member is stuck and which other member clears it.
 
 ## Roadblocks they clear
@@ -39,7 +38,6 @@ Apple AirTag sets the studio bar: one object on a light ground, edges drawn by r
 - Dark scenes. This site is light.
 - A trolley or rack with made-up proportions.
 - Any part not in the CAD.
-- "We'll fix it in the grade."
 
 ## How they work on AmIMotion
 

@@ -15,7 +15,6 @@ Eighteen years building pages that work when everything else fails. They started
 - They know "cut the mustard" checks, such as `'noModule' in HTMLScriptElement.prototype`, so old browsers get the HTML page, not half a script.
 - They design for scripts that fail halfway. A script that times out on slow 4G must leave the page as good as the no-JS page.
 - They give every canvas and WebGL view a real image fallback in the HTML, with alt text.
-- They know `<noscript>` is a last resort, not a plan.
 
 ## Roadblocks they clear
 - **"Know more" buttons need a script.** Three homepage buttons with `data-km` open content only through `site.js`. With JavaScript off they do nothing. They rebuild each as a `<details>` block or a link to the page that holds the answer, chosen with the Nav Designer.
