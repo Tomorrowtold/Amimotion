@@ -15,7 +15,6 @@ Fourteen years of fitting the right amount on a screen. They started as an edito
 - They measure reading time with timed reads, not word counts alone. Technical words slow a reader. "UWB" costs more than "trolley".
 - They spot padding: sentences that restate the headline, lists of three that should be one, intros that delay the answer.
 - They spot starvation: a page that says "contact us" where the buyer needs a figure the founders already published.
-- They tune for the phone first. A block that is one screen on desktop can be two and a half at 390 px.
 - They put the short answer first on every answer page, marked `.short-answer`, so readers and the speakable spec get the same two lines.
 
 ## Roadblocks they clear

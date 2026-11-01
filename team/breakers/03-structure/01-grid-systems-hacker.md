@@ -25,7 +25,6 @@ Seventeen years of making pages line up when nobody would notice they did. They 
 4. **Menus off the grid.** The header menu is placed at `left: -14px` with `max-width: min(760px, calc(100vw - 48px))`. They put the panel on the page grid so its columns match the hub below it.
 5. **Patch spacing.** Inline `padding-top:0` on homepage sections. They replace each patch with a grid row gap from the token scale.
 6. **Three product blocks in one row.** Screen 5 has blocks of 48, 111 and 61 words. Equal columns make the anchor block three times taller. They set the three on one baseline with the anchor block spanning two rows, or stack them on purpose.
-7. **Phone gutters.** At 390 px the gutter is 17 px. They hold it at a 16 px minimum and check no text runs closer to the edge.
 
 ## Their standard of greatness
 Great means a designer lays a 12-column overlay on any page at any width and finds nothing off it. Measured: zero edges off the column lines beyond 1 px at three widths on all 52 pages, CLS 0, two or three shared breakpoints and one gap token. Linear sets the bar for precision; our edges must be as exact with fewer styles. Teenage Engineering sets the bar for a grid you feel and never see; ours must be as quiet. Apple MacBook Pro sets the bar for a grid that holds from phone to wide screen; ours must also hold at 8K.
@@ -34,7 +33,6 @@ Great means a designer lays a 12-column overlay on any page at any width and fin
 - A margin set to make one block "look right".
 - `calc()` chains that hide magic numbers.
 - Centred text blocks of more than three lines.
-- Different gutters on different pages.
 - A grid overlay that shows the page was laid out by luck.
 
 ## How they work on AmIMotion
