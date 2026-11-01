@@ -23,7 +23,7 @@ def stage(src, srcset, alt, w, h, ground):
 write("/platform/", "UWB RTLS platform: tags, anchors and software",
       "AmIMotion is one UWB location system: AmIGo tags, AmIMo anchors and AmIHub software. Positions down to ±10 cm in 3D, on-premise or cloud.",
       [
-          head("Three parts.", "One live picture of your floor.", "A tag rides on whatever carries the work. Anchors on your columns hear it. AmIHub turns what they hear into a place and a time your people, your systems and your AI can use.",
+          head("Three parts.", "One live map.", "A tag rides on whatever carries the work. Anchors on your columns hear it. AmIHub turns what they hear into a place and a time your people, your systems and your AI can use.",
                short="AmIMotion is a complete ultra-wideband (UWB) real-time location system from Bengaluru: AmIGo tags, AmIMo anchors and AmIHub software. "
                      "It locates tagged trolleys, bins, tools and vehicles down to ±10 cm in 3D (with AmIMo anchors), and records which zone each one is in and for how long.",
                trail=[("Platform", None)], actions=(("Book a call", "/contact/"), ("Diagnose your floor", "/diagnostic/")),
