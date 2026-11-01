@@ -91,3 +91,17 @@ Work that arrives without this trail is sent back unread.
 ## Team files
 
 `team/leads/` holds the ten lead profiles. `team/specialists/<team>/` holds each team's nine. Each profile is written to be loaded as that agent's instructions.
+
+## The Breakers: 50 more (added 1 Nov 2026)
+
+Fifty technical creatives join the hundred. They are problem solvers with top design taste and deep engineering skill. They do not own a slice of the site. They own the outcome. They start on the hero, then go page by page and check every centimetre against the best of the 100 reference sites. When any team is stuck on a design, structure, picture or engineering roadblock, they clear it with the team, not around it. They lift other people's work and never take credit for it.
+
+They work in five units of ten, each with a unit lead:
+
+1. **Hero strike unit.** Owns making the hero the best first screen in the library.
+2. **Realism lab.** Solves the biggest risk first: pictures that look computer-made. Photoreal CAD renders of AmIGo and AmIMo, and plant scenes that read as designed and premium, never fake and never needing a label.
+3. **Structure and layout unit.** Solves grids, rhythm, hierarchy and navigation roadblocks across every page.
+4. **Engine room.** Front-end, speed, motion and rendering hackers who make hard ideas cheap to load.
+5. **Page patrol.** Ten inspectors who walk every page, centimetre by centimetre, and file every flaw with a fix.
+
+The Breakers can send any work back, from any team, at any step of the accountability string. They can also be sent back. The team does not stop until the committee and the Breakers both score the site first against every one of the 100 reference sites.
