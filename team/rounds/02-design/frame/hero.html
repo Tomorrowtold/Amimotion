@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AmIMotion: where work is, where it waits</title>
+<meta name="description" content="AmIMotion is spatial intelligence for factories and warehouses. A small tag rides on each trolley, bin and tool.">
+<link rel="preload" href="../fonts/MonaSans-Display-SemiBold-W112.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* ---------- Fonts: Mona Sans (SIL OFL 1.1), three static Latin subsets, 41 KB total ---------- */
+@font-face{font-family:"Mona Display";src:url(../fonts/MonaSans-Display-SemiBold-W112.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Mona Text";src:url(../fonts/MonaSans-Text-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Mona Text";src:url(../fonts/MonaSans-Text-Medium.woff2) format("woff2");font-weight:500;font-display:swap}
+/* Metric-matched fallbacks so the swap does not move a line (CLS 0). Values measured in DESIGN_SYSTEM.md. */
+@font-face{font-family:"Mona Display Fallback";src:local("Arial");size-adjust:118%;ascent-override:92%;descent-override:27%;line-gap-override:0%}
+@font-face{font-family:"Mona Text Fallback";src:local("Arial");size-adjust:105%;ascent-override:104%;descent-override:30%;line-gap-override:0%}
+
+/* ---------- Tokens ---------- */
+:root{
+  /* raw */
+  --hall-0:#f6f4ef; --hall-1:#eceae4; --hall-2:#e2e0d9;
+  --graphite-9:#16181b; --graphite-8:#2b2e33; --graphite-6:#4a4e55; --graphite-hw:#3a3d42;
+  --blue-brand:#66a5fa; --blue-deep:#1a56a8; --amber-brand:#f0a43a;
+
+  /* semantic: pages use only these */
+  --ground:var(--hall-0);
+  --surface:var(--hall-1);
+  --pressed:var(--hall-2);
+  --ink:var(--graphite-9);
+  --ink-soft:var(--graphite-6);
+  --ink-hover:var(--graphite-8);
+  --on-ink:var(--hall-0);
+  --hardware:var(--graphite-hw);
+  --link:var(--blue-deep);
+  --focus:var(--blue-deep);
+  --located:var(--blue-brand);   /* state only: where a thing is */
+  --waiting:var(--amber-brand);  /* state only: how long it has waited */
+
+  /* type: six sizes, fluid between 390 and 1440 px, still growing to 2560 */
+  --font-display:"Mona Display","Mona Display Fallback",Arial,sans-serif;
+  --font-text:"Mona Text","Mona Text Fallback",Arial,sans-serif;
+  --size-display:clamp(2.5rem, 1.18rem + 3.9vw, 7.5rem);
+  --size-h2:clamp(1.875rem, 1.2rem + 2.2vw, 4.5rem);
+  --size-h3:clamp(1.375rem, 1.1rem + 0.9vw, 2.25rem);
+  --size-lede:clamp(1.0625rem, 0.86rem + 0.6vw, 1.875rem);
+  --size-body:clamp(1rem, 0.94rem + 0.16vw, 1.25rem);
+  --size-small:clamp(0.875rem, 0.84rem + 0.1vw, 1.0625rem);
+
+  /* space: 8 pt base, 4 pt half step */
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px; --s-10:128px;
+  /* section rhythm: three sizes only */
+  --rhythm-s:clamp(48px, 5vw, 96px);
+  --rhythm-m:clamp(64px, 8vw, 160px);
+  --rhythm-l:clamp(96px, 11vw, 224px);
+
+  /* grid: 12 columns, every split is 5:7 */
+  --margin:clamp(20px, 3.9vw, 112px);
+  --gutter:clamp(16px, 1.67vw, 40px);
+  --bar:clamp(56px, 3.4vw + 40px, 96px);
+
+  /* radii: two values */
+  --radius-control:6px;
+  --radius-picture:0;
+
+  /* motion */
+  --press-scale:.97;
+  --t-fast:120ms;
+  --ease:cubic-bezier(.2,0,0,1);
+}
+
+/* ---------- Base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font:400 var(--size-body)/1.55 var(--font-text);font-kerning:normal;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:var(--radius-control)}
+img{display:block;max-width:100%}
+.skip{position:absolute;left:var(--margin);top:-100px}
+.skip:focus{top:var(--s-3);background:var(--ground);padding:var(--s-2) var(--s-3);z-index:3}
+
+/* ---------- Bar ---------- */
+.bar{height:var(--bar);padding-inline:var(--margin);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:center;background:var(--ground);position:relative;z-index:2}
+.logo{grid-column:1 / span 3;display:inline-flex;align-items:center;gap:clamp(8px,.6vw,14px);justify-self:start;padding-block:var(--s-2)}
+.logo .mark{height:clamp(22px,1.05vw + 10px,40px);width:auto}
+.logo .word{height:clamp(15px,.7vw + 7px,27px);width:auto}
+.links{grid-column:6 / span 5;display:flex;gap:clamp(24px,2.4vw,56px);margin:0;padding:0;list-style:none}
+.links a{font:500 var(--size-small)/1 var(--font-text);color:var(--ink);padding-block:var(--s-3);display:inline-block}
+.links a:hover{color:var(--ink-soft)}
+.btn{grid-column:11 / span 2;justify-self:end;display:inline-flex;align-items:center;height:clamp(40px,1.1vw + 28px,56px);padding-inline:clamp(16px,1.1vw,26px);background:var(--ink);color:var(--on-ink);border-radius:var(--radius-control);font:500 var(--size-small)/1 var(--font-text);transition:background-color var(--t-fast) var(--ease),transform var(--t-fast) var(--ease)}
+.btn:hover{background:var(--ink-hover)}
+.btn:active{transform:scale(var(--press-scale))}
+.menu{display:none}
+
+/* ---------- Hero ---------- */
+.hero{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);padding-left:var(--margin);height:calc(100svh - var(--bar));min-height:560px;max-height:1600px}
+.words{grid-column:1 / span 5;align-self:end;padding-bottom:var(--rhythm-s);padding-right:var(--s-5)}
+h1{font:600 var(--size-display)/1.0 var(--font-display);letter-spacing:-0.025em;margin:0 0 var(--s-6);text-wrap:balance;font-feature-settings:"kern"}
+h1 span{display:block;white-space:nowrap}
+.lede{font-size:var(--size-lede);line-height:1.5;color:var(--ink-soft);margin:0;max-width:34em;text-wrap:pretty}
+.picture{grid-column:6 / span 7;margin:0;background:var(--surface);border-radius:var(--radius-picture);overflow:hidden;min-height:0}
+.picture img{width:100%;height:100%;object-fit:cover}
+
+/* ---------- Phone ---------- */
+@media (max-width: 760px){
+  .bar{grid-template-columns:1fr auto auto;column-gap:var(--s-2)}
+  .logo{grid-column:auto}
+  .links{display:none}
+  .btn{grid-column:auto;height:40px}
+  .menu{display:block;position:static}
+  .menu summary{list-style:none;cursor:pointer;font:500 var(--size-small)/1 var(--font-text);height:40px;display:flex;align-items:center;padding-inline:var(--s-3);border-radius:var(--radius-control)}
+  .menu summary::-webkit-details-marker{display:none}
+  .menu[open] summary{background:var(--surface)}
+  .sheet{position:absolute;left:0;right:0;top:var(--bar);background:var(--ground);padding:var(--s-5) var(--margin) var(--s-8)}
+  .sheet ul{list-style:none;margin:0;padding:0}
+  .sheet a{display:block;font:600 var(--size-h3)/1.2 var(--font-display);padding-block:var(--s-3)}
+  .hero{display:block;height:auto;min-height:0;max-height:none;padding-left:0}
+  .words{padding:var(--s-6) var(--margin) var(--s-7)}
+  .picture{aspect-ratio:1/1}
+}
+@media (min-width: 761px){ .sheet{display:none} }
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar">
+  <a class="logo" href="/" aria-label="AmIMotion home">
+    <svg class="mark" viewBox="159.94 125.29 191.41 151.2" aria-hidden="true"><path fill="#66a5fa" fill-rule="evenodd" d="M252.00 125.75 L227.00 139.72 L161.39 178.00 L160.53 179.00 L159.94 181.00 L160.73 183.00 L162.00 184.16 L189.00 199.66 L189.64 201.00 L164.00 215.82 L161.00 218.03 L160.05 220.00 L160.46 222.00 L162.00 223.68 L171.00 229.27 L250.00 275.20 L254.00 276.47 L257.00 276.49 L261.00 275.13 L266.00 272.29 L350.28 223.00 L351.31 221.00 L351.35 220.00 L350.00 217.67 L321.08 201.00 L321.25 200.00 L349.00 184.19 L350.95 182.00 L351.26 180.00 L350.00 178.05 L348.00 176.68 L263.00 127.73 L258.00 125.52 L255.00 125.29 L252.00 125.75 Z M252.00 170.78 L201.91 200.00 L202.35 201.00 L233.00 218.69 L249.00 228.47 L251.00 229.43 L254.00 230.01 L257.00 229.98 L260.00 229.02 L308.25 201.00 L308.00 199.81 L260.00 171.69 L257.00 170.55 L252.00 170.78 Z M251.00 175.00 L248.00 175.57 L243.00 177.70 L238.00 181.38 L233.84 186.00 L231.53 190.00 L229.73 195.00 L229.12 200.00 L229.51 205.00 L230.60 209.00 L233.72 215.00 L237.00 218.70 L240.00 221.14 L244.00 223.49 L249.00 225.46 L255.00 226.29 L259.00 225.97 L262.00 225.29 L267.00 223.23 L273.00 219.23 L275.23 217.00 L278.00 212.94 L280.28 208.00 L281.44 203.00 L281.45 198.00 L280.37 193.00 L278.06 188.00 L275.24 184.00 L270.67 180.00 L267.00 177.67 L262.00 175.56 L257.00 174.59 L251.00 175.00 Z"/></svg>
+    <svg class="word" viewBox="84.76 307 341.82 51.19" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="WORDMARK"/></svg>
+  </a>
+  <nav aria-label="Main">
+    <ul class="links">
+      <li><a href="/platform/">How it works</a></li>
+      <li><a href="/solutions/">Where it helps</a></li>
+      <li><a href="/start/">Start small</a></li>
+      <li><a href="/company/">About us</a></li>
+    </ul>
+  </nav>
+  <a class="btn" href="/contact/">Book a call</a>
+  <details class="menu">
+    <summary>Menu</summary>
+    <div class="sheet">
+      <ul>
+        <li><a href="/diagnostic/">Plan your first bay</a></li>
+        <li><a href="/platform/">How it works</a></li>
+        <li><a href="/solutions/">Where it helps</a></li>
+        <li><a href="/start/">Start small</a></li>
+        <li><a href="/company/">About us</a></li>
+      </ul>
+    </div>
+  </details>
+</header>
+
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="words">
+      <h1 id="hero-title"><span>Where work is.</span> <span>Where it waits.</span></h1>
+      <p class="lede">AmIMotion is spatial intelligence for factories and warehouses. A small tag rides on each trolley, bin and tool. Anchors on your columns hear its signal. One live map shows where it went and how long it has waited. You find out from a screen, not a walk.</p>
+    </div>
+    <figure class="picture">
+      <!-- PICTURE SLOT. No CAD render exists yet in rounds/02-design/renders/.
+           Replace with the camera A poster of the model hall (4:5 master 1600x2000, rendered from the 8K scene),
+           cropped by object-fit to the slot: about 1:1 at 1440x900, 1.08:1 at 2560x1440, 1:1 on the phone.
+           <picture> with AVIF + WebP, srcset 800 to 3200 w, sizes="(max-width:760px) 100vw, 58vw", fetchpriority="high".
+           Alt text (v3, A7): "A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went.
+           Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting."
+           Never a drawing in its place. -->
+    </figure>
+  </section>
+</main>
+</body>
+</html>
