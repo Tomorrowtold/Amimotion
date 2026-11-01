@@ -180,3 +180,7 @@ Inspector R3: **4 FAIL, 3 WARN.** They are listed here so nobody reads "0":
 3. **Located vs waiting under colour-vision simulation** on AmIHub screens (Colour scientist).
 4. **The wordmark colour** #70afff vs #66a5fa in the source logo (Brand system designer, to the founders' brand file).
 5. **The width and weight of the phone hero.** At 390 the lede runs 7 lines and the picture starts at 439 px, so the phone's first screen is words-heavy. The Hero copy-fit editor should test whether the 1:1 crop goes above the lede on the phone.
+
+## Fix: the capital I (1 Nov 2026)
+
+Mona Sans draws capital I as a bare stem, so "AmIMotion" read as "AmlMotion". `tools/serif_I.py` gives I short slab serifs, scaled to each cut's stem weight, and saves renamed copies as "AmI Sans" (the OFL reserves the name "Mona Sans" for unmodified files). The site uses `fonts/AmISans*.woff2` only. Nothing else in the fonts changed.

@@ -363,16 +363,18 @@ def rig(target=(0, 0, 0.01), key_az=150, key=1.0, rake_az=None, rake_el=14, rake
         a, e = math.radians(az), math.radians(el)
         return t + Vector((math.cos(a) * math.cos(e), math.sin(a) * math.cos(e), math.sin(e))) * r
     back = cam_az + 180
-    # key: overhead scrim behind the product, its near edge sits in the top-face mirror direction -> gradient
-    area('scrim', pol(back, 58, 0.75), t, 0.7, 120 * key, 5400, size_y=0.5)
+    # key: graduated scrim above and behind, just out of frame; bright edge up, feathered to nothing at the bottom
+    grad_scrim('scrim', pol(back, 52, 0.38), t, 0.50, 0.36, 9.0 * key, 5400)
     # edge strips ~120 deg either side of camera
-    area('strip_L', pol(cam_az + 115, 20, 0.45), t, 0.10, 34 * key, 5300, size_y=0.7)
-    area('strip_R', pol(cam_az - 120, 26, 0.5), t, 0.10, 26 * key, 5300, size_y=0.7)
+    area('strip_L', pol(cam_az + 115, 20, 0.45), t, 0.10, 30 * key, 5300, size_y=0.7)
+    area('strip_R', pol(cam_az - 120, 26, 0.5), t, 0.10, 22 * key, 5300, size_y=0.7)
     # soft frontal fill, big and far: opens the shadow side without flattening
     area('fill', pol(cam_az + 30, 35, 1.3), t, 0.9, 30 * key, 5500, size_y=0.7)
-    # background light: hangs above the product, aimed at the cove behind; lights the paper, not the product
-    bgp = pol(back, 70, 0.6); bgt = pol(back, 15, 0.9)
-    area('bg', bgp, bgt, 1.2, 420, 5300, size_y=0.5, spread=70)
+    # background light: hung over the cove behind the product, aimed down at the wall, narrow spread
+    a = math.radians(back)
+    bgp = t + Vector((math.cos(a) * 0.28, math.sin(a) * 0.28, 0.75))
+    bgt = Vector((math.cos(a) * 0.45, math.sin(a) * 0.45, 0.22))
+    area('bg', bgp, bgt, 0.6, 520, 5300, size_y=0.6, spread=55)
     if rake > 0:
         area('rake', pol(rake_az if rake_az is not None else cam_az + 95, rake_el, 0.5), t, 0.06, rake, 5200, size_y=0.5)
     # negative fill: black flags just outside frame on both sides and above the lens
