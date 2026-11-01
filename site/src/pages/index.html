@@ -1,8 +1,8 @@
 <!--
 title: AmIMotion | Spatial intelligence for factories and warehouses
-description: AmIMotion builds spatial intelligence for factories and warehouses: UWB tags, anchors and one live map that show where work is and where it waits.
+description: Tag the trolleys, pallets and tools that carry your work. AmIMotion shows where each one is and how long it has waited, on one live map.
 tone: dark
-scripts: hero diag
+scripts: hero diag explain
 -->
 <div class="hero-runway" data-hero-runway>
   <section class="hero dark" aria-labelledby="hero-title" data-hero>
@@ -19,7 +19,7 @@ scripts: hero diag
     </div>
     <div class="hero-copy wrap" data-hero-copy>
       <h1 id="hero-title" class="h-hero">Where work is.<br><span class="soft">Where it waits.</span></h1>
-      <p class="lede">Spatial intelligence for factories and warehouses. Tag what moves, see it on one live map, and ask your floor a question.</p>
+      <p class="lede">Tag the trolleys, pallets and tools that carry your work. See where each one is, and how long it has waited, without walking the floor to find out.</p>
       <div class="actions">
         <a class="btn btn-fill" href="/contact/">Book a call</a>
         <a class="btn btn-line" href="#diagnose">Diagnose your floor</a>
@@ -33,7 +33,7 @@ scripts: hero diag
   <div class="words-pin">
     <div class="wrap">
       <h2 id="cat-title" class="kicker">Industrial spatial intelligence</h2>
-      <p class="cat-text" data-words-text>AmIMotion builds <span class="hl-blue">industrial spatial intelligence</span>: precise, time-stamped location of everything that moves in a plant, joined with jobs and zones, so people, systems and AI assistants can answer where work is and <span class="hl-amber">where it waits</span>. It is the first layer of <span class="hl-white">Physical AI</span> for factories and warehouses, built and supported in India.</p>
+      <p class="cat-text" data-words-text>Every plant runs on things that move. Trolleys, bins, pallets, forklifts, tools. AmIMotion gives each one a precise place and a time, and joins it to your zones and jobs. Then anyone, or any system, can ask where the work is, and <span class="hl-amber">where it is waiting</span>. We call it <span class="hl-blue">industrial spatial intelligence</span>: the first layer of <span class="hl-white">Physical AI</span> for the factory floor, built in India.</p>
       <a class="arrow-link" href="/industrial-spatial-intelligence/">What spatial intelligence means</a>
     </div>
   </div>
@@ -43,24 +43,24 @@ scripts: hero diag
 <section class="section light" id="waits" aria-labelledby="waits-title" >
   <div class="wrap">
     <div class="vp-head" data-reveal>
-      <h2 id="waits-title" class="h2">See where work waits.<br><span class="soft amber">Every wait, timed.</span></h2>
+      <h2 id="waits-title" class="h2">A trolley has waited since lunch.<br><span class="soft amber">Nobody has noticed yet.</span></h2>
     </div>
     <div class="chapter">
       <div class="chapter-left" data-reveal>
         <div class="card ph mood-amber ratio-photo"><p class="ph-brief"><b>P02</b> Three loaded trolleys of machined parts parked in a queue beside an inspection station. Late amber light, nobody near them. Still, quiet, slightly low angle. 4:3.</p></div>
       </div>
       <div class="chapter-right" data-reveal>
-        <div class="tile tile-text">Search a trolley, pallet, tool or forklift and see where it is now. Every move into and out of a zone gets a time, so you also see how long it has waited, at every station, queue and dock.</div>
+        <div class="tile tile-text">It happens on every floor. Parts finish on time, then sit in a queue nobody is watching. AmIMotion stamps a time on every move in and out of a zone, so a wait shows up while you can still do something about it. Search any tagged trolley, pallet, tool or forklift and see where it is right now.</div>
         <div class="tile">
-          <p class="small">Works for</p>
+          <p class="small">Where it counts</p>
           <p class="h3" style="margin-top:8px">Stations, queues, docks and stores</p>
           <button class="more" type="button" data-km="waits"><i aria-hidden="true"></i>Know more</button>
         </div>
       </div>
     </div>
   </div>
-  <div class="km-src" id="km-waits" data-h1="#f2a33a" data-h2="#f46f5e" data-kicker="See where work waits" data-title="Waiting, measured. Not guessed." data-link="/solutions/wip/">
-    <ul><li>Type a name or tag. The map shows where it is and when it was last seen.</li><li>You name the zones: stations, queues, docks and stores.</li><li>Each entry and exit is time-stamped, so waiting is measured, not guessed.</li><li>Ask for time in zone by shift, station or time window.</li><li>A long wait shows you where to look. Finding out why stays your team’s call.</li></ul>
+  <div class="km-src" id="km-waits" data-h1="#f2a33a" data-h2="#f46f5e" data-kicker="Where work waits" data-title="Measured, not guessed." data-link="/solutions/wip/">
+    <ul><li>Type a name and the map shows where it is, and when it was last seen.</li><li>You draw the zones that matter: stations, queues, docks and stores.</li><li>Every arrival and departure gets a time stamp.</li><li>See time in zone by shift, by station or by the hour.</li><li>A long wait tells you where to look. Why it waited is still your team’s call.</li></ul>
   </div>
 </section>
 
@@ -69,7 +69,7 @@ scripts: hero diag
   <div class="wrap">
     <div class="vp-head center" data-reveal>
       <h2 id="ask-title" class="h2">Ask your floor a question.</h2>
-      <p class="lede" style="margin-top:20px">Ask in plain words. An AI assistant answers from live data. A person approves any action.</p>
+      <p class="lede" style="margin-top:20px">Ask the way you would ask a supervisor. The answer comes from the floor as it is right now, and nothing moves until a person says yes.</p>
       <button class="more" type="button" data-km="ask"><i aria-hidden="true"></i>Know more</button>
     </div>
     <div class="vp-media" data-reveal-scale>
@@ -79,35 +79,63 @@ scripts: hero diag
       </div>
     </div>
     <div class="ask-steps" data-reveal>
-      <div class="tile"><b>Ask</b><p>Any assistant that speaks MCP can query live positions, zones and history.</p></div>
-      <div class="tile"><b>See</b><p>Each assistant gets its own access. Every call is logged.</p></div>
-      <div class="tile blue"><b>Approve</b><p>Actions, like raising a work order, can wait for a supervisor.</p></div>
+      <div class="tile"><b>Ask</b><p>Any AI assistant that speaks MCP can read live positions, zones and history.</p></div>
+      <div class="tile"><b>See</b><p>Each assistant has its own key, and every question it asks is logged.</p></div>
+      <div class="tile blue"><b>Approve</b><p>An action, like raising a work order, can wait for a supervisor’s yes.</p></div>
     </div>
   </div>
-  <div class="km-src" id="km-ask" data-h1="#8f7cf6" data-h2="#f08bbd" data-kicker="Ask your floor" data-title="Your floor, in plain words." data-link="/technology/#mcp" data-note="Shown in a live demo on the call.">
-    <ul><li>AmIHub has a built-in MCP server, so any MCP-capable assistant can use it.</li><li>Ask: “Which forklifts have been idle over an hour, and where?”</li><li>Each assistant gets its own access, and every call is logged.</li><li>Write actions, like raising a work order, can wait for a supervisor’s approval.</li></ul>
+  <div class="km-src" id="km-ask" data-h1="#8f7cf6" data-h2="#f08bbd" data-kicker="Ask your floor" data-title="Plain words in. Live answers out." data-link="/technology/#mcp" data-note="Shown in a live demo on the call.">
+    <ul><li>AmIHub has a built-in MCP server, so any MCP-capable assistant can talk to it.</li><li>Try: “Which forklifts have been idle for over an hour, and where are they?”</li><li>Each assistant gets its own access, and every call is logged.</li><li>Anything that changes something, like a work order, can wait for a supervisor.</li></ul>
   </div>
 </section>
 
-<!-- 4. The platform, as one picture -->
-<section class="section light" id="system" aria-labelledby="system-title">
+<!-- 4. How it works: AmIGo, AmIMo and AmIHub on one small floor, driven by scroll -->
+<section class="explain light" id="how" aria-labelledby="how-title" data-explain>
   <div class="wrap">
     <div class="vp-head" data-reveal>
-      <h2 id="system-title" class="h2">One tag. Every carrier.<br><span class="soft">One system, from the tag to your AI.</span></h2>
-      <p class="lede" style="margin-top:20px">One team builds every layer, so there is one contract and one support line.</p>
+      <h2 id="how-title" class="h2">Here is how it knows.</h2>
+      <p class="lede" style="margin-top:20px">A tag on what moves. A few anchors on your columns. Software that turns a radio pulse into a place and a time. Three parts, made by one team to work as one.</p>
     </div>
-    <ol class="stack" role="list" data-reveal>
-      <li><span class="stack-n">Tags</span><b><a href="/products/amigo/">AmIGo</a></b><p>On trolleys, bins, pallets, totes, tools, forklifts and badges. Sends a pulse when it moves, so one battery lasts 1 to 3 years.</p></li>
-      <li><span class="stack-n">Anchors</span><b><a href="/products/amimo/">AmIMo</a></b><p>On columns and walls, 3 to 8 m up. Times each pulse and reads its angle. Needs only power, DC or PoE.</p></li>
-      <li><span class="stack-n">Software</span><b><a href="/products/amihub/">AmIHub</a></b><p>Turns pulses into positions down to ±10 cm in 3D, then into zones and waits.</p></li>
-      <li class="stack-out"><span class="stack-n">Your systems</span><b>MES, ERP, WMS and AI assistants</b><p>REST, MQTT, WebSocket and an omlox hub. A built-in MCP server for AI assistants.</p></li>
-    </ol>
-    <ul class="facts-row" role="list" data-reveal>
-      <li><b>Runs without internet</b><span>On a PC inside your plant. Or in the cloud.</span></li>
-      <li><b>No data cables</b><span>Anchors sync over the air and need only power.</span></li>
-      <li><b>Built in India</b><span>Designed, built and supported from Bengaluru.</span></li>
+    <ul class="lineup" role="list" data-reveal>
+      <li><a href="/products/amigo/"><span class="lu-pic"><img src="/assets/img/amigo-card-900.webp" srcset="/assets/img/amigo-card-900.webp 900w, /assets/img/amigo-card-1600.webp 1600w" sizes="(max-width: 760px) 90vw, 30vw" alt="The AmIGo tag: a small dark grey housing with lowercase amimotion embossed on top and two screw tabs" width="900" height="607" loading="lazy" decoding="async"></span><b>AmIGo</b><span>The tag. Rides on whatever carries the work.</span></a></li>
+      <li><a href="/products/amimo/"><span class="lu-pic"><img src="/assets/img/amimo-3q-900.webp" srcset="/assets/img/amimo-3q-900.webp 900w, /assets/img/amimo-3q-1600.webp 1600w" sizes="(max-width: 760px) 90vw, 30vw" alt="The AmIMo anchor: a dark grey enclosure with amimotion embossed on its side and a mounting tab" width="900" height="575" loading="lazy" decoding="async"></span><b>AmIMo</b><span>The anchor. Listens from your columns.</span></a></li>
+      <li><a href="/products/amihub/"><span class="lu-pic lu-map" aria-hidden="true"><svg viewBox="0 0 300 190"><rect x="6" y="6" width="288" height="178" rx="14" fill="#fff"/><rect x="24" y="24" width="104" height="58" rx="6" fill="#ececef"/><rect x="186" y="24" width="90" height="58" rx="6" fill="#ececef"/><rect x="160" y="104" width="76" height="30" rx="6" fill="#fbecd6"/><rect x="24" y="116" width="104" height="52" rx="6" fill="#ececef"/><rect x="6" y="88" width="288" height="8" fill="#f2f2f3"/><rect x="134" y="6" width="8" height="178" fill="#f2f2f3"/><circle cx="60" cy="50" r="5" fill="#66a5fa"/><circle cx="96" cy="64" r="5" fill="#66a5fa"/><circle cx="226" cy="44" r="5" fill="#66a5fa"/><circle cx="80" cy="140" r="5" fill="#66a5fa"/><circle cx="176" cy="119" r="5" fill="#f0a43a"/><circle cx="196" cy="119" r="5" fill="#f0a43a"/><circle cx="216" cy="119" r="5" fill="#f0a43a"/></svg></span><b>AmIHub</b><span>The software. Turns pulses into answers.</span></a></li>
     </ul>
-    <div class="actions"><a class="btn btn-line btn-go" href="/platform/">See the platform</a></div>
+  </div>
+  <div class="ex-runway" data-ex-runway>
+    <div class="ex-pin">
+      <div class="ex-grid wrap">
+        <div class="ex-copy">
+          <nav class="ex-nav" aria-label="How it works, step by step"><button type="button" data-ex-go>AmIGo</button><button type="button" data-ex-go>AmIMo</button><button type="button" data-ex-go>AmIHub</button><button type="button" data-ex-go>Your systems</button></nav>
+          <div class="ex-steps">
+            <article class="ex-step" data-ex-step>
+              <h3 class="h3">AmIGo rides with the work.</h3>
+              <p>Stick it on a trolley, a bin, a pallet, a forklift or a tool. While things stand still, it sleeps. When they move, it wakes and sends a short radio pulse. That habit is why one battery lasts one to three years.</p>
+              <ul role="list"><li>1 to 3 years per battery, depending on use</li><li>Versions for assets, vehicles and people</li><li>Reports its own battery level</li></ul>
+            </article>
+            <article class="ex-step" data-ex-step>
+              <h3 class="h3">AmIMo listens from the columns.</h3>
+              <p>A few anchors go up on columns and walls, three to eight metres high. Each one notes the exact moment a pulse arrives, and the direction it came from. Anchors keep time with each other over the air, so all they need is power.</p>
+              <ul role="list"><li>Mounted 3 to 8 m up</li><li>Power only, from DC or PoE</li><li>No data or sync cables to run</li></ul>
+            </article>
+            <article class="ex-step" data-ex-step>
+              <h3 class="h3">AmIHub turns pulses into places.</h3>
+              <p>It weighs the timing and angle from every anchor in range and works out where the tag is, down to ±10 cm. Then it adds what only you know: your zones. Now a dot on a map is a trolley that reached the queue at 12:10 and is still there.</p>
+              <ul role="list"><li>Down to ±10 cm in 3D, site-dependent</li><li>Every arrival and exit time-stamped</li><li>On a PC in your plant, or in the cloud</li></ul>
+            </article>
+            <article class="ex-step" data-ex-step>
+              <h3 class="h3">Then it tells your systems.</h3>
+              <p>Your MES, ERP and WMS get the same events over REST, MQTT or WebSocket. AI assistants ask through the built-in MCP server. One team builds every layer, so you get one contract and one number to call.</p>
+              <ul role="list"><li>REST, MQTT, WebSocket and an omlox hub</li><li>Built on the FiRa and omlox specifications</li><li>Designed and built in India</li></ul>
+            </article>
+          </div>
+        </div>
+        <div class="ex-stage" data-ex-stage role="img" aria-label="A small factory floor: a tagged trolley moves along the aisle, anchors on the columns pick up its pulses, and the floor becomes a live map where the trolley waits in the queue."></div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap ex-foot">
+    <div class="actions"><a class="btn btn-line btn-go" href="/platform/">See the whole platform</a><a class="btn btn-line btn-go" href="/specs/">Read the specs</a></div>
   </div>
 </section>
 
@@ -115,8 +143,8 @@ scripts: hero diag
 <section class="section light" id="diagnose" aria-labelledby="diag-title" style="padding-top:0">
   <div class="wrap">
     <div class="vp-head" data-reveal>
-      <h2 id="diag-title" class="h2">Diagnose your floor.<br><span class="soft">Six questions. Two minutes.</span></h2>
-      <p class="lede" style="margin-top:20px">Answer as you would on the floor. Your plant builds itself as you go, and you get a plan for where to start.</p>
+      <h2 id="diag-title" class="h2">Find out where your hours go.</h2>
+      <p class="lede" style="margin-top:20px">Six questions, two minutes. Answer the way you would on the floor. Your plant draws itself as you go, and you leave with a plan for where to start.</p>
     </div>
     <div class="diag-shell dark" data-diag>
       <div class="diag-main">
@@ -130,9 +158,9 @@ scripts: hero diag
       <div class="diag-visual" aria-label="Your floor, as you describe it"><svg viewBox="0 0 480 330" data-diag-map role="img" aria-label="A sketch of your floor that updates with your answers"></svg><p class="diag-caption" data-diag-caption>Answer the questions and your floor builds itself.</p></div>
     </div>
     <div class="tools">
-      <a class="tool" href="/tools/anchors/" data-reveal><div><b>How many anchors you need</b><p>Your floor size in, a first anchor range out, before a site survey.</p></div><span class="go">Plan anchors</span></a>
-      <a class="tool" href="/tools/search-time/" data-reveal><div><b>What searching costs you</b><p>Put a number on the time your team spends looking, from your own figures.</p></div><span class="go">Work it out</span></a>
-      <a class="tool" href="/tools/pilot/" data-reveal><div><b>Your pilot on one page</b><p>Describe one bay. Get a pilot brief to bring to the call.</p></div><span class="go">Build the brief</span></a>
+      <a class="tool" href="/tools/anchors/" data-reveal><div><b>How many anchors you need</b><p>Give us your floor size. Get a first anchor range before anyone visits.</p></div><span class="go">Plan anchors</span></a>
+      <a class="tool" href="/tools/search-time/" data-reveal><div><b>What searching costs you</b><p>Your own figures in. The cost of looking for things, out.</p></div><span class="go">Work it out</span></a>
+      <a class="tool" href="/tools/pilot/" data-reveal><div><b>Your pilot on one page</b><p>Describe one bay. Bring the brief to the call.</p></div><span class="go">Build the brief</span></a>
     </div>
   </div>
 </section>
@@ -141,24 +169,24 @@ scripts: hero diag
 <section class="section light" id="start" aria-labelledby="start-title" style="padding-top:0">
   <div class="wrap">
     <div class="vp-head" data-reveal>
-      <h2 id="start-title" class="h2">Start with one bay.<br><span class="soft">Grow on the same system.</span></h2>
-      <p class="lede" style="margin-top:20px">A pilot watches one flow in one bay or line. Your MES stays in charge.</p>
+      <h2 id="start-title" class="h2">Try it in one bay first.</h2>
+      <p class="lede" style="margin-top:20px">Pick one flow on one line. Let it prove itself on your floor, then grow on the same system. Your MES stays in charge the whole time.</p>
       <button class="more" type="button" data-km="start"><i aria-hidden="true"></i>Know more</button>
     </div>
     <ol class="steps" role="list">
-      <li data-reveal><b>A call and a live demo</b><p>On real AmIHub data, not slides.</p></li>
+      <li data-reveal><b>A call and a live demo</b><p>Real AmIHub data, not slides.</p></li>
       <li data-reveal><b>The detailed pack</b><p>Datasheets and architecture, under NDA.</p></li>
-      <li data-reveal><b>A survey and a pilot</b><p>Anchors planned for your floor. One bay or line.</p></li>
-      <li data-reveal><b>Plant-wide</b><p>Scale on the same AmIHub, with nothing to refit.</p></li>
+      <li data-reveal><b>A survey and a pilot</b><p>We plan anchors for your floor and tag one flow.</p></li>
+      <li data-reveal><b>Plant-wide</b><p>Same AmIHub, more tags. Nothing to refit.</p></li>
     </ol>
     <div class="pilot-split" data-reveal>
       <div class="tile"><h3>What you get</h3><ul role="list"><li>An anchor plan from a site survey</li><li>Tags and anchors for one bay or line</li><li>AmIHub on a PC in your plant, or in the cloud</li><li>A baseline measured before tags go on, and the same numbers after</li></ul></div>
-      <div class="tile"><h3>What you bring</h3><ul role="list"><li>One flow you want to see, such as trolleys between two stations</li><li>A contact on the floor</li><li>Power at the anchor points, DC or PoE</li><li>The zones that matter, and the time limit for each</li></ul></div>
+      <div class="tile"><h3>What you bring</h3><ul role="list"><li>One flow you want to see, like trolleys between two stations</li><li>A contact on the floor</li><li>Power at the anchor points, DC or PoE</li><li>The zones that matter, and how long is too long in each</li></ul></div>
     </div>
     <div class="actions"><a class="btn btn-line btn-go" href="/pilot/">How a pilot runs</a></div>
   </div>
-  <div class="km-src" id="km-start" data-h1="#ffb36b" data-h2="#66a5fa" data-kicker="Start with one bay" data-title="Small first. Then the plant." data-link="/pilot/">
-    <ul><li>It runs on a PC inside your plant with no internet, or in the cloud.</li><li>Built on the FiRa and omlox specifications, with REST, MQTT and WebSocket interfaces to MES, ERP and WMS.</li><li>Designed and built in India. One team, one contract, one support line.</li><li>Most teams pilot one bay or line first.</li></ul>
+  <div class="km-src" id="km-start" data-h1="#ffb36b" data-h2="#66a5fa" data-kicker="Try one bay first" data-title="Small first. Then the plant." data-link="/pilot/">
+    <ul><li>It runs on a PC inside your plant with no internet, or in the cloud.</li><li>Built on the FiRa and omlox specifications, with REST, MQTT and WebSocket for your MES, ERP and WMS.</li><li>Designed and built in India. One team, one contract, one number to call.</li><li>Most teams start with one bay or one line.</li></ul>
   </div>
 </section>
 
@@ -171,7 +199,7 @@ scripts: hero diag
 <section class="section dark close-cta" aria-labelledby="close-title" data-tone="dark">
   <div class="wrap" data-reveal>
     <h2 id="close-title" class="h2">Which walk would you cut first?</h2>
-    <p class="lede" style="margin:20px auto 0">On the call we show the live map and an AI query, on real AmIHub data.</p>
+    <p class="lede" style="margin:20px auto 0">Tell us about one bay. We will show you the live map and an AI question, on real AmIHub data.</p>
     <div class="actions"><a class="btn btn-fill" href="/contact/">Book a call</a><a class="btn btn-line" href="/platform/">See the platform</a></div>
   </div>
 </section>
