@@ -1,0 +1,11 @@
+{
+ "_": "Hero prologue product film: AmIGo tag rendered with Higgsfield (Nano Banana Pro stills from the approved product reference; Seedance 2.0 turn). Illustrative render.",
+ "n": 72,
+ "large": 1080,
+ "small": 720,
+ "src": "/assets/intro/turn-{w}-{i}.webp",
+ "stillA": "/assets/intro/still-a-{w}.webp",
+ "stillB": "/assets/intro/still-b-{w}.webp",
+ "stillLarge": 1600,
+ "stillSmall": 900
+}

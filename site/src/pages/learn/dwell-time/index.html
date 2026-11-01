@@ -1,0 +1,33 @@
+<!--
+title: How dwell time is measured in manufacturing
+description: Dwell time is the time a carrier spends in a zone, from entry to exit. How RTLS measures it, what it includes, and how AmIMotion shows where WIP waits.
+tone: light
+crumb: How dwell time is measured
+type: article
+-->
+<section class="page-head section light" aria-labelledby="page-title">
+<div class="wrap">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/learn/">Field guides</a><span aria-hidden="true">/</span><span aria-current="page">How dwell time is measured</span></nav><h1 id="page-title" class="h-hero">How dwell time<br><span class="soft">is measured.</span></h1><div class="answer-tile"><p>The short answer</p><p class="short-answer">Dwell time is the time a tagged carrier spends inside an agreed zone, from the moment it enters to the moment it leaves. A real-time location system measures it by time-stamping every zone entry and exit. AmIMotion does this with AmIGo tags located down to ±10 cm in 3D, so neighbouring queues and stations can be told apart and long waits on the shop floor stand out.</p></div>
+</div>
+</section>
+
+<section class="section light">
+<div class="wrap">
+<div class="read"><nav class="read-nav" aria-label="On this page"><a href="#zones">Start with the zones</a><a href="#entry">Entry, exit and the edge</a><a href="#includes">What dwell includes</a><a href="#use">Using it well</a><a href="#amimotion">How AmIMotion does it</a></nav><div class="prose" data-reveal><h2 id="zones">Start with the zones</h2><p>A zone is an agreed area of the floor, such as an inspection queue or a dock lane. Draw zones around the process, not around the radio coverage. Neighbouring zones need enough positional precision to tell them apart, which is why UWB is used where queues sit side by side.</p><h2 id="entry">Entry, exit and the edge</h2><p>Every time a tag crosses a zone boundary, the system records a time. Agree what counts as a visit: a short pass through a zone on the way somewhere else should not count as waiting. A small time or distance threshold at the edge stops a trolley parked on a boundary from flickering in and out.</p><h2 id="includes">What dwell includes</h2><p>Dwell is not cycle time. It includes waiting, processing, breaks and anything else that happens while the carrier sits in the zone. To separate waiting from working you need another signal, such as a start or finish event from your MES or a scan.</p><h2 id="use">Using it well</h2><ul><li>Set a time limit per zone and name who looks when it is passed.</li><li>Compare dwell by shift, product and station, not just averages.</li><li>Treat a long dwell as a reason to look, not as a diagnosis.</li></ul><h2 id="amimotion">How AmIMotion does it</h2><p>AmIHub time-stamps every enter, exit, idle and dwell event and keeps the history, so you can ask for time in zone by shift, station or time window. Events can be sent to your MES or ERP over MQTT, REST or WebSocket.</p></div></div>
+</div>
+</section>
+
+<section class="section light">
+<div class="wrap">
+<div class="vp-head" data-reveal><h2 class="h2">Common follow-ups.</h2></div><div class="faq" style="margin-top:clamp(32px,4vw,56px);max-width:980px"><details><summary>How can I see where work in progress is waiting?</summary><p>Tag the carriers, name the zones where work queues, and time every entry and exit. AmIHub shows how long each tagged carrier has waited in each zone.</p></details><details><summary>Is dwell time the same as cycle time?</summary><p>No. Dwell is time in a zone and includes waiting and processing. Cycle time needs process start and finish events.</p></details><details><summary>Do we need an MES to measure dwell?</summary><p>No. Dwell comes from location and time alone. The MES link adds which job was waiting.</p></details></div>
+</div>
+</section>
+
+<section class="section light">
+<div class="wrap">
+<div class="vp-head" data-reveal><h2 class="h2">Read next.</h2></div>
+<div class="link-row" style="margin-top:clamp(44px,5vw,72px)"><a class="link-card" href="/learn/wip-visibility/" data-reveal><b>What is WIP visibility?</b><span>What it needs and how to start.</span></a><a class="link-card" href="/learn/association/" data-reveal><b>Which job is on the trolley?</b><span>The link with a start, an end and an owner.</span></a><a class="link-card" href="/learn/pilot-baseline/" data-reveal><b>Measure before you claim</b><span>The baseline a pilot needs.</span></a></div>
+</div>
+</section>
+
+<section class="section dark close-cta" aria-labelledby="close-title" data-tone="dark"><div class="wrap" data-reveal><h2 id="close-title" class="h2">Questions about your own floor?</h2><p class="lede" style="margin:20px auto 0">An engineer answers them on a short call, with the live map open.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Book a call</a><a class="btn btn-line" href="/diagnostic/">Diagnose your floor</a></div></div></section>

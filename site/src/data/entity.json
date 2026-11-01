@@ -1,0 +1,41 @@
+{
+  "about": "One description of AmIMotion, used word for word on the site, in structured data, llms.txt, YouTube, LinkedIn and every boilerplate (discoverability plan section 4; all GREEN in kit file 03). The build and tools/pickability.py read this file.",
+  "short": "AmIMotion builds industrial spatial intelligence for factories and warehouses: where work is and where it waits, starting with WIP visibility.",
+  "long": "AmIMotion, a brand of Locatepro Technologies Pvt Ltd in Bengaluru, India, builds industrial spatial intelligence for factories and warehouses with a complete UWB real-time location system: AmIGo tags, AmIMo anchors and AmIHub software. Factories use it to see where work in progress is and where it waits; warehouses use it to time pallets, totes and forklifts from dock to stock. Designed and built in India on NXP Trimension UWB silicon. Built on the FiRa and omlox specifications.",
+  "alternateName": [
+    "AmiMotion",
+    "Ami Motion",
+    "AmI Motion",
+    "Amimotion"
+  ],
+  "legalName": "Locatepro Technologies Pvt Ltd",
+  "email": "sales@amimotion.com",
+  "sameAs": [
+    "https://www.youtube.com/@locateprotech"
+  ],
+  "knowsAbout": [
+    "Spatial intelligence",
+    "Real-time location systems (RTLS)",
+    "Ultra-wideband (UWB) indoor positioning",
+    "Work-in-progress (WIP) visibility",
+    "Asset and tool tracking",
+    "Industrial Spatial Intelligence",
+    "Model Context Protocol (MCP)",
+    "Physical AI"
+  ],
+  "facts": [
+    "AmIMotion is a brand of Locatepro Technologies Pvt Ltd, Bengaluru, India. Contact: sales@amimotion.com.",
+    "Category: Industrial Spatial Intelligence. Commercial focus: WIP (work-in-progress) visibility in manufacturing. Foundation: UWB real-time location (RTLS).",
+    "The system has three parts: AmIGo UWB tags, AmIMo UWB anchors and AmIHub software.",
+    "Positioning: down to ±10 cm in 3D, with AmIMo anchors. Accuracy depends on the site and is measured in a pilot.",
+    "Radios: UWB, BLE and Wi-Fi FTM on the same anchors. Built on NXP Trimension UWB silicon.",
+    "Anchors: no data or sync cabling, Wi-Fi backhaul (Ethernet option), DC or PoE power, about 50 m line-of-sight coverage (site-dependent; the anchor count comes from a site survey).",
+    "Tags: battery life 1–3 years, typical and usage-dependent.",
+    "AmIHub runs on-premise with no internet dependency, or in the cloud. Interfaces: REST, MQTT, WebSocket and an omlox hub interface, to connect with MES, ERP, WMS, SCADA and BI.",
+    "Built on the FiRa and omlox specifications. This is a statement about the specifications, not a certification.",
+    "AmIHub has a built-in MCP server, so AI assistants can query live location data. Any action needs a person's approval. This is a described capability, shown in a demo on request.",
+    "Runs in manufacturing, robotics and warehousing sites. Customer references are shared under NDA.",
+    "Location alone does not show which job is on a carrier. AmIMotion links a tagged carrier to its job through an association with a start and an end.",
+    "Pilots start in one bay or one line and scale on the same AmIHub. A live demo is available on a discovery call."
+  ]
+}

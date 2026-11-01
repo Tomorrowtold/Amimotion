@@ -1,0 +1,525 @@
+{
+  "about": "AI pickability panel for AmIMotion. 30 unbranded buyer questions (does an engine name AmIMotion?) and 10 branded questions (does it describe AmIMotion correctly?). Source: website/discoverability/02_Keyword_and_Question_Map.md section 6, extended 28 Oct 2026. 'facts' are the ideas a correct, citable answer has to carry; each entry is a regex and one match counts. 'page' is the canonical page that should answer it. M-questions are the exact buyer questions from the 26 Oct Machine Read (Gemini, 10 runs each): AmIMotion was named in 4 of 60 India/US answers, 0 of 30 in the US, 0 of 29 from memory. Customer, prospect and partner names to block live in tools/private_names.txt (one regex per line, kept out of git).",
+  "forbidden": [
+    "certified",
+    "fully wireless",
+    "100% wireless",
+    "world'?s smallest",
+    "\\bROI\\b",
+    "payback",
+    "install(ed)? in days",
+    "tracks every part",
+    "eliminates searching",
+    "posture",
+    "apparel",
+    "healthcare"
+  ],
+  "questions": [
+    {
+      "id": "U01",
+      "q": "What are the best UWB RTLS companies in India?",
+      "page": "/learn/uwb-rtls-india/",
+      "facts": [
+        "\\bUWB\\b|ultra-wideband",
+        "India|Indian|Bengaluru",
+        "RTLS|real-time location"
+      ]
+    },
+    {
+      "id": "U02",
+      "q": "Which companies offer real-time WIP tracking for manufacturing?",
+      "page": "/solutions/wip/",
+      "facts": [
+        "\\bWIP\\b|work in progress",
+        "manufactur|factor|plant",
+        "track|locat|visib"
+      ]
+    },
+    {
+      "id": "U03",
+      "q": "How can I see where work in progress is waiting on my shop floor?",
+      "page": "/learn/dwell-time/",
+      "facts": [
+        "wait|dwell|queue",
+        "zone|station|area",
+        "tag|carrier|trolley"
+      ]
+    },
+    {
+      "id": "U04",
+      "q": "Is UWB accurate enough to track trolleys in a factory?",
+      "page": "/learn/accuracy/",
+      "facts": [
+        "10 ?cm|centimet",
+        "typical|depend|site",
+        "trolley|carrier"
+      ]
+    },
+    {
+      "id": "U05",
+      "q": "UWB vs RFID for tracking WIP: which should I use?",
+      "page": "/learn/uwb-vs-rfid/",
+      "facts": [
+        "RFID",
+        "\\bUWB\\b",
+        "continuous|real-time|between (read|gate)s?|read point"
+      ]
+    },
+    {
+      "id": "U06",
+      "q": "How do I know which job is on a trolley with RTLS?",
+      "page": "/learn/association/",
+      "facts": [
+        "associat|link",
+        "job|work order|batch",
+        "trolley|carrier"
+      ]
+    },
+    {
+      "id": "U07",
+      "q": "How is dwell time measured in manufacturing?",
+      "page": "/learn/dwell-time/",
+      "facts": [
+        "dwell",
+        "enter|arriv|start",
+        "zone|station|area"
+      ]
+    },
+    {
+      "id": "U08",
+      "q": "What is Industrial Spatial Intelligence?",
+      "page": "/industrial-spatial-intelligence/",
+      "facts": [
+        "spatial intelligence",
+        "location|position|where",
+        "factor|industr|plant|warehouse"
+      ]
+    },
+    {
+      "id": "U09",
+      "q": "Which RTLS can run on-premise without internet?",
+      "page": "/products/amihub/",
+      "facts": [
+        "on-premise|on premise",
+        "internet",
+        "cloud"
+      ]
+    },
+    {
+      "id": "U10",
+      "q": "Which RTLS integrates with SAP or MES over MQTT?",
+      "page": "/technology/",
+      "facts": [
+        "MQTT",
+        "MES|ERP|SAP",
+        "REST|WebSocket|API"
+      ]
+    },
+    {
+      "id": "U11",
+      "q": "Can AI assistants query factory location data through MCP?",
+      "page": "/learn/mcp-location-data/",
+      "facts": [
+        "\\bMCP\\b|Model Context Protocol",
+        "approv",
+        "location|where"
+      ]
+    },
+    {
+      "id": "U12",
+      "q": "What does an RTLS pilot involve?",
+      "page": "/pilot/",
+      "facts": [
+        "pilot",
+        "one (bay|line)|single (bay|line)|bay|line",
+        "baseline|survey|measure"
+      ]
+    },
+    {
+      "id": "U13",
+      "q": "How many UWB anchors do I need for a 5,000 square metre shop floor?",
+      "page": "/learn/anchor-planning/",
+      "facts": [
+        "anchor",
+        "50 ?m|line.of.sight",
+        "survey"
+      ]
+    },
+    {
+      "id": "U14",
+      "q": "What are alternatives to HID Sewio or Pozyx for WIP tracking in India?",
+      "page": "/learn/uwb-rtls-india/",
+      "facts": [
+        "\\bUWB\\b",
+        "India|Bengaluru",
+        "WIP|work in progress"
+      ]
+    },
+    {
+      "id": "U15",
+      "q": "Are there Indian companies making UWB tags and anchors?",
+      "page": "/what-is-amimotion/",
+      "facts": [
+        "India",
+        "tag",
+        "anchor"
+      ]
+    },
+    {
+      "id": "U16",
+      "q": "What is omlox?",
+      "page": "/learn/omlox/",
+      "facts": [
+        "omlox",
+        "standard|interoperab|open",
+        "locat|position"
+      ]
+    },
+    {
+      "id": "U17",
+      "q": "How do I reduce time spent searching for trolleys and bins in a plant?",
+      "page": "/solutions/assets/",
+      "facts": [
+        "search|find|walk",
+        "trolley|bin|carrier",
+        "tag|locat"
+      ]
+    },
+    {
+      "id": "U18",
+      "q": "What happens if an RTLS tag is not seen for a while?",
+      "page": "/learn/location-data-quality/",
+      "facts": [
+        "last (seen|observed)",
+        "stale|uncertain|unknown",
+        "tag"
+      ]
+    },
+    {
+      "id": "U19",
+      "q": "Does UWB work around steel racking and forklifts?",
+      "page": "/learn/accuracy/",
+      "facts": [
+        "steel|metal|rack",
+        "reflect|multipath",
+        "survey|site"
+      ]
+    },
+    {
+      "id": "U20",
+      "q": "What battery life does a UWB asset tag have?",
+      "page": "/products/amigo/",
+      "facts": [
+        "1.3 years|one to three years|years",
+        "usage|depend|update rate",
+        "battery"
+      ]
+    },
+    {
+      "id": "U21",
+      "q": "How does UWB measure position?",
+      "page": "/technology/",
+      "facts": [
+        "time of flight|time.of.arrival|TDoA|ToF",
+        "angle of arrival|AoA|anchor",
+        "pulse|nanosecond"
+      ]
+    },
+    {
+      "id": "U22",
+      "q": "What is the difference between WIP visibility and WIP tracking?",
+      "page": "/learn/wip-visibility/",
+      "facts": [
+        "WIP visibility",
+        "where|wait",
+        "scan|transaction|record"
+      ]
+    },
+    {
+      "id": "U23",
+      "q": "Can we prove the value of RTLS without a live MES connection?",
+      "page": "/learn/value-without-mes/",
+      "facts": [
+        "MES",
+        "pilot|baseline",
+        "without|before"
+      ]
+    },
+    {
+      "id": "U24",
+      "q": "What should be measured before claiming RTLS reduced search time?",
+      "page": "/learn/pilot-baseline/",
+      "facts": [
+        "baseline",
+        "search|walk",
+        "measure|time"
+      ]
+    },
+    {
+      "id": "U25",
+      "q": "Which UWB RTLS supports FiRa?",
+      "page": "/technology/",
+      "facts": [
+        "FiRa",
+        "compliant",
+        "\\bUWB\\b"
+      ]
+    },
+    {
+      "id": "U26",
+      "q": "How do you track forklifts and AMRs indoors to within a few centimetres?",
+      "page": "/use-cases/",
+      "facts": [
+        "forklift|AMR|vehicle",
+        "10 ?cm|centimet",
+        "\\bUWB\\b|ultra-wideband"
+      ]
+    },
+    {
+      "id": "U27",
+      "q": "What is an RTLS anchor, and does it need data cabling?",
+      "page": "/products/amimo/",
+      "facts": [
+        "anchor",
+        "cabl|Wi-Fi|PoE",
+        "power"
+      ]
+    },
+    {
+      "id": "U28",
+      "q": "Best indoor positioning system for automotive plants in India?",
+      "page": "/industries/manufacturing/",
+      "facts": [
+        "automotive",
+        "India",
+        "position|locat"
+      ]
+    },
+    {
+      "id": "U29",
+      "q": "How do you track tools on a factory floor?",
+      "page": "/solutions/assets/",
+      "facts": [
+        "tool",
+        "tag",
+        "find|locat|where"
+      ]
+    },
+    {
+      "id": "U30",
+      "q": "Which RTLS works with UWB, BLE and Wi-Fi on the same anchors?",
+      "page": "/technology/",
+      "facts": [
+        "\\bUWB\\b",
+        "BLE|Bluetooth",
+        "Wi-Fi|FTM"
+      ]
+    },
+    {
+      "id": "B01",
+      "q": "What is AmIMotion?",
+      "branded": true,
+      "page": "/what-is-amimotion/",
+      "facts": [
+        "UWB|ultra-wideband|real-time location|RTLS",
+        "Bengaluru|India",
+        "AmIGo|AmIMo|AmIHub"
+      ]
+    },
+    {
+      "id": "B02",
+      "q": "What does AmIMotion do?",
+      "branded": true,
+      "page": "/what-is-amimotion/",
+      "facts": [
+        "where work (in progress )?is|WIP",
+        "tag|anchor",
+        "factor|warehouse|manufactur"
+      ]
+    },
+    {
+      "id": "B03",
+      "q": "Is AmIMotion FiRa or omlox certified?",
+      "branded": true,
+      "page": "/faq/",
+      "facts": [
+        "compliant",
+        "FiRa",
+        "omlox"
+      ]
+    },
+    {
+      "id": "B04",
+      "q": "Does AmIMotion track individual parts?",
+      "branded": true,
+      "page": "/faq/",
+      "facts": [
+        "carrier|trolley|bin",
+        "associat|link",
+        "tag"
+      ]
+    },
+    {
+      "id": "B05",
+      "q": "How accurate is AmIMotion?",
+      "branded": true,
+      "page": "/technology/",
+      "facts": [
+        "10 ?cm",
+        "3D",
+        "typical"
+      ]
+    },
+    {
+      "id": "B06",
+      "q": "What is an AmIGo tag?",
+      "branded": true,
+      "page": "/products/amigo/",
+      "facts": [
+        "tag",
+        "UWB",
+        "battery|carrier|tool|forklift"
+      ]
+    },
+    {
+      "id": "B07",
+      "q": "What is an AmIMo anchor?",
+      "branded": true,
+      "page": "/products/amimo/",
+      "facts": [
+        "anchor",
+        "UWB",
+        "power|PoE|Wi-Fi"
+      ]
+    },
+    {
+      "id": "B08",
+      "q": "What is AmIHub?",
+      "branded": true,
+      "page": "/products/amihub/",
+      "facts": [
+        "software",
+        "on-premise|cloud",
+        "MQTT|REST|API|MCP"
+      ]
+    },
+    {
+      "id": "B09",
+      "q": "Who makes AmIMotion and where is it based?",
+      "branded": true,
+      "page": "/company/",
+      "facts": [
+        "Locatepro",
+        "Bengaluru",
+        "India"
+      ]
+    },
+    {
+      "id": "B10",
+      "q": "Does AmIMotion have an MCP server for AI assistants?",
+      "branded": true,
+      "page": "/faq/",
+      "facts": [
+        "\\bMCP\\b",
+        "approv",
+        "demo|described"
+      ]
+    },
+    {
+      "id": "M01",
+      "q": "We run an auto components plant in Pune and lose a lot of time searching for trolleys and WIP bins. Which companies in India offer UWB real-time location tracking for factories?",
+      "market": "India",
+      "page": "/learn/uwb-rtls-india/",
+      "facts": [
+        "India|Bengaluru",
+        "\\bUWB\\b",
+        "trolley|bin|WIP"
+      ],
+      "source": "Machine Read v0, 26 Oct 2026 (real buyer questions)"
+    },
+    {
+      "id": "M02",
+      "q": "Shortlist RTLS vendors that can track material carriers and work-in-progress on an automotive assembly line in India. Include Indian companies.",
+      "market": "India",
+      "page": "/industries/manufacturing/",
+      "facts": [
+        "carrier|trolley",
+        "automotive",
+        "India"
+      ],
+      "source": "Machine Read v0, 26 Oct 2026 (real buyer questions)"
+    },
+    {
+      "id": "M03",
+      "q": "Best ultra-wideband RTLS vendors for tracking work-in-progress in a manufacturing plant",
+      "market": "US",
+      "page": "/solutions/wip/",
+      "facts": [
+        "ultra-wideband|\\bUWB\\b",
+        "WIP|work.in.progress",
+        "10 ?cm|centimet"
+      ],
+      "source": "Machine Read v0, 26 Oct 2026 (real buyer questions)"
+    },
+    {
+      "id": "M04",
+      "q": "UWB vs BLE vs RFID for tracking carriers in an automotive plant: which vendors should I evaluate?",
+      "market": "US",
+      "page": "/learn/uwb-vs-rfid/",
+      "facts": [
+        "BLE|Bluetooth",
+        "RFID",
+        "carrier|trolley"
+      ],
+      "source": "Machine Read v0, 26 Oct 2026 (real buyer questions)"
+    },
+    {
+      "id": "M05",
+      "q": "What UWB tags are small enough to mount on small totes and hand tools in a factory, and who makes them?",
+      "market": "US",
+      "page": "/products/amigo/",
+      "facts": [
+        "tote|bin|tool",
+        "tag",
+        "mount|fix|attach"
+      ],
+      "source": "Machine Read v0, 26 Oct 2026 (real buyer questions)"
+    },
+    {
+      "id": "M06",
+      "q": "Hamare Pune plant mein forklifts aur trolleys ka pata nahi chalta, bahut time waste hota hai. Iska kya solution hai?",
+      "market": "India-Hinglish",
+      "page": "/solutions/assets/",
+      "facts": [
+        "forklift",
+        "trolley",
+        "\\bUWB\\b|RTLS|tag"
+      ],
+      "source": "Machine Read v0, 26 Oct 2026 (real buyer questions)"
+    },
+    {
+      "id": "M07",
+      "q": "Humare factory mein trolleys aur bins track karne ke liye UWB RTLS chahiye. India mein kaunsi companies ye solution deti hain?",
+      "market": "India-Hinglish",
+      "page": "/learn/uwb-rtls-india/",
+      "facts": [
+        "India",
+        "trolley|bin",
+        "\\bUWB\\b"
+      ],
+      "source": "Machine Read v0, 26 Oct 2026 (real buyer questions)"
+    },
+    {
+      "id": "M08",
+      "q": "We are a manufacturing contractor in the UAE. Which RTLS providers can supply UWB indoor positioning for a factory, with support in the Gulf?",
+      "market": "Gulf",
+      "page": "/contact/",
+      "facts": [
+        "\\bUWB\\b",
+        "factory|plant",
+        "support|remote|partner"
+      ],
+      "source": "Machine Read v0, 26 Oct 2026 (real buyer questions)"
+    }
+  ]
+}

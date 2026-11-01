@@ -1,0 +1,6 @@
+.env
+site/dist/
+site/reports/
+__pycache__/
+.DS_Store
+site/tools/private_names.txt

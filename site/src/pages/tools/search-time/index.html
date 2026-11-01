@@ -1,0 +1,20 @@
+<!--
+title: What searching costs: a search-time calculator
+description: Put a number on the hours your team spends looking for trolleys, bins and tools, from your own figures. Runs in your browser. No savings are assumed.
+tone: light
+crumb: Search-time calculator
+scripts: tools
+-->
+<section class="page-head section light" aria-labelledby="page-title">
+<div class="wrap">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/tools/">Tools</a><span aria-hidden="true">/</span><span aria-current="page">Search-time calculator</span></nav><h1 id="page-title" class="h-hero">What searching<br><span class="soft">costs you.</span></h1><p class="lede">Put a number on the time your team spends looking, from your own figures.</p><p class="short-answer">Searching for trolleys, bins, tools and forklifts costs hours every shift. This calculator multiplies your own figures, people, searches and minutes, into hours a year. AmIMotion’s tags put each item on a live map, located down to ±10 cm in 3D, so a search starts on a screen. The calculator assumes no savings.</p>
+</div>
+</section>
+
+<section class="section light">
+<div class="wrap">
+<div class="tool-shell"><form class="tool-form" data-tool="search" aria-label="Search-time calculator"><label class="field"><span class="field-row"><span>People who search, per shift</span><output for="s-p"></output></span><input type="range" id="s-p" name="people" min="1" max="200" step="1" value="12" data-unit=""></label><label class="field"><span class="field-row"><span>Searches per person, per shift</span><output for="s-n"></output></span><input type="range" id="s-n" name="per" min="1" max="40" step="1" value="4" data-unit=""></label><label class="field"><span class="field-row"><span>Minutes per search</span><output for="s-m"></output></span><input type="range" id="s-m" name="mins" min="1" max="60" step="1" value="8" data-unit=" min"></label><label class="field"><span class="field-row"><span>Shifts per day</span><output for="s-s"></output></span><input type="range" id="s-s" name="shifts" min="1" max="3" step="1" value="2" data-unit=""></label><label class="field"><span class="field-row"><span>Working days a year</span><output for="s-d"></output></span><input type="range" id="s-d" name="days" min="200" max="365" step="1" value="300" data-unit=""></label><label class="field"><span>Loaded cost per hour, ₹ (optional)</span><input type="number" name="rate" value="" min="0" step="1" inputmode="decimal"><small>Leave empty to see hours only.</small></label></form><div class="tool-out dark" aria-live="polite"><p class="over">Time spent searching</p><p class="big" data-out="hours">—</p><div class="lines"><p>Per day <b data-out="day">—</b></p><p>Full-time people, equivalent <b data-out="fte">—</b></p><p>Cost a year <b data-out="cost">—</b></p></div><p class="note">Your numbers, multiplied out. This is the cost of searching today, not a forecast of savings. A pilot measures the change on your floor.</p><div class="actions"><a class="btn btn-fill btn-sm" href="/contact/">Book a call</a><a class="btn btn-line btn-sm" href="/learn/pilot-baseline/">Measure a baseline</a></div></div></div>
+</div>
+</section>
+
+<section class="section dark close-cta" aria-labelledby="close-title" data-tone="dark"><div class="wrap" data-reveal><h2 id="close-title" class="h2">Questions about your own floor?</h2><p class="lede" style="margin:20px auto 0">An engineer answers them on a short call, with the live map open.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Book a call</a><a class="btn btn-line" href="/diagnostic/">Diagnose your floor</a></div></div></section>

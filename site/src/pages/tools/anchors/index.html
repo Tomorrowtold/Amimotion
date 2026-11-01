@@ -1,0 +1,20 @@
+<!--
+title: UWB anchor estimator: a first range for your floor
+description: Enter your floor size and racking to get a first range of UWB anchors before a site survey. Assumptions shown. AmIMo reaches ~50 m line of sight.
+tone: light
+crumb: Anchor estimator
+scripts: tools
+-->
+<section class="page-head section light" aria-labelledby="page-title">
+<div class="wrap">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/tools/">Tools</a><span aria-hidden="true">/</span><span aria-current="page">Anchor estimator</span></nav><h1 id="page-title" class="h-hero">How many anchors?<br><span class="soft">A first range.</span></h1><p class="lede">Your floor in, a first anchor range out, before anyone visits. A site survey sets the real number.</p><p class="short-answer">AmIMotion plans the final anchor count from a site survey. This estimator gives a first budget range from floor size and racking, using planning grids of about 25 m for an open hall, 18 m with some racking and 12 m with dense high racking. An AmIMo anchor reaches about 50 m in line of sight (indicative, site-dependent).</p>
+</div>
+</section>
+
+<section class="section light">
+<div class="wrap">
+<div class="tool-shell"><form class="tool-form" data-tool="anchors" aria-label="Anchor estimator"><label class="field"><span class="field-row"><span>Floor length</span><output for="a-len"></output></span><input type="range" id="a-len" name="flen" min="10" max="400" step="5" value="100" data-unit=" m"></label><label class="field"><span class="field-row"><span>Floor width</span><output for="a-wid"></output></span><input type="range" id="a-wid" name="fwid" min="10" max="300" step="5" value="50" data-unit=" m"></label><label class="field"><span class="field-row"><span>Ceiling height</span><output for="a-h"></output></span><input type="range" id="a-h" name="height" min="3" max="20" step="1" value="9" data-unit=" m"></label><fieldset class="field"><legend>What is on the floor?</legend><div class="seg"><label><input type="radio" name="env" value="mixed" data-label="Some racking" checked><span>Some racking</span></label><label><input type="radio" name="env" value="open" data-label="Open hall"><span>Open hall</span></label><label><input type="radio" name="env" value="dense" data-label="Dense high racking"><span>Dense high racking</span></label></div></fieldset><fieldset class="field"><legend>Position needed</legend><div class="seg"><label><input type="radio" name="dim" value="3d" data-label="3D, with height" checked><span>3D, with height</span></label><label><input type="radio" name="dim" value="2d" data-label="2D, floor only"><span>2D, floor only</span></label></div></fieldset></form><div class="tool-out dark" aria-live="polite"><p class="over">First budget range</p><p class="big" data-out="range">—</p><div class="lines"><p>Floor area <b data-out="area">—</b></p><p>Planning grid <b data-out="grid">—</b></p><p>Floor type <b data-out="env">—</b></p><p>Fewest in view for this mode <b data-out="min">—</b></p></div><p class="note">A planning estimate from this site’s rule-of-thumb grids, not a quote or an AmIMotion specification. Angle of arrival can need fewer anchors; aisles between high racks can need more. A site survey sets the count.</p><div class="actions"><a class="btn btn-fill btn-sm" href="/contact/">Plan a site survey</a><a class="btn btn-line btn-sm" href="/learn/anchor-planning/">Anchor planning, explained</a></div></div></div>
+</div>
+</section>
+
+<section class="section dark close-cta" aria-labelledby="close-title" data-tone="dark"><div class="wrap" data-reveal><h2 id="close-title" class="h2">Questions about your own floor?</h2><p class="lede" style="margin:20px auto 0">An engineer answers them on a short call, with the live map open.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Book a call</a><a class="btn btn-line" href="/diagnostic/">Diagnose your floor</a></div></div></section>
