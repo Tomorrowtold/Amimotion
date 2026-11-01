@@ -27,7 +27,7 @@ def numf(name, label, val, small=None, step="1"):
 write("/tools/anchors/", "UWB anchor estimator: a first range for your floor",
       "Enter your floor size and racking to get a first range of UWB anchors before a site survey. Assumptions shown. AmIMo reaches ~50 m line of sight.",
       [
-          head("How many anchors?", "A first range.", "Your floor in, a first anchor range out, before anyone visits. A site survey sets the real number.",
+          head("How many anchors?", "A first honest range.", "Tell us about your floor and get a first anchor range before anyone visits. The real number comes from walking the floor in a site survey.",
                short="AmIMotion plans the final anchor count from a site survey. This estimator gives a first budget range from floor size and racking, using planning grids of about 25 m for an open hall, 18 m with some racking and 12 m with dense high racking. "
                      "An AmIMo anchor reaches about 50 m in line of sight (indicative, site-dependent).",
                trail=[("Tools", "/tools/"), ("Anchor estimator", None)], actions=()),
@@ -47,7 +47,7 @@ write("/tools/anchors/", "UWB anchor estimator: a first range for your floor",
 write("/tools/search-time/", "What searching costs: a search-time calculator",
       "Put a number on the hours your team spends looking for trolleys, bins and tools, from your own figures. Runs in your browser. No savings are assumed.",
       [
-          head("What searching", "costs you.", "Put a number on the time your team spends looking, from your own figures.",
+          head("What searching", "really costs you.", "Everyone knows the walk to find a trolley. Few plants have put a number on it. Use your own figures and see.",
                short="Searching for trolleys, bins, tools and forklifts costs hours every shift. This calculator multiplies your own figures, people, searches and minutes, into hours a year. "
                      "AmIMotion’s tags put each item on a live map, located down to ±10 cm in 3D, so a search starts on a screen. The calculator assumes no savings.",
                trail=[("Tools", "/tools/"), ("Search-time calculator", None)], actions=()),
@@ -69,7 +69,7 @@ write("/tools/search-time/", "What searching costs: a search-time calculator",
 write("/tools/pilot/", "Pilot planner: a one-page RTLS pilot brief",
       "Three choices become a one-page brief for an AmIMotion pilot: the question, the starting area and how jobs are linked. Download it or email it.",
       [
-          head("Your pilot", "on one page.", "Three answers become a brief for the first call. Nothing leaves your browser.",
+          head("Your pilot", "on one page.", "Answer three questions and get a brief you can bring to the first call. Nothing leaves your browser.",
                short="An AmIMotion pilot starts in one bay or one line with one question, a few zones and one owner. Choose what you need to understand, where to begin and how work is linked to trolleys today, "
                      "and the planner writes the brief, with the points to settle before hardware arrives.",
                trail=[("Tools", "/tools/"), ("Pilot planner", None)], actions=()),
@@ -87,7 +87,7 @@ write("/tools/pilot/", "Pilot planner: a one-page RTLS pilot brief",
 write("/tools/", "Free RTLS planning tools",
       "Three free tools from AmIMotion: a UWB anchor estimator, a search-time calculator and a one-page pilot planner. Plus the six-question floor diagnostic.",
       [
-          head("Plan it", "before the call.", "Free tools that run in your browser. No sign-up.",
+          head("Do the thinking", "before the call.", "Small, free tools that run in your browser. No sign-up, no email.",
                short="AmIMotion offers four free planning tools: a floor diagnostic, a UWB anchor estimator, a search-time calculator and a pilot planner. Each runs in the browser and nothing is stored.",
                trail=[("Tools", None)], actions=()),
           section('<div class="tools">'
@@ -104,11 +104,11 @@ diag = home[home.index("<div class=\"diag-shell dark\" data-diag>"):home.index("
 write("/diagnostic/", "WIP visibility floor diagnostic",
       "Six questions about how work moves on your floor. Your plant builds itself as you answer, and you get a visibility profile and a pilot scope that fits.",
       [
-          head("Your floor,", "diagnosed.", "Six questions on how work moves. Your profile appears at once, before we ask for anything.",
+          head("Your floor,", "diagnosed.", "Six questions about how work moves on your floor. Your profile appears straight away, before we ask you for anything.",
                short="AmIMotion’s floor diagnostic asks six questions about what your team looks for and where work waits. It sketches your floor as you answer and ends with a visibility profile and a pilot scope for one bay or line. Answers stay in your browser.",
                trail=[("Diagnose your floor", None)], actions=()),
           section(diag, flush=True),
-          section(vp("Useful on its own."),
+          section(vp("Useful even if you never call us."),
                   tiles([("A visibility profile", "Where work is likely hiding, and how your team finds it today."),
                          ("A pilot that fits", "One flow, its zones, one rule and one owner. Small enough to prove, big enough to matter."),
                          ("The right questions", "What we would ask on a floor walk, so the first call starts in the right place.")])),
@@ -119,18 +119,18 @@ write("/diagnostic/", "WIP visibility floor diagnostic",
 write("/pilot/", "What an RTLS pilot involves",
       "An AmIMotion RTLS pilot runs in one bay or line: scope, baseline, survey and install, operational review, then a decision on evidence.",
       [
-          head("A pilot", "worth running.", "One flow, a few zones and one rule, measured on your floor.",
+          head("A pilot", "worth running.", "One flow, a few zones and one rule, measured on your own floor. Small enough to finish, big enough to matter.",
                short="An RTLS pilot with AmIMotion covers one bay or one line. It runs through five steps: agree the question and area, measure a baseline, survey and install the anchors, review the results with the people who act, "
                      "then decide on evidence whether to extend on the same AmIHub. Positions are accurate down to ±10 cm in 3D, measured on your floor.",
                trail=[("Pilot", None)], actions=(("Book a call", "/contact/"), ("Build your brief", "/tools/pilot/")),
                media=ph("A site survey walk: an engineer and a production lead looking up at a column, a tablet in hand, the line running behind them. Clear daylight. 21:9.", "dawn", "cine")),
-          section(vp("Five steps.", "Each one earns the next."),
+          section(vp("Five steps.", "Each one has to earn the next."),
                   tiles([("1 · Scope", "The question", "Agree the question, the area and the trolleys."),
                          ("2 · Baseline", "Today, measured", "How work is found and chased before tags go on."),
                          ("3 · Technical", "Survey and install", "Anchors planned for your floor and tested in the hard places."),
                          ("4 · Operational", "Used by people", "Reviewed with the people who act on it."),
                          ("5 · Commercial", "A decision", "Decide on evidence whether to extend.")], 3)),
-          section(vp("What you get.", "What you bring. What your team does.", "So you know the effort before you say yes."),
+          section(vp("What you get, what you bring.", "And what your team actually does.", "So you know the effort before you say yes."),
                   '<div class="pilot-split three" data-reveal>'
                   '<div class="tile"><h3>What you get</h3><ul role="list"><li>An anchor plan from a site survey</li><li>Tags and anchors for one bay or line</li><li>AmIHub on a PC in your plant, or in the cloud</li><li>A baseline before tags go on, and the same numbers after</li><li>A review of the results with your team</li></ul></div>'
                   '<div class="tile"><h3>What you bring</h3><ul role="list"><li>One flow you want to see, such as trolleys between two stations</li><li>An owner on the floor who acts on what the map shows</li><li>Power at the anchor points, DC or PoE</li><li>The zones that matter, and the time limit for each</li></ul></div>'
@@ -151,7 +151,7 @@ write("/pilot/", "What an RTLS pilot involves",
 write("/films/", "Films: AmIMotion use cases in motion",
       "Four short AmIMotion films about one plant: finding a trolley, a robot hand-off, station-to-station timing and asking the plant a question.",
       [
-          head("Watch the floor", "change.", "Four short films about one plant: finding work, moving it, timing it and asking about it.",
+          head("One plant,", "four short films.", "Finding work, moving it, timing it and asking about it. Each film is about a minute and a half.",
                short="These four AmIMotion films show one simulated plant. A worker finds a trolley on the live map, a robot hand-off is recorded without a scan, a trolley is timed station to station, and a supervisor asks an AI assistant a question.",
                trail=[("Films", None)], dark=True, actions=()),
           section('<div class="cards two">' + "".join(film(n) for n in (1, 2, 3, 4)) + "</div>", tone="dark"),
@@ -163,7 +163,7 @@ write("/films/", "Films: AmIMotion use cases in motion",
 write("/resources/", "AmIMotion resources: tools, guides and films",
       "Everything to plan a UWB location project with AmIMotion: the floor diagnostic, planning tools, field guides, films, FAQ and glossary.",
       [
-          head("Everything", "to plan with.", "Tools, guides and films. No sign-up.",
+          head("Everything", "you need to plan.", "Tools, plain-English guides and films. No sign-up.",
                short="AmIMotion’s resources help plants plan real-time location: a floor diagnostic, an anchor estimator, a search-time calculator, a pilot planner, field guides, four short films, an FAQ and a glossary.",
                trail=[("Resources", None)], actions=()),
           section(links([("/diagnostic/", "Diagnose your floor", "Six questions, two minutes."), ("/tools/", "Planning tools", "Anchors, search time and pilot brief."), ("/films/", "Films", "Four jobs, in motion.")]),
@@ -297,7 +297,7 @@ n_terms = sum(len(t) for _, t in TERMS)
 write("/glossary/", "Glossary of RTLS and UWB terms",
       "Plain definitions of industrial location terms: RTLS, UWB, TDoA, angle of arrival, multipath, omlox, FiRa, WIP visibility, dwell and association.",
       [
-          head("The words,", "without the jargon.", f"{n_terms} terms you will hear when people talk about location on a factory floor.", trail=[("Glossary", None)], actions=(),
+          head("The words,", "without the jargon.", f"{n_terms} terms you will hear when people talk about location on a factory floor, each in a sentence or two.", trail=[("Glossary", None)], actions=(),
                short="This glossary from AmIMotion defines the terms used in real-time location on factory floors, from RTLS and UWB to dwell and carrier-to-job association. AmIMotion locates tags down to ±10 cm in 3D, with AmIMo anchors."),
           section('<nav class="term-index" aria-label="Terms">' + "".join(f'<a href="#{i}">{n}</a>' for _, ts in TERMS for i, n, _ in ts) + "</nav>"
                   + "".join(f'<div class="term-group"><h2 class="h3">{g}</h2><dl class="terms">' + "".join(f'<dt id="{i}">{n}</dt><dd>{dd}</dd>' for i, n, dd in ts) + "</dl></div>" for g, ts in TERMS)),
@@ -308,14 +308,14 @@ write("/glossary/", "Glossary of RTLS and UWB terms",
 write("/company/", "About AmIMotion: UWB RTLS from Bengaluru",
       "AmIMotion, a brand of Locatepro Technologies, designs and builds UWB tags, anchors and software in Bengaluru, India. One team, one contract, one support line.",
       [
-          head("Designed in Bengaluru.", "Built in India.", short=LONG, trail=[("Company", None)],
+          head("Designed in Bengaluru.", "Built for real floors.", short=LONG, trail=[("Company", None)],
                media=ph("The AmIMotion team at work in the Bengaluru lab: a bench with anchors and tags, a laptop with the map, two engineers talking. Natural window light. 21:9. Real photo to be supplied by AmIMotion.", "office", "cine")),
           section(stats([("Bengaluru", "Designed and built in India", "Engineers on site"), ("End to end", "Tags, anchors and AmIHub", "From one team"),
                          ("Open", "built on the FiRa and omlox specifications", "REST, MQTT, WebSocket"), ("In the field", "Manufacturing, robotics, warehousing", "References under NDA")])),
-          section(vp("Every position", "has an age.", "A position helps only when people know where it came from, how old it is and what work it belongs to. So every record carries a time, unknown is shown as unknown, and nothing is dispatched on location alone."),
-                  tiles([("We start from your floor", "Pilots are scoped from a survey of the flow you care about."),
+          section(vp("Every position", "has an age.", "A position is only useful if you know where it came from, how old it is and what work it belongs to. So every record we keep carries a time, we show unknown as unknown, and nothing gets dispatched on location alone."),
+                  tiles([("We start from your floor", "Every pilot is scoped from a walk through the flow you care about."),
                          ("One contract, one support line", "Hardware, software and integration from the people who built them."),
-                         ("We say what location can’t do", "Location is not completion, cause or permission. We design around that."),
+                         ("We say what location can’t do", "Knowing where something is doesn’t tell you it’s finished, why it stopped or who may move it. We design around that."),
                          ("Pilot first", "Pilot one bay or line, then scale on the same AmIHub.")], 4), tone="dark", id="work-with-us"),
           section(links([("/what-is-amimotion/", "What is AmIMotion?", "The definition, the name and the facts."), ("/trust/", "Scope and evidence", "What each claim rests on."), ("/contact/", "Contact", "sales@amimotion.com")])),
           close(),
@@ -325,7 +325,7 @@ write("/company/", "About AmIMotion: UWB RTLS from Bengaluru",
 write("/contact/", "Book a call with AmIMotion",
       "Book a call with AmIMotion: see the live map and an AI query on real AmIHub data, and scope a UWB pilot for one bay or line. sales@amimotion.com",
       [
-          head("Book a call.", None, "Tell us where your team walks to check. We show the live map on real AmIHub data.", trail=[("Contact", None)], actions=()),
+          head("Book a call.", None, "Tell us where your team walks to go and check. An engineer will show you the live map on real AmIHub data, and answer the questions about your floor.", trail=[("Contact", None)], actions=()),
           section('<div class="contact"><div>'
                   '<form class="form" data-contact novalidate>'
                   '<label>Your name<input name="name" autocomplete="name" required></label>'
@@ -351,7 +351,7 @@ write("/contact/", "Book a call with AmIMotion",
 write("/trust/", "Scope and evidence: what AmIMotion’s claims rest on",
       "What AmIMotion’s claims rest on, where your data lives and how access is secured: on-premise or cloud, TLS, roles, API keys and audit logs.",
       [
-          head("Clear claims.", "Clear boundaries.", "What each claim on this site rests on, and what your floor still has to show.", trail=[("Scope and evidence", None)], actions=(),
+          head("What we claim,", "and what it rests on.", "Every number on this site, where it comes from, and what your own floor still has to prove.", trail=[("Scope and evidence", None)], actions=(),
                short="AmIMotion’s product figures, such as down to ±10 cm in 3D (with AmIMo anchors) and 1 to 3 years of tag battery (typical), come from its published brochure and are indicative. A pilot measures them on your floor."),
           section(tiles([("Product facts", "From the brochure", "Figures are indicative, not independently measured. Confirm hardware revision, software version and setup in your evaluation."),
                          ("Pictures and films", "Made to explain", "Renders, films and scenes on this site explain the product. Films carry a Simulation label. They are not customer sites or live data."),
@@ -380,7 +380,7 @@ write("/trust/", "Scope and evidence: what AmIMotion’s claims rest on",
 write("/privacy/", "Privacy",
       "This site works without sign-up or advertising pixels. Diagnostic answers, planner briefs and email drafts stay in your browser until you send them.",
       [
-          head("A useful visit,", "without a profile.", "Everything on this site works without signing up or handing over contact details.", trail=[("Privacy", None)], actions=()),
+          head("A useful visit,", "without a profile.", "Everything on this site works without signing up or giving us your details.", trail=[("Privacy", None)], actions=()),
           section(prose('<h2>Advertising and tracking</h2><p>This site has no advertising pixels and no cross-site tracking. The host may process technical request data to serve and secure the site.</p>'
                         '<h2>Floor diagnostic</h2><p>Your answers stay in this browser tab, so you can pick up where you left off. They leave your browser only if you choose to send your profile.</p>'
                         '<h2>Tools and pilot briefs</h2><p>The anchor estimator, search-time calculator and pilot planner run in your browser. Downloading a brief saves a local file. Nothing is sent to AmIMotion unless you email it.</p>'

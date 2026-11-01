@@ -4,24 +4,24 @@ from lib import *
 write("/technology/", "How UWB indoor positioning works",
       "How AmIMotion turns a nanosecond UWB pulse into a 3D position down to ±10 cm: timing, angle, modes per zone, multipath, FiRa and omlox.",
       [
-          head("Find it first.", "Then add meaning.", "Ultra-wideband radio gives a precise, time-stamped position. Zones and a link to the job make it useful.",
+          head("How we find things", "to within a hand’s width.", "Ultra-wideband radio gives us a precise position and the exact time we saw it. Your zones, and a link to the job, turn that into something a supervisor can act on.",
                short="AmIMotion locates tags with ultra-wideband (UWB) radio to IEEE 802.15.4z. AmIMo anchors time each pulse to tens of picoseconds and read the angle it arrives from, "
                      "and AmIHub solves a 3D position down to ±10 cm (with AmIMo anchors). The same anchors also offer BLE ranging and Wi-Fi FTM. AmIMotion is built on the FiRa and omlox specifications.",
                trail=[("Technology", None)], dark=True, actions=(("Book a call", "/contact/"), ("Positioning modes", "#modes"))),
           section(
-              vp("Light travels", "about 30 cm a nanosecond.", "So timing a pulse to tens of picoseconds places a tag to centimetres. Angle of arrival adds direction, so fewer anchors fix a point."),
+              vp("Light covers about 30 cm", "in a billionth of a second.", "So if you can time a pulse to tens of trillionths of a second, you can place a tag to centimetres. Reading the angle it arrived from adds direction, so fewer anchors are needed."),
               tiles([("Timing", "Time of flight", "Each anchor records exactly when a pulse arrives. The differences between anchors give the position."),
                      ("Angle", "3D angle of arrival", "An antenna array in each AmIMo reads the direction, horizontal and vertical, so height counts too."),
                      ("Reflections", "Multipath, handled", "The wide band tells the direct signal from echoes off steel. NLOS algorithms keep positions steady.")]),
               tone="dark"),
           section(
-              vp("Short pulses", "survive metal.", "Racking and machines bounce radio around. UWB’s very short pulses let the direct path be separated from the reflections."),
+              vp("Short pulses", "cope with steel.", "A plant is full of racking and machines that bounce radio around. Because each UWB pulse is so short, we can tell the straight path from the echoes."),
               '<div class="vp-media" data-reveal-scale>' + ph("Low angle down a machining aisle lined with steel racking, an anchor high on a column in the foreground, a trolley mid-aisle. Cool, clean, high-contrast light. 21:9.", "steel", "cine") + "</div>",
-              stats([("802.15.4z", "The IEEE UWB standard", "HRP, channels 5 and 9"), ("FiRa · omlox", "Compliant", "Open devices and data"),
+              stats([("802.15.4z", "The IEEE UWB standard", "HRP, channels 5 and 9"), ("FiRa · omlox", "Built on the specifications", "Open devices and data"),
                      ("3 radios", "UWB, BLE, Wi-Fi FTM", "From the same anchors"), ("±10 cm", "Down to, in 3D", "With AmIMo anchors, site-dependent")]),
               tone="dark", flush=True),
           section(
-              vp("Choose the method", "per zone.", "Switch modes per zone in AmIHub, with no hardware swap. High precision at gates, low power everywhere else."),
+              vp("Pick the method", "zone by zone.", "Switch modes per zone in AmIHub, with no hardware swap. Tight precision at a gate, long battery life everywhere else."),
               compare(["Mode", "How it works", "Best for"], [
                   ("UL-TDoA", "Uplink time difference of arrival. The tag sends; anchors compare when it arrived.", "Thousands of low-power tags across a floor"),
                   ("DL-TDoA", "Downlink. Anchors send; the device works out its own position.", "Phones, with the position kept on the device"),
@@ -29,7 +29,7 @@ write("/technology/", "How UWB indoor positioning works",
                   ("BLE · Wi-Fi FTM", "Bluetooth ranging and Wi-Fi fine timing from the same anchors.", "BLE devices, phones and yards")]),
               id="modes", tone="light"),
           section(
-              vp("Never just a dot."),
+              vp("A position is never just a dot."),
               tiles([("Position", "Where it was seen", "On a grid tied to your floor plan, in 3D."),
                      ("Time", "When it was seen", "Not when the screen refreshed. Old data reads “last seen at …”."),
                      ("Quality", "How good it is there", "Metal, blocked views and mounting matter. Measured in the pilot.")]),
@@ -47,7 +47,7 @@ write("/technology/", "How UWB indoor positioning works",
               id="mcp", tone="light"),
           section(faq([
               ("How does UWB measure position?", "A tag sends a pulse a few nanoseconds wide. AmIMo anchors time its arrival (time of flight and TDoA) and read its angle of arrival. Because light travels about 30 cm a nanosecond, that timing places the tag to centimetres."),
-              ("Which UWB RTLS supports FiRa?", "AmIMotion is built on the FiRa and omlox specifications, and its UWB radio follows IEEE 802.15.4z. That is a compliance statement, not a formal certification."),
+              ("Which UWB RTLS supports FiRa?", "AmIMotion is built on the FiRa and omlox specifications, and its UWB radio follows IEEE 802.15.4z. That describes how it is built; it is not a formal certification."),
               ("Which RTLS works with UWB, BLE and Wi-Fi on the same anchors?", "AmIMo anchors offer UWB, BLE ranging and Wi-Fi FTM from the same unit, so one installation can serve more than one tag type."),
               ("How accurate is AmIMotion?", "Down to ±10 cm in 3D, with AmIMo anchors. Accuracy depends on the site, so a pilot measures it on your floor."),
               ("Does it integrate with SAP or an MES over MQTT?", "AmIHub publishes zone events over MQTT and offers REST, WebSocket and an omlox hub interface. The connector for your system is confirmed during scoping."),
@@ -60,7 +60,7 @@ write("/technology/", "How UWB indoor positioning works",
 write("/solutions/", "RTLS solutions for WIP, tools and vehicles",
       "What AmIMotion solves on a manufacturing floor: see where work in progress waits, and find trolleys, tools and vehicles down to ±10 cm in 3D.",
       [
-          head("Two questions.", "One system.", "Where is it? And how long has it waited? AmIMotion answers both on one live map.",
+          head("Two questions", "every plant asks.", "Where is it? And how long has it been sitting there? We answer both, on one live map.",
                short="AmIMotion is a UWB real-time location system for manufacturing. Teams use it for two jobs: work-in-progress visibility, which shows where jobs wait between operations, "
                      "and finding tagged tools, trolleys and vehicles from a screen. Positions are accurate down to ±10 cm in 3D, with AmIMo anchors.",
                trail=[("Solutions", None)]),
@@ -76,13 +76,13 @@ write("/solutions/", "RTLS solutions for WIP, tools and vehicles",
 write("/solutions/wip/", "WIP visibility and tracking with UWB RTLS",
       "AmIMotion shows where work in progress is and where it waits: tagged trolleys down to ±10 cm in 3D, linked to jobs, timed in every zone.",
       [
-          head("Find the job.", "Time the wait.", "A tag shows where the trolley is. Link it to the job, and you see which work waits where.", amber=True,
+          head("Find the job.", "Time the wait.", "A tag tells you where the trolley is. Link the trolley to the job it carries, and you can see which work is waiting, where, and since when.", amber=True,
                short="AmIMotion gives manufacturers real-time WIP visibility. AmIGo tags ride on trolleys and bins, AmIMo anchors locate them down to ±10 cm in 3D, "
                      "and AmIHub records every zone entry and exit with its time. Linked to the job through an agreed carrier-to-job association, that shows which job waits where, and for how long.",
                trail=[("Solutions", "/solutions/"), ("Work in progress", None)], actions=(("Book a call", "/contact/"), ("Diagnose your floor", "/diagnostic/")),
                media=ph("A loaded trolley of machined parts parked between two cells, an AmIGo on its frame, nobody near it. Amber afternoon light raking across the floor. 21:9.", "amber", "cine")),
           section(
-              vp("Four questions.", "Four needs.", "A dot on a map answers the first one. The rest need agreements you make once, at the start.", more="wip-four"),
+              vp("Four questions.", "Only one is about radio.", "A dot on a map answers the first. The other three need a few decisions you make once, at the start.", more="wip-four"),
               tiles([("Where is the work?", "The tag’s position plus a link from trolley to job. Without the link you see the trolley, which still helps."),
                      ("Where is it waiting?", "Zones you name, such as stations and queues, with entry times. Zones follow the process, not the radio."),
                      ("What needs a look?", "A time limit per zone and a named owner. Passing the limit means “go and look”. It does not say why."),
@@ -93,18 +93,18 @@ write("/solutions/wip/", "WIP visibility and tracking with UWB RTLS",
                   "The job link comes from your MES, ERP or a scan step, for a set time.",
                   "Being in a zone does not prove work started or finished."], "/learn/wip-visibility/", "#f2a33a", "#f46f5e")),
           section(
-              vp("Tag. Locate. Link.", "Watch. Act."),
+              vp("How a pilot plays out.", "Tag, locate, link, watch, act."),
               steps([("Tag", "An AmIGo rides on the trolley. It stays with the trolley through every job it carries."),
                      ("Locate and link", "AmIMo anchors place it in 3D with the time. A scan or MES event puts the job on it."),
                      ("Watch the wait", "AmIHub times every zone entry and exit, so you see how long the job has waited."),
                      ("Act early", "Production control sees job, place and wait on one screen. Nothing is closed on location alone.")]),
               tone="light", flush=True),
           section(
-              vp("Queued is not assembled.", lede="Location says where something was seen. Whether work is finished comes from your MES or your people. The map never claims more than that.", center=True),
+              vp("Queued is not assembled.", lede="We can tell you where a trolley was and when. Whether the work on it is finished is your MES’s call, or your people’s. The map never pretends otherwise.", center=True),
               '<div class="vp-media" data-reveal-scale>' + ph("Production control desk at shift change: two people looking at a large screen with a floor map, the real line visible through glass behind. Dusk blue outside, warm desk light. 21:9.", "night", "cine") + "</div>",
               tone="dark"),
           section(
-              vp("Start with one question.", "Pilot one bay or line."),
+              vp("Start with one question.", "On one bay or one line."),
               tiles([("Scope", "One flow", "Pick the trolleys, the area, a few zones and one question."),
                      ("Data", "One agreed link", "Decide how a job gets onto a trolley, and when it comes off."),
                      ("Acceptance", "A fair baseline", "Measure tag identity, position quality, freshness and what people did differently.")]),
@@ -124,18 +124,18 @@ write("/solutions/wip/", "WIP visibility and tracking with UWB RTLS",
 write("/solutions/assets/", "Find tools, trolleys and forklifts with UWB",
       "Stop walking the hall to look. AmIMotion finds tagged trolleys, bins, tools and forklifts on a live map, down to ±10 cm in 3D, with last-seen times.",
       [
-          head("Find it from a screen.", "Not a walk.", "Tag the tools, fixtures, carriers and vehicles your team looks for. Find each one in seconds.",
+          head("Find it from a screen.", "Not a walk.", "Put a tag on the tools, fixtures, trolleys and forklifts your team keeps looking for. Next time, the search starts on a screen.",
                short="To cut the time spent searching for trolleys, bins and tools, AmIMotion puts a small AmIGo tag on each one. AmIMo anchors locate them down to ±10 cm in 3D, "
                      "and the AmIHub map shows where each is now, which zone had it last and when it was last seen.",
                trail=[("Solutions", "/solutions/"), ("Tools, vehicles and carriers", None)],
                media=ph("A supervisor in a long aisle between racks, tablet in hand, turning toward a trolley half-hidden behind a column. Cool light with a warm pool where the trolley is. 21:9.", "cool", "cine")),
           section(
-              vp("Where was it", "last seen?", "Trolleys and carriers move all day. The map shows the last zone, the time, and how long each one has sat."),
+              vp("Where was it", "last seen?", "Trolleys move all day and nobody writes it down. The map does: the last zone, the time, and how long it has sat there."),
               tiles([("Trolleys and carriers", "Search by name or tag. Walk straight there."),
                      ("Tools and fixtures", "History shows which cell used a fixture, and when. Screw-mount where work won’t knock it."),
                      ("Forklifts and tuggers", "Zone, trips and parked time. A vehicle-powered tag needs no battery swaps.")])),
           section(
-              vp("Four things", "to agree first."),
+              vp("Four things", "to agree before you start."),
               tiles([("Identity", "Which tag sits on which object, and who keeps that right."),
                      ("Precision", "How precise the position must be for the job, checked on your floor."),
                      ("Freshness", "How old a position can be before it stops helping. Old data is shown as old."),
@@ -201,10 +201,10 @@ for slug, n, title, h1, soft, lede, short, today, withit, qs in UC:
               head(h1, soft, lede, short=short, trail=[("Use cases", "/use-cases/"), (FILMS[n][0], None)], dark=True,
                    media=film(n)),
               section(
-                  vp("Today,", "and with AmIMotion."),
+                  vp("How it goes today,", "and how it goes with us."),
                   tiles([("Today", "The walk", today), ("With AmIMotion", "The map", withit)], 2), tone="dark"),
               section(faq(qs, "Common questions.")),
-              section(vp("Other jobs,", "same tags."),
+              section(vp("Other jobs,", "the same tags."),
                       cards([(f"/use-cases/{o[0]}/", f'<div class="card ratio-wide"><img src="/assets/film/v6/film0{o[1]}-poster.jpg" alt="" width="1600" height="900" loading="lazy" decoding="async"></div>',
                               FILMS[o[1]][0], FILMS[o[1]][3] + " film", "Watch") for o in others]), tone="light"),
               close(),
@@ -213,7 +213,7 @@ for slug, n, title, h1, soft, lede, short, today, withit, qs in UC:
 write("/use-cases/", "RTLS use cases: tools, WIP, AMRs and AI",
       "Four AmIMotion use cases as short films: find a trolley, follow a robot hand-off, time work station to station, ask the plant a question.",
       [
-          head("Four jobs.", "One map.", "Each starts with a walk someone takes today, and ends with an answer on a screen.",
+          head("Four everyday jobs.", "One map.", "Each one starts with a walk somebody takes today, and ends with an answer on a screen.",
                short="AmIMotion is used to find tagged assets, record robot hand-offs, time work at each station and let AI assistants answer questions about the floor. "
                      "All four run on the same AmIGo tags, AmIMo anchors and AmIHub software, with positions down to ±10 cm in 3D.",
                trail=[("Use cases", None)], dark=True),
@@ -225,7 +225,7 @@ write("/use-cases/", "RTLS use cases: tools, WIP, AMRs and AI",
 # ---------------- industries ----------------
 IND = [
     ("manufacturing", "UWB RTLS for manufacturing plants", "Find work", "between cells.", "steel",
-     "Work crosses many cells. See where each trolley is, which job it holds, and how long it waited.",
+     "Work crosses a dozen cells on its way out the door. See where each trolley is, which job it holds and how long it has waited.",
      "AmIMotion is a UWB real-time location system for manufacturing. Tags locate carriers between operations down to ±10 cm in 3D, and a link from your MES says which job each one holds.",
      "Machining cells with totes of parts between operations, a person working at one cell, a loaded trolley in the foreground. Clean, cool daylight. 21:9.",
      [("WIP carriers and bins", "Find the job, see the wait", "Carriers between machining and assembly, with time in each zone."),
@@ -237,7 +237,7 @@ IND = [
       ("Can AmIMotion tell which job is on a carrier?", "Through a link, not the radio. The tag names the trolley. Your MES or a scan step says which job it holds, and for how long."),
       ("Does UWB work around machining centres and racking?", "UWB’s very short pulses help tell the direct signal from reflections off steel. Your pilot measures it in the hardest spots.")]),
     ("warehousing", "UWB RTLS for warehousing and intralogistics", "Every dock and vehicle,", "one map.", "cool",
-     "Forklifts and pallets rarely stay where the system last saw them. The map shows where each one is now.",
+     "Forklifts and pallets rarely stay where the system last saw them. The map shows where each one is right now.",
      "AmIMotion runs in warehousing. It shows where forklifts, tuggers, robots and tagged pallets are, down to ±10 cm in 3D, and how long loads wait at docks and staging lanes.",
      "A dock door at dawn, pallets staged in lanes, a forklift crossing with motion blur. Cool blue hour with warm dock light. 21:9.",
      [("Forklifts and tuggers", "See every vehicle", "Running, idle or parked, and how long each one dwells."),
@@ -281,7 +281,7 @@ for slug, title, h1, soft, mood, lede, short, brief, three, h2b, ledeb, qs in IN
 write("/industries/", "UWB RTLS for manufacturing, warehousing, AMRs",
       "AmIMotion runs in manufacturing, robotics and warehousing sites: one UWB system, down to ±10 cm in 3D, set up for how your floor runs.",
       [
-          head("Built for floors", "that move.", "One system, set up for how your floor runs.",
+          head("Built for floors", "that never stand still.", "The same tags, anchors and software, set up around how your floor actually runs.",
                short="AmIMotion runs in manufacturing, robotics and warehousing sites. The same AmIGo tags, AmIMo anchors and AmIHub software locate carriers, pallets, totes, vehicles and robots "
                      "down to ±10 cm in 3D. Customer references are shared under NDA.", trail=[("Industries", None)]),
           section(cards([

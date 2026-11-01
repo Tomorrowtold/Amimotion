@@ -161,13 +161,13 @@ def film(n, caption=True):
 
 # The closing section changes with the part of the site, so it never reads as a template
 CLOSES = [
-    (("/platform/", "/technology/", "/products/", "/specs/", "/developers/"), ("See it on a live map.", "On a short call we show the live map and an AI query, on real AmIHub data.",
+    (("/platform/", "/technology/", "/products/", "/specs/", "/developers/"), ("See it on a live map.", "On a short call we show you the live map and an AI question, on real AmIHub data.",
         (("Book a call", "/contact/"), ("Diagnose your floor", "/diagnostic/")))),
-    (("/solutions/", "/industries/", "/use-cases/"), ("Diagnose your floor.", "Six questions, two minutes. See where location data would help first.",
+    (("/solutions/", "/industries/", "/use-cases/"), ("Find out where your hours go.", "Six questions, two minutes. See where knowing what’s where would help you first.",
         (("Diagnose your floor", "/diagnostic/"), ("Book a call", "/contact/")))),
-    (("/company/", "/trust/", "/pilot/", "/contact/", "/privacy/"), ("Talk to the team.", "Tell us the flow you want to see. We walk through it with you.",
+    (("/company/", "/trust/", "/pilot/", "/contact/", "/privacy/"), ("Talk to the people who built it.", "Tell us the flow you want to see. We’ll walk through it with you.",
         (("Book a call", "/contact/"), ("How a pilot runs", "/pilot/")))),
-    (("/",), ("Questions about your own floor?", "An engineer answers them on a short call, with the live map open.",
+    (("/",), ("Questions about your own floor?", "An engineer will answer them on a short call, with the live map open.",
         (("Book a call", "/contact/"), ("Diagnose your floor", "/diagnostic/")))),
 ]
 DEFAULT_CLOSE = "<!--close-->"
