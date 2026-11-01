@@ -210,7 +210,7 @@ def plastic(name, hexcol, seed=0.0, grain=1.0):
     # roughness = base + drift - k*height
     r1 = N.new('ShaderNodeMapRange'); L.new(n2.outputs['Fac'], r1.inputs['Value'])
     r1.inputs['From Min'].default_value = 0.3; r1.inputs['From Max'].default_value = 0.7
-    r1.inputs['To Min'].default_value = 0.50; r1.inputs['To Max'].default_value = 0.56
+    r1.inputs['To Min'].default_value = 0.42; r1.inputs['To Max'].default_value = 0.47
     r2 = N.new('ShaderNodeMath'); r2.operation = 'MULTIPLY_ADD'
     L.new(hmix.outputs[0], r2.inputs[0]); r2.inputs[1].default_value = -0.06; L.new(r1.outputs['Result'], r2.inputs[2])
     L.new(r2.outputs[0], b.inputs['Roughness'])
@@ -252,7 +252,7 @@ def card_mat(name, val, emit=0.0):
 
 
 # ---------------- studio ----------------
-def sweep(w=3.0, depth=1.6, radius=0.45, height=1.4, back=-0.55):
+def sweep(cam_az=-90.0, w=3.0, depth=1.6, radius=0.30, height=1.4, back=-0.42):
     """Cyclorama: flat floor to y=back, quarter-circle cove, wall up. Built along -Y toward camera."""
     bm = bmesh.new()
     prof = []
@@ -273,6 +273,7 @@ def sweep(w=3.0, depth=1.6, radius=0.45, height=1.4, back=-0.55):
     me = bpy.data.meshes.new('sweep'); bm.to_mesh(me); bm.free()
     for p in me.polygons: p.use_smooth = True
     o = link(bpy.data.objects.new('sweep', me))
+    o.rotation_euler = (0, 0, math.radians(cam_az + 180 + 90))
     o.data.materials.append(sweep_mat())
     return o
 
@@ -299,6 +300,27 @@ def kelvin_rgb(k):
     b = 255 if t >= 66 else (0 if t <= 19 else 138.5 * math.log(t - 10) - 305.0)
     c = [max(0, min(255, x)) / 255 for x in (r, g, b)]
     return tuple(srgb('#%02x%02x%02x' % tuple(int(x * 255) for x in c)))
+
+
+def grad_scrim(name, loc, look, sx, sy, strength, kelvin=5400, falloff=1.6):
+    """Graduated scrim: a diffusion panel whose brightness falls from its top edge to zero at its bottom edge,
+    as a photographer feathers a softbox. Its reflection lays a real gradient across a dark top face."""
+    bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=0.5)
+    me = bpy.data.meshes.new(name); bm.to_mesh(me); bm.free()
+    o = link(bpy.data.objects.new(name, me)); o.location = loc; o.scale = (sx, sy, 1)
+    d = Vector(look) - Vector(loc); o.rotation_euler = d.to_track_quat('Z', 'Y').to_euler()
+    m = bpy.data.materials.new(name); m.use_nodes = True; N = m.node_tree.nodes; L = m.node_tree.links
+    N.remove(N['Principled BSDF'])
+    tc = N.new('ShaderNodeTexCoord'); sep = N.new('ShaderNodeSeparateXYZ'); L.new(tc.outputs['Generated'], sep.inputs[0])
+    pw = N.new('ShaderNodeMath'); pw.operation = 'POWER'; L.new(sep.outputs['Y'], pw.inputs[0]); pw.inputs[1].default_value = falloff
+    mul = N.new('ShaderNodeMath'); mul.operation = 'MULTIPLY'; L.new(pw.outputs[0], mul.inputs[0])
+    mul.inputs[1].default_value = strength * EXPO
+    em = N.new('ShaderNodeEmission'); em.inputs['Color'].default_value = (*kelvin_rgb(kelvin), 1)
+    L.new(mul.outputs[0], em.inputs['Strength'])
+    L.new(em.outputs[0], N['Material Output'].inputs['Surface'])
+    o.data.materials.append(m)
+    o.visible_camera = False; o.visible_shadow = False
+    return o
 
 
 def card(name, loc, look, sx, sy, val):
@@ -340,14 +362,24 @@ def rig(target=(0, 0, 0.01), key_az=150, key=1.0, rake_az=None, rake_el=14, rake
     def pol(az, el, r):
         a, e = math.radians(az), math.radians(el)
         return t + Vector((math.cos(a) * math.cos(e), math.sin(a) * math.cos(e), math.sin(e))) * r
-    area('scrim', pol(cam_az + 180, 62, 0.9), t, 1.3, 260 * key, 5400, size_y=1.0)
-    area('strip_L', pol(cam_az + 118, 22, 0.55), t, 0.18, 55 * key, 5300, size_y=0.9)
-    area('strip_R', pol(cam_az - 118, 24, 0.6), t, 0.18, 45 * key, 5300, size_y=0.9)
-    area('front_soft', pol(cam_az + 25, 38, 1.4), t, 1.0, 70 * key, 5500, size_y=0.8)
-    area('bg', (0, -0.1, 1.2), (0, -0.5, 0.2), 1.6, 380, 5300, size_y=1.0)
+    back = cam_az + 180
+    # key: overhead scrim behind the product, its near edge sits in the top-face mirror direction -> gradient
+    area('scrim', pol(back, 58, 0.75), t, 0.7, 120 * key, 5400, size_y=0.5)
+    # edge strips ~120 deg either side of camera
+    area('strip_L', pol(cam_az + 115, 20, 0.45), t, 0.10, 34 * key, 5300, size_y=0.7)
+    area('strip_R', pol(cam_az - 120, 26, 0.5), t, 0.10, 26 * key, 5300, size_y=0.7)
+    # soft frontal fill, big and far: opens the shadow side without flattening
+    area('fill', pol(cam_az + 30, 35, 1.3), t, 0.9, 30 * key, 5500, size_y=0.7)
+    # background light: hangs above the product, aimed at the cove behind; lights the paper, not the product
+    bgp = pol(back, 70, 0.6); bgt = pol(back, 15, 0.9)
+    area('bg', bgp, bgt, 1.2, 420, 5300, size_y=0.5, spread=70)
     if rake > 0:
-        area('rake', pol(rake_az if rake_az is not None else cam_az + 95, rake_el, 0.5), t, 0.08, rake, 5200, size_y=0.6)
-    card('bounce', pol(cam_az - 20, 8, 0.45), t, 0.4, 0.25, 0.85)
+        area('rake', pol(rake_az if rake_az is not None else cam_az + 95, rake_el, 0.5), t, 0.06, rake, 5200, size_y=0.5)
+    # negative fill: black flags just outside frame on both sides and above the lens
+    card('flag_L', pol(cam_az + 62, 18, 0.30), t, 0.25, 0.18, 0.02)
+    card('flag_R', pol(cam_az - 62, 18, 0.30), t, 0.25, 0.18, 0.02)
+    card('flag_T', pol(cam_az, 62, 0.40), t, 0.30, 0.20, 0.02)
+    card('bounce', pol(cam_az - 15, 6, 0.40), t, 0.30, 0.10, 0.80)
 
 
 def camera(loc, look, lens=90, fstop=8.0, focus=None, sensor=36):
@@ -380,7 +412,7 @@ PLASTIC = '#45484d'   # dark grey, not black: holds L* 18-25 on the shadow side
 
 
 def shot_amigo_hero():
-    sc = reset(); world(0.30, rot=0.6); sweep()
+    sc = reset(); world(0.30, rot=0.6); sweep(-62)
     root, top, bot = amigo()
     m_top = plastic('tag_top', PLASTIC, seed=0.0); m_bot = plastic('tag_bot', PLASTIC, seed=5.0)
     top.data.materials.append(m_top); bot.data.materials.append(m_bot)
@@ -392,7 +424,7 @@ def shot_amigo_hero():
 
 
 def shot_amigo_logo():
-    sc = reset(); world(0.30, rot=0.6); sweep()
+    sc = reset(); world(0.30, rot=0.6); sweep(-90)
     root, top, bot = amigo()
     top.data.materials.append(plastic('tag_top', PLASTIC, 0.0)); bot.data.materials.append(plastic('tag_bot', PLASTIC, 5.0))
     place(root, rz=math.radians(TAG_RZ))
@@ -404,7 +436,7 @@ def shot_amigo_logo():
 
 
 def shot_amimo_rj45():
-    sc = reset(); world(0.30, rot=0.6); sweep()
+    sc = reset(); world(0.30, rot=0.6); sweep(-55)
     root, body, cap = amimo()
     m = plastic('anchor', PLASTIC, 2.0)
     body.data.materials.append(m); cap.data.materials.append(plastic('anchor_cap', PLASTIC, 7.0))
@@ -415,7 +447,7 @@ def shot_amimo_rj45():
 
 
 def shot_pair_scale():
-    sc = reset(); world(0.30, rot=0.6); sweep()
+    sc = reset(); world(0.30, rot=0.6); sweep(-70)
     r1, top, bot = amigo()
     top.data.materials.append(plastic('tag_top', PLASTIC, 0.0)); bot.data.materials.append(plastic('tag_bot', PLASTIC, 5.0))
     place(r1, loc=(0.052, 0.006, 0), rz=math.radians(TAG_RZ + 8))
