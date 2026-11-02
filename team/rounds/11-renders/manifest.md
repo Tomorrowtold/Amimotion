@@ -18,7 +18,7 @@ Formats:
 
 | Job | Screen | Status |
 |---|---|---|
-| R1 AmIGo turntable | Home S1 | rendering (96 frames, 1440 px) |
+| R1 AmIGo turntable | Home S1 | **landed** |
 | R2 AmIGo macro | Home S1b | **landed** |
 | R3 family stage still | Home S5, /products/ | **landed** (3:1 and 4:5) |
 | R3b family dolly | Home S5 | **landed** |
@@ -27,11 +27,49 @@ Formats:
 | R6 queue full-bleed | Home S3 | **landed** (see below) |
 | R7 one bay | Home S6, /pilot/ | **landed** |
 | R8 job crops | Home S7 | **landed** |
-| R9 closer-look angles | Product pages | queued |
+| R9 closer-look angles | Product pages | **AmIGo landed**; AmIMo rendering |
 | R10 AmIGo lowers onto trolley | AmIGo page | **landed** |
 | R11 AmIGo covers part | AmIGo page | see notes |
 | R12 hall line drawing | /technology/ header | **landed** |
 | R13 AmIMo on column | AmIMo hero, S5 tab | **landed** (no cable, see below) |
+
+## R1 AmIGo turntable (Home S1): landed
+
+- 96 frames, one full turn, 3.75° per frame, counter-clockwise seen from above.
+- The tag turns on a fixed studio, as on a real turntable: 85 mm, el 22°, 0.35 m, f/8. The rig's graduated scrim key sits at az 150, el 52.
+- Frame 0 is the poster: the logo face toward the camera, about 30° off square. The sequence loops seamlessly (frame 95 leads into frame 0).
+- Every frame is flat-fielded with one rendered empty plate, so the page ground is exact and identical in all 96 frames, with no flicker. Fixed seed, OIDN denoise, a dark-cavity despeckle, no grain (grain would shimmer).
+- The plastic measures R = G = B within 1 level (median 78/79/79): neutral, no blue cast.
+
+| Files | Size | Frames | Mean / total |
+|---|---|---|---|
+| `home/turntable/amigo-turn-1440-000.avif` to `-095` | 1440 x 1440 | 96 | 15.0 KB / 1.41 MB |
+| `home/turntable/amigo-turn-1080-000.avif` to `-095` | 1080 x 1080 | 96 | 9.5 KB / 0.89 MB |
+| `home/turntable/amigo-turn-720-000.avif` to `-095` | 720 x 720 | 96 | 6.2 KB / 0.58 MB |
+| `home/amigo-turn-poster-{720,1080,1440}.{avif,webp}` | 1:1 | frame 0 | still for first paint, JS off and reduced motion |
+
+- Names follow `build.py wire_turntable` (`*turn*-1080-NNN.avif` with its `-720-` twin). The hero canvas is wired automatically on the next build. Use 1440 on desktop at 2x.
+- Opaque AVIF 4:4:4. The ground decodes to #f0f6ff within 1 level. Draw it on a `var(--ground)` stage.
+- The tag sits a little below the frame centre (its top face reads as the centre of mass). The square holds the tag's widest diagonal at every angle with about 15 % margin.
+- Alt for the poster or stage: "The AmIGo tag, a small dark grey tag with amimotion on its cover, turning slowly." The canvas frames are `aria-hidden`.
+
+## R9 closer-look angles (product pages): AmIGo landed
+
+The R1 rig and lens. The product turns by `az` from the turntable's poster pose (az 0 = R1 frame 0), and the camera rises to `el`.
+
+| File | Angle | Shows |
+|---|---|---|
+| `products/closer/amigo-az0-el30-{800,1600}.{avif,webp}` | front three-quarter | the logo face and both screw ears |
+| `products/closer/amigo-az90-el30-*` | quarter turn | the end with its opening, and one ear |
+| `products/closer/amigo-az180-el30-*` | back | the back face and the ears from behind |
+| `products/closer/amigo-az270-el30-*` | other end | the other end and an ear |
+| `products/closer/amigo-az0-el60-*` | high | the top cover and logo |
+| `products/closer/amigo-az0-el10-*` | low | the profile: covers and parting line |
+
+- Each is 1:1, 800 and 1600, RGBA on the page (transparent where it is the page), flat-fielded with its own plate.
+- Six angles, not five: the plan lists el 10, 30 and 60, so el 10 is included. Pick the five you need.
+- AmIMo's six (`amimo-*`) are rendering and will be added here.
+- Alt pattern: "The AmIGo tag from <the front / its end / behind / above / low at the side>."
 
 ## R2 AmIGo macro (Home S1b): landed
 
