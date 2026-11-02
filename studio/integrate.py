@@ -25,7 +25,9 @@ def sh(*a, **k): return subprocess.run(a, check=True, **k)
 if BRANCH.startswith("origin/"): subprocess.run(["git", "-C", str(REPO), "fetch", "-q", "origin", BRANCH.split("/", 1)[1]])
 shutil.rmtree(WORK, ignore_errors=True); WORK.mkdir(parents=True)
 tar = subprocess.run(["git", "-C", str(REPO), "archive", BRANCH, "site"], check=True, capture_output=True).stdout
-tarfile.open(fileobj=io.BytesIO(tar)).extractall(WORK, filter='data')
+_tf = tarfile.open(fileobj=io.BytesIO(tar))
+try: _tf.extractall(WORK, filter='data')
+except TypeError: _tf.extractall(WORK)   # Python before 3.12 (macOS system python): our own git archive, trusted
 site = WORK / "site"
 b = (site / "build.py").read_text()
 b = re.sub(r'    if missing: raise SystemExit\("build: homepage pictures missing.*\n', '    if missing: print("build: homepage pictures not landed yet:", len(missing))\n', b)
