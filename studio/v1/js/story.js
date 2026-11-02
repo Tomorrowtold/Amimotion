@@ -10,13 +10,20 @@ export const VS = `attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Posi
 export const FS = `precision highp float;varying vec2 v;
 uniform sampler2D tA,tB,tM;uniform vec2 res,span,tagPos,bayC,waveC;uniform vec3 cam;uniform vec4 vr;
 uniform float draw,dash,amber,onlyQ,hidePaths,bay,tagOn,time,grey,wave,dof,sky;
+uniform vec4 spot,lpos;uniform vec3 ltgt;
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 void main(){
   vec2 uv=vec2(v.x,1.-v.y);
   vec2 iu=cam.xy+(uv-.5)*span/cam.z;
   // a lens on a model: sharp through the middle of the frame, falling softly out of focus toward its edges
   vec2 fu=(uv-vr.xy)/vr.zw; float tilt=smoothstep(.2,.56,abs(fu.y-.5))*1.6+smoothstep(.3,.62,abs(fu.x-.5))*.7;
-  float lb=tilt*dof;
+  // the focus: one place on the floor in light, the rest falls back, softer and quieter
+  float sd0=length((iu-spot.xy)*vec2(.8,1.));float out0=smoothstep(spot.z,spot.z*1.9+.02,sd0)*spot.w;
+  // the loupe: a lens over the render itself, magnifying one thing on the floor
+  vec2 ld=(uv-lpos.xy)*res/res.y;float lr=length(ld);float inL=(1.-smoothstep(lpos.z-.0015,lpos.z,lr))*step(.001,lpos.w);
+  vec2 liu=ltgt.xy+(uv-lpos.xy)*span/(cam.z*ltgt.z);
+  iu=mix(iu,liu,inL);
+  float lb=mix(tilt*dof+out0*1.6,0.,inL);
   vec3 A=texture2D(tA,iu,lb).rgb,B=texture2D(tB,iu,lb).rgb,M=texture2D(tM,iu).rgb;
   // the landing's reveal: inside the wave the plant is already known
   float wd=length((iu-waveC)*vec2(.8,1.));
@@ -49,7 +56,12 @@ void main(){
   col*=mix(vec3(1.),mix(vec3(.955,.968,1.0),vec3(1.025,1.012,.985),pane),sky);
   // cooler, quieter grade for "before"
   float g=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(g),col,.2)*vec3(.97,.985,1.02),grey*(1.-k)*(1.-inBay)*.6);
+  // outside the focus: a pale, cool haze
+  float gq=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(gq),col,.25)*.42+vec3(.93,.95,.99)*.58,out0*(1.-inL)*.9);
   col=mix(col,col*col*(3.-2.*col),.14);
+  // the lens itself: a slight lift inside, a soft falloff at its rim, and its shadow on the floor
+  col=mix(col,col*1.03,inL);col*=1.-inL*smoothstep(lpos.z*.7,lpos.z,lr)*.07;
+  float lsh=(1.-inL)*exp(-pow(max(0.,lr-lpos.z)/(.03),2.))*step(.001,lpos.w)*lpos.w;col*=1.-lsh*.12;
   vec2 pu=(uv-vr.xy)/vr.zw;float vg=smoothstep(.5,1.2,length((pu-.5)*vec2(1.2,1.)));col*=mix(vec3(1.),vec3(.955,.965,.995),vg);col+=vec3(.014,.016,.02)*(1.-smoothstep(0.,.9,length((pu-vec2(.18,.08))*vec2(1.,1.2))));
   col+=(h(floor(uv*res))-.5)*.012;
   gl_FragColor=vec4(col,1.);}`;
@@ -89,46 +101,58 @@ const WALK1 = [[.97, .99], [.86, .9], [.93, .76], [.8, .67], [.64, .56], [.71, .
 const WALK2 = [[.63, .4], [.5, .43], [.33, .37], [.26, .45], [.12, .5], [.17, .64], [.3, .58], [.41, .52], [.462, .505]];
 const LOOK1 = [[.8, .67, 3], [.71, .44, 5]], LOOK2 = [[.33, .37, 2], [.12, .5, 4], [.17, .64, 5]];
 
-// ---------- the beats: one picture per scroll; frag = which words light up ----------
-const S0 = { cam: WIDE, draw: 1.03, dash: 0, amber: 1, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 0 };
-const st = (o) => Object.assign({ draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 }, o);
+// ---------- the beats: one picture per scroll; each plays on its own clock once you reach it, then holds ----------
+// sp = where the light falls [u, v, radius], sk = how far the rest falls back, lz = the lens on, lt = what it magnifies
+const S0 = { cam: WIDE, draw: 1.03, dash: 0, amber: 1, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 0, sp: [T[0], T[1], .5], sk: 0, lz: 0, lt: [T[0], T[1]] };
+const st = (o) => Object.assign({ draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1, sp: [.5, .5, .6], sk: 0, lz: 0, lt: [T[0], T[1]] }, o);
+const WC = [.44, .82];
 export const BEATS = [
-  st({ ch: 0, cam: [.52, .55, 1.06], hide: 1 }),                                   // Think of the last time someone went looking for a trolley.
-  st({ ch: 0, cam: [.62, .6, 1.12] }),                                    // The walk.
-  st({ ch: 0, cam: [.58, .42, 1.12] }),                                   // The calls to stores.
-  st({ ch: 0, cam: [.42, .5, 1.12] }),                                    // The second walk.
-  st({ ch: 1, cam: [.38, .32, 1.32] }),                                   // A scan tells you where it last passed.
-  st({ ch: 1, cam: [.41, .4, 1.3] }),                                     // Between scans ... out of sight.
-  st({ ch: 2, cam: [.47, .47, 2.1] }),                                    // A small tag rides on each trolley,
-  st({ ch: 2, cam: [.36, .45, 1.5] }),                                    // bin
-  st({ ch: 2, cam: [.5, .38, 1.22] }),                                    // and tool.
-  st({ ch: 2, cam: [.55, .26, 1.18] }),                                   // Anchors on your columns
-  st({ ch: 2, cam: [.5, .3, 1.12] }),                                     // hear its signal.
-  st({ ch: 3, cam: [.5, .5, 1.04] }),                                     // A tag tells you where it stopped.
-  st({ ch: 3, cam: [.5, .5, 1.0], draw: 1.03, grey: 0 }),                 // One live map shows where it went
-  st({ ch: 3, cam: [.47, .5, 1.3], draw: 1.03, grey: 0 }),                // and how long it has waited.
-  st({ ch: 4, cam: [.55, .72, 1.3], draw: 1.03, amber: 1, grey: 0 }),     // See where work waits.
-  st({ ch: 4, cam: [.55, .72, 1.3], draw: 1.03, amber: 1, grey: 0 }),     // You see how long each one has waited,
-  st({ ch: 4, cam: [.55, .72, 1.34], draw: 1.03, amber: 1, grey: 0 }),    // while it is still waiting.
-  st({ ch: 5, cam: [.5, .7, 1.15], draw: 1.03, amber: 1, onlyQ: 1, hide: 1 }), // Ask your floor a question.
-  st({ ch: 5, cam: [.5, .7, 1.15], draw: 1.03, amber: 1, onlyQ: 1, hide: 1 }), // Which trolleys ...?
-  st({ ch: 6, cam: [.42, .74, 1.3], draw: 1.03, amber: 1, hide: 1, bay: .2 }), // Start with one bay.
-  st({ ch: 6, cam: [.42, .76, 1.4], draw: 1.03, amber: 1, hide: 1, bay: .2 }), // You see your own waits in one bay,
-  st({ ch: 6, cam: [.42, .76, 1.4], draw: 1.03, amber: 1, hide: 1, bay: .2 }), // and prove the numbers,
-  st({ ch: 6, cam: [.48, .66, 1.05], draw: 1.03, amber: 1, hide: 1, bay: .2 }), // before you decide on more.
+  st({ ch: 0, cam: [.52, .55, 1.06], hide: 1, sp: [T[0], T[1], .09], sk: .55 }),         // Think of the last time someone went looking for a trolley.
+  st({ ch: 0, cam: [.66, .6, 1.16], sp: [.8, .7, .14], sk: .5 }),                          // The walk.
+  st({ ch: 0, cam: [.6, .4, 1.16], sp: [.65, .3, .17], sk: .5 }),                          // The calls to stores.
+  st({ ch: 0, cam: [.4, .5, 1.12], sp: [.3, .5, .15], sk: .5 }),                           // The second walk.
+  st({ ch: 1, cam: [.36, .3, 1.4], sp: [.29, .26, .17], sk: .45 }),                        // A scan tells you where it last passed.
+  st({ ch: 1, cam: [.4, .38, 1.3], sp: [.29, .26, .13], sk: .92 }),                        // Between scans ... out of sight.
+  st({ ch: 2, cam: [.48, .5, 1.9], sp: [T[0], T[1], .05], sk: .6, lz: 1, lt: T }),        // A small tag rides on each trolley,
+  st({ ch: 2, cam: [.34, .46, 1.5], sp: [BIN[0], BIN[1], .05], sk: .6, lz: 1, lt: BIN }), // bin
+  st({ ch: 2, cam: [.58, .36, 1.4], sp: [TOOL[0], TOOL[1], .05], sk: .6, lz: 1, lt: TOOL }), // and tool.
+  st({ ch: 2, cam: [.6, .24, 1.3], sp: [.6, .17, .2], sk: .35, lz: 1, lt: [.8745, .2287] }), // Anchors on your columns
+  st({ ch: 2, cam: [.52, .3, 1.12], sp: [.55, .3, .3], sk: .3 }),                          // hear its signal.
+  st({ ch: 3, cam: [.5, .5, 1.3], sp: [T[0], T[1], .07], sk: .6 }),                        // A tag tells you where it stopped.
+  st({ ch: 3, cam: [.5, .5, 1.0], draw: 1.03, grey: 0, sp: [.5, .5, .7], sk: 0 }),         // One live map shows where it went
+  st({ ch: 3, cam: [.48, .5, 1.36], draw: 1.03, grey: 0, sp: [T[0], T[1], .09], sk: .4 }), // and how long it has waited.
+  st({ ch: 4, cam: [.55, .74, 1.3], draw: 1.03, amber: 1, grey: 0, sp: [WC[0], WC[1], .3], sk: .35 }),  // See where work waits.
+  st({ ch: 4, cam: [.55, .74, 1.3], draw: 1.03, amber: 1, grey: 0, sp: [WC[0], WC[1], .3], sk: .35 }),  // You see how long each one has waited,
+  st({ ch: 4, cam: [.55, .74, 1.36], draw: 1.03, amber: 1, grey: 0, sp: [WC[0], WC[1], .3], sk: .35 }), // while it is still waiting.
+  st({ ch: 5, cam: [.48, .74, 1.2], draw: 1.03, amber: 1, onlyQ: 1, hide: 1, sp: [.41, .84, .17], sk: .85 }), // Ask your floor a question.
+  st({ ch: 5, cam: [.48, .74, 1.2], draw: 1.03, amber: 1, onlyQ: 1, hide: 1, sp: [.41, .84, .17], sk: .85 }), // Which trolleys ...?
 ];
 export const NB = BEATS.length;
 const SNAP = /[?&]still\b/.test(location.search); // screenshots: no easing lag
-const PLAY = .7; // each beat plays in its first 62% of scroll, then holds while it is read
+const PLAY = .92;
 export const REST = BEATS.map((_, i) => (i + .78) / NB);
-export const CH_FIRST = [0, 1, 2, 3, 4, 5, 6].map((c) => BEATS.findIndex((b) => b.ch === c));
+export const CH_FIRST = [0, 1, 2, 3, 4, 5].map((c) => BEATS.findIndex((b) => b.ch === c));
+const KEYS = ['cam', 'draw', 'dash', 'amber', 'onlyQ', 'hide', 'bay', 'dot', 'grey', 'sp', 'sk', 'lz', 'lt'];
 
 function sample(bf) {
   const b = Math.min(NB - 1, Math.floor(bf)), u = clamp(bf - b), a = b ? BEATS[b - 1] : S0, z = BEATS[b], k = sm(0, 1, u / PLAY);
-  const o = {}; for (const key of ['cam', 'draw', 'dash', 'amber', 'onlyQ', 'hide', 'bay', 'dot', 'grey']) o[key] = Array.isArray(a[key]) ? a[key].map((x, j) => lerp(x, z[key][j], k)) : lerp(a[key], z[key], k);
+  const o = {}; for (const key of KEYS) o[key] = Array.isArray(a[key]) ? a[key].map((x, j) => lerp(x, z[key][j], k)) : lerp(a[key], z[key], k);
   if (b === 12) o.draw = clamp(u / PLAY) * 1.03;    // the paths draw on a steady clock so their fronts read
   if (b === 0) { o.draw = 1.03; o.hide = sm(0, PLAY * .7, u); }
+  // the light walks with the person
+  if (b === 1 || b === 3) { const w = along(b === 1 ? WALK1 : WALK2, clamp(u / PLAY)); o.sp = [lerp(o.sp[0], w[0], k), lerp(o.sp[1], w[1], k), o.sp[2]]; }
   return o;
+}
+// what each beat's words point at on the floor
+function targetOf(b, k) {
+  switch (b) {
+    case 0: case 5: case 6: case 10: case 11: case 13: return T;
+    case 1: return along(WALK1, k); case 3: return along(WALK2, k);
+    case 2: return STORES; case 4: return GATES[1];
+    case 7: return BIN; case 8: return TOOL; case 9: return ANCH[1];
+    case 14: return WAITS[0]; case 15: return WAITS[1]; case 16: return WAITS[2];
+    default: return null;
+  }
 }
 
 export function story(section, canvas) {
@@ -138,10 +162,9 @@ export function story(section, canvas) {
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
   const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'dof', 'sky'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
+  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'dof', 'sky', 'spot', 'lpos', 'ltgt'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
   gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
   const big = plateSize();
-  const tex = (src, unit) => new Promise((res) => { const im = new Image(); im.decoding = 'async'; im.onload = () => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im); for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v); res(); }; im.src = src; });
   let ready = false;
   Promise.all([plateTex(gl, `assets/scene/hall-after-${big}.webp`, 0), plateTex(gl, `assets/scene/hall-before-${big}.webp`, 1), plateTex(gl, `assets/scene/hall-masks-${big}.png`, 2, false)]).then(() => {
     gl.uniform1f(U.sky, 1); gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); gl.uniform4f(U.vr, 0, 0, 1, 1); gl.uniform1f(U.wave, 0); gl.uniform2f(U.waveC, T[0], T[1]); ready = true; canvas.classList.add('ready');
@@ -152,49 +175,80 @@ export function story(section, canvas) {
   size(); addEventListener('resize', size);
   section.dataset.beats = NB;
 
-  // the question's thread: a fine line from the words to the three answers on the floor
+  // the threads: a hairline from the words being read to the thing they name on the floor
   const sticky = section.querySelector('.story-sticky'), qEl = section.querySelector('.q-big');
   const NS = 'http://www.w3.org/2000/svg', thread = document.createElementNS(NS, 'svg'); thread.setAttribute('class', 'q-thread'); thread.setAttribute('aria-hidden', 'true');
   const tps = [0, 1, 2].map(() => { const g = document.createElementNS(NS, 'path'); g.setAttribute('pathLength', '1'); thread.appendChild(g); return g; });
-  const tds = [0, 1, 2].map(() => { const c = document.createElementNS(NS, 'circle'); c.setAttribute('r', '4'); thread.appendChild(c); return c; });
+  const tds = [0, 1, 2].map(() => { const c = document.createElementNS(NS, 'circle'); c.setAttribute('r', '3.5'); thread.appendChild(c); return c; });
   sticky.appendChild(thread);
-  const caps = [...section.querySelectorAll('.cap')], rail = section.querySelector('.rail b'), links = [...section.querySelectorAll('.rail a')];
+  const wire = document.createElementNS(NS, 'svg'); wire.setAttribute('class', 'w-thread'); wire.setAttribute('aria-hidden', 'true');
+  const wp = document.createElementNS(NS, 'path'); wp.setAttribute('pathLength', '1'); const wd = document.createElementNS(NS, 'circle'); wd.setAttribute('r', '2.6'); const ws = document.createElementNS(NS, 'circle'); ws.setAttribute('r', '2'); ws.setAttribute('class', 'ws');
+  wire.append(wp, wd, ws); sticky.appendChild(wire);
+  const caps = [...section.querySelectorAll('.cap')], links = [...section.querySelectorAll('.rail a')];
   const frags = [...section.querySelectorAll('[data-b]')].map((el) => [el, +el.dataset.b]);
+  const fragAt = (i) => { let el = null; for (const [e, j] of frags) if (j === i) el = e; return el; };
   links.forEach((a, i) => a.addEventListener('click', (e) => { e.preventDefault(); const top = section.getBoundingClientRect().top + scrollY + (section.offsetHeight - innerHeight) * REST[CH_FIRST[i]]; scrollTo({ top, behavior: 'smooth' }); }));
-  let smooth = null, mx = 0, my = 0, qx = 0, qy = 0, beat = -1, lit = -1;
+  let smooth = null, mx = 0, my = 0, qx = 0, qy = 0, beat = -1, lit = -1, disp = 0, last = 0, wk = 0, wb = -1;
   addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
   return (t) => {
-    const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight)), bf = Math.min(NB - .0001, p * NB), pinned = r.top <= 1 || section.classList.contains('pre-on');
-    const bNow = Math.floor(bf), ch = BEATS[bNow].ch;
-    // the words: the chapter shows, and its words light up beat by beat (a word lights as its picture starts)
-    const lb = pinned ? Math.floor(bf + .12) : -1;
+    const dt = Math.min(.1, last ? (t - last) / 1000 : 0); last = t;
+    const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight)), sf = Math.min(NB - .0001, p * NB), pinned = r.top <= 1 || section.classList.contains('pre-on');
+    // the scroll only chooses the moment; once a moment is reached it plays out on its own clock and then stops
+    const sb = Math.floor(sf), target = Math.min(NB - .0001, sb + clamp((sf - sb) / .1) * .999);
+    if (SNAP || !pinned) disp = target; else { const dd = target - disp, rate = Math.max(.85, Math.abs(dd) * 2.4); disp += Math.sign(dd) * Math.min(Math.abs(dd), rate * dt); }
+    const bf = disp, bNow = Math.floor(bf), ch = BEATS[bNow].ch;
+    // the words: the chapter shows, and its words light up as their picture starts
+    const lb = pinned ? bNow : -1;
     if (bNow !== beat || lb !== lit) {
       beat = bNow; lit = lb;
       caps.forEach((c, i) => { const on = pinned && i === ch; c.classList.toggle('on', on); links[i] && links[i].classList.toggle('on', on); });
-      frags.forEach(([el, i]) => { el.classList.toggle('lit', i <= lb); el.classList.toggle('now', i === lb); });
+      frags.forEach(([el, i]) => { el.classList.toggle('lit', i <= lb); el.classList.toggle('now', i === lb); el.classList.toggle('past', i < lb); });
     }
-    rail.style.transform = innerWidth > 900 ? `scaleX(${p})` : `scaleY(${p})`;
+    // the chapter bar: each chapter fills as its moments play
+    links.forEach((a, i) => { const f0 = CH_FIRST[i], f1 = i + 1 < CH_FIRST.length ? CH_FIRST[i + 1] : NB; a.style.setProperty('--f', clamp((bf - f0) / (f1 - f0)).toFixed(3)); });
     if (!ready) return;
     const s = sample(bf);
-    if (!smooth || SNAP) smooth = s; else for (const k in s) smooth[k] = Array.isArray(s[k]) ? s[k].map((x, j) => lerp(smooth[k][j], x, .12)) : lerp(smooth[k], s[k], .12);
+    if (!smooth || SNAP) smooth = JSON.parse(JSON.stringify(s)); else for (const k in s) smooth[k] = Array.isArray(s[k]) ? s[k].map((x, j) => lerp(smooth[k][j], x, .1)) : lerp(smooth[k], s[k], .1);
     const z = smooth.cam[2], hx = span[0] / z / 2, hy = span[1] / z / 2;
     const pk = clamp(bf / .5); qx = lerp(qx, mx * pk, .05); qy = lerp(qy, my * pk, .05);
     const cx = clamp(smooth.cam[0] + qx * .012 / z, hx, 1 - hx), cy = clamp(smooth.cam[1] + qy * .012 / z, hy, 1 - hy);
+    const desk = innerWidth > 900;
+    // the lens: it sits in the emptier side of the frame, away from what it magnifies
+    const toUV = (u, v) => [(u - cx) * z / span[0] + .5, (v - cy) * z / span[1] + .5];
+    const [lu, lv] = toUV(...smooth.lt), asp = canvas.width / canvas.height, LR = desk ? .15 : .13;
+    const LP = [clamp(lu + (lu > .5 ? -.3 : .3) / asp * 1.25, LR / asp + .04, 1 - LR / asp - .04), clamp(lv + (lv > .45 ? -.26 : .26), LR + .05, 1 - LR - .05)];
+    const lzk = sm(.05, .95, smooth.lz);
     gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform2f(U.span, span[0], span[1]);
     gl.uniform3f(U.cam, cx, cy, z); gl.uniform2f(U.tagPos, T[0], T[1]); gl.uniform2f(U.bayC, .40, .80);
     gl.uniform1f(U.draw, smooth.draw); gl.uniform1f(U.dash, smooth.dash); gl.uniform1f(U.amber, smooth.amber); gl.uniform1f(U.onlyQ, smooth.onlyQ > .5 ? 1 : 0);
-    gl.uniform1f(U.hidePaths, smooth.hide); gl.uniform1f(U.bay, smooth.bay); gl.uniform1f(U.tagOn, smooth.dot); gl.uniform1f(U.grey, smooth.grey); gl.uniform1f(U.time, t * .001); gl.uniform1f(U.dof, innerWidth > 900 ? 1 : .6);
+    gl.uniform1f(U.hidePaths, smooth.hide); gl.uniform1f(U.bay, 0); gl.uniform1f(U.tagOn, 0); gl.uniform1f(U.grey, smooth.grey); gl.uniform1f(U.time, t * .001); gl.uniform1f(U.dof, desk ? 1 : .6);
+    gl.uniform4f(U.spot, smooth.sp[0], smooth.sp[1], smooth.sp[2], smooth.sk);
+    gl.uniform4f(U.lpos, LP[0], LP[1], LR * eo(lzk), lzk); gl.uniform3f(U.ltgt, smooth.lt[0], smooth.lt[1], 2.4);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
-    if (hctx) drawHUD(hctx, bf, t * .001, cx, cy, z, span);
-    // the question's threads, from the words to the answers
-    const ta = clamp((bf - 18.05) / .15) * clamp((19 - bf) / .1);
-    if (ta <= 0 || !qEl || innerWidth <= 900) thread.style.opacity = 0; else {
-      const k = eo((bf - 18.1) / .4), cr = canvas.getBoundingClientRect(), sr = sticky.getBoundingClientRect(), sc = cr.width / canvas.width, desk = innerWidth > 900;
-      const Pc = (u, v) => [((u - cx) * z / span[0] + .5) * canvas.width * sc + cr.left - sr.left, ((v - cy) * z / span[1] + .5) * canvas.height * sc + cr.top - sr.top];
-      const q = qEl.getBoundingClientRect(), sx = desk ? q.right - sr.left + 18 : q.left - sr.left + Math.min(q.width * .5, 160), sy = desk ? q.top - sr.top + q.height * .45 : q.top - sr.top - 14;
+    if (hctx) drawHUD(hctx, bf, t * .001, cx, cy, z, span, { lp: LP, lr: LR * eo(lzk), lz: lzk, lt: smooth.lt, sp: smooth.sp });
+
+    // the thread from the words to the floor
+    const cr = canvas.getBoundingClientRect(), sr = sticky.getBoundingClientRect(), sc = cr.width / canvas.width;
+    const Pc = (u, v) => [((u - cx) * z / span[0] + .5) * canvas.width * sc + cr.left - sr.left, ((v - cy) * z / span[1] + .5) * canvas.height * sc + cr.top - sr.top];
+    const u0 = clamp(bf - bNow), tg = desk && pinned ? targetOf(bNow, clamp(u0 / PLAY)) : null, el = tg && fragAt(lb);
+    if (bNow !== wb) { wb = bNow; wk = 0; }
+    wk = SNAP ? 1 : Math.min(1, wk + dt / .7);
+    if (!el) wire.style.opacity = 0; else {
+      const rg = document.createRange(); rg.selectNodeContents(el); const rs = [...rg.getClientRects()].filter((o) => o.width > 1), q = rs[rs.length - 1] || el.getBoundingClientRect();
+      const sx = q.right - sr.left + 14, sy = q.top - sr.top + q.height * .56, [ex, ey] = Pc(tg[0], tg[1]);
+      const gx = cr.left - sr.left - 18, kx = Math.max(sx + 20, gx);
+      wp.setAttribute('d', `M ${sx} ${sy} L ${kx} ${sy} C ${kx + (ex - kx) * .45} ${sy}, ${ex - (ex - kx) * .2} ${ey}, ${ex} ${ey}`);
+      const k = eo(wk); wp.style.strokeDashoffset = 1 - k; wd.setAttribute('cx', ex); wd.setAttribute('cy', ey); wd.style.opacity = k > .97 ? 1 : 0; ws.setAttribute('cx', sx - 6); ws.setAttribute('cy', sy);
+      wire.style.opacity = sm(.02, .25, u0) * (bNow >= 17 ? 0 : 1);
+    }
+    // the question's threads, from the words to the three answers
+    const ta = clamp((bf - 18.02) / .1);
+    if (ta <= 0 || !qEl || !desk) thread.style.opacity = 0; else {
+      const k = eo((bf - 18.05) / .5);
+      const q = qEl.getBoundingClientRect(), sx = q.right - sr.left + 18, sy = q.top - sr.top + q.height * .45;
       WAITS.slice(0, 3).forEach(([u, v], i) => {
-        const [ex, ey] = Pc(u, v), mx = desk ? sx + (ex - sx) * .55 : sx, my = desk ? sy : sy + (ey - sy) * .5;
-        tps[i].setAttribute('d', `M ${sx} ${sy} C ${mx} ${my}, ${ex - (desk ? 60 : 0)} ${ey + (desk ? 0 : 60)}, ${ex} ${ey}`);
+        const [ex, ey] = Pc(u, v), mx = sx + (ex - sx) * .55;
+        tps[i].setAttribute('d', `M ${sx} ${sy} C ${mx} ${sy}, ${ex - 60} ${ey}, ${ex} ${ey}`);
         const ki = clamp(k * 1.25 - i * .12); tps[i].style.strokeDashoffset = 1 - ki; tds[i].setAttribute('cx', ex); tds[i].setAttribute('cy', ey); tds[i].style.opacity = ki > .98 ? 1 : 0;
       });
       thread.style.opacity = ta;
@@ -218,220 +272,188 @@ export function drawLanding(x, P, d, seen, lockA, lockGrow = 0) {
   x.restore();
 }
 
-/* ---------- the story layer: no words, only light, shape and motion ---------- */
-const TAGIMG = new Image(); TAGIMG.decoding = 'async'; TAGIMG.src = 'assets/hw/amigo-34.webp';
-const MOIMG = new Image(); MOIMG.decoding = 'async'; MOIMG.src = 'assets/hw/amimo-34.webp';
+/* ---------- the story layer: no words, no numbers; only fine light, line and motion ---------- */
 function along(path, k) { const n = path.length - 1, u = clamp(k) * n, i = Math.min(n - 1, Math.floor(u)), f = u - i; return [lerp(path[i][0], path[i + 1][0], f), lerp(path[i][1], path[i + 1][1], f)]; }
 function floorRing(x, X, Y, r, s) { x.beginPath(); x.ellipse(X, Y, r * s, r * .62 * s, -.5, 0, 7); }
 function brackets(x, X, Y, r, len, s) {
   for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { const cx = X + dx * r, cy = Y + dy * r; x.beginPath(); x.moveTo(cx, cy - dy * len * s); x.lineTo(cx, cy); x.lineTo(cx - dx * len * s, cy); x.stroke(); }
 }
-function clockChip(x, X, Y, R, ang, s, a) {
-  x.save(); x.globalAlpha = a; x.fillStyle = 'rgba(255,255,255,.95)'; x.shadowColor = 'rgba(11,18,56,.18)'; x.shadowBlur = 14 * s; x.shadowOffsetY = 3 * s; x.beginPath(); x.arc(X, Y, R, 0, 7); x.fill(); x.shadowColor = 'transparent';
-  x.strokeStyle = 'rgba(11,18,56,.12)'; x.lineWidth = 1 * s; x.stroke();
-  x.strokeStyle = 'rgb(11,18,56)'; x.lineWidth = 1.8 * s; x.lineCap = 'round'; x.beginPath(); x.moveTo(X, Y); x.lineTo(X + Math.sin(ang / 12) * R * .42, Y - Math.cos(ang / 12) * R * .42); x.moveTo(X, Y); x.lineTo(X + Math.sin(ang) * R * .66, Y - Math.cos(ang) * R * .66); x.stroke();
-  x.fillStyle = 'rgb(11,18,56)'; x.beginPath(); x.arc(X, Y, 1.8 * s, 0, 7); x.fill(); x.restore();
+// a precise reticle: a fine ring in four arcs, ticks outside it, a point at its centre; it closes in as it arrives
+function reticle(x, X, Y, r, k, s, col, a = 1, spin = 0) {
+  if (k <= 0 || a <= 0) return; const e = eo(k), R = r * s * (1 + (1 - e) * .9);
+  x.save(); x.globalAlpha = a * e; x.strokeStyle = `rgb(${col})`; x.lineWidth = 1.15 * s;
+  for (let i = 0; i < 4; i++) { const a0 = spin + i * 1.5708 + .2; x.beginPath(); x.arc(X, Y, R, a0, a0 + 1.17); x.stroke(); }
+  x.lineWidth = 1 * s; for (let i = 0; i < 4; i++) { const an = spin + i * 1.5708 - .19; x.beginPath(); x.moveTo(X + Math.cos(an) * (R + 3 * s), Y + Math.sin(an) * (R + 3 * s)); x.lineTo(X + Math.cos(an) * (R + 8 * s), Y + Math.sin(an) * (R + 8 * s)); x.stroke(); }
+  x.fillStyle = `rgb(${col})`; x.beginPath(); x.arc(X, Y, 1.6 * s, 0, 7); x.fill(); x.restore();
 }
-function dotPath(x, P, path, k, s, a, col = INK) {
-  const N = 140; x.save(); x.globalAlpha = a; x.strokeStyle = `rgba(${col},.6)`; x.lineWidth = 1.8 * s; x.setLineDash([1, 7 * s]); x.beginPath();
-  for (let i = 0; i <= N * clamp(k); i++) { const [X, Y] = P(...along(path, i / N)); i ? x.lineTo(X, Y) : x.moveTo(X, Y); } x.stroke(); x.restore();
+// a located point: small, exact, with a hairline halo
+function point(x, X, Y, k, s, col, a = 1, big = 1) {
+  if (k <= 0 || a <= 0) return; const e = eo(Math.min(1, k * 1.8));
+  x.save(); x.globalAlpha = a;
+  if (k < 1) { x.globalAlpha = a * (1 - k) * .5; x.strokeStyle = `rgb(${col})`; x.lineWidth = 1 * s; floorRing(x, X, Y, 6 + k * 30, s); x.stroke(); x.globalAlpha = a; }
+  x.fillStyle = 'rgba(255,255,255,.95)'; x.beginPath(); x.arc(X, Y, 4.6 * s * e * big, 0, 7); x.fill();
+  x.fillStyle = `rgb(${col})`; x.beginPath(); x.arc(X, Y, 2.9 * s * e * big, 0, 7); x.fill(); x.restore();
 }
-function walker(x, X, Y, s, a) { x.save(); x.globalAlpha = a; x.fillStyle = '#fff'; x.shadowColor = 'rgba(11,18,56,.3)'; x.shadowBlur = 10 * s; x.beginPath(); x.arc(X, Y, 9 * s, 0, 7); x.fill(); x.shadowColor = 'transparent'; x.fillStyle = `rgb(${INK})`; x.beginPath(); x.arc(X, Y, 5 * s, 0, 7); x.fill(); x.restore(); }
-function popDot(x, X, Y, k, s, col, a = 1) {
-  if (k <= 0) return; x.save(); x.globalAlpha = a;
-  if (k < 1) { x.globalAlpha = a * (1 - k) * .6; x.strokeStyle = `rgb(${col})`; x.lineWidth = 1.4 * s; floorRing(x, X, Y, 8 + k * 40, s); x.stroke(); x.globalAlpha = a; }
-  const e = eo(Math.min(1, k * 2.2)); x.fillStyle = '#fff'; x.beginPath(); x.arc(X, Y, 8 * s * e, 0, 7); x.fill(); x.fillStyle = `rgb(${col})`; x.beginPath(); x.arc(X, Y, 5 * s * e, 0, 7); x.fill(); x.restore();
-}
-function card(x, img, OX, OY, CX, CY, w, col, a, k, s, t) {
-  if (!img.complete || !img.naturalWidth || a * k <= 0) return;
-  const h = w * img.naturalHeight / img.naturalWidth, pad = 12 * s, X = CX - w / 2 - pad, Y = CY - h / 2 - pad, CW = w + pad * 2, CH = h + pad * 2;
-  x.save(); x.globalAlpha = a * k;
-  x.strokeStyle = `rgba(${col},.45)`; x.lineWidth = 1.2 * s; x.setLineDash([2 * s, 4 * s]); x.beginPath(); x.moveTo(OX, OY); x.lineTo(CX, CY); x.stroke(); x.setLineDash([]);
-  x.translate(0, (1 - k) * 12 * s);
-  x.fillStyle = 'rgba(255,255,255,.96)'; x.shadowColor = 'rgba(11,18,56,.2)'; x.shadowBlur = 24 * s; x.shadowOffsetY = 8 * s; x.beginPath(); x.roundRect(X, Y, CW, CH, 16 * s); x.fill(); x.shadowColor = 'transparent';
-  x.fillStyle = `rgb(${col})`; x.beginPath(); x.roundRect(X + 14 * s, Y + CH - 3 * s, CW - 28 * s, 3 * s, 2 * s); x.fill();
-  x.drawImage(img, CX - w / 2, CY - h / 2 + Math.sin(t * .9) * 1.5 * s, w, h);
+// a comet: the last stretch of a path in fading light, its head a soft point
+function comet(x, P, path, k, s, a, col, tail = .4) {
+  if (k <= 0 || a <= 0) return; const N = 90, k0 = Math.max(0, k - tail);
+  x.save(); x.lineCap = 'round';
+  // the whole way so far, very faint
+  x.globalAlpha = a * .22; x.strokeStyle = `rgb(${col})`; x.lineWidth = 1 * s; x.setLineDash([1.5 * s, 4 * s]); x.beginPath();
+  for (let i = 0; i <= N; i++) { const [X, Y] = P(...along(path, k * i / N)); i ? x.lineTo(X, Y) : x.moveTo(X, Y); } x.stroke(); x.setLineDash([]);
+  for (let i = 1; i <= N; i++) { const q0 = lerp(k0, k, (i - 1) / N), q1 = lerp(k0, k, i / N), [X0, Y0] = P(...along(path, q0)), [X1, Y1] = P(...along(path, q1)); x.globalAlpha = a * Math.pow(i / N, 1.6) * .9; x.lineWidth = (.6 + 1.4 * i / N) * s; x.beginPath(); x.moveTo(X0, Y0); x.lineTo(X1, Y1); x.stroke(); }
+  const [HX, HY] = P(...along(path, k)); const g = x.createRadialGradient(HX, HY, 0, HX, HY, 14 * s); g.addColorStop(0, `rgba(${col},.32)`); g.addColorStop(1, `rgba(${col},0)`);
+  x.globalAlpha = a; x.fillStyle = g; x.beginPath(); x.arc(HX, HY, 14 * s, 0, 7); x.fill();
+  x.fillStyle = '#fff'; x.beginPath(); x.arc(HX, HY, 4.4 * s, 0, 7); x.fill(); x.fillStyle = `rgb(${col})`; x.beginPath(); x.arc(HX, HY, 2.8 * s, 0, 7); x.fill();
   x.restore();
 }
-function dial(x, X, Y, R, w, s, a, t, live, i) {
-  if (a <= 0) return;
-  x.save(); x.translate(X, Y); x.globalAlpha = a;
-  x.fillStyle = 'rgba(255,255,255,.92)'; x.shadowColor = 'rgba(11,18,56,.16)'; x.shadowBlur = 16 * s; x.shadowOffsetY = 4 * s; x.beginPath(); x.arc(0, 0, R + 7 * s, 0, 7); x.fill(); x.shadowColor = 'transparent';
-  x.strokeStyle = `rgba(${AMB},.22)`; x.lineWidth = 5 * s; x.beginPath(); x.arc(0, 0, R, 0, 7); x.stroke();
-  const sweep = 6.283 * w; x.strokeStyle = `rgb(${AMB})`; x.lineCap = 'round'; x.beginPath(); x.arc(0, 0, R, -1.57, -1.57 + sweep); x.stroke();
-  x.fillStyle = `rgb(${AMB})`; x.beginPath(); x.arc(Math.cos(-1.57 + sweep) * R, Math.sin(-1.57 + sweep) * R, 4.2 * s, 0, 7); x.fill();
-  // a fine second hand: it keeps going while the work keeps waiting
-  if (live > 0) { const ang = t * 1.6 + i * 1.3; x.globalAlpha = a * live; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1.4 * s; x.beginPath(); x.moveTo(0, 0); x.lineTo(Math.sin(ang) * R * .62, -Math.cos(ang) * R * .62); x.stroke(); x.globalAlpha = a; }
-  x.fillStyle = `rgba(${AMB},${.55 + .25 * Math.sin(t * 2 + i)})`; x.beginPath(); x.arc(0, 0, 6 * s, 0, 7); x.fill();
-  x.restore();
-}
-function tick(x, X, Y, k, s, a) {
-  if (k <= 0) return; x.save(); x.globalAlpha = a; x.fillStyle = `rgb(${BLUE})`; x.beginPath(); x.arc(X, Y, 11 * s * eo(k * 1.5), 0, 7); x.fill();
-  const L = clamp(k * 1.6 - .3); if (L > 0) { x.strokeStyle = '#fff'; x.lineWidth = 2.2 * s; x.lineCap = 'round'; x.lineJoin = 'round'; x.beginPath(); x.moveTo(X - 4.5 * s, Y); const m = Math.min(1, L * 2); x.lineTo(X - 4.5 * s + 3.3 * s * m, Y + 3.4 * s * m); if (L > .5) { const n = (L - .5) * 2; x.lineTo(X - 1.2 * s + 6 * s * n, Y + 3.4 * s - 7.4 * s * n); } x.stroke(); }
+// waiting: a fine amber ring on the floor, its arc filling with the time
+function waitRing(x, X, Y, R, w, s, a, t, live, i) {
+  if (a <= 0) return; x.save(); x.globalAlpha = a;
+  const g = x.createRadialGradient(X, Y, 0, X, Y, R * 1.3); g.addColorStop(0, `rgba(${AMB},${.16 + .05 * Math.sin(t * 1.6 + i)})`); g.addColorStop(1, `rgba(${AMB},0)`);
+  x.fillStyle = g; x.beginPath(); x.ellipse(X, Y, R * 1.3, R * .8, -.5, 0, 7); x.fill();
+  x.strokeStyle = `rgba(${AMB},.28)`; x.lineWidth = 1 * s; x.beginPath(); x.ellipse(X, Y, R, R * .62, -.5, 0, 7); x.stroke();
+  const a0 = -1.9, sw = 6.283 * clamp(w); x.strokeStyle = `rgb(${AMB})`; x.lineWidth = 2 * s; x.lineCap = 'round'; x.beginPath(); x.ellipse(X, Y, R, R * .62, -.5, a0, a0 + sw); x.stroke();
+  // the arc's leading end keeps creeping while the work keeps waiting
+  const ex = X + Math.cos(a0 + sw) * R * Math.cos(-.5) - Math.sin(a0 + sw) * R * .62 * Math.sin(-.5), ey = Y + Math.cos(a0 + sw) * R * Math.sin(-.5) + Math.sin(a0 + sw) * R * .62 * Math.cos(-.5);
+  x.fillStyle = `rgb(${AMB})`; x.beginPath(); x.arc(ex, ey, (2.6 + live * .8 * (1 + Math.sin(t * 3 + i))) * s, 0, 7); x.fill();
   x.restore();
 }
 
-function drawHUD(x, bf, t, cx, cy, z, span) {
+function drawHUD(x, bf, t, cx, cy, z, span, L) {
   const W = x.canvas.width, H = x.canvas.height, d = W / Math.max(1, x.canvas.clientWidth), s = Math.min(Math.max(H / 760, .8), 2.2) * (W < 700 ? .9 : 1);
   const P = (u, v) => [((u - cx) * z / span[0] + .5) * W, ((v - cy) * z / span[1] + .5) * H];
-  const lp = (i) => clamp((bf - i) / PLAY);                       // a beat's picture: 0 before it, 1 once it has played
-  const win = (a, b, f = .25) => clamp((bf - a) / f) * clamp((b - bf) / f); // visible between two beat marks
+  const lp = (i) => clamp((bf - i) / PLAY);
+  const win = (a, b, f = .25) => clamp((bf - a) / f) * clamp((b - bf) / f);
   x.clearRect(0, 0, W, H); x.lineCap = 'round'; x.lineJoin = 'round';
 
   // the landing holds for a moment: every tag located, the lock on the trolley; then they go out one by one
-  const out = clamp(bf / (PLAY * .8));
+  const out = clamp(bf / (PLAY * .7));
   if (out < 1) drawLanding(x, P, d, (i) => 1 - clamp(out * 2.2 - (MOVERS.length - i) * .09), 1 - clamp(out * 1.8), out * .8);
+  const [TX, TY] = P(T[0], T[1]);
 
-  // ---- Search: the lost trolley, the walk, the calls to stores, the second walk ----
-  let a = win(.1, 4.15);
+  // ---- Search ----
+  let a = win(.1, 4.1);
   if (a > 0) {
     // the one they are looking for: we can see it, they cannot
-    const [TX, TY] = P(T[0], T[1]), lost = sm(.25, .6, bf) * (1 - sm(3.6, 3.95, bf));
-    if (lost > 0) { x.save(); x.globalAlpha = a * lost * .7; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1.3 * s; x.setLineDash([3 * s, 5 * s]); x.lineDashOffset = -t * 6; floorRing(x, TX, TY, 26, s); x.stroke(); x.restore(); }
-    const k1 = lp(1), k3 = lp(3), clock = k1 * 9.4 + lp(2) * 4.7 + k3 * 9.4;
-    dotPath(x, P, WALK1, k1, s, a); if (k3 > 0) dotPath(x, P, WALK2, k3, s, a);
-    [[LOOK1, k1, WALK1], [LOOK2, k3, WALK2]].forEach(([L, k, path]) => L.forEach(([u, v, at]) => { const kk = k * (path.length - 1) - at; if (kk < 0 || kk > 2.5) return; const [X, Y] = P(u, v); x.save(); x.globalAlpha = a * clamp(1 - kk * .4) * .55; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1.2 * s; floorRing(x, X, Y, 16 + eo(kk) * 26, s); x.stroke(); x.restore(); }));
-    // the calls to stores: rings from the person, rings at the racks, nothing comes back
+    const lost = sm(.3, .8, bf) * (1 - sm(3.7, 4, bf));
+    if (lost > 0) { x.save(); x.globalAlpha = a * lost * .75; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1 * s; x.setLineDash([2 * s, 5 * s]); x.lineDashOffset = -t * 5; floorRing(x, TX, TY, 24, s); x.stroke(); x.setLineDash([]); x.restore(); }
+    const k1 = lp(1), k3 = lp(3);
+    if (k1 > 0 && k3 <= 0) comet(x, P, WALK1, k1, s, a * (1 - sm(1.85, 2.2, bf) * .6), INK, .35);
+    if (k3 > 0) comet(x, P, WALK2, k3, s, a, INK, .3);
+    // where they stop and look: a quick hairline ripple, nothing found
+    [[LOOK1, k1, WALK1, 2.1], [LOOK2, k3, WALK2, 4.1]].forEach(([Lk, k, path, end]) => { if (bf > end) return; Lk.forEach(([u, v, at]) => { const kk = k * (path.length - 1) - at; if (kk < 0 || kk > 1.6) return; const [X, Y] = P(u, v); x.save(); x.globalAlpha = a * (1 - kk / 1.6) * .6; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1 * s; floorRing(x, X, Y, 10 + eo(kk / 1.6) * 30, s); x.stroke(); x.restore(); }); });
+    // the calls to stores: a fine arc out, rings at the racks, nothing comes back
     const k2 = lp(2), [WX, WY] = P(...WALK1[WALK1.length - 1]), [SX, SY] = P(...STORES);
-    if (k2 > 0 && bf < 3.9) {
-      const ca = a * (1 - sm(3.3, 3.8, bf));
-      x.save(); x.globalAlpha = ca * .6; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1.3 * s; x.setLineDash([2 * s, 6 * s]); x.lineDashOffset = -t * 14;
-      const mx = (WX + SX) / 2 - 40 * s, my = (WY + SY) / 2, kk = eo(k2 * 1.6);
-      x.beginPath(); x.moveTo(WX, WY); x.quadraticCurveTo(lerp(WX, mx, kk), lerp(WY, my, kk), lerp(WX, SX, kk), lerp(WY, SY, kk)); x.stroke(); x.setLineDash([]);
-      for (let j = 0; j < 3; j++) { const ph = (t * .8 + j / 3) % 1; x.globalAlpha = ca * (1 - ph) * .7 * sm(.4, .6, k2); x.beginPath(); x.arc(SX, SY, (8 + ph * 34) * s, 0, 7); x.stroke(); }
-      for (let j = 0; j < 2; j++) { const ph = (t * .8 + j / 2 + .25) % 1; x.globalAlpha = ca * (1 - ph) * .5; x.beginPath(); x.arc(WX, WY, (12 + ph * 22) * s, -2.4, -.7); x.stroke(); }
+    if (k2 > 0 && bf < 3.8) {
+      const ca = a * (1 - sm(3.2, 3.7, bf)), kk = eo(k2 * 1.4), mx = (WX + SX) / 2 - 50 * s, my = Math.min(WY, SY) - 30 * s;
+      x.save(); x.globalAlpha = ca * .7; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1 * s;
+      x.beginPath(); for (let i = 0; i <= 40 * kk; i++) { const q = i / 40, X = (1 - q) * (1 - q) * WX + 2 * (1 - q) * q * mx + q * q * SX, Y = (1 - q) * (1 - q) * WY + 2 * (1 - q) * q * my + q * q * SY; i ? x.lineTo(X, Y) : x.moveTo(X, Y); } x.stroke();
+      for (let j = 0; j < 3; j++) { const q = ((t * .55 + j / 3) % 1) * kk, X = (1 - q) * (1 - q) * WX + 2 * (1 - q) * q * mx + q * q * SX, Y = (1 - q) * (1 - q) * WY + 2 * (1 - q) * q * my + q * q * SY; x.globalAlpha = ca * Math.sin(q / kk * 3.14); x.fillStyle = `rgb(${INK})`; x.beginPath(); x.arc(X, Y, 2 * s, 0, 7); x.fill(); }
+      for (let j = 0; j < 3; j++) { const ph = (t * .7 + j / 3) % 1; x.globalAlpha = ca * (1 - ph) * .55 * sm(.5, .8, k2); x.beginPath(); floorRing(x, SX, SY, 8 + ph * 42, s); x.stroke(); }
+      point(x, WX, WY, 1, s, INK, ca * (k3 > 0 ? 0 : 1));
       x.restore();
     }
-    // the person: where they are now
-    const pos = k3 > 0 ? along(WALK2, k3) : along(WALK1, k1), [X, Y] = P(...pos);
-    if (k1 > 0) walker(x, X, Y, s, a * sm(0, .15, k1));
     // found, at last: the ring closes on the trolley
-    const f = sm(.86, 1, k3); if (f > 0) { x.save(); x.globalAlpha = a * f; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 2 * s; x.beginPath(); x.ellipse(TX, TY, 26 * s, 16 * s, -.5, -1.6, -1.6 + 6.283 * f); x.stroke(); x.restore(); }
-    // time spent: one clock, always turning while they look
-    clockChip(x, 40 * s, 40 * s, 20 * s, clock, s, a * sm(.6, 1, bf));
+    const f = sm(.8, 1, k3); if (f > 0) { x.save(); x.globalAlpha = a * f; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1.4 * s; x.beginPath(); x.ellipse(TX, TY, 24 * s, 15 * s, -.5, -1.6, -1.6 + 6.283 * f); x.stroke(); x.restore(); }
   }
 
-  // ---- Scans: two checkpoints stamp a moment; between them, and after them, the trolley is out of sight ----
+  // ---- Scans: two checkpoints catch a moment each; after them, the trolley is out of sight ----
   a = win(4, 6.1);
   if (a > 0) {
-    const G = GATES.map(([u, v]) => P(u, v)), [TX, TY] = P(T[0], T[1]), k4 = lp(4), k5 = lp(5);
+    const G = GATES.map(([u, v]) => P(u, v)), k4 = lp(4), k5 = lp(5);
     x.save(); x.globalAlpha = a;
-    const k1 = eo((k4 - .3) / .4);
-    if (k1 > 0) { x.strokeStyle = `rgba(${INK},.7)`; x.lineWidth = 2 * s; x.beginPath(); x.moveTo(G[0][0], G[0][1]); x.lineTo(lerp(G[0][0], G[1][0], k1), lerp(G[0][1], G[1][1], k1)); x.stroke(); }
-    // a moving mark: the trolley as the scans see it
-    const mv = k5 > 0 ? null : k4 < .3 ? G[0] : [lerp(G[0][0], G[1][0], k1), lerp(G[0][1], G[1][1], k1)];
-    if (mv) { x.fillStyle = `rgb(${INK})`; x.beginPath(); x.arc(mv[0], mv[1], 5 * s, 0, 7); x.fill(); }
-    // after the last scan: the trail breaks up and the floor goes quiet
-    if (k5 > 0) {
-      const N = 14; for (let i = 0; i < N * eo(k5 * 1.4); i++) { const q = i / N, X = lerp(G[1][0], TX, q * .85), Y = lerp(G[1][1], TY, q * .85); x.fillStyle = `rgba(${INK},${.6 * (1 - q)})`; x.beginPath(); x.arc(X, Y, 1.8 * s, 0, 7); x.fill(); }
-      const kf = sm(.35, .8, k5); const g = x.createRadialGradient(TX, TY, 0, TX, TY, 90 * s); g.addColorStop(0, `rgba(240,246,255,${.85 * kf})`); g.addColorStop(1, 'rgba(240,246,255,0)'); x.fillStyle = g; x.fillRect(TX - 90 * s, TY - 90 * s, 180 * s, 180 * s);
-      x.strokeStyle = `rgba(${INK},${.45 * kf})`; x.lineWidth = 1.4 * s; x.setLineDash([3 * s, 6 * s]); x.lineDashOffset = -t * 8; floorRing(x, TX, TY, 30 + Math.sin(t * 1.4) * 3, s); x.stroke(); x.setLineDash([]);
-      for (let j = 0; j < 3; j++) { const ang = t * .5 + j * 2.1; x.globalAlpha = a * kf * .35; x.fillStyle = `rgb(${INK})`; x.beginPath(); x.arc(TX + Math.cos(ang) * 22 * s * kf, TY + Math.sin(ang) * 13 * s * kf, 3.4 * s, 0, 7); x.fill(); x.globalAlpha = a; }
-    }
+    const k1 = eo((k4 - .25) / .5);
+    // the gates: two fine posts and a curtain of light between them
     G.forEach(([X, Y], i) => {
-      const k = clamp((k4 - (i ? .7 : .15)) / .2);
-      x.fillStyle = `rgb(${INK})`; for (const dd of [-1, 1]) { x.beginPath(); x.roundRect(X + dd * 14 * s - 2 * s, Y - 22 * s, 4 * s, 22 * s, 2 * s); x.fill(); }
-      x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 2 * s; x.beginPath(); x.moveTo(X - 14 * s, Y - 14 * s); x.lineTo(X + 14 * s, Y - 14 * s); x.stroke();
-      if (k > 0 && k < 1) { x.globalAlpha = a * (1 - k); x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 1.6 * s; floorRing(x, X, Y, 10 + k * 60, s); x.stroke(); x.globalAlpha = a; }
-      const c = eo(k * 2); if (c > 0) clockChip(x, X + 30 * s, Y - 40 * s, 15 * s * c, i ? 2.4 : .7, s, a);
+      const hit = clamp((k4 - (i ? .72 : .2)) / .25), flash = hit > 0 && hit < 1 ? Math.sin(hit * 3.14) : 0;
+      const gr = x.createLinearGradient(X, Y - 34 * s, X, Y); gr.addColorStop(0, `rgba(${BLUE},0)`); gr.addColorStop(1, `rgba(${BLUE},${.1 + flash * .35 + (hit >= 1 ? .08 : 0)})`);
+      x.fillStyle = gr; x.beginPath(); x.moveTo(X - 15 * s, Y - 9 * s - 30 * s); x.lineTo(X + 15 * s, Y + 9 * s - 30 * s); x.lineTo(X + 15 * s, Y + 9 * s); x.lineTo(X - 15 * s, Y - 9 * s); x.closePath(); x.fill();
+      x.strokeStyle = `rgba(${INK},.75)`; x.lineWidth = 1.2 * s; for (const dd of [-1, 1]) { x.beginPath(); x.moveTo(X + dd * 15 * s, Y + dd * 9 * s); x.lineTo(X + dd * 15 * s, Y + dd * 9 * s - 30 * s); x.stroke(); }
+      x.strokeStyle = `rgba(${BLUE},${.6 + flash * .4})`; x.lineWidth = 1 * s; x.beginPath(); x.moveTo(X - 15 * s, Y - 9 * s); x.lineTo(X + 15 * s, Y + 9 * s); x.stroke();
+      if (flash > 0) { x.globalAlpha = a * (1 - hit) * .7; x.strokeStyle = `rgb(${BLUE})`; floorRing(x, X, Y, 10 + hit * 50, s); x.stroke(); x.globalAlpha = a; }
     });
+    // the trolley as the scans see it: a point that moves only between the gates
+    if (k1 > 0) { x.strokeStyle = `rgba(${INK},.55)`; x.lineWidth = 1 * s; x.beginPath(); x.moveTo(G[0][0], G[0][1]); x.lineTo(lerp(G[0][0], G[1][0], k1), lerp(G[0][1], G[1][1], k1)); x.stroke(); }
+    if (k5 <= 0) { const mv = k4 < .25 ? G[0] : [lerp(G[0][0], G[1][0], k1), lerp(G[0][1], G[1][1], k1)]; point(x, mv[0], mv[1], 1, s, INK, a); }
+    // after the last scan: its trace thins out and is lost in the haze
+    if (k5 > 0) {
+      const N = 22, ke = eo(k5 * 1.3); x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1 * s;
+      for (let i = 0; i < N * ke; i++) { const q0 = i / N, q1 = (i + .5) / N; x.globalAlpha = a * .6 * Math.pow(1 - q0, 2); x.beginPath(); x.moveTo(lerp(G[1][0], TX, q0 * .8), lerp(G[1][1], TY, q0 * .8)); x.lineTo(lerp(G[1][0], TX, q1 * .8), lerp(G[1][1], TY, q1 * .8)); x.stroke(); }
+      x.globalAlpha = a * sm(.4, .9, k5) * .5; x.setLineDash([2 * s, 5 * s]); x.lineDashOffset = -t * 5; floorRing(x, TX, TY, 30 + Math.sin(t * 1.3) * 3, s); x.stroke(); x.setLineDash([]);
+    }
     x.restore();
-    // the shift on one line: two moments seen, the rest unseen
-    const kt = eo(k4 * 2);
+    // the shift as one hairline: two moments seen, the rest unseen
+    const kt = eo(k4 * 1.6);
     if (kt > 0) {
-      const bw = Math.min(W * .6, 520 * s), bx = (W - bw) / 2, by = H - 40 * s, bh = 6 * s;
+      const bw = W * .56, bx = (W - bw) / 2, by = H - 34 * s, head = clamp(k4 * .45 + k5 * .55);
       x.save(); x.globalAlpha = a * kt;
-      x.fillStyle = 'rgba(255,255,255,.92)'; x.shadowColor = 'rgba(11,18,56,.16)'; x.shadowBlur = 18 * s; x.beginPath(); x.roundRect(bx - 20 * s, by - 17 * s, bw + 40 * s, bh + 34 * s, 20 * s); x.fill(); x.shadowColor = 'transparent';
-      x.fillStyle = 'rgba(11,18,56,.08)'; x.beginPath(); x.roundRect(bx, by, bw, bh, bh / 2); x.fill();
-      const head = clamp(k4 * .45 + k5 * .55);
-      [.2, .45].forEach((m) => { if (head < m) return; x.fillStyle = `rgb(${BLUE})`; x.beginPath(); x.arc(bx + bw * m, by + bh / 2, 5 * s, 0, 7); x.fill(); });
-      if (head > .45) { x.strokeStyle = `rgba(${INK},.35)`; x.lineWidth = 1.2 * s; x.setLineDash([2 * s, 4 * s]); x.beginPath(); x.moveTo(bx + bw * .45 + 8 * s, by + bh / 2); x.lineTo(bx + bw * head, by + bh / 2); x.stroke(); x.setLineDash([]); }
-      x.fillStyle = `rgb(${INK})`; x.beginPath(); x.arc(bx + bw * head, by + bh / 2, 4 * s, 0, 7); x.fill();
+      x.strokeStyle = `rgba(${INK},.16)`; x.lineWidth = 1 * s; x.beginPath(); x.moveTo(bx, by); x.lineTo(bx + bw, by); x.stroke();
+      for (let i = 0; i <= 24; i++) { const X = bx + bw * i / 24; x.beginPath(); x.moveTo(X, by - (i % 6 ? 2 : 5) * s); x.lineTo(X, by); x.stroke(); }
+      x.strokeStyle = `rgba(${INK},.55)`; x.beginPath(); x.moveTo(bx, by); x.lineTo(bx + bw * Math.min(head, .45), by); x.stroke();
+      if (head > .45) { x.setLineDash([2 * s, 5 * s]); x.strokeStyle = `rgba(${INK},.3)`; x.beginPath(); x.moveTo(bx + bw * .45, by); x.lineTo(bx + bw * head, by); x.stroke(); x.setLineDash([]); }
+      [.2, .45].forEach((m) => { if (head < m) return; x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 1.6 * s; x.beginPath(); x.moveTo(bx + bw * m, by - 9 * s); x.lineTo(bx + bw * m, by + 3 * s); x.stroke(); });
+      x.fillStyle = `rgb(${INK})`; x.beginPath(); x.arc(bx + bw * head, by, 2.4 * s, 0, 7); x.fill();
       x.restore();
     }
   }
 
-  // ---- Tag: on the trolley, on a bin, on a tool; anchors on the columns; the signal; found ----
+  // ---- Tag: on the trolley, a bin, a tool; anchors on the columns; the signal; found ----
   a = win(6, 11.1);
   if (a > 0) {
-    const [TX, TY] = P(T[0], T[1]), k6 = lp(6), k7 = lp(7), k8 = lp(8), k9 = lp(9), k10 = lp(10);
-    const w0 = Math.min(W * .17, 150 * s);
-    card(x, TAGIMG, TX, TY, clamp(TX - Math.min(W * .22, 200 * s), w0, W - w0), clamp(TY + Math.min(H * .2, 160 * s), w0, H - w0 * .8), w0, INDIGO, a * (1 - sm(7.6, 8.2, bf)), eo(k6 * 1.4), s, t);
-    popDot(x, TX, TY, k6 * 1.2, s, INDIGO, a);
-    popDot(x, ...P(...BIN), k7 * 1.2, s, INDIGO, a);
-    popDot(x, ...P(...TOOL), k8 * 1.2, s, INDIGO, a);
-    // the rest of the floor's tags join quietly
-    if (k8 > .5) MOVERS.slice(4).forEach((m, i) => popDot(x, ...P(...m), clamp((k8 - .5) * 2.4 - i * .1), s * .7, INDIGO, a * .8));
-    const AP = ANCH.map(([u, v]) => P(u, v));
-    AP.forEach(([X, Y], i) => { const on = eo((k9 - i * .15) / .4); if (on <= 0) return; x.save(); x.globalAlpha = a * on; x.fillStyle = '#fff'; x.beginPath(); x.arc(X, Y, 8 * s, 0, 7); x.fill(); x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 2.6 * s; x.stroke(); if (on < 1) { x.globalAlpha = a * (1 - on) * .6; x.lineWidth = 1.4 * s; x.beginPath(); x.arc(X, Y, (10 + on * 30) * s, 0, 7); x.stroke(); } x.restore(); });
-    const [AX, AY] = AP[1];
-    card(x, MOIMG, AX, AY, clamp(AX - Math.min(W * .14, 120 * s), w0, W - w0), clamp(AY + Math.min(H * .22, 180 * s), w0, H - w0), w0 * .82, BLUE, a * (1 - sm(10.3, 10.8, bf)), eo(k9 * 1.4 - .2), s, t);
-    // the signal: pulses out from the tag, each anchor answers, the lock closes
+    const k6 = lp(6), k7 = lp(7), k8 = lp(8), k9 = lp(9), k10 = lp(10), AP = ANCH.map(([u, v]) => P(u, v));
+    const tagged = [[T, k6], [BIN, k7], [TOOL, k8]];
+    tagged.forEach(([m, k], i) => { const [X, Y] = P(...m), cur = Math.floor(bf) === 6 + i; reticle(x, X, Y, 13, k, s, INDIGO, a * (cur ? 1 : .0), t * .2); point(x, X, Y, k * 1.2, s, INDIGO, a); });
+    if (k8 > .4) MOVERS.slice(4).forEach((m, i) => point(x, ...P(...m), clamp((k8 - .4) * 2.4 - i * .1), s * .8, INDIGO, a * .8));
+    // anchors: a small square mark on each column, and the column's line of sight
+    AP.forEach(([X, Y], i) => { const on = eo((k9 - i * .15) / .4); if (on <= 0) return; x.save(); x.globalAlpha = a * on; x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 1.2 * s; brackets(x, X, Y, (7 + (1 - on) * 10) * s, 4, s); x.fillStyle = `rgb(${BLUE})`; x.beginPath(); x.arc(X, Y, 2.2 * s, 0, 7); x.fill(); x.restore(); });
+    // the signal: a fine pulse out from the tag, each anchor answers on its beam, then the lock closes
     if (k10 > 0) {
       x.save(); x.globalAlpha = a * sm(0, .2, k10);
-      for (let j = 0; j < 2; j++) { const ph = (t * .45 + j / 2) % 1; x.strokeStyle = `rgba(${INDIGO},${.45 * (1 - ph)})`; x.lineWidth = 1.4 * s; floorRing(x, TX, TY, 10 + ph * 46, s); x.stroke(); }
+      for (let j = 0; j < 3; j++) { const ph = (t * .4 + j / 3) % 1; x.strokeStyle = `rgba(${INDIGO},${.4 * (1 - ph)})`; x.lineWidth = 1 * s; floorRing(x, TX, TY, 8 + ph * 60, s); x.stroke(); }
       AP.forEach(([X, Y], i) => {
         const on = eo((k10 - i * .1) / .3); if (on <= 0) return;
-        const gr = x.createLinearGradient(TX, TY, X, Y); gr.addColorStop(0, `rgba(${INDIGO},.45)`); gr.addColorStop(1, `rgba(${BLUE},.45)`);
-        x.strokeStyle = gr; x.lineWidth = 1.2 * s; x.beginPath(); x.moveTo(TX, TY); x.lineTo(lerp(TX, X, on), lerp(TY, Y, on)); x.stroke();
-        const f = (t * .5 + i * .22) % 1, px = lerp(TX, X, f), py = lerp(TY, Y, f), al = Math.sin(f * 3.1416);
-        const g = x.createRadialGradient(px, py, 0, px, py, 10 * s); g.addColorStop(0, `rgba(${INDIGO},${al})`); g.addColorStop(1, `rgba(${INDIGO},0)`); x.fillStyle = g; x.beginPath(); x.arc(px, py, 10 * s, 0, 7); x.fill();
-        const hit = Math.max(0, 1 - Math.abs(f - .97) * 14); if (hit > 0) { x.strokeStyle = `rgba(${BLUE},${.6 * hit})`; x.lineWidth = 1.4 * s; x.beginPath(); x.arc(X, Y, (10 + (1 - hit) * 16) * s, 0, 7); x.stroke(); }
+        const gr = x.createLinearGradient(TX, TY, X, Y); gr.addColorStop(0, `rgba(${INDIGO},.5)`); gr.addColorStop(1, `rgba(${BLUE},.15)`);
+        x.strokeStyle = gr; x.lineWidth = 1 * s; x.beginPath(); x.moveTo(TX, TY); x.lineTo(lerp(TX, X, on), lerp(TY, Y, on)); x.stroke();
+        const f = (t * .45 + i * .27) % 1, px = lerp(TX, X, f), py = lerp(TY, Y, f);
+        x.fillStyle = `rgba(${INDIGO},${Math.sin(f * 3.14)})`; x.beginPath(); x.arc(px, py, 1.8 * s, 0, 7); x.fill();
+        const hit = Math.max(0, 1 - Math.abs(f - .97) * 14); if (hit > 0) { x.strokeStyle = `rgba(${BLUE},${.6 * hit})`; x.lineWidth = 1 * s; x.beginPath(); x.arc(X, Y, (8 + (1 - hit) * 14) * s, 0, 7); x.stroke(); }
       });
-      const lock = eo((k10 - .45) / .4); x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 2 * s; x.globalAlpha = a * lock; brackets(x, TX, TY, (60 - lock * 38) * s, 9, s);
+      const lock = eo((k10 - .4) / .45); x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 1.4 * s; x.globalAlpha = a * lock; brackets(x, TX, TY, (54 - lock * 36) * s, 6, s);
       x.restore();
     }
+  }
+  // the lens's rim and its leader to what it magnifies
+  if (L && L.lz > .01) {
+    const lx = L.lp[0] * W, ly = L.lp[1] * H, lr = L.lr * H, [GX, GY] = P(...L.lt), an = Math.atan2(GY - ly, GX - lx);
+    x.save(); x.globalAlpha = L.lz;
+    x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = 3 * s; x.beginPath(); x.arc(lx, ly, lr, 0, 7); x.stroke();
+    x.strokeStyle = `rgba(${INK},.22)`; x.lineWidth = 1 * s; x.beginPath(); x.arc(lx, ly, lr + 2 * s, 0, 7); x.stroke();
+    x.strokeStyle = `rgba(${INDIGO},.9)`; x.lineWidth = 1.4 * s; x.beginPath(); x.arc(lx, ly, lr + 2 * s, an - .35, an + .35); x.stroke();
+    x.strokeStyle = `rgba(${INK},.35)`; x.lineWidth = 1 * s; x.beginPath(); x.moveTo(lx + Math.cos(an) * (lr + 2 * s), ly + Math.sin(an) * (lr + 2 * s)); x.lineTo(GX - Math.cos(an) * 16 * s, GY - Math.sin(an) * 16 * s); x.stroke();
+    x.restore();
   }
 
   // ---- Paths: where it stopped; where it went; how long it has waited ----
   a = win(11, 14.1);
   if (a > 0) {
-    const [X, Y] = P(T[0], T[1]), k = lp(11), drop = 1 - eo(k * 1.6), land = clamp((k - .5) / .3);
-    x.save(); x.globalAlpha = a * clamp(k * 3);
-    x.fillStyle = `rgba(${RED},${.22 * (1 - drop)})`; floorRing(x, X, Y, 10 - drop * 4, s); x.fill();
-    if (land > 0) for (let j = 0; j < 2; j++) { const ph = ((t * .45 + j / 2) % 1); x.strokeStyle = `rgba(${RED},${.5 * (1 - ph) * land * (1 - lp(12) * .7)})`; x.lineWidth = 1.6 * s; floorRing(x, X, Y, 10 + ph * 46, s); x.stroke(); }
-    const py = Y - drop * 60 * s - 4 * s; x.fillStyle = `rgb(${RED})`; x.shadowColor = `rgba(${RED},.32)`; x.shadowBlur = 12 * s;
-    x.beginPath(); x.moveTo(X, py); x.bezierCurveTo(X - 13 * s, py - 15 * s, X - 13 * s, py - 34 * s, X, py - 34 * s); x.bezierCurveTo(X + 13 * s, py - 34 * s, X + 13 * s, py - 15 * s, X, py); x.fill();
-    x.shadowColor = 'transparent'; x.fillStyle = '#fff'; x.beginPath(); x.arc(X, py - 23 * s, 4.2 * s, 0, 7); x.fill();
+    const k = lp(11), land = clamp((k - .35) / .4);
+    x.save(); x.globalAlpha = a;
+    if (land > 0) for (let j = 0; j < 2; j++) { const ph = ((t * .4 + j / 2) % 1); x.strokeStyle = `rgba(${RED},${.45 * (1 - ph) * land * (1 - lp(12) * .7)})`; x.lineWidth = 1 * s; floorRing(x, TX, TY, 10 + ph * 50, s); x.stroke(); }
     x.restore();
-    const k13 = lp(13); if (k13 > 0) dial(x, X + 46 * s, Y - 40 * s, 22 * s, .42 * eo(k13) + (t * .002) % .01, s, a * eo(k13 * 2), t, sm(.5, 1, k13), 9);
+    reticle(x, TX, TY, 15, k, s, RED, a * (1 - lp(12) * .5), 0);
+    point(x, TX, TY, clamp(k * 1.4), s, RED, a, 1.15);
+    const k13 = lp(13); if (k13 > 0) waitRing(x, TX, TY, 34 * s, .42 * eo(k13), s, a * eo(k13 * 2), t, sm(.5, 1, k13), 9);
   }
 
-  // ---- Ask: the floor dims; only the answers stay lit ----
-  a = win(17, 19.05, .3);
-  if (a > 0) {
-    x.save(); x.globalAlpha = a; x.fillStyle = 'rgba(238,243,252,.6)'; x.fillRect(0, 0, W, H);
-    x.globalCompositeOperation = 'destination-out';
-    WAITS.slice(0, 3).forEach(([u, v]) => { const [X, Y] = P(u, v), R = 110 * s; const g = x.createRadialGradient(X, Y - 10 * s, 0, X, Y - 10 * s, R); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(.55, 'rgba(0,0,0,.9)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(X - R, Y - R - 10 * s, R * 2, R * 2); });
-    x.restore();
-  }
-
-  // ---- Waits: the amber dials, filling, then running on their own ----
-  a = win(14.9, 23);
+  // ---- Waits: fine amber rings on the floor, filling, then creeping on while the work still waits ----
+  a = win(13.9, 19.2);
   WAITS.forEach(([u, v, w], i) => {
-    const k = eo((lp(15) - i * .1) / .5); if (a * k <= 0) return; const [X, Y] = P(u, v), R = 30 * s;
-    const ask = bf > 17 && bf < 19.05 ? (i < 3 ? 1 : .25) : 1, inBay = bf > 19.1 ? (i < 2 ? 1 : .2) : 1;
-    dial(x, X, Y - 46 * s, R, w * k + lp(16) * ((t * .006) % .04), s, a * ask * inBay, t, lp(16), i);
+    const k = eo((lp(14) - i * .12) / .5); if (a * k <= 0) return; const [X, Y] = P(u, v);
+    const ask = bf > 17 ? (i < 3 ? 1 : .2) : 1, grow = eo(lp(15));
+    waitRing(x, X, Y, 30 * s, w * k * (.55 + .45 * grow) + lp(16) * ((t * .006) % .05), s, a * ask, t, lp(16), i);
   });
-  // the answer draws itself around the three that match
-  a = win(18, 19.05, .3);
-  if (a > 0) WAITS.slice(0, 3).forEach(([u, v], i) => { const [X, Y] = P(u, v), k = eo((lp(18) - .2 - i * .1) / .4); if (k <= 0) return; x.save(); x.globalAlpha = a;
-    x.strokeStyle = `rgba(${AMB},.22)`; x.lineWidth = 6 * s; x.beginPath(); x.ellipse(X, Y, 58 * s, 36 * s, -.5, -2.2, -2.2 + 6.283 * k); x.stroke();
-    x.strokeStyle = `rgb(${AMB})`; x.lineWidth = 1.6 * s; x.beginPath(); x.ellipse(X, Y, 58 * s, 36 * s, -.5, -2.2, -2.2 + 6.283 * k); x.stroke(); x.restore(); });
-
-  // ---- One bay: corner marks settle around it; its waits; the numbers proved; more bays, later ----
-  a = win(19, 24);
-  if (a > 0) {
-    const [X, Y] = P(.40, .80), k = eo(lp(19) * 1.3), rx = (.2 / .8) * z / span[0] * W, ry = (.2 / 1.25) * z / span[1] * H;
-    x.save(); x.globalAlpha = a * k; x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 2.6 * s; const e = (1 - k) * 40 * s, L = 26 * s;
-    for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { const ccx = X + dx * (rx + e), ccy = Y + dy * (ry + e); x.beginPath(); x.moveTo(ccx, ccy - dy * L); x.lineTo(ccx, ccy); x.lineTo(ccx - dx * L, ccy); x.stroke(); }
-    x.restore();
-    WAITS.slice(0, 2).forEach(([u, v], i) => { const [WX, WY] = P(u, v); tick(x, WX + 34 * s, WY - 74 * s, clamp((lp(21) - i * .2) / .5), s, a); });
-    const k22 = lp(22);
-    // more bays, later: the same corner marks, lighter, waiting their turn
-    if (k22 > 0) ZONES.forEach(([u, v, w, h], i) => { const kk = eo((k22 - i * .25) / .5); if (kk <= 0) return; const [ZX, ZY] = P(u, v), zx = w * z / span[0] * W, zy = h * z / span[1] * H, e2 = (1 - kk) * 30 * s, L2 = 18 * s;
-      x.save(); x.globalAlpha = a * kk * .55; x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 2 * s; x.setLineDash([4 * s, 4 * s]);
-      for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { const ccx = ZX + dx * (zx + e2), ccy = ZY + dy * (zy + e2); x.beginPath(); x.moveTo(ccx, ccy - dy * L2); x.lineTo(ccx, ccy); x.lineTo(ccx - dx * L2, ccy); x.stroke(); }
-      x.restore(); });
-  }
+  // the answer: a reticle settles on each of the three that match
+  a = win(18, 19.2, .3);
+  if (a > 0) WAITS.slice(0, 3).forEach(([u, v], i) => { const [X, Y] = P(u, v); reticle(x, X, Y, 40, clamp((lp(18) - .15 - i * .12) / .45), s, AMB, a, t * .15 + i); });
 }

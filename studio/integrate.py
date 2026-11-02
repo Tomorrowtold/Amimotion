@@ -86,8 +86,8 @@ def cls_attr(m): return 'class="' + ' '.join(('z-' + c) if c in CLS else c for c
 main = re.sub(r'class="([^"]*)"', cls_attr, main)
 cursor = '<div class="cursor" id="cursor" aria-hidden="true"><i class="c-ring"></i><i class="c-dot"></i><i class="c-h"></i><i class="c-v"></i></div>'
 a, z = home.index("<main"), home.index("</main>") + 7
-home = home[:a] + cursor + main + home[z:]
-home = home.replace("</head>", '<link rel="stylesheet" href="./assets/studio/css/studio.css">\n</head>', 1)
+home = home[:a] + main + home[z:]   # the normal system cursor (Shiv, 2 Nov): no custom cursor
+home = home.replace("</head>", '<link rel="stylesheet" href="./assets/studio/css/studio.css">\n<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("tag-live")</script>\n</head>', 1)
 home = home.replace("</body>", '<script type="module" src="./assets/studio/js/studio.js"></script>\n</body>', 1)
 (dist / "index.html").write_text(home)
 
@@ -115,7 +115,6 @@ for f in dist.rglob("*.html"):
     if "studio/skin.css" in t: continue
     t = t.replace("</head>", f'<link rel="stylesheet" href="{pre}assets/studio/skin.css">\n</head>', 1)
     t = t.replace("</body>", f'<script src="{pre}assets/studio/skin.js" defer></script>\n</body>', 1)
-    if 'id="cursor"' not in t: t = t.replace("</body>", '<div class="cursor" id="cursor" aria-hidden="true"><i class="c-ring"></i><i class="c-dot"></i></div>\n</body>', 1)
     f.write_text(t)
 
 # 5. copy only referenced files
