@@ -1,4 +1,6 @@
 (() => {
+  const top = document.querySelector('header.top');
+  if (top) { const on = () => top.classList.toggle('sk-scrolled', scrollY > 8); addEventListener('scroll', on, { passive: true }); on(); }
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const c = document.getElementById('cursor');
   if (c && fine && !document.querySelector('main.studio')) {
