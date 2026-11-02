@@ -254,7 +254,7 @@ def section_of(url):
 
 def grouped(s):
     i = 0
-    for name, n in s["groups"]:
+    for name, n, *_ in s["groups"]:
         yield name, s["items"][i:i + n]; i += n
 
 
@@ -269,52 +269,70 @@ def ask_form(i, hint="Ask about tags, anchors, pilots or data"):
             '</form><p class="vh" role="status" data-ask-status></p><div class="nask-out"></div>')
 
 
-def header_html(url="/"):
-    """The bar (round 14, team/rounds/14-nav/notes.md). Logo; the bar split in two: how it works and where it helps
-    (understand), then start small and about us (decide); Ask; one button. Every panel is a native <details>, so it
-    opens on click, tap and keyboard with JavaScript off and its links are in the HTML for crawlers. Inside, each
-    panel splits the floor side from the review side (nav.json groups) and previews the destination in a still.
-    The phone gets a full-height sheet with the same tree and a thumb dock. assets/js/nav.js adds the rest."""
-    here = section_of(url)
+WORLD_DOOR = {"steel": "Products", "shift": "Solutions", "floor": "Solutions", "morning": "Start small", "paper": "Resources", "studio": "Company"}
+GUIDES = []   # every field guide as [url, short title, cover colour]; build() fills it from the pages before rendering
+CHEV = '<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5"/></svg>'
+LOOK = '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6"/><path d="m13 13 5 5"/></svg>'
+
+
+def still(u):
+    """The picture an item shows in a panel: a nav still (CAD on a pale ground) or the graded still its page opens on."""
+    k = PIC.get(u)
+    if not k: return ""
+    src = f"/assets/worlds/{k[2:]}-800.webp" if k.startswith("w:") else f"/assets/nav/{k}-640.webp"
+    return f'<span class="pic"><img src="{src}" alt="" loading="lazy" decoding="async"></span>'
+
+
+def panel_group(name, kind, items, cur, where):
+    """One group of a panel. Every link is plain HTML, so crawlers and answer engines read the whole tree."""
+    a = lambda l, u, line, cls="": (f'<a class="{cls}" href="{u}"{cur(u)} data-nav-id="{where}.{slug(name)}.{slug(l)}">'
+                                     f'{still(u) if cls else ""}<b>{html.escape(l)}</b><span>{html.escape(line)}</span>'
+                                     f'{"" if cls else CHEV}</a>')
+    if kind == "shelf":
+        lu, ll = items[0][1], items[0][0]
+        spines = "".join(f'<li><a class="spine" href="{u}"{cur(u)} style="--c:{c};--h:{220 + (i * 37) % 34}px" data-t="{html.escape(t)}"><span>{html.escape(t)}</span></a></li>'
+                         for i, (u, t, c) in enumerate(GUIDES))
+        return (f'<div class="grp shelfgrp"><p class="grp-name"><a href="{lu}"{cur(lu)}>{html.escape(ll)}</a></p>'
+                f'<ul class="shelf">{spines}</ul><p class="shelf-cap" aria-hidden="true">{html.escape(GUIDES[0][1]) if GUIDES else ""}</p></div>')
+    cls = {"plinths": "plinth", "photos": "photo", "feature": "photo feature"}.get(kind, "")
+    body = "".join(f"<li>{a(*it, cls)}</li>" for it in items)
+    return f'<div class="grp g-{kind}"><p class="grp-name">{html.escape(name)}</p><ul class="{kind}">{body}</ul></div>'
+
+
+def header_html(url="/", world=None):
+    """The capsule (round 3 nav, /mnt/project-files/nav/concepts/). One floating piece of glass; four materials, four
+    jobs: glass to move around, a lens bead that rests on the door you are in, a pressed well for Ask, one clay button.
+    Five doors, each one world of the inner pages; a door's panel wears that world's ground and shows the stills its
+    pages open on. Every door is a native <details>, so it opens on click, tap and keyboard with JavaScript off.
+    On long pages nav.js turns the capsule into a locator (where you are, the section you read, how far). On phones
+    the capsule sits at the bottom under the thumb and grows into the menu sheet."""
+    here_label = WORLD_DOOR.get(world) if world else None
+    here = next((s for s in NAV["sections"] if s["label"] == here_label), None) or section_of(url)
     cur = lambda u: ' aria-current="page"' if u == url else ""
-    nx = NAV["closing"]
-    next_line = f'{nx[0]} {A(nx[2], nx[1])}'
-    panels, secs = [], []
+    doors, panes = [], []
     for s in NAV["sections"]:
-        sl = slug(s["label"]); gs = list(grouped(s))
-        def row(l, u, line, where, thumb=False):
-            k = PIC.get(u)
-            nid = f' data-nav-id="{where}.{sl}.{slug(l)}"' if where == "header" else ""   # sheet clicks: the .sheet ancestor tells them apart
-            return (f'<li><a href="{u}"{cur(u)}{nid}{f" data-k={chr(34)}{k}{chr(34)}" if k else ""}>'
-                    f'{nav_pic(k) if thumb else ""}<b>{html.escape(l)}</b><span>{html.escape(line)}</span></a></li>')
-        groups = "".join(f'<div class="grp"><p class="grp-name">{html.escape(n)}</p><ul>' + "".join(row(*it, "header") for it in its) + "</ul></div>" for n, its in gs)
-        keys = list(dict.fromkeys(PIC[u] for _, u, _ in s["items"] if u in PIC))
-        f_l, _, f_line = next(it for it in s["items"] if it[1] in PIC)
-        stage = (f'<figure class="stage" aria-hidden="true"><div class="stage-pic">{"".join(nav_pic(k, i == 0) for i, k in enumerate(keys))}</div>'
-                 f'<figcaption><b>{html.escape(f_l)}</b><span>{html.escape(f_line)}</span></figcaption></figure>')
-        panels.append(f'<li{" class=\"here\"" if s is here else ""}><details data-panel><summary data-nav-id="header.{sl}"{" aria-current=\"true\"" if s is here else ""}>{s["label"]}</summary>'
-                      f'<div class="drop g{len(gs)}"><div class="drop-head"><a class="drop-hub" href="{s["url"]}"{cur(s["url"])} data-nav-id="header.{sl}.hub">{s["label"]}</a>'
-                      f'<p class="drop-next">{next_line}</p></div><div class="drop-groups">{groups}</div>{stage}</div></details></li>')
-        sgroups = "".join(f'<p class="grp-name">{html.escape(n)}</p><ul class="sheet-list{" pics" if all(u in PIC for _, u, _ in its) else ""}">'
-                          + "".join(row(*it, "sheet", all(u in PIC for _, u, _ in its)) for it in its) + "</ul>" for n, its in gs)
-        secs.append(f'<details class="fold"{" open" if s is here else ""}><summary>{s["label"]}</summary><div class="fold-body">'
-                    f'<a class="fold-hub" href="{s["url"]}"{cur(s["url"])} aria-label="{s["label"]} overview">Overview</a>{sgroups}</div></details>')
-    secs.append(f'<details class="fold"><summary>Start from your job</summary><div class="fold-body"><ul class="jobs-list">{roles_html("sheet")}</ul></div></details>')
+        sl = slug(s["label"]); gs = [(n, k, its) for (n, _, k), (_, its) in zip(s["groups"], grouped(s))]
+        groups = "".join(panel_group(n, k, its, cur, f"header.{sl}") for n, k, its in gs)
+        foot = f'<div class="drop-foot"><a class="drop-hub" href="{s["url"]}"{cur(s["url"])} data-nav-id="header.{sl}.hub">{html.escape(s["hub"])}{CHEV}</a><span class="drop-ask">Ask anything <kbd>/</kbd></span></div>'
+        doors.append(f'<details class="door{" here" if s is here else ""}" data-panel data-world="{s["world"]}"><summary data-nav-id="header.{sl}"{" aria-current=\"true\"" if s is here else ""}>{s["label"]}</summary>'
+                     f'<div class="drop" data-world="{s["world"]}"><div class="drop-grid g{len(gs)}">{groups}</div>{foot}</div></details>')
+        panes.append(f'<section class="pane" data-world="{s["world"]}" aria-label="{s["label"]}"><h2 class="pane-h">{s["label"]}</h2>'
+                     + "".join(panel_group(n, k, its, cur, f"sheet.{sl}") for n, k, its in gs)
+                     + f'<p class="pane-hub"><a href="{s["url"]}"{cur(s["url"])}>{html.escape(s["hub"])}{CHEV}</a></p></section>')
+    roles = "".join(f'<li><a href="{u}"><b>{html.escape(r)}</b><span>{html.escape(l)}</span></a></li>' for r, l, u in NAV["ask_roles"])
+    ask = (f'<details class="nask" data-panel><summary data-nav-id="header.ask" aria-label="Ask a question">{LOOK}<span class="t">Ask</span><kbd aria-hidden="true">/</kbd></summary>'
+           f'<div class="drop nask-drop"><div class="nask-main">{ask_form("d")}</div><div class="nask-roles"><p>I\'m here as</p><ul>{roles}</ul></div></div></details>')
+    menu = ''.join(f'<li><button type="button" data-pane="{i}">{s["label"]}{CHEV}</button></li>' for i, s in enumerate(NAV["sections"]))
     return ('<a class="skip-link" href="#main">Skip to content</a>\n<header class="top ds">\n'
+            f'<a class="logo plogo" href="/" aria-label="AmIMotion home">{part("logo.html")}</a>\n<div class="cap">'
             f'<a class="logo" href="/" aria-label="AmIMotion home" data-nav-id="header.home">{part("logo.html")}</a>\n'
-            f'<nav class="main" aria-label="Main"><ul class="links">{"".join(panels)}</ul></nav>\n<div class="act">'
-            '<details class="nask" data-panel><summary data-nav-id="header.ask">Ask<kbd aria-hidden="true">/</kbd></summary>'
-            f'<div class="drop nask-drop"><div class="nask-main">{ask_form("d")}</div>'
-            f'<div class="nask-jobs"><p class="grp-name">Start from your job</p><ul class="jobs-list">{roles_html("ask")}</ul></div></div></details>'
-            '<a class="cta" href="/contact/" data-nav-id="header.book-a-call">Book a call</a>\n'
-            '<details class="phone" data-panel><summary data-nav-id="sheet.menu"><span class="m-open">Menu</span><span class="m-close">Close</span></summary>'
-            f'<nav class="sheet" aria-label="Menu"><div class="sheet-ask">{ask_form("m", "Ask a question")}</div><div class="sheet-secs">{"".join(secs)}'
-            f'<p class="sheet-next">{next_line}</p></div></nav></details></div>\n</header>\n<div class="scrim" aria-hidden="true"></div>\n'
-            # the phone dock: Menu, Ask and Book a call under the thumb once the first screen is behind you
-            '<div class="dock" data-dock><button type="button" class="dock-b" data-menu tabindex="-1" aria-label="Menu">'
-            '<span class="m-open">Menu</span><span class="m-close">Close</span></button>'
-            '<button type="button" class="dock-b" data-ask-open tabindex="-1">Ask</button>'
-            '<a class="cta" href="/contact/" tabindex="-1" data-nav-id="dock.book-a-call">Book a call</a></div>')
+            f'<nav class="main" aria-label="Main"><div class="doors">{"".join(doors)}<span class="lens" aria-hidden="true"></span></div></nav>\n'
+            '<div class="where" aria-hidden="true"><span class="w-crumb"></span><span class="w-sec"></span></div>\n'
+            f'<div class="act">{ask}<a class="cta" href="/contact/" data-nav-id="header.book-a-call">Book a call</a>'
+            '<details class="phone" data-panel><summary data-nav-id="sheet.menu"><span class="bars" aria-hidden="true"></span><span class="m-open">Menu</span><span class="m-close">Close</span></summary>'
+            f'<nav class="sheet" aria-label="Menu"><div class="sheet-track"><div class="sheet-home"><div class="sheet-ask">{ask_form("m", "Ask a question")}</div><ul class="sheet-doors">{menu}</ul></div>'
+            f'<div class="sheet-panes"><button type="button" class="back">{CHEV}Menu</button>{"".join(panes)}</div></div></nav></details></div>'
+            '<span class="prog" aria-hidden="true"><i></i></span></div>\n</header>\n<div class="scrim" aria-hidden="true"></div>')
 
 
 # Footer jobs grid (M15, M19): the twelve role lines of homepage-final.md screen 7, in four columns, each column under
@@ -454,11 +472,15 @@ def build():
             return f'<li data-to="{worlds[u]}"{cv}><a href="{u}"'
         return re.sub(r'<nav class="related[^"]*".*?</nav>', lambda m: re.sub(r'<li><a href="([^"#]+)"', li, m.group(0)), body, flags=re.S)
     pages = {u: (m, connect(b) if m.get("world") else b) for u, (m, b) in pages.items()}
+    # the field-guide shelf in the Resources panel: every guide with a cover colour, by the first line of its own title
+    for u, (m, b) in sorted(pages.items()):
+        t = re.search(r'<h1[^>]*>\s*<span>(.*?)</span>', b, re.S)
+        if u.startswith("/learn/") and m.get("cover") and t: GUIDES.append([u, text_of(t.group(1)).strip(), m["cover"]])
     check_home(pages["/"][1])
 
     public = []
     for url, (meta, body) in pages.items():
-        header = header_html(url)
+        header = header_html(url, meta.get("world"))
         page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main">\n{body}\n</main>\n' + footer_html() + "\n" + scripts(meta) + "\n</body>\n</html>\n"
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")

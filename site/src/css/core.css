@@ -58,154 +58,218 @@
 .go:hover{text-decoration:underline!important;text-decoration-thickness:1px!important;text-underline-offset:4px}
 .go::after{width:.38em;height:.38em}
 
-/* ---------- the nav (round 14, team/rounds/14-nav/notes.md). A 56 px bar split in two (understand | decide), Ask,
-   one button. Panels are <details>: no JS needed to open them. Opens in 180 ms by a clip from the bar down; moving
-   between panels morphs from the old panel's height (--from, set by nav.js); closing is instant. The located dot
-   (the blue a tag shows on the map) marks where you are and what you point at. No glass, glow or gradient. ---------- */
+/* ---------- the nav (round 3, thread "Perfect the site navigation", /mnt/project-files/nav/concepts/). One floating
+   capsule of glass. Four materials, four jobs: glass to move around; a lens bead that glides to the door you point at
+   and rests on the door you are in (with a short located-blue line); a pressed well for Ask; one clay button, Book a
+   call. Five doors, five worlds: a door's panel wears its world's ground and shows the stills its pages open on.
+   Doors are <details>, so the nav opens without JS. Phones: the capsule sits under the thumb and grows into the menu.
+   No dots, no glow beyond the located line, nothing that bounces past a 1.3 overshoot on the lens. ---------- */
+@font-face{font-family:"AmI Serif";src:url("/assets/fonts/InstrumentSerif-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
 .vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-.top{position:sticky;top:0;z-index:30;height:var(--bar);padding-inline:var(--margin);display:flex;align-items:center;gap:var(--s-4);background:var(--ground)}
-/* the bar stays with you (Shiv, 2 Nov): sticky, solid ground, a hairline fades in once the page moves. Every sticky
-   stage below it starts under the bar, not behind it, and anchor jumps clear it. */
-html{scroll-padding-top:calc(var(--bar) + var(--s-4))}
-@keyframes top-line{to{box-shadow:0 1px 0 var(--hairline)}}
-@supports (animation-timeline:scroll()){.top{animation:top-line linear both;animation-timeline:scroll(root);animation-range:0 96px}}
+.top{--n-ease:cubic-bezier(.16,1,.3,1);--n-liquid:cubic-bezier(.34,1.3,.54,1);--n-serif:"AmI Serif",Georgia,serif;position:relative;z-index:40;height:var(--bar)}
+html{scroll-padding-top:calc(var(--bar) + var(--s-5))}
+/* sticky stages start under the bar's space, not behind it (kept from round 14); the products' local bar clears the capsule */
 html .motion .hero-pin,html .film,html .motion .find-pin,html .motion .how-pin,html .waits-panel{top:var(--bar);height:calc(100svh - var(--bar))}
-html .local{top:var(--bar)}
+html .local{top:calc(var(--bar) + 10px)}
+html .local{transition:top .5s cubic-bezier(.16,1,.3,1)}
+html:has(.top.away) .local{top:0}
 html .local .cta{display:none}
 html .top li{margin:0}
 html .bay{top:calc(var(--bar) + var(--s-6))}
 html .ex-stage{top:calc(var(--bar) + var(--local) + var(--s-6))}
 html .read .toc,html .read.has-fig .rail{top:calc(var(--bar) + var(--s-6))}
 html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5))}
-@media (max-width:1023px){html .tool-draw{top:var(--bar)}}
-.top a{color:var(--ink);text-decoration:none}
-.top ul{list-style:none;margin:0;padding:0}
-.top p{margin:0}
-.logo{flex:1 1 0;display:inline-flex;align-items:center;gap:10px;justify-self:start;padding-block:var(--s-2)}
+@media (max-width:1023px){html .tool-draw,html .local{top:0}html .motion .hero-pin,html .film,html .motion .find-pin,html .motion .how-pin,html .waits-panel{top:0;height:100svh}html .read .toc,html .read.has-fig .rail,html .bay{top:var(--s-5)}}
 .logo .mark path{fill:var(--brand)}
 .logo .mark{height:24px;width:auto}
 .logo .word{height:16px;width:auto}
-.act{flex:1 1 0;display:flex;align-items:center;justify-content:flex-end;gap:var(--s-2)}
-.top .main,.links{display:flex;align-items:center;height:100%}
-.links{gap:clamp(0px,.5vw,12px)}
-.links > li:nth-child(3){margin-left:clamp(8px,1.2vw,24px);padding-left:clamp(8px,1.2vw,24px);box-shadow:inset 1px 0 0 var(--hairline)}
-.top summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;height:36px;font:400 15px/1 var(--font-text);color:var(--ink);padding:0 12px;border-radius:var(--radius-pill);white-space:nowrap;-webkit-user-select:none;user-select:none;transition:background-color var(--t-fast) var(--ease-ds)}
+.top a{color:var(--ink);text-decoration:none}
+.top ul{list-style:none;margin:0;padding:0}
+.top p{margin:0}
+.top summary{list-style:none;cursor:pointer;-webkit-user-select:none;user-select:none}
 .top summary::-webkit-details-marker{display:none}
-.top summary:hover,.top details[open] > summary{background:var(--surface)}
-.here > details > summary::before,.drop-groups a::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--located)}
-.glide{position:absolute;left:0;top:calc((var(--bar) - 36px) / 2);height:36px;border-radius:var(--radius-pill);background:var(--surface);opacity:0;pointer-events:none;z-index:-1}
-.glide-on .glide{opacity:1;transition:transform var(--t-fast) var(--ease-ds),width var(--t-fast) var(--ease-ds)}
-.glide-on summary:hover{background:none}
-.act > .cta{height:36px;padding:0 16px;font-size:15px}
-.nask > summary{box-shadow:inset 0 0 0 1px var(--hairline);padding-inline:14px 8px;gap:24px;color:var(--ink-soft)}
-.nask kbd{display:grid;place-items:center;width:20px;height:20px;border-radius:4px;background:var(--ground);font:500 12px/1 var(--font-text);color:var(--ink-soft)}
+.ds .top summary:focus-visible,.ds .cap .cta:focus-visible,.ds .top .spine:focus-visible{outline-offset:2px;border-radius:999px}
+.ds .top .spine:focus-visible{border-radius:4px}
+.top .chev{width:11px;height:11px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* glass */
+.cap{position:fixed;z-index:41;top:8px;left:50%;width:min(1240px,calc(100% - 2 * clamp(12px,2vw,32px)));height:52px;transform:translateX(-50%);display:flex;align-items:center;gap:var(--s-3);padding:0 6px 0 20px;border-radius:999px;
+  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.52));-webkit-backdrop-filter:blur(22px) saturate(1.8);backdrop-filter:blur(22px) saturate(1.8);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(11,18,56,.04),0 0 0 1px rgba(11,18,56,.06),0 14px 34px -20px rgba(11,18,56,.38);
+  transition:transform .5s var(--n-ease),height .35s var(--n-ease),top .35s var(--n-ease)}
+.top.compact .cap{height:48px;top:6px}
+.top.away .cap{transform:translateX(-50%) translateY(calc(-100% - 20px))}
+.cap .logo{display:flex;align-items:center;gap:10px;flex:none}
+.plogo{display:none}
+.main{flex:1;min-width:0;display:flex;justify-content:center;height:100%;align-items:center}
+.doors{display:flex;gap:2px;align-items:center}
+.door > summary{position:relative;z-index:1;height:40px;display:flex;align-items:center;padding:0 16px;border-radius:999px;font:500 15px/1 var(--font-text);letter-spacing:-.005em;color:var(--ink);white-space:nowrap}
+/* lens: brighter glass. Without JS it sits on the open door and the door you are in; with JS one bead glides */
+.lens,.no-js .door[open] > summary,.no-js .door.here > summary{background:linear-gradient(180deg,#fff,rgba(255,255,255,.84));box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 1px 2px rgba(11,18,56,.08),0 6px 14px -8px rgba(11,18,56,.3)}
+.lens{position:absolute;z-index:0;left:0;top:50%;height:40px;margin-top:-20px;width:0;border-radius:999px;opacity:0;pointer-events:none;transition:transform .55s var(--n-liquid),width .55s var(--n-liquid),opacity .2s}
+.lens.on{opacity:1}
+.door.here > summary::after{content:"";position:absolute;left:50%;bottom:5px;width:14px;height:2px;margin-left:-7px;border-radius:2px;background:var(--located);box-shadow:0 0 8px rgba(31,107,255,.55)}
+/* the locator: on long pages the doors give way to where you are and the section you read */
+.where{display:none}
+.top.locate .main{display:none}
+.top.locate .where{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:12px;white-space:nowrap;animation:n-fade .35s var(--n-ease) both}
+.w-crumb{font:italic 400 19px/1 var(--n-serif);color:var(--ink-soft)}
+.w-crumb::after{content:"/";font:400 15px/1 var(--font-text);color:rgba(11,18,56,.3);margin-left:12px}
+.w-sec{font:500 15px/1 var(--font-text);padding:12px 16px;border-radius:999px;overflow:hidden;text-overflow:ellipsis;max-width:46ch;background:linear-gradient(180deg,#fff,rgba(255,255,255,.84));box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 6px 14px -8px rgba(11,18,56,.3)}
+.prog{position:absolute;left:26px;right:26px;bottom:0;height:2px;border-radius:2px;overflow:hidden;opacity:0;transition:opacity .3s;pointer-events:none}
+.prog i{display:block;height:100%;transform-origin:0 50%;transform:scaleX(var(--p,0));background:var(--cv,var(--w-accent,var(--action)))}
+.top.locate .prog{opacity:1}
+.js .k-progress{display:none}
+/* well: Ask is pressed into the glass; a clay keycap shows the shortcut */
+.act{display:flex;align-items:center;gap:8px;flex:none}
+.nask > summary{display:flex;align-items:center;gap:10px;height:40px;min-width:200px;padding:0 8px 0 14px;border-radius:999px;color:var(--ink-soft);font:400 15px/1 var(--font-text);background:rgba(11,18,56,.045);box-shadow:inset 0 1.5px 3px rgba(11,18,56,.13),inset 0 -1px 0 rgba(255,255,255,.85);transition:box-shadow .25s}
+.nask > summary:hover,.nask[open] > summary{box-shadow:inset 0 1.5px 3px rgba(11,18,56,.16),inset 0 -1px 0 rgba(255,255,255,.85),0 0 0 1px rgba(75,61,240,.22)}
+.nask > summary svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
+.nask .t{flex:1}
+.top kbd{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:6px;font:500 12px/1 var(--font-text);color:var(--ink-soft);background:linear-gradient(180deg,#fff,#eef2fb);box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(11,18,56,.18),0 2px 4px -1px rgba(11,18,56,.18)}
 .no-js .nask,.no-js .sheet-ask{display:none}
-/* a panel: hub and closing line, the item groups (floor side first), and a preview of where the pointer is */
-.drop{position:absolute;left:0;right:0;top:var(--bar);max-height:calc(100vh - var(--bar));overflow:auto;background:var(--surface);border-top:1px solid var(--hairline);box-shadow:0 1px 0 var(--hairline);padding:var(--s-7) var(--margin);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);animation:nav-in 180ms var(--ease-ds) both}
-@keyframes nav-in{from{clip-path:inset(0 0 calc(100% - var(--from,0px)) 0)}to{clip-path:inset(0 0 -2px 0)}}
-@keyframes nav-fade{from{opacity:0;transform:translateY(6px)}}
-.drop > *{animation:nav-fade 160ms var(--ease-ds) both}
-.drop > :nth-child(2){animation-delay:20ms}.drop > :nth-child(3){animation-delay:40ms}
-.drop-head{grid-column:1 / span 3;display:flex;flex-direction:column;justify-content:space-between;gap:var(--s-6)}
-.drop-hub{align-self:start;display:inline-flex;align-items:center;gap:.4em;font:600 var(--size-h3)/1.1 var(--font-display);letter-spacing:-.015em}
-.drop-hub::after{content:"";width:.32em;height:.32em;border:solid currentColor;border-width:2px 2px 0 0;transform:rotate(45deg);transition:transform var(--t-fast) var(--ease-ds)}
-.drop-hub:hover::after{transform:translateX(3px) rotate(45deg)}
-.drop-next,.sheet-next{font:400 15px/1.4 var(--font-text);color:var(--ink-soft)}
-.drop-next a,.sheet-next a{color:var(--link)!important;text-decoration:underline!important;text-underline-offset:4px}
-.drop-groups{grid-column:4 / span 5;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--gutter);align-content:start}
-.g3 .drop-groups{grid-column:4 / span 6;grid-template-columns:repeat(3,minmax(0,1fr))}
-.grp-name{font:500 15px/1.3 var(--font-text);color:var(--ink);padding-bottom:var(--s-3);margin-bottom:var(--s-2)!important;border-bottom:1px solid var(--hairline)}
-.drop-groups a{position:relative;display:block;padding:7px 0 7px 16px;margin-left:-16px}
-.drop-groups a::before{position:absolute;left:2px;top:15px;transform:scale(0);transition:transform 120ms var(--ease-ds)}
-.drop-groups a:hover::before,.drop-groups a:focus-visible::before,.drop-groups a[aria-current]::before{transform:none}
-.drop-groups b,.stage b{display:block;font:500 16px/1.3 var(--font-text)}
-.drop-groups span,.stage span,.sheet-list span{display:block;font:400 14px/1.4 var(--font-text);color:var(--ink-soft)}
-.drop-groups a:hover b{color:var(--link)}
-.stage{grid-column:9 / -1;margin:0}
-.g3 .stage{grid-column:10 / -1}
-.stage-pic{position:relative;aspect-ratio:4 / 3;border-radius:4px;overflow:hidden;background:var(--ground)}
-.stage picture,.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.stage picture{opacity:0;transition:opacity 140ms var(--ease-ds)}
-.stage picture.on{opacity:1}
-.stage figcaption{padding-top:var(--s-3)}
-/* Ask: answers from the site's own pages (assets/ask.json), or start from your job */
-.nask-drop{row-gap:var(--s-5)}
-.nask-main{grid-column:1 / span 7}
-.nask-jobs{grid-column:9 / -1}
-.nask-form input{width:100%;height:56px;border:0;border-bottom:2px solid var(--ink);border-radius:0;background:none;padding:0;font:600 var(--size-h3)/1 var(--font-display);letter-spacing:-.01em;color:var(--ink);outline:0;-webkit-appearance:none;appearance:none}
+/* clay: the one thing you press */
+.cap .cta,.cap .cta:hover{height:42px;padding:0 20px;border-radius:999px;color:#fff;background:linear-gradient(180deg,#5d51f6,#4232e4);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -2px 0 rgba(10,0,80,.16),0 1px 1px rgba(40,30,160,.3),0 10px 22px -10px rgba(75,61,240,.75);transition:transform .18s var(--n-ease),box-shadow .18s}
+.cap .cta:hover{transform:translateY(-1px)}
+.cap .cta:active{transform:translateY(1px) scale(1);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -1px 0 rgba(10,0,80,.16),0 1px 1px rgba(40,30,160,.3),0 4px 10px -6px rgba(75,61,240,.7)}
+.phone{display:none}
+/* the panel: one surface under the capsule, in the ground of the world the door leads to; moving between doors
+   morphs from the old panel's height (--from, set by nav.js) */
+.drop{--wg:var(--surface);position:absolute;left:0;right:0;top:calc(100% + 10px);max-height:calc(100vh - 90px);overflow:auto;overscroll-behavior:contain;border-radius:28px;background:var(--wg);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 0 0 1px rgba(11,18,56,.06),0 40px 90px -40px rgba(11,18,56,.45),0 12px 24px -18px rgba(11,18,56,.2);animation:n-in .42s var(--n-ease) both}
+.drop[data-world="steel"]{--wg:#eef3fb}.drop[data-world="shift"]{--wg:#f3f5f9}.drop[data-world="morning"]{--wg:#f0f6ff}.drop[data-world="paper"]{--wg:#f8f5ef}.drop[data-world="studio"]{--wg:#f6f3f1}
+@keyframes n-in{from{clip-path:inset(0 0 calc(100% - var(--from,0px)) 0 round 28px);opacity:var(--o0,0)}to{clip-path:inset(0 0 0 0 round 28px);opacity:1}}
+@keyframes n-fade{from{opacity:0;transform:translateY(6px)}}
+.drop-grid{display:grid;gap:36px;padding:30px 32px 0;grid-template-columns:minmax(0,2.4fr) minmax(0,1fr);animation:n-fade .32s .04s var(--n-ease) both}
+.drop-grid.g2:has(.g-feature){grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
+.drop-grid.g3{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr) minmax(0,1fr)}
+.drop-grid.g3:has(.g-feature){grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr)}
+.drop .grp-name,.pane .grp-name{font:500 12px/1 var(--font-text);letter-spacing:.07em;text-transform:uppercase;color:rgba(11,18,56,.48);margin:2px 0 16px}
+.grp-name a{color:inherit!important}
+.drop-foot{display:flex;align-items:center;justify-content:space-between;margin-top:28px;padding:16px 32px 18px;border-top:1px solid var(--hairline)}
+.drop-hub,.pane-hub a{display:inline-flex;align-items:center;gap:10px;font:italic 400 25px/1 var(--n-serif);letter-spacing:-.01em}
+.drop-hub .chev,.pane-hub .chev{color:var(--action);transition:transform .25s var(--n-ease)}
+.drop-hub:hover .chev{transform:translateX(3px)}
+.drop-ask{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(11,18,56,.48)}
+/* rows: a quiet list; hover lifts a pane of glass behind the row */
+.top .list{display:grid;gap:2px}
+.list a{display:grid;grid-template-columns:1fr auto;align-items:center;padding:9px 12px;margin:0 -12px;border-radius:14px;transition:background .25s,box-shadow .25s}
+.list b{font:500 15.5px/1.3 var(--font-text);letter-spacing:-.005em}
+.list span{grid-column:1;font-size:13.5px;color:var(--ink-soft);line-height:1.35}
+.list .chev{grid-row:1 / 3;grid-column:2;color:var(--action);opacity:0;transform:translateX(-6px);transition:opacity .2s,transform .3s var(--n-ease)}
+.list a:hover,.list a[aria-current]{background:rgba(255,255,255,.75);box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 6px 14px -10px rgba(11,18,56,.3)}
+.list a:hover .chev,.list a:focus-visible .chev{opacity:1;transform:none}
+/* clay plinths for the products (CAD on a pale ground) */
+.plinths{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.plinth{display:block;padding:10px 10px 16px;border-radius:22px;background:linear-gradient(180deg,#fff,#f6f8fd);box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 22px 34px -26px rgba(12,20,48,.45);transition:transform .5s var(--n-ease),box-shadow .5s var(--n-ease)}
+.plinth .pic{display:block;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#f3f6fc}
+.top .pic img{display:block;width:100%;height:100%;object-fit:cover;transition:transform 1s var(--n-ease)}
+.plinth b,.photo b{display:block;font:500 15.5px/1.3 var(--font-text);margin:14px 6px 2px}
+.plinth span:not(.pic),.photo span:not(.pic){display:block;font-size:13.5px;color:var(--ink-soft);line-height:1.35;margin:0 6px}
+.plinth:hover{transform:translateY(-4px);box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 30px 40px -26px rgba(12,20,48,.5)}
+.plinth:hover img,.photo:hover img{transform:scale(1.04)}
+/* graded photographs: the same still the page opens on */
+.photos,.feature{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.g-feature ul{grid-template-columns:1fr}
+.photo{display:block}
+.photo b,.photo span:not(.pic){margin-inline:0}
+.photo .pic{position:relative;display:block;aspect-ratio:3 / 4;border-radius:18px;overflow:hidden;background:var(--surface)}
+.photo.feature .pic{aspect-ratio:16 / 10}
+.photo.feature b{font:italic 400 27px/1.1 var(--n-serif);letter-spacing:-.01em}
+.photo .pic::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(11,18,56,.06);transition:box-shadow .4s}
+.photo:hover .pic::after{box-shadow:inset 0 0 0 1.5px var(--located)}
+/* the field guides as a shelf: each guide a spine in its own cover colour */
+.shelf{display:flex;align-items:flex-end;gap:6px;height:262px;position:relative;margin-bottom:8px}
+.shelf::after{content:"";position:absolute;left:-8px;right:-8px;bottom:-8px;height:8px;border-radius:4px;background:linear-gradient(180deg,#fff,#efe8da);box-shadow:inset 0 1px 0 #fff,0 10px 18px -12px rgba(28,27,42,.5)}
+.shelf li{flex:1;min-width:0;max-width:56px;display:flex;align-items:flex-end;height:100%}
+.spine{width:100%;height:var(--h,240px);border-radius:4px 4px 2px 2px;background:var(--c);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 3px 0 0 rgba(255,255,255,.14),inset -4px 0 0 rgba(0,0,0,.16),0 6px 10px -8px rgba(0,0,0,.5);transition:transform .45s var(--n-liquid)}
+.top .spine,.top .spine:hover{color:rgba(255,255,255,.94)}
+.spine span{writing-mode:vertical-rl;transform:rotate(180deg);font:italic 400 15px/1 var(--n-serif);white-space:nowrap;padding:12px 0}
+.spine:hover,.spine:focus-visible,.spine[aria-current]{transform:translateY(-14px)}
+.shelf-cap{margin-top:24px!important;min-height:28px;font:italic 400 23px/1.15 var(--n-serif)}
+/* Ask: a palette under the well */
+.nask-drop{left:auto;width:min(640px,calc(100vw - 32px));padding:10px}
+.nask-main{padding:6px 14px 4px;border-radius:20px;background:linear-gradient(180deg,#fff,rgba(255,255,255,.88));box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 6px 14px -10px rgba(11,18,56,.25)}
+.nask-form input{width:100%;height:56px;border:0;border-radius:0;background:none;padding:0;font:400 20px/1 var(--font-text);color:var(--ink)}
 .nask-form input::placeholder{color:var(--ink-soft);opacity:.6}
-.ds .nask-form input:focus-visible{outline:0;border-bottom-color:var(--focus)}
+.ds .nask-form input:focus-visible{outline:0}
 .nask-form input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
 .nask-out a{display:block;padding-block:var(--s-2)}
 .nask-out b{display:block;font:500 17px/1.35 var(--font-text)}
 .nask-out span,.nask-out i{display:block;font:400 15px/1.45 var(--font-text);color:var(--ink-soft);font-style:normal}
-.nask-out .ans{margin-block:var(--s-5) var(--s-3);padding:var(--s-5);border-radius:6px;background:var(--ground)}
+.nask-out .ans{margin-block:var(--s-3);padding:var(--s-5);border-radius:16px;background:var(--ground)}
 .nask-out .ans b{font:600 var(--size-lede)/1.2 var(--font-display);letter-spacing:-.01em;margin-bottom:var(--s-2)}
 .nask-out .ans span{color:var(--ink);font-size:var(--size-small)}
 .nask-out .ans i{margin-top:var(--s-3);color:var(--link)}
 .nask-out a:hover b,.nask-out a:focus-visible b{color:var(--link)}
-.nask-more{border-top:1px solid var(--hairline)}
-.jobs-list li{display:flex;flex-wrap:wrap;column-gap:.4em;padding-block:6px;border-bottom:1px solid var(--hairline);font:400 15px/1.35 var(--font-text)}
-.jobs-list li > span:first-child{flex:0 0 100%;color:var(--ink-soft);font-size:14px}
-.jobs-list a{color:var(--link)!important;font-weight:500}
-.jobs-list a:hover{text-decoration:underline!important;text-underline-offset:4px}
-.scrim{position:fixed;inset:0;z-index:29;background:var(--ink);opacity:0;visibility:hidden;pointer-events:none;transition:opacity var(--t-fast) var(--ease-ds),visibility 0s var(--t-fast)}
-@media (min-width:1024px){.top:has(.links [open],.nask[open]) + .scrim{opacity:.14;visibility:visible;transition:opacity var(--t-fast) var(--ease-ds)}}
-.phone,.dock{display:none}
-@media (min-width:1024px) and (max-width:1199px){.nask > summary{gap:10px}.links > li:nth-child(3){margin-left:4px;padding-left:4px}.top summary{padding-inline:10px}}
-/* phone and tablet: logo, button, Menu; a full-height sheet with Ask, the four sections as folds, start from your job */
+.nask-more{border-top:1px solid var(--hairline);margin-bottom:var(--s-3)!important}
+.nask-roles{padding:18px 8px 6px}
+.nask-roles p{font:italic 400 20px/1 var(--n-serif);color:var(--ink-soft);margin:0 0 14px 6px!important}
+.nask-roles ul{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.nask-roles a{display:grid;gap:3px;padding:12px 14px;border-radius:16px;background:linear-gradient(180deg,#fff,rgba(255,255,255,.84));box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 6px 14px -10px rgba(11,18,56,.3);transition:transform .3s var(--n-ease)}
+.nask-roles a:hover{transform:translateY(-2px)}
+.nask-roles b{font-weight:500;font-size:15px}
+.nask-roles span{color:var(--ink-soft);font-size:13.5px}
+.asking .nask-roles{display:none}
+.scrim{position:fixed;inset:0;z-index:39;background:rgba(11,18,56,.1);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s,visibility 0s .35s}
+.top:has(details[open]) + .scrim{opacity:1;visibility:visible;transition:opacity .35s}
+@media (min-width:1024px) and (max-width:1239px){.door > summary{padding-inline:12px}.nask > summary{min-width:0}.nask .t{display:none}.cap{padding-left:16px}}
+/* phones and tablets: the logo stays at the top of the page; the capsule moves under the thumb (Menu, Ask, Book a
+   call) and grows upward into the menu: the five doors, then a door's own page with its stills */
 @media (max-width:1023px){
-  .top{gap:var(--s-2)}
-  .logo{flex:1 1 auto}
-  .act{flex:none}
-  .top .main,.nask{display:none}
-  .act > .cta{padding:0 14px}
-  .phone{display:block}
-  .phone > summary{padding-inline:12px}
-  .m-close,[open] > summary > .m-open{display:none}
-  [open] > summary > .m-close{display:inline}
+  .plogo{display:flex;align-items:center;gap:8px;height:100%;padding-inline:var(--margin);width:max-content}
+  .cap{top:auto;bottom:calc(10px + env(safe-area-inset-bottom));width:min(440px,calc(100% - 20px));height:56px;padding:0 6px;gap:6px}
+  .top.compact .cap{top:auto;height:56px}
+  .top.away .cap{transform:translateX(-50%) translateY(calc(100% + 24px))}
+  .cap .logo,.main,.top.locate .where{display:none}
+  .act{flex:1;gap:6px}
+  .phone{display:block;order:-1;flex:none}
+  .phone > summary{display:flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:999px;font:500 15px/1 var(--font-text);background:linear-gradient(180deg,#fff,rgba(255,255,255,.84));box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 6px 14px -8px rgba(11,18,56,.3)}
+  .bars{width:16px;height:10px;position:relative}
+  .bars::before,.bars::after{content:"";position:absolute;left:0;right:0;height:1.6px;border-radius:2px;background:currentColor;transition:transform .35s var(--n-ease)}
+  .bars::before{top:1px}.bars::after{bottom:1px}
+  .phone[open] .bars::before{transform:translateY(3.2px) rotate(45deg)}
+  .phone[open] .bars::after{transform:translateY(-3.2px) rotate(-45deg)}
+  .m-close,.phone[open] .m-open{display:none}
+  .phone[open] .m-close{display:inline}
+  .nask{flex:none;margin-left:auto}
+  .nask > summary{min-width:0;width:44px;height:44px;padding:0;justify-content:center}
+  .nask .t,.nask > summary kbd{display:none}
+  .nask-drop{top:auto;bottom:calc(100% + 10px);left:0;right:0;width:auto;max-height:calc(100svh - 120px)}
+  .cap .cta{flex:none;height:44px;padding:0 18px}
+  .cap .cta::after{display:none}
+  .sheet{position:absolute;z-index:-1;left:0;right:0;bottom:0;height:min(80svh,720px);border-radius:28px;background:var(--sg,rgba(255,255,255,.98));overflow:hidden;
+    box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.06),0 40px 80px -30px rgba(11,18,56,.5);animation:n-grow .55s var(--n-ease) both;transition:background .35s}
+  @keyframes n-grow{from{clip-path:inset(calc(100% - 56px) 0 0 0 round 28px)}to{clip-path:inset(0 0 0 0 round 28px)}}
+  .sheet::after{content:"";position:absolute;left:0;right:0;bottom:0;height:96px;border-radius:0 0 28px 28px;background:linear-gradient(rgba(255,255,255,0),var(--sg,#fff) 70%);pointer-events:none}
   html:has(.phone[open]){overflow:hidden}
-  html:has(.phone[open]) body{padding-top:var(--bar)}
-  html:has(.phone[open]) .top{position:fixed;top:0;left:0;right:0}
-  .sheet{position:fixed;left:0;right:0;top:var(--bar);bottom:0;overflow-y:auto;overscroll-behavior:contain;background:var(--ground);padding:var(--s-3) var(--margin) var(--s-8);animation:nav-fade 180ms var(--ease-ds) both}
-  .sheet-ask{margin-bottom:var(--s-4)}
-  .sheet-ask input{font-size:clamp(1.25rem,1rem + 1.2vw,1.75rem);height:52px}
-  .asking .sheet-secs{display:none}
-  .fold{display:block;border-bottom:1px solid var(--hairline)}
-  .fold > summary{height:auto;padding:var(--s-4) 0;border-radius:0;justify-content:space-between;font:600 clamp(1.625rem,1.2rem + 1.6vw,2.25rem)/1.15 var(--font-display);letter-spacing:-.015em}
-  .fold > summary::after{content:"+";font:400 28px/1 var(--font-text);color:var(--ink-soft);transition:transform var(--t-fast) var(--ease-ds)}
-  .fold[open] > summary::after{transform:rotate(45deg)}
-  .top .fold > summary,.top .fold[open] > summary{background:none}
-  .fold-body{padding-bottom:var(--s-5);animation:nav-fade 160ms var(--ease-ds) both}
-  .fold-hub{display:inline-flex;align-items:center;gap:.4em;min-height:44px;font:500 var(--size-body)/1.2 var(--font-text);color:var(--link)!important}
-  .fold-hub::after{content:"";width:.38em;height:.38em;border:solid currentColor;border-width:2px 2px 0 0;transform:rotate(45deg)}
-  .fold-body .grp-name{margin-top:var(--s-4)!important}
-  .sheet-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(15em,1fr));column-gap:var(--gutter)}
-  .sheet-list a{display:block;min-height:44px;padding-block:var(--s-2)}
-  .sheet-list b{display:block;font:500 var(--size-body)/1.3 var(--font-text)}
-  .sheet-list.pics a{display:grid;grid-template-columns:72px 1fr;column-gap:var(--s-3);align-items:center}
-  .sheet-list.pics picture{grid-row:span 2;display:block;aspect-ratio:4 / 3;border-radius:3px;overflow:hidden;background:var(--surface)}
-  .sheet-list.pics img{display:block;width:100%;height:100%;object-fit:cover}
-  .sheet-list a[aria-current] b::before{content:"";display:inline-block;width:7px;height:7px;margin-right:8px;border-radius:50%;background:var(--located);vertical-align:.15em}
-  .sheet-next{margin-top:var(--s-6)!important}
-  .nask-out .ans{margin-top:var(--s-3)}
+  .sheet-track{display:flex;width:200%;height:100%;transition:transform .45s var(--n-ease)}
+  .sheet.deep .sheet-track{transform:translateX(-50%)}
+  .sheet-home,.sheet-panes{width:50%;height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:22px 22px 84px}
+  .sheet-ask{margin-bottom:var(--s-3)}
+  .sheet-ask .nask-form input{height:52px;padding:0 16px;border-radius:16px;background:rgba(11,18,56,.045);box-shadow:inset 0 1.5px 3px rgba(11,18,56,.13);font-size:17px}
+  .asking .sheet-doors{display:none}
+  .sheet-doors button{width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:0;border-bottom:1px solid var(--hairline);padding:17px 2px;font:600 28px/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);cursor:pointer;text-align:left}
+  .sheet-doors .chev{width:14px;height:14px;color:rgba(11,18,56,.4)}
+  .back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;font:500 15px/1 var(--font-text);color:var(--action);padding:2px 0 10px;cursor:pointer}
+  .back .chev{transform:rotate(180deg)}
+  .js .pane{display:none}
+  .js .pane.on{display:block;animation:n-fade .3s var(--n-ease) both}
+  .pane-h{font:600 32px/1.05 var(--font-display);letter-spacing:-.025em;margin:6px 0 4px}
+  .pane .grp-name{margin-top:26px}
+  .pane .plinths,.pane .photos{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:22px;margin:0 -22px;padding:4px 22px 12px;gap:12px;scrollbar-width:none}
+  .pane .plinths li,.pane .photos li{flex:0 0 62%;scroll-snap-align:start}
+  .pane .shelf{height:206px;gap:4px}
+  .pane .spine{--h:186px!important}
+  .pane .spine span{font-size:12.5px}
+  .pane-hub{margin-top:26px!important;padding-top:16px;border-top:1px solid var(--hairline)}
+  .no-js .sheet-track{display:block;width:auto;overflow-y:auto}
+  .no-js .sheet-doors,.no-js .back{display:none}
+  .no-js .sheet-home,.no-js .sheet-panes{width:auto;height:auto;overflow:visible;padding-bottom:var(--s-5)}
+  .no-js .sheet{overflow-y:auto}
+  .foot{padding-bottom:calc(var(--s-8) + 72px)}
 }
-/* the narrowest phones (320 to 359 px): the bar keeps logo, button and Menu on one line */
-@media (max-width:359px){.top{gap:2px}.logo{gap:6px}.logo .mark{height:20px}.logo .word{height:13px}.act > .cta{padding-inline:10px}.act > .cta::after{display:none}.phone > summary{padding-inline:8px}}
-
-/* the phone dock (M13): Menu, Ask and Book a call under the thumb, slid in once the first screen is behind you (JS on) */
-@media (max-width:1023px){
-  .js .dock{display:flex;gap:var(--s-2);position:fixed;z-index:40;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom));padding:8px var(--margin) calc(8px + env(safe-area-inset-bottom));align-items:center;background:var(--surface);border-top:1px solid var(--hairline);transform:translateY(105%);transition:transform 200ms var(--ease-ds);visibility:hidden}
-  .js.dock-on .dock{transform:none;visibility:visible}
-  .js.sheet-on .dock{transform:translateY(105%);visibility:hidden}
-  .act > .cta{transition:opacity var(--t-fast) var(--ease-ds),visibility 0s}
-  .js.dock-on:not(.sheet-on) .act > .cta{opacity:0;visibility:hidden;transition:opacity var(--t-fast) var(--ease-ds),visibility 0s var(--t-fast)}
-  .dock-b{flex:none;height:48px;padding:0 18px;border:0;border-radius:var(--radius-pill);background:var(--ground);color:var(--ink);font:500 var(--size-small)/1 var(--font-text);cursor:pointer}
-  .dock-b:active,.dock .cta:active{transform:scale(var(--press-scale))}
-  .dock .cta{flex:1;min-width:0}
-  .js .foot{padding-bottom:calc(var(--s-8) + 64px)}
-}
-
+@media (max-width:359px){.phone > summary{padding-inline:12px}.cap .cta{padding-inline:12px}.plogo .word{height:13px}}
+@media (prefers-reduced-motion:reduce){.cap,.lens,.drop,.drop-grid,.sheet,.sheet-track,.spine,.plinth{transition:none!important;animation:none!important}}
 /* ---------- the footer (M15): start from your job, four link columns, the entity paragraph ---------- */
 .foot{background:var(--surface);border-top:1px solid var(--hairline);padding:var(--rhythm-m) var(--margin) var(--s-7);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);font:400 15px/1.5 var(--font-text)}
 .foot a{color:var(--ink);text-decoration:none}
@@ -221,7 +285,7 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
 .roles dd{margin:0;font:500 clamp(1.0625rem,.95rem + .25vw,1.1875rem)/1.35 var(--font-text)}
 .roles dd a{color:var(--link)}
 .roles dd span{color:var(--ink-soft)}
-.foot-cols{grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--gutter);padding-top:var(--s-7);border-top:1px solid var(--hairline);margin-bottom:var(--s-8)}
+.foot-cols{grid-column:1 / -1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:var(--gutter);padding-top:var(--s-7);border-top:1px solid var(--hairline);margin-bottom:var(--s-8)}
 .foot-cols ul{list-style:none;margin:var(--s-3) 0 0;padding:0}
 .foot-cols li{padding-block:4px}
 .foot-cols .hub{font:600 var(--size-lede)/1.2 var(--font-display);letter-spacing:-.01em}
