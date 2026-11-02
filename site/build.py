@@ -349,7 +349,9 @@ def scripts(meta):
     """Every page loads nav.js (deferred, cached once: the nav works without it), plus a tool's own file where it has one.
     The diagnostic's 3D floor (three.js, about 690 KB) is no longer loaded: it drew a plant in code and broke the
     first-screen budget. Its 2D sketch stays."""
-    if meta.get("layout") == "home": return NAV_JS + '\n<script src="/assets/js/stage.js" defer></script>'
+    # round 19: locate.js (a module, a few KB) starts the "How it locates a tag" stage near the viewport; it pulls in
+    # locate-scene.js and the one copy of three.js (assets/vendor) only then, and never with reduced motion or no WebGL
+    if meta.get("layout") == "home": return NAV_JS + '\n<script src="/assets/js/stage.js" defer></script>\n<script type="module" src="/assets/js/locate.js"></script>'
     s = meta.get("scripts", "").split()
     out = [NAV_JS]
     if "diag" in s: out.append('<script src="/assets/js/config.js" defer></script><script src="/assets/js/diagnostic.js" defer></script>')
@@ -414,8 +416,11 @@ def build():
     # assets/intro (the old AI-made hero turn) is no longer shipped: nothing may use it
     # shipped: fonts, CAD stills, film files. Not shipped: assets/intro (the old AI-made turn), assets/scene (the dark
     # glowing scene stills, replaced by reserved slots in round 05), vendor (three.js, no longer loaded)
-    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech"):
+    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech", "locate"):
         if (SRC / "assets" / sub).exists(): shutil.copytree(SRC / "assets" / sub, DIST / "assets" / sub)
+    # three.js ships again for one use: the homepage locate stage (round 19), loaded lazily, never in the first screen
+    (DIST / "assets" / "vendor").mkdir()
+    for f in ("three.module.min.js", "THREE-LICENSE.txt"): shutil.copy(SRC / "assets" / "vendor" / f, DIST / "assets" / "vendor" / f)
     shutil.copytree(SRC / "js", DIST / "assets" / "js", dirs_exist_ok=True)
     nav = (SRC / "js" / "nav.js").read_text()
     nav = re.sub(r"(?m)^\s*//.*\n|\s+// [^'\n]*$", "\n", nav)
