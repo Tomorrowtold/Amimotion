@@ -151,3 +151,25 @@ addEventListener('load', () => idle(() => {
   if (slow || reduce) return;
   import('./tag.js').then((m) => m.init($('#tagGL'), $('#tagFallback'), $('#hero'))).catch(() => {});
 }));
+
+/* ---------- plan your first bay: the first answer opens the real planner in a glass window ---------- */
+const simSec = $('#sim');
+if (simSec) {
+  new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) simSec.classList.add('in'); }), { threshold: .3 }).observe(simSec);
+  const win = simSec.querySelector('.sim-window'), frame = simSec.querySelector('.sim-frame');
+  const dress = (doc) => {
+    const st = doc.createElement('style');
+    st.textContent = `header.top,.dock,.scrim,.foot,footer,.head,.skip-link,.cursor,main > section:not(:has([data-diag])),main > *:not(section){display:none!important}
+      html,body{background:transparent!important}body{padding:0!important}main{padding:0!important;margin:0!important}
+      main > section:has([data-diag]){padding:clamp(18px,2.4vw,34px)!important;margin:0!important}`;
+    doc.head.appendChild(st);
+  };
+  const open = (v) => {
+    simSec.classList.add('open'); win.hidden = false;
+    const go = () => { try { const d = frame.contentDocument; dress(d); const pick = () => { const b = d.querySelector(`.diag-opt[data-v="${v}"]`); if (b) { if (b.getAttribute('aria-pressed') !== 'true') b.click(); } else setTimeout(pick, 120); }; pick(); } catch (e) {} };
+    if (!frame.src) { frame.addEventListener('load', go, { once: true }); frame.src = './diagnostic/index.html'; } else go();
+    setTimeout(() => win.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }), 250);
+  };
+  simSec.querySelectorAll('.sim-opt').forEach((b) => b.addEventListener('click', () => open(b.dataset.v)));
+  simSec.querySelector('.sim-close').addEventListener('click', () => { simSec.classList.remove('open'); win.hidden = true; });
+}
