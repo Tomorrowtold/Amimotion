@@ -1,0 +1,13 @@
+/* /solutions/: two questions. A tall portrait of a supervisor holds the left half; the page answers on the right. */
+@media (min-width:1024px){
+  .head{grid-template-rows:auto auto 1fr;min-height:min(92svh,1000px);align-items:start}
+  .head-pic{grid-column:1 / span 6;grid-row:1 / span 3;margin:0 0 0 calc(-1 * var(--margin))!important;align-self:stretch}
+  .head-pic figure,.head-pic picture{height:100%;margin:0;display:block}
+  .head-pic img{width:100%;height:100%;object-fit:cover;border-radius:0 28px 28px 0}
+  .head .crumbs{grid-column:8 / -1;grid-row:1;margin-top:var(--s-6)}
+  .head h1{grid-column:8 / -1;grid-row:2;font-size:clamp(3rem,1.6rem + 3.8vw,6.2rem)}
+  .head .words{grid-column:8 / -1;grid-row:3;display:block}
+}
+.head h1 span+span{color:var(--w-accent)}
+.related.tiles .pic{border-radius:18px;overflow:hidden}
+.parts.c2>li{background:var(--surface);border-radius:22px;padding:var(--s-6)}

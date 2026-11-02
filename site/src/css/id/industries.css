@@ -1,0 +1,13 @@
+/* /industries/: three floors. A headline that fills the width, then three tall photographs, one per kind of floor. */
+.head h1{grid-column:1 / -1;max-width:none}
+.head .words{grid-column:1 / span 7;display:block}
+.parts.c3{gap:var(--s-3)!important}
+.parts.c3>li{position:relative;border-radius:22px;overflow:hidden;min-height:min(70svh,640px);display:flex;flex-direction:column;justify-content:flex-end;padding:var(--s-6);color:#fff}
+.parts.c3>li .pic{position:absolute!important;inset:0;margin:0!important}
+.parts.c3>li .pic img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--k-ease)}
+.parts.c3>li::before{content:"";position:absolute;inset:40% 0 0;background:linear-gradient(to top,rgba(20,26,46,.9),transparent);z-index:1}
+.parts.c3>li>*:not(.pic){position:relative;z-index:2}
+.parts.c3 h3 a{color:#fff!important;font-size:clamp(1.8rem,1.2rem + 1.4vw,2.6rem)}
+.parts.c3 h3 a::after{content:"";position:absolute;inset:0;z-index:3}
+.parts.c3 p{color:rgba(255,255,255,.8)!important}
+.parts.c3>li:hover .pic img{transform:scale(1.05)}

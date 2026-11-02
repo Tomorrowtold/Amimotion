@@ -1,0 +1,10 @@
+/* /contact/: a trolley at rest. The photograph fills the top; the form card rises over its lower edge. */
+.head{margin-top:calc(-1 * var(--bar) - 10px)}
+.head-pic{grid-column:1 / -1;grid-row:1;margin:0 calc(-1 * var(--margin))!important;position:relative}
+.head-pic img{width:100%;height:min(70svh,720px);object-fit:cover}
+.head-pic::after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(to top,rgba(18,32,82,.82),transparent)}
+.head .crumbs{grid-row:1;z-index:2;align-self:start;margin-top:calc(var(--bar) + var(--s-5));color:rgba(255,255,255,.85)}.head .crumbs a{color:#fff}
+.head h1{grid-row:1;z-index:2;align-self:end;color:#fff;margin-bottom:var(--s-7);font-size:clamp(3.4rem,1.4rem + 6vw,8.4rem)}
+.head h1 span+span{color:#cfe0ff}
+.head .words{grid-row:2;display:block;grid-column:1 / span 6;padding-top:var(--s-6)}
+.contact-grid{background:var(--surface);border-radius:28px;padding:var(--s-7);margin-top:calc(-1 * var(--s-6));position:relative;z-index:3;box-shadow:0 40px 80px -60px rgba(18,32,82,.5)}

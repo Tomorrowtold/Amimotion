@@ -1,0 +1,7 @@
+/* /learn/: the shelf. Every guide stands by its cover colour; the four quick answers sit on index cards. */
+.head h1{font-size:clamp(3rem,1.4rem + 4.8vw,7rem)!important;max-width:14em}
+.head h1 span:last-child{font-style:italic;color:var(--w-accent)}
+.related.tiles ul{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:var(--s-3)!important}
+.points.c2>li{background:var(--surface);border-radius:4px;padding:var(--s-6);box-shadow:0 1px 0 rgba(28,27,42,.06)}
+.points.c2 h3{font-family:var(--font-serif);font-weight:400;font-size:1.7rem!important;letter-spacing:-.01em!important}
+@media (max-width:1023px){.related.tiles ul{grid-template-columns:1fr 1fr!important}}

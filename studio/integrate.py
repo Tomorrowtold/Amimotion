@@ -17,12 +17,12 @@ REPO = Path(__file__).resolve().parent.parent
 STUDIO = REPO / "studio" / "v1"
 WORK = Path(os.environ.get("STUDIO_WORK", "/tmp/claude-0/integrate"))
 OUT = REPO / "studio" / "out"
-BRANCH = "origin/claude/project-thread-lihvsj"   # main site + inner pages + nav + product sites + new footer (2 Nov)
+BRANCH = os.environ.get("SITE_BRANCH", "origin/claude/project-thread-lihvsj")   # main site + inner pages + nav + product sites + new footer (2 Nov)
 
 def sh(*a, **k): return subprocess.run(a, check=True, **k)
 
 # 1. export + build the main site
-subprocess.run(["git", "-C", str(REPO), "fetch", "-q", "origin", BRANCH.split("/", 1)[1]])
+if BRANCH.startswith("origin/"): subprocess.run(["git", "-C", str(REPO), "fetch", "-q", "origin", BRANCH.split("/", 1)[1]])
 shutil.rmtree(WORK, ignore_errors=True); WORK.mkdir(parents=True)
 tar = subprocess.run(["git", "-C", str(REPO), "archive", BRANCH, "site"], check=True, capture_output=True).stdout
 tarfile.open(fileobj=io.BytesIO(tar)).extractall(WORK, filter='data')

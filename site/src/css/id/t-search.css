@@ -1,0 +1,4 @@
+/* /tools/search-time/: hours, counted. A wide strip of the floor, then the calculator with its result set huge in the serif. */
+.tool-shell{background:var(--surface);border-radius:28px;padding:var(--s-7)!important}
+.tool-shell output,.tool-shell .out,.tool-shell [data-out]{font-family:var(--font-serif)}
+.head h1{font-size:clamp(3rem,1.4rem + 4.6vw,6.8rem)}

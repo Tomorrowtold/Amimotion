@@ -1,33 +1,43 @@
 <!--
 title: UWB RTLS for warehousing and intralogistics
-description: UWB location for warehouses: forklifts, tuggers, pallets and AMRs on one AmIMotion map, with dock and staging wait times.
-tone: light
+description: AmIMotion for warehouses: pallets, totes, forklifts and tuggers on one live map, with how long each load waits at docks and staging lanes.
 crumb: Warehousing
+scripts: km worlds
+world: shift
+id: warehousing
+look: inline accent numerals close-ink
 -->
-<section class="page-head section light" aria-labelledby="page-title">
-<div class="wrap">
-<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/industries/">Industries</a><span aria-hidden="true">/</span><span aria-current="page">Warehousing</span></nav><h1 id="page-title" class="h-hero">Every dock and vehicle,<br><span class="soft">one map.</span></h1><p class="lede">Forklifts and pallets rarely stay where the system last saw them. The map shows where each one is now.</p><p class="short-answer">AmIMotion runs in warehousing. It shows where forklifts, tuggers, robots and tagged pallets are, down to ±10 cm in 3D, and how long loads wait at docks and staging lanes.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Book a call</a><a class="btn btn-line" href="/diagnostic/">Diagnose your floor</a></div><div class="head-media"><div class="card ph mood-cool ratio-cine"><p class="ph-brief"><b>P25</b> A dock door at dawn, pallets staged in lanes, a forklift crossing with motion blur. Cool blue hour with warm dock light. 21:9.</p></div></div>
+<div data-km class="head has-bleed w-poster">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true"> / </span><a href="/industries/">Industries</a><span aria-hidden="true"> / </span><span aria-current="page">Warehousing</span></nav>
+<h1 id="page-title"><span>Know where each pallet is.</span> <span>And how long it has waited.</span></h1>
+<div class="words"><p class="lede">Your WMS knows where a pallet should be. AmIMotion shows where it is, and how long it has stood there.</p><p class="short-answer">In warehousing, AmIMotion shows where tagged pallets, totes, forklifts and tuggers are, and how long loads wait at docks and staging lanes. AmIGo tags ride on the loads and vehicles. AmIMo anchors place each tag down to ±10 cm, depending on the floor. AmIHub times every entry and exit, and your WMS stays the record for orders and stock.</p><p class="more"><a href="/diagnostic/">Plan your first bay</a></p></div>
+<div class="head-pic"><figure class="pic"><picture><source media="(max-width:700px)" type="image/avif" srcset="/assets/worlds/wh-hero-m-600.avif 600w, /assets/worlds/wh-hero-m-1080.avif 1080w" sizes="100vw"><source media="(max-width:700px)" type="image/webp" srcset="/assets/worlds/wh-hero-m-600.webp 600w, /assets/worlds/wh-hero-m-1080.webp 1080w" sizes="100vw"><source type="image/avif" srcset="/assets/worlds/wh-hero-800.avif 800w, /assets/worlds/wh-hero-1600.avif 1600w, /assets/worlds/wh-hero-2400.avif 2400w" sizes="100vw"><img src="/assets/worlds/wh-hero-1600.webp" srcset="/assets/worlds/wh-hero-800.webp 800w, /assets/worlds/wh-hero-1600.webp 1600w, /assets/worlds/wh-hero-2400.webp 2400w" sizes="100vw" width="1600" height="900" fetchpriority="high" decoding="async" alt="Warehouse dock with an open door, a truck outside, pallets in the staging area and a forklift by tall racking"></picture></figure></div>
 </div>
+
+<section class="sec has-lead" aria-labelledby="good-first-flows">
+<h2 id="good-first-flows"><span>Good first flows</span> <span>in a warehouse.</span></h2><p class="lead">An AmIMotion pilot follows one flow, such as inbound from the dock to the rack. These three are where warehouses look first.</p>
+<ul class="points c3"><li><h3>Docks and staging lanes.</h3><p>AmIHub times each tagged pallet at every dock door and staging lane. You see which load has waited longest, while it waits.</p></li><li><h3>Forklifts and tuggers.</h3><p>A vehicle tag rides on each one, with a vehicle-powered option. AmIHub shows where each one is now, and its trips over any time window.</p></li><li><h3>Pallets and totes.</h3><p>Find a tagged load through put-away, staging and storage. AmIHub shows where it was last seen, and when.</p></li></ul>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Where teams start.</h2></div>
-<div class="tiles"><div class="tile" data-reveal><p class="over">Forklifts and tuggers</p><h3>See every vehicle</h3><p>Running, idle or parked, and how long each one dwells.</p></div><div class="tile" data-reveal><p class="over">Docks and staging</p><h3>See how long loads wait</h3><p>Time at each dock door and staging lane, from dock to stock.</p></div><div class="tile" data-reveal><p class="over">Pallets and totes</p><h3>Find the load</h3><p>Tagged pallets, totes and high-value goods through put-away, staging and storage.</p></div></div>
-</div>
+<section class="sec has-lead" aria-labelledby="dock-to-stock">
+<h2 id="dock-to-stock"><span>Dock to stock,</span> <span>timed.</span></h2><p class="lead">Name the dock, the staging lane and the put-away zone in AmIHub. It notes when each tagged pallet enters and leaves each one.</p>
+<figure class="w-route w-fig" data-sig="route" data-stops="[0,0.26,0.58,0.86]" aria-label="Example: one pallet from dock to rack, each zone timed"><svg viewBox="0 0 1000 300" role="img" aria-labelledby="rt-t"><title id="rt-t">Plan of one pallet's route: dock door, staging lane, put-away, rack. AmIHub times each zone entry and exit.</title><g class="leg"><rect x="20" y="70" width="120" height="160" rx="4" class="w-ink"/><text x="34" y="96" class="w-lbl">DOCK</text><text x="34" y="214" class="w-lbl" style="fill:var(--ink)">07:42</text></g><g class="leg"><rect x="200" y="110" width="250" height="80" rx="4" style="fill:color-mix(in srgb,var(--waiting) 14%,transparent);stroke:var(--waiting-edge);stroke-width:1.5;stroke-dasharray:6 5"/><text x="214" y="134" class="w-lbl">STAGING LANE</text><text x="214" y="180" class="w-lbl" style="fill:var(--waiting-edge)">waited 52 min</text></g><g class="leg"><line x1="510" y1="40" x2="510" y2="260" class="w-ink-soft"/><text x="522" y="64" class="w-lbl">PUT-AWAY</text><text x="522" y="250" class="w-lbl" style="fill:var(--ink)">08:41</text></g><g class="leg"><rect x="700" y="40" width="40" height="220" rx="2" class="w-ink"/><rect x="764" y="40" width="40" height="220" rx="2" class="w-ink"/><rect x="828" y="40" width="40" height="220" rx="2" class="w-ink"/><rect x="892" y="40" width="40" height="220" rx="2" class="w-ink"/><text x="700" y="282" class="w-lbl">RACK</text><text x="900" y="282" class="w-lbl" style="fill:var(--ink)">08:49</text></g><path class="path" d="M80 150 L325 150 L560 150 Q610 150 610 110 L610 80 Q610 60 640 60 L780 60 L780 150" fill="none" stroke="var(--located)" stroke-width="2.5" stroke-linecap="round"/><g class="pallet" transform="translate(780,150)"><rect x="-9" y="-9" width="18" height="18" rx="2" fill="var(--located)"/></g></svg><figcaption>Example times.</figcaption></figure>
+<ol class="steps"><li><h3>Dock.</h3><p>A tagged pallet enters the dock zone. AmIHub records the time.</p></li><li><h3>Staging lane.</h3><p>It waits in a lane. Its wait shows live, during the shift.</p></li><li><h3>Put-away.</h3><p>A forklift picks it up. Both tags move together toward the racks.</p></li><li><h3>Rack.</h3><p>It leaves the last zone. AmIHub sends each entry and exit to your WMS, as it happens.</p></li></ol>
 </section>
 
-<section class="section dark" data-tone="dark">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Your WMS stays in charge.</h2><p class="lede" style="margin-top:20px">AmIHub adds where and how long. Orders and stock stay in your WMS.</p></div>
-<div class="stats"><div class="stat" data-reveal><b>±10 cm</b><span>Down to, in 3D<small>With AmIMo anchors, site-dependent</small></span></div><div class="stat" data-reveal><b>REST · MQTT</b><span>WebSocket and omlox<small>Open interfaces</small></span></div><div class="stat" data-reveal><b>On-premise</b><span>Or cloud<small>No internet needed on site</small></span></div><div class="stat" data-reveal><b>One bay</b><span>First<small>Then grow on the same AmIHub</small></span></div></div>
-</div>
+<section class="sec" aria-labelledby="docks-aisles">
+<h2 id="docks-aisles"><span>Docks, aisles</span> <span>and covered yards.</span></h2>
+<ul class="points c3"><li><h3>Docks and gates.</h3><p>AmIMo anchors can use angle and two-way ranging at docks and gates. The mode is set per zone in AmIHub, with no hardware swap.</p></li><li><h3>Tall racking.</h3><p>Racking changes how far a signal reaches. AmIMotion surveys your floor and sets the anchor count.</p></li><li><h3>Covered yards.</h3><p>AmIMo anchors also work in sheltered outdoor areas, so a covered yard can join the same map.</p></li></ul>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Questions teams ask first.</h2></div><div class="faq" style="margin-top:clamp(32px,4vw,56px);max-width:980px"><details><summary>Can AmIMotion track forklifts and AMRs together?</summary><p>Yes. Tags fit forklifts, tuggers and robots, and all of them appear on one live map.</p></details><details><summary>Does it replace our WMS?</summary><p>No. AmIHub feeds your WMS over REST, MQTT, WebSocket or omlox. The WMS stays the record.</p></details><details><summary>Can AmIMotion time dock-to-stock?</summary><p>Yes. Each tagged pallet or tote is time-stamped as it enters and leaves the dock, staging lanes and put-away zones, so you see where loads wait.</p></details></div>
-</div>
+<section class="sec has-lead" aria-labelledby="your-wms-stays">
+<h2 id="your-wms-stays"><span>Your WMS stays</span> <span>in charge.</span></h2><p class="lead">AmIHub adds where each load is and how long it waited. Orders and stock stay in your WMS, which connects through open REST, MQTT, WebSocket and omlox hub interfaces.</p>
+<dl class="figures"><div><dt>±10 cm</dt><dd>Down to, per AmIGo tag<small>With AmIMo anchors. Depends on your floor.</small></dd></div><div><dt>About 50 m</dt><dd>Reach of each AmIMo anchor<small>In clear line of sight. Racking changes it.</small></dd></div><div><dt>Hundreds</dt><dd>Active tags per anchor cell<small>Indicative, in UL-TDoA mode.</small></dd></div></dl>
+<p class="more"><a href="/specs/">Specifications</a><span class="sep" aria-hidden="true">·</span><a href="/tools/anchors/">How many anchors you need</a></p>
 </section>
 
-<section class="section dark close-cta" aria-labelledby="close-title" data-tone="dark"><div class="wrap" data-reveal><h2 id="close-title" class="h2">Diagnose your floor.</h2><p class="lede" style="margin:20px auto 0">Six questions, two minutes. See where location data would help first.</p><div class="actions"><a class="btn btn-fill" href="/diagnostic/">Diagnose your floor</a><a class="btn btn-line" href="/contact/">Book a call</a></div></div></section>
+<section class="sec band surface" aria-labelledby="questions-warehouses-ask-first">
+<h2 id="questions-warehouses-ask-first"><span>Questions warehouses ask first.</span></h2><div class="faq"><details><summary>Can AmIMotion track forklifts and AMRs together?</summary><p>Yes. AmIGo vehicle tags fit forklifts, tuggers and AMRs, and all of them appear on one AmIHub map with the pallets they move.</p></details><details><summary>Does AmIMotion replace our WMS?</summary><p>No. AmIHub sends positions and events to your WMS over REST, MQTT, WebSocket or omlox. Your WMS stays the record. The connector for your WMS is confirmed when we scope the pilot.</p></details><details><summary>Can AmIMotion time dock-to-stock?</summary><p>Yes, for tagged pallets and totes. AmIHub notes each entry and exit at the dock, the staging lanes and the put-away zones, so you see where loads wait.</p></details><details><summary>Do the anchors need data cables?</summary><p>No data or sync cable. Each AmIMo anchor needs only power, from DC or PoE, syncs over the air and sends its data over Wi-Fi. Ethernet is also an option.</p></details></div>
+</section>
+
+<section class="close" aria-label="Next step"><p><span>See where location would help first.</span><span class="sub">Six questions, two minutes.</span><a href="/diagnostic/">Plan your first bay</a></p></section>

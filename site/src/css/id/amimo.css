@@ -1,0 +1,32 @@
+/* /products/amimo/: height. The anchor rides a true scale from 3 to 8 m as you scroll; the page reads past a
+   sticky heading; its four figures sit in one dark instrument strip. */
+@media (min-width:1024px){
+  .head.prod{grid-template-rows:auto auto 1fr;align-items:start;min-height:min(92svh,980px)}
+  .head.prod .crumbs{grid-column:1 / span 6;grid-row:1}
+  .head.prod h1{grid-column:1 / span 6;grid-row:2;font-size:clamp(3rem,1.6rem + 4.4vw,6.6rem);margin-top:var(--s-7)}
+  .head.prod .words{grid-column:1 / span 5;grid-row:3}
+  .prod .prod-stage{grid-column:7 / -1;grid-row:1 / span 3;margin:0 calc(-1 * var(--margin)) 0 0;min-height:min(88svh,940px);place-items:stretch;border-radius:28px 0 0 28px;background:#e3eaf6}
+}
+.prod-name{display:none}
+.am-scale{position:absolute;inset:6% 8% 7% 12%;pointer-events:none}
+.am-scale svg{width:100%;height:100%;overflow:visible}
+.am-scale .t{stroke:var(--ink);stroke-width:1.5}
+.am-scale .t2{stroke:var(--ink-soft);stroke-width:1}
+.am-scale .band{fill:color-mix(in srgb,var(--located) 12%,transparent)}
+.am-scale .num{font:400 26px var(--font-serif);fill:var(--ink)}
+.am-scale .num.on{fill:var(--located)}
+.am-scale .floor{stroke:var(--ink);stroke-width:3}
+.prod-stage .pic{position:absolute!important;left:34%;width:52%!important;top:12%}
+.prod-stage .pic img{mix-blend-mode:normal!important;filter:drop-shadow(0 26px 30px rgba(11,18,56,.3))}
+@supports (animation-timeline:scroll()){@media (prefers-reduced-motion:no-preference) and (min-width:1024px){
+  .prod-stage .pic{animation:am-up linear both;animation-timeline:scroll(root);animation-range:0 60vh}
+  @keyframes am-up{from{top:42%}to{top:8%}}
+}}
+.figures{background:var(--w-band);color:#fff;border-radius:18px;padding:var(--s-6);gap:var(--gutter)!important}
+.figures dt{font:400 clamp(2.4rem,1.4rem + 2.4vw,4rem)/1 var(--font-serif)!important;color:#fff}
+.figures dd{color:#dfe6f7}.figures small{color:rgba(223,230,247,.6)!important}
+.head h1 span+span{color:var(--w-accent)}
+@media (max-width:1023px){.prod .prod-stage{min-height:70svh;border-radius:20px;margin-inline:0}.prod-stage .pic{top:30%}}
+.head .words{display:block}
+.prod .prod-stage{background:#fff!important}
+.prod-stage .pic img{filter:none!important}

@@ -1,0 +1,36 @@
+/* /products/: the lineup. One dark stage holds the family; the three parts stand on one shelf; the table compares. */
+.head{margin:var(--s-3) calc(-1 * var(--margin) + 12px) 0;padding:var(--s-8) var(--margin) 0;border-radius:28px;background:#0a0f24;color:#fff;overflow:hidden;justify-items:center;text-align:center}
+.head .crumbs,.head .crumbs a{color:rgba(233,238,248,.62)}
+.head h1{grid-column:2 / span 10;max-width:none;color:#fff;font-size:clamp(3rem,1.4rem + 5.6vw,7.5rem)}
+.head h1 span+span{color:#9db8ff}
+.head .words{grid-column:3 / span 8;display:flex;flex-direction:column;align-items:center}
+.head .lede{color:rgba(233,238,248,.78);margin-inline:auto}
+.head .short-answer{text-align:left;background:#141b3a!important;color:#dfe6f7!important;box-shadow:none!important;max-width:44em}
+.head .short-answer a{color:#9db8ff}
+.head-pic{grid-column:1 / -1;width:calc(100% + 2 * var(--margin));margin:var(--s-7) calc(-1 * var(--margin)) 0!important;position:relative}
+.head-pic::before{content:"";position:absolute;left:12%;right:12%;bottom:7%;height:16%;border-radius:50%;background:#000;filter:blur(28px);opacity:.75}
+.head-pic img{position:relative;mix-blend-mode:normal!important;width:100%;max-width:1500px;margin:0 auto;transform:translateY(6%)}
+@supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
+  .head-pic img{animation:pr-rise linear both;animation-timeline:view();animation-range:entry 0% entry 100%}
+  @keyframes pr-rise{from{transform:translateY(14%) scale(.94)}to{transform:translateY(2%) scale(1)}}
+}}
+/* the shelf */
+.parts{gap:var(--s-3)!important}
+.parts>li{background:var(--surface);border-radius:20px;padding:var(--s-5) var(--s-5) var(--s-6);transition:opacity .4s,transform .5s var(--k-ease)}
+.parts .pic{background:#e9eff9;border-radius:14px;aspect-ratio:4/3;display:grid;place-items:center;overflow:hidden;margin-bottom:var(--s-5)!important}
+.parts .pic img{width:78%;mix-blend-mode:normal!important;transition:transform .7s var(--k-ease)}
+.parts .pic.r32-pic img{width:100%;height:100%;object-fit:cover}
+.parts h3{font-size:clamp(1.6rem,1.1rem + 1.1vw,2.2rem)!important;letter-spacing:-.02em!important}
+.parts:has(li:hover)>li:not(:hover){opacity:.5}
+.parts>li:hover{transform:translateY(-6px)}
+.parts>li:hover .pic img{transform:scale(1.06) rotate(-2deg)}
+/* the compare table: product names hold the top while you read down */
+.lineup thead th{position:sticky;top:calc(var(--bar) - 12px);z-index:2;background:var(--surface);font:600 clamp(1.25rem,.9rem + .9vw,1.75rem)/1.1 var(--font-display)!important;color:var(--ink)!important;letter-spacing:-.015em;padding-block:var(--s-5)!important}
+.lineup tbody th{color:var(--ink-soft);font-weight:400!important;font-size:var(--size-small)}
+.lineup td{color:var(--ink)!important}
+@media (max-width:1023px){.head{margin-inline:calc(-1 * var(--margin) + 8px);border-radius:20px;padding-top:var(--s-7)}.head h1,.head .words{grid-column:1 / -1}}
+.head-pic img{max-width:min(1100px,86%)!important;transform:none}
+@keyframes pr-rise{from{transform:translateY(10%) scale(.94)}to{transform:none}}
+.head{padding-bottom:var(--s-7)}
+.parts .pic picture{width:100%;height:100%;display:grid;place-items:center}
+@media (max-width:1023px){.head-pic{width:auto;margin:var(--s-6) 0 0!important}.head-pic img{max-width:100%!important}}

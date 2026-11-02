@@ -1,0 +1,15 @@
+/* /start/: one bay lights up. The hall stays grey; one bay comes into colour as you scroll, and the plant grows from it. */
+.head h1{font-size:clamp(3rem,1.4rem + 5vw,7.2rem)}
+.head .words{display:block;grid-column:1 / span 7}
+.head-pic{grid-column:1 / -1;margin:var(--s-7) calc(-1 * var(--margin)) 0!important}
+.st-bay{position:relative;margin:0}
+.st-bay>picture img{width:100%;aspect-ratio:16/8;object-fit:cover;filter:grayscale(1) brightness(1.08) contrast(.85)}
+.st-lit{position:absolute;inset:0;clip-path:inset(18% 34% 10% 34% round 18px)}
+.st-lit img{width:100%;height:100%;object-fit:cover}
+.st-bay::after{content:"";position:absolute;inset:18% 34% 10% 34%;border-radius:18px;box-shadow:0 0 0 3px var(--w-accent);pointer-events:none}
+@supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
+  .st-lit{animation:st-grow linear both;animation-timeline:view();animation-range:cover 35% cover 85%}
+  .st-bay::after{animation:st-ring linear both;animation-timeline:view();animation-range:cover 35% cover 85%}
+  @keyframes st-grow{to{clip-path:inset(0 0 0 0 round 0)}}
+  @keyframes st-ring{to{inset:0;opacity:0}}
+}}

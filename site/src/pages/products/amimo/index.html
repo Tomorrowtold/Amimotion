@@ -1,53 +1,101 @@
 <!--
-title: AmIMo UWB anchor: 3D angle of arrival, no sync cable
-description: AmIMo is AmIMotion’s UWB anchor. Range and 3D angle, no data or sync cabling, Wi-Fi backhaul, DC or PoE, about 50 m line of sight (site-dependent).
-tone: dark
-crumb: AmIMo
+title: AmIMo UWB anchor: power only, no sync cable, 3D angle
+description: AmIMo is AmIMotion's UWB anchor. It times each tag pulse and reads its angle, syncs over the air, sends data over Wi-Fi and needs only DC or PoE power.
+crumb: AmIMo anchor
 type: product
 product: AmIMo
 category: UWB anchor
-og: /assets/img/amimo-a-1600.webp
+og: /assets/products/amimo-hero-1200.webp
+layout: product
+world: steel
+id: amimo
+rail: AmIMo
 -->
-<section class="page-head section dark product-head" aria-labelledby="page-title" data-tone="dark">
-<div class="wrap">
-<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/platform/">Platform</a><span aria-hidden="true">/</span><span aria-current="page">AmIMo</span></nav><h1 id="page-title" class="h-hero">AmIMo</h1><p class="h3">Anchors that need only power.</p><p class="lede">AmIMo times each tag pulse and reads where it came from. Clocks sync over the air, so there is no data or sync cable to run.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Plan a site survey</a><a class="btn btn-line" href="#specs">Specifications</a></div><div class="head-media"><div class="card ground-cobalt product-stage" data-reveal-scale><img src="/assets/img/amimo-a-1600.webp" srcset="/assets/img/amimo-a-900.webp 900w, /assets/img/amimo-a-1600.webp 1600w" sizes="(max-width: 900px) 90vw, 900px" alt="AmIMo anchor: a dark-grey box with a network port, a mounting tab and an embossed amimotion logo, rendered from the production CAD" width="1600" height="982" fetchpriority="high" decoding="async"></div></div>
+<div class="p-hero am-hero" data-tone="dark">
+<div class="am-spot" aria-hidden="true"><img src="/assets/products/amimo-spot.webp" width="2000" height="1400" alt=""></div>
+<div class="p-wrap am-hero-words">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true"> / </span><a href="/products/">Products</a><span aria-hidden="true"> / </span><span aria-current="page">AmIMo anchor</span></nav>
+<p class="am-kicker">AmIMo anchor</p>
+<h1 id="page-title" class="am-h1"><span>It needs only power.</span></h1>
+<p class="am-lede">AmIMo hears every AmIGo pulse and the angle it arrived from, keeps time with the other anchors over the air, and sends what it hears to AmIHub over Wi-Fi. Mount it 3 to 8 m up and give it power. There is no sync cable and no data cable to run.</p>
+<p class="am-ctas"><a class="am-pill" href="/tools/anchors/">Plan your anchors</a><a class="am-ghost" href="#specs">Specifications</a></p>
+</div>
+<figure class="am-hero-pic"><picture><source type="image/avif" srcset="/assets/products/amimo-hero-1200.avif 1200w, /assets/products/amimo-hero-2000.avif 2000w, /assets/products/amimo-hero-2688.avif 2688w" sizes="(max-width:1400px) 100vw, 1400px"><img src="/assets/products/amimo-hero-2000.webp" srcset="/assets/products/amimo-hero-1200.webp 1200w, /assets/products/amimo-hero-2000.webp 2000w, /assets/products/amimo-hero-2688.webp 2688w" sizes="(max-width:1400px) 100vw, 1400px" width="2688" height="1520" fetchpriority="high" decoding="async" alt="The AmIMo anchor, a dark grey box with amimotion on its side, a network port and a mounting tab."></picture></figure>
+<div class="p-wrap">
+<dl class="am-figs"><div><dt>3D</dt><dd>Angle of arrival<small>Direction as well as time</small></dd></div><div><dt>About 50 m</dt><dd>Reach in line of sight<small>Site-dependent. The survey sets the count</small></dd></div><div><dt>DC or PoE</dt><dd>Power<small>Wi-Fi backhaul, no data or sync cable</small></dd></div><div><dt>3 to 8 m</dt><dd>Mounting height<small>Recommended. Wall, column, ceiling or pole</small></dd></div></dl>
+</div>
+</div>
+
+<section class="am-intro" data-tone="light" aria-labelledby="amimo-in-short">
+<div class="p-wrap am-intro-grid">
+<h2 id="amimo-in-short" class="am-kick rv">AmIMo, in short</h2>
+<p class="short-answer am-intro-text rv">AmIMo is AmIMotion's UWB anchor. It records when each AmIGo pulse arrives and reads the angle it came from, in 3D, so <em>fewer anchors fix a position</em>. It keeps time with the other anchors over the air, sends its data to AmIHub over Wi-Fi, with an Ethernet option, and needs only power, from DC or PoE. Each anchor reaches about 50 m in clear line of sight. A site survey sets how many your floor needs.</p>
 </div>
 </section>
 
-<section class="section dark" data-tone="dark">
-<div class="wrap">
-<div class="answer-tile" data-reveal><p>AmIMo in short</p><p class="short-answer">AmIMo is AmIMotion’s UWB anchor. A 3D angle-of-arrival antenna array reads direction as well as arrival time, so as few as two anchors in view can fix a position. The same unit offers BLE ranging and Wi-Fi FTM. Each anchor reaches about 50 m in line of sight (indicative, site-dependent) and needs only DC or PoE power.</p></div>
-<div class="stats"><div class="stat" data-reveal><b>3D AoA</b><span>Angle of arrival<small>Direction as well as time</small></span></div><div class="stat" data-reveal><b>~50 m</b><span>Line-of-sight radius<small>Indicative, site-dependent</small></span></div><div class="stat" data-reveal><b>0 cables</b><span>For data or sync<small>Wi-Fi backhaul, Ethernet option</small></span></div><div class="stat" data-reveal><b>3–8 m</b><span>Mounting height<small>Wall, column, ceiling or pole</small></span></div></div>
+<section class="p-sec am-anat" data-tone="light" aria-labelledby="what-you-run-to-it">
+<div class="p-wrap">
+<h2 id="what-you-run-to-it" class="am-h2 am-center rv"><span>What you run to it.</span> <span>Power, and nothing else.</span></h2>
+<div class="am-stage rv">
+<img class="am-mono" src="/assets/products/amimo-mono-1600.webp" srcset="/assets/products/amimo-mono-900.webp 900w, /assets/products/amimo-mono-1600.webp 1600w" sizes="(max-width:900px) 90vw, 600px" width="1600" height="1023" loading="lazy" decoding="async" alt="The AmIMo anchor from above, a dark box with a mounting tab and amimotion on its side.">
+<svg class="am-lines" viewBox="0 0 1200 640" aria-hidden="true"><g><path d="M270 176H420L587 236"/><path d="M270 446H340L427 416"/><path d="M930 166H880L807 210"/><path d="M930 316H860L700 332"/><path d="M930 476H860L690 420"/></g><g class="d"><circle cx="587" cy="236" r="4"/><circle cx="427" cy="416" r="4"/><circle cx="807" cy="210" r="4"/><circle cx="700" cy="332" r="4"/><circle cx="690" cy="420" r="4"/></g></svg>
+<ul class="am-calls">
+<li style="--x:3%;--y:22%"><b>3D angle of arrival</b>When each pulse arrived, and the direction it came from.</li>
+<li style="--x:3%;--y:64%"><b>Mounts 3 to 8 m up</b>Wall, column, ceiling or pole brackets.</li>
+<li class="r" style="--x:78.5%;--y:20.5%"><b>Syncs over the air</b>Keeps time with the other anchors. No sync cable.</li>
+<li class="r" style="--x:78.5%;--y:44%"><b>Data over Wi-Fi</b>Straight to AmIHub. Ethernet is an option.</li>
+<li class="r" style="--x:78.5%;--y:69%"><b>DC or PoE</b>The one thing you run to it.</li>
+</ul>
+</div>
+<div class="am-cols rv"><p>The install is a bracket and a power point. AmIMo keeps time with its neighbours over the air and sends its data to AmIHub over Wi-Fi, so the only thing you run to it is power, from a DC adapter or PoE.</p><p>Each anchor is set up from a phone app. AmIHub finds it on its own and tells you if one ever goes dark.</p></div>
 </div>
 </section>
 
-<section class="section dark" data-tone="dark" style="padding-top:0">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Three radios.<br><span class="soft">One anchor.</span></h2><p class="lede" style="margin-top:20px">No second network to install.</p></div>
-<div class="tiles"><div class="tile" data-reveal><h3>UWB</h3><p>Tagged carriers, vehicles and tools down to ±10 cm in 3D.</p></div><div class="tile" data-reveal><h3>BLE ranging</h3><p>Zone-level presence and search for BLE beacons and devices without a UWB tag.</p></div><div class="tile" data-reveal><h3>Wi-Fi FTM</h3><p>Ranging with compatible Wi-Fi devices. Device support is confirmed for each site.</p></div></div>
+<section class="am-film" id="mounting" data-tone="dark" aria-labelledby="where-and-how-anchors-mount">
+<div class="am-film-frame"><video data-loop muted playsinline loop preload="none" data-poster="/assets/products/amimo-aisle-poster.webp" width="1600" height="894" aria-hidden="true"><source src="/assets/products/amimo-aisle.mp4" type="video/mp4"></video>
+<div class="am-scale" aria-hidden="true"><svg viewBox="0 0 120 620" preserveAspectRatio="xMinYMid meet"><line class="t" x1="0" y1="600" x2="0" y2="72"/><line class="t" x1="0" y1="600" x2="18" y2="600"/><line class="t" x1="0" y1="534" x2="10" y2="534"/><line class="t" x1="0" y1="468" x2="10" y2="468"/><line class="t on" x1="0" y1="402" x2="28" y2="402"/><line class="t" x1="0" y1="336" x2="10" y2="336"/><line class="t" x1="0" y1="270" x2="10" y2="270"/><line class="t" x1="0" y1="204" x2="10" y2="204"/><line class="t" x1="0" y1="138" x2="10" y2="138"/><line class="t on" x1="0" y1="72" x2="28" y2="72"/><rect class="band" x="0" y="72" width="6" height="330"/><text x="38" y="608">0 m</text><text class="on" x="38" y="410">3 m</text><text class="on" x="38" y="80">8 m</text></svg></div>
+<div class="p-wrap am-film-words"><h2 id="where-and-how-anchors-mount" class="am-h2"><span>Mounted 3 to 8 m up.</span> <span>Above everything that moves.</span></h2></div>
+</div>
+<div class="p-wrap">
+<ol class="am-steps">
+<li class="rv"><figure><picture><source type="image/avif" srcset="/assets/products/amimo-column-800.avif 800w, /assets/products/amimo-column-1600.avif 1600w" sizes="(max-width:900px) 100vw, 25vw"><img src="/assets/products/amimo-column-800.webp" srcset="/assets/products/amimo-column-800.webp 800w, /assets/products/amimo-column-1600.webp 1600w" sizes="(max-width:900px) 100vw, 25vw" width="1600" height="1195" loading="lazy" decoding="async" alt="A steel column on a factory floor, the place an anchor mounts, in black and white."></picture></figure><span class="am-n">01</span><h3>On a column, wall or ceiling, or on a pole, 3 to 8 m up.</h3></li>
+<li class="rv"><figure class="cad"><img src="/assets/img/amimo-side-900.webp" srcset="/assets/img/amimo-side-900.webp 900w, /assets/img/amimo-side-1600.webp 1600w" sizes="(max-width:900px) 100vw, 25vw" width="1600" height="881" loading="lazy" decoding="async" alt="The AmIMo anchor from the side, amimotion on its long face."></figure><span class="am-n">02</span><h3>Set up from a phone app. AmIHub finds each anchor itself.</h3></li>
+<li class="rv"><figure class="cad"><img src="/assets/img/amimo-a-900.webp" srcset="/assets/img/amimo-a-900.webp 900w, /assets/img/amimo-a-1600.webp 1600w" sizes="(max-width:900px) 100vw, 25vw" width="1600" height="982" loading="lazy" decoding="async" alt="The AmIMo anchor from the end, with its network port and a mounting tab."></figure><span class="am-n">03</span><h3>About 50 m in line of sight. Steel and racking set the final count.</h3></li>
+<li class="rv"><figure class="cad"><picture><source type="image/avif" srcset="/assets/home/amimo-page-640.avif 640w, /assets/home/amimo-page-1200.avif 1200w" sizes="(max-width:900px) 100vw, 25vw"><img src="/assets/home/amimo-page-1200.webp" srcset="/assets/home/amimo-page-640.webp 640w, /assets/home/amimo-page-1200.webp 1200w" sizes="(max-width:900px) 100vw, 25vw" width="1800" height="1200" loading="lazy" decoding="async" alt="The AmIMo anchor, a dark grey box with a network port."></picture></figure><span class="am-n">04</span><h3>Prefer a wired network? Ethernet is also an option.</h3></li>
+</ol>
+<p class="more rv"><a href="/technology/">How it locates a tag</a></p>
 </div>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Every floor starts with a survey.<br><span class="soft">Not a formula.</span></h2><button class="more" type="button" data-km="amimo-survey"><i aria-hidden="true"></i>Know more</button></div>
-<div class="split flip"><div data-reveal><h3 class="h3">Racking, ceiling height and metal decide where anchors go.</h3><p>Timing plus angle means fewer anchors where the geometry allows. Each anchor is set up from a phone app and found by AmIHub on its own.</p><ul><li>DC adapter or PoE power</li><li>Hundreds of active tags per anchor cell in UL-TDoA, indicative</li><li>Indoor and sheltered outdoor use, −20 °C to +60 °C typical</li></ul></div><div data-reveal><div class="card ground-graphite ratio-photo product-shot"><img src="/assets/img/amimo-side-900.webp" srcset="/assets/img/amimo-side-900.webp 900w, /assets/img/amimo-side-1600.webp 1600w" sizes="(max-width: 900px) 90vw, 640px" alt="AmIMo anchor side view with the embossed amimotion logo" width="900" height="495" loading="lazy" decoding="async"></div></div></div>
-<div class="km-src" id="km-amimo-survey" data-h1="#3b6ef5" data-h2="#66a5fa" data-kicker="Plan anchors" data-title="Where anchors go." data-link="/learn/anchor-planning/"><ul><li>High on columns above machining halls, clear of moving vehicles.</li><li>Over dense racking, where the survey measures the steel first.</li><li>Spread around the area a tag moves in. A straight line of anchors gives poor accuracy across it.</li><li>The final count comes from a site survey, not from floor area.</li></ul></div>
-<div class="link-row" style="margin-top:clamp(44px,5vw,72px)"><a class="link-card" href="/tools/anchors/" data-reveal><b>How many anchors?</b><span>A first range from your floor size, before a survey.</span></a><a class="link-card" href="/learn/anchor-planning/" data-reveal><b>Anchor planning, explained</b><span>What sets the count on a real floor.</span></a><a class="link-card" href="/technology/" data-reveal><b>Timing and angle</b><span>How AmIMo turns a pulse into a place.</span></a></div>
+<section class="p-sec am-radios" data-tone="light" aria-labelledby="three-radios">
+<div class="p-wrap">
+<h2 id="three-radios" class="am-h2 am-center rv"><span>Three radios.</span> <span>One anchor.</span></h2>
+<figure class="am-radar rv" aria-hidden="true"><i class="w1"></i><i class="w2"></i><i class="w3"></i><img src="/assets/products/amimo-mono-900.webp" width="900" height="575" loading="lazy" alt=""><span class="l1">UWB</span><span class="l2">BLE</span><span class="l3">Wi-Fi FTM</span></figure>
+<ul class="am-radio-list"><li class="rv"><h3>UWB</h3><p>AmIGo tags on carriers, tools and vehicles, down to ±10 cm in 3D with AmIMo anchors, depending on your floor.</p></li><li class="rv"><h3>BLE ranging</h3><p>Zone-level presence for BLE devices and beacons that carry no UWB tag.</p></li><li class="rv"><h3>Wi-Fi FTM</h3><p>Ranging with compatible Wi-Fi devices, from the same AmIMo anchors. Device support is confirmed for each site.</p></li></ul>
 </div>
 </section>
 
-<section class="section light" id="specs">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">AmIMo, in detail.</h2></div>
-<div class="spec-wrap" data-reveal><table class="spec"><tbody><tr><th scope="row">UWB radio</th><td>IEEE 802.15.4z HRP with a 3D angle-of-arrival antenna array</td></tr><tr><th scope="row">Positioning modes</th><td>UL-TDoA, DL-TDoA, two-way ranging and 3D AoA, chosen per zone</td></tr><tr><th scope="row">Additional ranging</th><td>BLE-based ranging; Wi-Fi FTM (IEEE 802.11mc)</td></tr><tr><th scope="row">Coverage</th><td>About 50 m line-of-sight radius, indicative and site-dependent</td></tr><tr><th scope="row">Synchronisation</th><td>Over-the-air timing sync; no sync cable</td></tr><tr><th scope="row">Backhaul</th><td>Wi-Fi 2.4 / 5 GHz to AmIHub; Ethernet option</td></tr><tr><th scope="row">Power</th><td>DC adapter or PoE</td></tr><tr><th scope="row">Tag capacity</th><td>Hundreds of active tags per anchor cell (UL-TDoA), indicative</td></tr><tr><th scope="row">Mounting</th><td>3–8 m recommended; wall, column, ceiling and pole brackets</td></tr><tr><th scope="row">Commissioning</th><td>Phone app; found automatically by AmIHub</td></tr><tr><th scope="row">Silicon</th><td>NXP Trimension UWB</td></tr></tbody></table><p class="note">Indicative values from AmIMotion’s published brochure. Coverage and spacing change with ceiling height, racking and metal. Final anchor counts come from a site survey.</p></div>
+<section class="am-survey" id="survey" data-tone="dark" aria-labelledby="every-floor-starts-with-a-survey">
+<figure class="am-survey-pic"><picture><source type="image/avif" srcset="/assets/products/amimo-survey-1600.avif 1600w, /assets/products/amimo-survey-2400.avif 2400w" sizes="100vw"><img src="/assets/products/amimo-survey-1600.webp" srcset="/assets/products/amimo-survey-800.webp 800w, /assets/products/amimo-survey-1600.webp 1600w, /assets/products/amimo-survey-2400.webp 2400w" sizes="100vw" width="1600" height="1073" loading="lazy" decoding="async" alt="Two people at a steel column on a factory floor, one on a step ladder, in black and white."></picture></figure>
+<div class="p-wrap am-survey-words">
+<h2 id="every-floor-starts-with-a-survey" class="am-h2 rv"><span>Every floor starts with a survey.</span> <span>Steel decides, not square metres.</span></h2>
+<p class="am-sub rv">Racking, ceiling height and steel decide where anchors go. Each AmIMo reaches about 50 m around it in clear line of sight, and the survey measures what your floor does to that.</p>
+<ol class="am-rules"><li class="rv"><span>01</span>High on columns or walls, 3 to 8 m up, clear of moving vehicles.</li><li class="rv"><span>02</span>Spread around the area a tag moves in, not in one straight line.</li><li class="rv"><span>03</span>Where the angle helps, as few as two anchors in view can fix a position.</li><li class="rv"><span>04</span>Over dense racking, the survey measures the steel first.</li></ol>
+<nav class="related" aria-label="Related pages"><ul><li><a href="/tools/anchors/">How many anchors you need</a> <span>A first estimate, before the survey</span></li><li><a href="/learn/anchor-planning/">Anchor planning</a> <span>What sets the count on a real floor</span></li><li><a href="/technology/">How it locates a tag</a> <span>Steel, racking, signal and outages</span></li></ul></nav>
 </div>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Questions teams ask first.</h2></div><div class="faq" style="margin-top:clamp(32px,4vw,56px);max-width:980px"><details><summary>What is an AmIMo anchor?</summary><p>AmIMo is AmIMotion’s UWB anchor. It times each tag pulse and reads its 3D angle of arrival, offers BLE and Wi-Fi FTM from the same unit, and needs only DC or PoE power, with no data or sync cabling.</p></details><details><summary>Does an RTLS anchor need data cabling?</summary><p>Not AmIMo. It syncs over the air and sends data over Wi-Fi, with an Ethernet option. Each anchor still needs power, from DC or PoE.</p></details><details><summary>How far does one AmIMo anchor reach?</summary><p>About 50 m in line of sight, indicative and site-dependent. Racking, machines and metal reduce the useful range.</p></details><details><summary>How many anchors does a floor need?</summary><p>It depends on the accuracy you need, ceiling height and how much racking blocks line of sight. Angle of arrival lets as few as two anchors in view fix a position. A site survey sets the count.</p></details><details><summary>Can AmIMo work with phones?</summary><p>AmIMo offers Wi-Fi FTM ranging from the same anchors, and in downlink mode a device works out its own position, which keeps it on the device. Which phones and laptops are supported depends on their chipset, so it is confirmed for each site.</p></details></div>
+<section class="p-sec am-specs" id="specs" data-tone="light" aria-labelledby="amimo-in-detail">
+<div class="p-wrap am-doc">
+<div class="am-doc-side"><h2 id="amimo-in-detail" class="am-h2 sm rv"><span>AmIMo, in detail.</span></h2><p class="note">Indicative values. Coverage and spacing change with ceiling height, racking and metal. The final count comes from a site survey. Full datasheets are shared under NDA.</p></div>
+<table class="spec"><tbody><tr><th scope="row">UWB radio</th><td>IEEE 802.15.4z HRP, with a 3D angle-of-arrival antenna array</td></tr><tr><th scope="row">Positioning modes</th><td>UL-TDoA, DL-TDoA, two-way ranging and 3D AoA, chosen per zone in AmIHub</td></tr><tr><th scope="row">Additional ranging</th><td>BLE ranging; Wi-Fi FTM (IEEE 802.11mc). Device support confirmed per site</td></tr><tr><th scope="row">Coverage</th><td>About 50 m line-of-sight radius, indicative and site-dependent</td></tr><tr><th scope="row">Synchronisation</th><td>Over the air; no sync cable</td></tr><tr><th scope="row">Backhaul</th><td>Wi-Fi 2.4 / 5 GHz to AmIHub; Ethernet option</td></tr><tr><th scope="row">Power</th><td>DC adapter or PoE</td></tr><tr><th scope="row">Tag capacity</th><td>Hundreds of active tags per anchor cell (UL-TDoA), indicative</td></tr><tr><th scope="row">Mounting</th><td>3 to 8 m recommended; wall, column, ceiling and pole brackets</td></tr><tr><th scope="row">Operating temperature</th><td>−20 °C to +60 °C, typical; indoor and sheltered outdoor</td></tr><tr><th scope="row">Commissioning</th><td>Phone app; found by AmIHub on its own</td></tr><tr><th scope="row">Silicon</th><td>NXP Trimension UWB</td></tr></tbody></table>
 </div>
 </section>
 
-<section class="section dark close-cta" aria-labelledby="close-title" data-tone="dark"><div class="wrap" data-reveal><h2 id="close-title" class="h2">Mount it. Power it. Done.</h2><p class="lede" style="margin:20px auto 0">A site survey plans the anchors for one bay of your floor.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Book a call</a><a class="btn btn-line" href="/diagnostic/">Diagnose your floor</a></div></div></section>
+<section class="p-sec am-faq" data-tone="light" aria-labelledby="questions-about-amimo">
+<div class="p-wrap p-faqgrid">
+<h2 id="questions-about-amimo" class="am-h2 sm rv"><span>Questions about AmIMo.</span></h2><div class="faq"><details><summary>What is an AmIMo anchor?</summary><p>AmIMo is AmIMotion's UWB anchor. It times each tag pulse and reads its 3D angle of arrival. It offers BLE ranging and Wi-Fi FTM from the same unit, and needs only DC or PoE power, with no data or sync cable.</p></details><details><summary>Does an RTLS anchor need data cabling?</summary><p>Not AmIMo. It syncs over the air and sends its data to AmIHub over Wi-Fi, with an Ethernet option. Each AmIMo anchor still needs power, from DC or PoE.</p></details><details><summary>How far does one AmIMo anchor reach?</summary><p>About 50 m in clear line of sight, indicative and site-dependent. Racking, machines and steel shorten it, so a site survey sets the count.</p></details><details><summary>How many AmIMo anchors does a floor need?</summary><p>It depends on the accuracy you need, the ceiling height and how much racking blocks the view. Where the angle helps, as few as two anchors in view can fix a position. A site survey sets the count.</p></details><details><summary>What happens if an anchor loses power?</summary><p>AmIHub raises an alert when an AmIMo anchor goes dark, so your team knows which one to check.</p></details></div>
+</div>
+</section>
+
+<section class="close am-close" data-tone="dark" aria-label="Next step"><div class="am-spot low" aria-hidden="true"><img src="/assets/products/amimo-spot.webp" width="2000" height="1400" alt="" loading="lazy"></div><p><span>Plan the anchors for one bay.</span><span class="sub">Enter your floor and racking, and get a first range of AmIMo anchors before the survey.</span><a class="am-pill" href="/tools/anchors/">How many anchors you need</a></p></section>

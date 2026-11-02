@@ -1,0 +1,152 @@
+/* kit.css: the type and UI kit every inner page draws from (never the homepage).
+   One shared layer keeps the site one site: palette, AmI Sans, the ink drawing language, the answer card, the close.
+   Each page then picks its own "look" from front matter (look: serif sidehead cards ...), which becomes body classes,
+   and may carry its own file in css/id/<page>.css. Copy is never touched: looks only restyle what is there. */
+
+/* ---------- a second voice: a serif italic for the turn in a headline, numerals and pull lines ---------- */
+@font-face{font-family:"AmI Serif";src:url("/assets/fonts/InstrumentSerif-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"AmI Serif";src:url("/assets/fonts/InstrumentSerif-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"AmI Serif Fallback";src:local("Georgia"),local("Times New Roman"),local("Liberation Serif");size-adjust:88%;ascent-override:100%;descent-override:28%}
+.ds{--font-serif:"AmI Serif","AmI Serif Fallback",Georgia,serif;--k-ease:cubic-bezier(.16,1,.3,1)}
+
+/* ---------- text polish on every inner page ---------- */
+.ds[data-world] main p,.ds[data-world] main li{text-wrap:pretty;hanging-punctuation:first}
+.ds[data-world] main h1,.ds[data-world] main h2,.ds[data-world] main h3{text-wrap:balance}
+.ds[data-world] main data,.ds[data-world] .figures dt,.ds[data-world] td,.ds[data-world] th{font-variant-numeric:tabular-nums}
+.ds[data-world] ::selection{background:color-mix(in srgb,var(--w-accent) 22%,#fff);color:var(--ink)}
+.ds[data-world] main a{text-decoration-color:color-mix(in srgb,currentColor 35%,transparent);transition:text-decoration-color .2s,color .2s}
+.ds[data-world] main a:hover{text-decoration-color:currentColor}
+/* the answer card speaks in the second voice instead of a capitalised label */
+.ds .head .short-answer::before{font:italic 400 1.15rem/1 var(--font-serif);letter-spacing:0;text-transform:none;color:var(--w-accent)}
+
+/* ---------- voices: how a headline turns (h1 and h2 are written in two spans; the second is the turn) ---------- */
+.look-serif .head h1 span+span,.look-serif .sec>h2 span+span,.look-serif .close p>span:first-child{font-family:var(--font-serif);font-style:italic;font-weight:400;letter-spacing:-.012em;font-size:1.1em;line-height:.95}
+.look-serif-all .head h1,.look-serif-all .sec>h2{font-family:var(--font-serif);font-weight:400;letter-spacing:-.02em;line-height:.98}
+.look-serif-all .head h1 span+span,.look-serif-all .sec>h2 span+span{font-style:italic}
+.look-soft .head h1 span+span,.look-soft .sec>h2 span+span{color:color-mix(in srgb,var(--ink) 48%,var(--w-ground))}
+.look-accent .head h1 span+span,.look-accent .sec>h2 span+span{color:var(--w-accent)}
+.look-inline .head h1 span,.look-inline .sec>h2 span{display:inline}
+.look-giant .head h1{font-size:clamp(3.4rem,1.2rem + 9vw,11.5rem);line-height:.86;letter-spacing:-.05em}
+.look-quiet .head h1{font-size:clamp(2.6rem,1.6rem + 3.2vw,4.75rem);line-height:1;letter-spacing:-.03em;max-width:16em}
+.look-norule .sec>h2::before{display:none!important}
+
+/* ---------- section layouts ---------- */
+@media (min-width:1024px){
+  /* sidehead: the heading holds the left third while the section reads past it */
+  .look-sidehead .sec:not(.band){row-gap:0}
+  .look-sidehead .sec:not(.band)>h2{grid-column:1 / span 4;grid-row:1 / span 30;position:sticky;top:calc(var(--bar) + var(--s-6));align-self:start;font-size:clamp(1.9rem,1.1rem + 1.6vw,2.9rem);margin-bottom:var(--s-6)}
+  .look-sidehead .sec:not(.band)>*:not(h2){grid-column:5 / -1}
+  .look-sidehead .sec:not(.band)>.lead{grid-column:5 / -1;margin-top:0}
+  .look-sidehead .sec:not(.band) .split .copy{grid-column:1 / span 5}.look-sidehead .sec:not(.band) .split .side{grid-column:6 / -1}
+  /* centred: one axis down the page, for statements */
+  .look-centred .sec>h2,.look-centred .sec>.lead{justify-self:center;text-align:center;grid-column:2 / span 10;margin-inline:auto}
+  .look-centred .sec>h2::before{margin-inline:auto}
+  .look-centred .sec>.prose{grid-column:3 / span 8}
+}
+
+/* ---------- points: three dialects ---------- */
+.look-cards .points>li{background:var(--surface);border-radius:6px;padding:var(--s-6) var(--s-5) var(--s-6);transition:transform .45s var(--k-ease),background .3s}
+.look-cards .points>li:hover{transform:translateY(-3px)}
+.look-cards .band .points>li{background:var(--w-ground)}
+.look-rail .points{grid-template-columns:minmax(0,1fr)!important;row-gap:0}
+.look-rail .points>li{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);padding:var(--s-6) 0;box-shadow:0 -1px 0 color-mix(in srgb,var(--ink) 12%,transparent)}
+.look-rail .points>li>h3{grid-column:1 / span 5;font-size:var(--size-h3)!important;letter-spacing:-.01em!important;margin:0}
+.look-rail .points>li>:not(h3){grid-column:6 / -1}
+.look-ink .points{background:var(--w-band);color:#e9eef8;border-radius:10px;padding:var(--s-7) var(--s-6);margin-inline:calc(-1 * var(--s-2))}
+.look-ink .points p,.look-ink .points ul{color:rgba(233,238,248,.72)}
+.look-ink .points h3{color:#fff}
+
+/* ---------- figures: numerals in the second voice ---------- */
+.look-numerals .figures dt{font:400 clamp(2.4rem,1.4rem + 2.6vw,4.2rem)/.95 var(--font-serif);letter-spacing:-.02em;margin-bottom:var(--s-3)}
+.look-numerals .giant-num{font-family:var(--font-serif);font-weight:400;letter-spacing:-.04em}
+
+/* ---------- the close: four ways to end a page ---------- */
+.look-close-ink .close{background:var(--w-band);color:#fff}
+.look-close-ink .close a{background:#fff;color:var(--w-band)!important}
+.look-close-paper .close{background:transparent;color:var(--ink);padding-top:var(--rhythm-m)}
+.look-close-paper .close p{font-family:var(--font-serif);font-weight:400;letter-spacing:-.025em;font-size:clamp(2.6rem,1.2rem + 4.4vw,6rem)}
+.look-close-paper .close .sub{font-family:var(--font-text)}
+.look-close-world .close{background:var(--w-accent)}
+
+/* ---------- the connector: related pages wear the colour of the page they lead to ---------- */
+.ds[data-world] .related:not(.tiles) ul{gap:var(--s-3)}
+.ds[data-world] .related:not(.tiles) li{position:relative;background:var(--surface);border-radius:6px;padding:var(--s-5) var(--s-5) var(--s-5) calc(var(--s-5) + 10px);overflow:hidden;transition:transform .45s var(--k-ease)}
+.ds[data-world] .related:not(.tiles) li::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--to,var(--w-accent));transition:width .45s var(--k-ease)}
+.ds[data-world] .related:not(.tiles) li:hover{transform:translateY(-2px)}
+.ds[data-world] .related:not(.tiles) li:hover::before{width:10px}
+.ds[data-world] .related:not(.tiles) li>a{color:var(--ink);text-decoration:none;font:600 var(--size-lede)/1.25 var(--font-display);letter-spacing:-.01em}
+.ds[data-world] .related:not(.tiles) li>a::after{content:"";position:absolute;inset:0}
+.ds[data-world] .related:not(.tiles) li:hover>a{color:var(--to-ink,var(--link))}
+.ds[data-world] .band .related:not(.tiles) li{background:var(--w-ground)}
+[data-to="steel"]{--to:#1f6bff}[data-to="shift"]{--to:#4b3df0}[data-to="floor"]{--to:#0f8a7a}[data-to="paper"]{--to:#c9a35a}[data-to="morning"]{--to:#66a5fa}[data-to="studio"]{--to:#a0627a}
+
+/* ---------- moving between pages: the headline of the next page grows out of the link you chose ---------- */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.42s;animation-timing-function:var(--k-ease)}
+::view-transition-group(k-title){animation-duration:.55s;animation-timing-function:var(--k-ease)}
+@media (prefers-reduced-motion:reduce){@view-transition{navigation:none}}
+
+/* ---------- reading progress for the long pages (a world-coloured bar under the top bar) ---------- */
+.k-progress{position:fixed;left:0;top:0;height:3px;width:100%;z-index:70;transform-origin:0 50%;transform:scaleX(0);background:var(--w-accent);pointer-events:none}
+@supports (animation-timeline:scroll()){
+  .k-progress{animation:kprog linear both;animation-timeline:scroll(root)}
+}
+@keyframes kprog{to{transform:scaleX(1)}}
+
+/* ---------- a drop initial for essays ---------- */
+.look-dropcap .sec>.prose:first-of-type>p:first-of-type::first-letter{font:400 4.6em/.8 var(--font-serif);float:left;margin:.06em .1em 0 0;color:var(--w-accent)}
+@supports (initial-letter:3){.look-dropcap .sec>.prose:first-of-type>p:first-of-type::first-letter{initial-letter:3;float:none;font-size:1em;line-height:inherit;margin:0 .12em 0 0}}
+
+@media (max-width:1023px){
+  .look-rail .points>li{grid-template-columns:minmax(0,1fr)}
+  .look-rail .points>li>h3,.look-rail .points>li>:not(h3){grid-column:1 / -1}
+  .look-rail .points>li>h3{margin-bottom:var(--s-2)}
+}
+@media (prefers-reduced-motion:reduce){.look-cards .points>li,.ds[data-world] .related li,.ds[data-world] .related li::before{transition:none}}
+
+/* ---------- field guides: one series, each guide with its own cover colour (front matter cover:) ---------- */
+.look-cover .head{margin:var(--s-3) calc(-1 * var(--margin) + 12px) 0;padding:var(--s-8) var(--margin) var(--s-8);border-radius:6px 28px 28px 6px;background:var(--cv,#1c1b2a);color:#fff;position:relative;overflow:hidden}
+.look-cover .head::before{content:"";position:absolute;left:0;top:0;bottom:0;width:18px;background:rgba(0,0,0,.18)}
+.look-cover .head .crumbs,.look-cover .head .crumbs a{color:rgba(255,255,255,.7)}
+.look-cover .head h1{color:#fff;font-family:var(--font-serif);font-weight:400;letter-spacing:-.02em;line-height:.95;font-size:clamp(3rem,1.2rem + 5.4vw,7.6rem);max-width:13em}
+.look-cover .head h1 span+span{font-style:italic;color:rgba(255,255,255,.72)}
+.look-cover .head .lede{color:rgba(255,255,255,.85)}
+.look-cover .head .short-answer{background:rgba(255,255,255,.96)!important;color:var(--ink)!important}
+.look-cover .head .more a{color:#fff}
+.look-cover .head-pic{display:none}
+/* the index card: a small title in a lot of air */
+.look-card .head{justify-items:center;text-align:center;padding-block:var(--s-9,96px) var(--s-8)}
+.look-card .head h1{font-family:var(--font-serif);font-weight:400;font-size:clamp(2.6rem,1.4rem + 3.6vw,5.4rem);line-height:1;letter-spacing:-.02em;grid-column:3 / span 8}
+.look-card .head h1 span+span{font-style:italic;color:var(--cv,var(--w-accent))}
+.look-card .head .words{grid-column:4 / span 6;display:block}.look-card .head .lede{margin-inline:auto}.look-card .head .short-answer{text-align:left}
+.look-card .head-pic{display:none}
+/* the shelf: guides shown by their covers (learn index and every "read next" list) */
+.ds[data-world] .related.tiles li[style*="--cv"]>a{display:flex;flex-direction:column;justify-content:space-between;min-height:260px;padding:var(--s-5) var(--s-5) var(--s-5) calc(var(--s-5) + 14px);border-radius:4px 18px 18px 4px;background:var(--cv);color:#fff!important;position:relative;transition:transform .5s var(--k-ease)}
+.ds[data-world] .related.tiles li[style*="--cv"]>a::before{content:"";position:absolute;left:0;top:0;bottom:0;width:12px;background:rgba(0,0,0,.2);border-radius:4px 0 0 4px}
+.ds[data-world] .related.tiles li[style*="--cv"]>a:hover{transform:translateY(-6px) rotate(-.6deg)}
+.ds[data-world] .related.tiles li[style*="--cv"] .pic{display:none}
+.ds[data-world] .related.tiles li[style*="--cv"] b{font:400 clamp(1.6rem,1.1rem + 1.2vw,2.3rem)/1.02 var(--font-serif)!important;color:#fff!important;letter-spacing:-.01em}
+.ds[data-world] .related.tiles li[style*="--cv"] span{color:rgba(255,255,255,.75)!important}
+.ds[data-world] .related:not(.tiles) li[style*="--cv"]::before{background:var(--cv)}
+/* the reading column of a guide */
+.look-guide .read .prose h3{font-family:var(--font-serif);font-weight:400;font-size:clamp(1.6rem,1.2rem + 1vw,2.2rem);letter-spacing:-.01em}
+.look-guide .toc a{text-decoration:none}
+.look-guide .toc li{transition:color .2s}
+.cv-glyph{position:absolute;right:var(--margin);top:var(--s-8);width:min(30vw,380px);opacity:.9;pointer-events:none}
+.cv-glyph svg{width:100%;height:auto;overflow:visible}
+.cv-glyph line,.cv-glyph path{stroke:#fff;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.cv-glyph rect{fill:none;stroke:#fff;stroke-width:3}
+.cv-glyph .on{fill:#fff;stroke:#fff}
+.cv-glyph line.on{stroke:#ffc35a;stroke-width:6}
+.cv-glyph text{fill:#fff;font:500 4px var(--font-text)}
+.cv-glyph .ruler{width:10cm;max-width:100%}
+.cv-glyph .ruler line{stroke-width:.35}
+.look-cover .head h1,.look-cover .head .words,.look-cover .head .crumbs{position:relative;z-index:1}
+@media (max-width:1023px){.cv-glyph{position:relative;right:auto;top:auto;width:60%;margin-bottom:var(--s-6)}}
+@media (min-width:1024px){.look-cover .head h1{grid-column:1 / span 8}.look-cover .head .words{grid-column:1 / span 8}}
+/* phone: every head stacks in one column, whatever the page did on desktop */
+@media (max-width:1023px){
+  .ds[data-world] .head>*:not(.cv-glyph){grid-column:1 / -1!important}
+  .ds[data-world] .head .words{display:block!important}
+  .ds[data-world] .head .words>*{grid-column:auto!important}
+}

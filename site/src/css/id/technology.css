@@ -1,0 +1,23 @@
+/* /technology/: the physics essay. Headlines in the serif, a narrow reading column, the figures breaking out wide,
+   a progress bar at the top, and the one fact the page hangs on set very large. */
+.head{justify-items:center;text-align:center}
+.head .crumbs{grid-column:1 / -1}
+.head h1{grid-column:2 / span 10;font-size:clamp(3.2rem,1.4rem + 5.4vw,7.6rem)!important;max-width:11em}
+.head .words{grid-column:3 / span 8}
+.head .lede{margin-inline:auto;font-family:var(--font-serif);font-style:italic;font-size:clamp(1.4rem,1.1rem + .9vw,2rem);line-height:1.3;color:var(--ink)}
+.head .short-answer{text-align:left}
+.head-pic{grid-column:1 / -1;margin-top:var(--s-8)!important}
+#light-travels-about-30-cm{font-size:clamp(3rem,1.2rem + 6vw,8.2rem)!important;line-height:.92;max-width:none;text-align:center;justify-self:center;grid-column:1 / -1!important}
+#light-travels-about-30-cm span+span{font-style:italic;color:var(--w-accent)}
+#light-travels-about-30-cm+.lead{grid-column:3 / span 8!important;text-align:center;justify-self:center}
+.explain{grid-column:1 / -1;background:var(--surface);border-radius:22px;padding:var(--s-6)}
+@media (min-width:1024px){
+  .sec>.prose,.sec>.points,.sec>.split,.sec>.more,.sec>.compare,.sec>.note,.sec>.figures,.sec>.related{grid-column:3 / span 8}
+  .sec>h2{grid-column:3 / span 8}
+}
+.sec .split .copy{grid-column:1 / -1!important}.sec .split .side{grid-column:1 / -1!important;margin-top:var(--s-6)}
+.figures{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#light-travels-about-30-cm{margin-bottom:var(--s-7)!important}
+#light-travels-about-30-cm+.lead{margin-top:0!important}
+#light-travels-about-30-cm+.lead{grid-row:2!important}
+.sec.has-lead>.lead{grid-row:2!important}@media (min-width:1024px){.sec.has-lead>.lead{grid-column:3 / span 8!important}}#light-travels-about-30-cm+.lead{grid-column:3 / span 8!important}
