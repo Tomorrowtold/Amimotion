@@ -16,3 +16,5 @@
 .parts.c3>li .pic{aspect-ratio:auto;display:block;background:none}
 .parts.c3>li .pic picture{display:block;height:100%}
 .parts.c3>li::before{inset:35% 0 0;background:linear-gradient(to top,rgba(14,19,38,.88),rgba(14,19,38,.45) 55%,transparent)}
+/* the moment of decision: the way into the diagnostic is the one filled button in the head; any second link stays a quiet text link beside it */
+.head .more:has(>.cta){display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3) var(--s-6)}.head .more:has(>.cta) .sep{display:none}

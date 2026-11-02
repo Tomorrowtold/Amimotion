@@ -27,3 +27,5 @@
 .parts.c2>li:hover h3 a::after{transform:translate(3px,-.1em) rotate(45deg)}
 @media (max-width:639px){.parts.c2{row-gap:var(--s-4)!important}}
 @media (prefers-reduced-motion:reduce){.parts.c2>li,.parts.c2 .pic img{transition:none}}
+/* the moment of decision: the way into the diagnostic is the one filled button in the head; any second link stays a quiet text link beside it */
+.head .more:has(>.cta){display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3) var(--s-6)}.head .more:has(>.cta) .sep{display:none}
