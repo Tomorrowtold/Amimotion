@@ -6,3 +6,8 @@
 .head h1{font-size:clamp(3rem,1.4rem + 4.6vw,7rem)!important}
 .co-plate img{border-radius:22px;aspect-ratio:6/5;object-fit:cover}
 #what-we-will-not-claim~ul li h3,#what-we-will-not-claim~.points li h3{text-decoration:line-through;text-decoration-color:var(--waiting);text-decoration-thickness:3px}
+/* the paper close: the sub line in ink-soft and the call as the one action pill (the shared paper close leaves both white). */
+.look-close-paper .close .sub{color:var(--ink-soft)}
+main .close a{background:var(--action);color:var(--on-action)!important}
+main .close a:hover{background:var(--action-hover)}
+.close :focus-visible{outline-color:var(--focus)}

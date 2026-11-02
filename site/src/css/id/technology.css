@@ -21,3 +21,13 @@
 #light-travels-about-30-cm+.lead{margin-top:0!important}
 #light-travels-about-30-cm+.lead{grid-row:2!important}
 .sec.has-lead>.lead{grid-row:2!important}@media (min-width:1024px){.sec.has-lead>.lead{grid-column:3 / span 8!important}}#light-travels-about-30-cm+.lead{grid-column:3 / span 8!important}
+/* the explainer: the step in view stays in ink; the others step back in colour only,
+   never below 4.5:1, so every step can still be read while the drawing follows the one in focus. */
+.js .explain.is-live .ex-steps li{opacity:1}
+.js .explain.is-live .ex-steps li h3,.js .explain.is-live .ex-steps li p{transition:color 300ms var(--ease-ds)}
+.js .explain.is-live .ex-steps li:not(.on) h3,.js .explain.is-live .ex-steps li:not(.on) p{color:#6b7190}
+/* the paper close: the sub line in ink-soft and the call as the one action pill (the shared paper close leaves both white). */
+.look-close-paper .close .sub{color:var(--ink-soft)}
+main .close a{background:var(--action);color:var(--on-action)!important}
+main .close a:hover{background:var(--action-hover)}
+.close :focus-visible{outline-color:var(--focus)}

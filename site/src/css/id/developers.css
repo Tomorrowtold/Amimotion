@@ -25,3 +25,6 @@ main .crumbs,main .crumbs a{color:#7f8bb0}
 .close{background:#1f6bff}
 @media (max-width:1023px){.dv-event{grid-template-columns:1fr}}
 main p a:not(.btn):not(.cta){color:var(--link)}
+/* the close band is located blue here: the call is a white pill in ink, not the dark surface of this page. */
+main .close a{background:#fff;color:#0b1238!important}
+main .close a:hover{background:#e3eeff}

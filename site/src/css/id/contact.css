@@ -8,3 +8,18 @@
 .head h1 span+span{color:#cfe0ff}
 .head .words{grid-row:2;display:block;grid-column:1 / span 6;padding-top:var(--s-6)}
 .contact-grid{background:var(--surface);border-radius:28px;padding:var(--s-7);margin-top:calc(-1 * var(--s-6));position:relative;z-index:3;box-shadow:0 40px 80px -60px rgba(18,32,82,.5)}
+/* the form: inputs sit on the card, so they take the ground fill and a hairline with 3:1 against the card,
+   a soft hover, and the action colour as the focus ring. The draft box reads as a sheet inside the card. */
+.contact-grid .form{gap:var(--s-5)}
+.contact-grid .form label{gap:10px;font-size:var(--size-small);letter-spacing:.005em}
+.contact-grid .form input,.contact-grid .form textarea{background:var(--ground);box-shadow:inset 0 0 0 1px rgba(11,18,56,.45);border-radius:12px;font-size:17px;font-weight:400;min-height:52px;padding:14px 16px;transition:box-shadow 150ms var(--ease-ds),background-color 150ms var(--ease-ds)}
+.contact-grid .form textarea{min-height:9em;line-height:1.5}
+.contact-grid .form input:hover,.contact-grid .form textarea:hover{box-shadow:inset 0 0 0 1px rgba(11,18,56,.7)}
+.contact-grid .form input:focus-visible,.contact-grid .form textarea:focus-visible{outline:0;background:var(--surface);box-shadow:inset 0 0 0 2px var(--action),0 0 0 4px rgba(75,61,240,.14)}
+.contact-grid .form .cta{margin-top:var(--s-2)}
+.contact-grid .draft{background:var(--ground);border-radius:16px;margin-top:var(--s-5)}
+@media (max-width:767px){.contact-grid{padding:var(--s-6) 20px;border-radius:22px}}
+/* the photograph runs to the very top edge, under the bar; a soft scrim keeps the crumbs legible on the bright roof. */
+.head{padding-top:0!important}
+.head-pic::before{content:"";position:absolute;inset:0 0 auto;height:clamp(140px,22vh,220px);background:linear-gradient(rgba(18,32,82,.5),transparent);pointer-events:none}
+.head .crumbs{margin-top:calc(var(--bar) + var(--s-5) + 32px)}
