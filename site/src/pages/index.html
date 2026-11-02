@@ -45,11 +45,13 @@ og: /assets/home/og-home.jpg
 <!-- S1c Hall film, full bleed (M05, M24), then S2 slides over it. Plays only in view, muted, with a pause control.
      The poster stays with JavaScript off or reduced motion (a play control is offered). -->
 <div class="stack">
-  <figure class="film plant" data-plant>
+  <figure class="film plant" data-film data-src="/assets/home/hero-film/plant">
     <picture>
       <source type="image/avif" srcset="/assets/home/plant/floor-169-800.avif 800w, /assets/home/plant/floor-169-1600.avif 1600w, /assets/home/plant/floor-169-2752.avif 2752w" sizes="100vw">
-      <img src="/assets/home/plant/floor-169-1600.webp" srcset="/assets/home/plant/floor-169-800.webp 800w, /assets/home/plant/floor-169-1600.webp 1600w, /assets/home/plant/floor-169-2752.webp 2752w" sizes="100vw" width="2752" height="1536" loading="lazy" decoding="async" alt="A production supervisor walks down a rack aisle on a busy Indian factory floor, past shelves of machined aluminium housings and loaded trolleys.">
+      <img src="/assets/home/plant/floor-169-1600.webp" srcset="/assets/home/plant/floor-169-800.webp 800w, /assets/home/plant/floor-169-1600.webp 1600w, /assets/home/plant/floor-169-2752.webp 2752w" sizes="100vw" width="2752" height="1536" loading="lazy" decoding="async" alt="A production supervisor walks down a rack aisle on a busy Indian factory floor, past shelves of machined aluminium housings and loaded trolleys. The view then cuts to the bay from directly above, where one trolley stands parked out of sight.">
     </picture>
+    <video muted playsinline loop preload="none" disablepictureinpicture disableremoteplayback aria-hidden="true" tabindex="-1"></video>
+    <button class="playpause" type="button" aria-label="Pause the film" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/><path class="i-play" d="M8 5.5v13l11-6.5z"/></svg></button>
   </figure>
 
   <!-- S2 Find it (M06, M07): a two-screen sticky stage. Scan (the before frame, checkpoint ticks only) gives way to
