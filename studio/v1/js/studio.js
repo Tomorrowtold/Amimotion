@@ -38,7 +38,7 @@ const settle = () => {
   const top = storySec.getBoundingClientRect().top + scrollY, len = storySec.offsetHeight - innerHeight, y = scrollY, p = (y - top) / len;
   if (drawBridge && y > 2 && y < top - 2) { const k = y / top, to = k > .3 ? top : 0; target = to; cur = y; wheeling = true; return; }
   if (p < -.12 || p > .985) return;
-  const rests = [0, ...[0, 1, 2, 3, 4, 5, 6].map((i) => (i + .82) / 7)];
+  const nb = +storySec.dataset.beats || 7; const rests = [0, ...Array.from({ length: nb }, (_, i) => (i + .78) / nb)];
   let best = rests[0]; for (const r of rests) if (Math.abs(r - p) < Math.abs(best - p)) best = r;
   const to = top + best * len; if (Math.abs(to - y) < 6) return;
   target = to; cur = y; wheeling = true;
@@ -73,11 +73,11 @@ if (fine && !reduce) {
 const qb = document.querySelector('.cap .q-big');
 if (qb && !reduce) {
   const full = qb.textContent; qb.setAttribute('aria-label', full); let timer = 0, typed = false;
-  new MutationObserver(() => {
-    const on = qb.parentElement.classList.contains('on');
+  const mo = new MutationObserver(() => {
+    const on = qb.classList.contains('lit') && qb.parentElement.classList.contains('on');
     if (on && !typed) { typed = true; let i = 0; qb.textContent = ''; const step = () => { i++; qb.textContent = full.slice(0, i); if (i < full.length) timer = setTimeout(step, 18 + Math.random() * 30); }; timer = setTimeout(step, 250); }
     if (!on && typed) { clearTimeout(timer); typed = false; qb.textContent = full; }
-  }).observe(qb.parentElement, { attributes: true, attributeFilter: ['class'] });
+  }); mo.observe(qb.parentElement, { attributes: true, attributeFilter: ['class'] }); mo.observe(qb, { attributes: true, attributeFilter: ['class'] });
 }
 
 /* ---------- one system: vertical scroll moves the track sideways, tag, then anchor, then AmIHub ---------- */
@@ -159,7 +159,7 @@ new IntersectionObserver((es) => { storyOn = es[0].isIntersecting; }, { rootMarg
 let drawBridge = null;
 const startGL = () => { if (!reduce) import('./story.js').then((m) => { drawStory = m.story(storySec, $('#storyGL'));
   // the landing between the hero and the film
-  if ($('#descent') && $('#bridgeGL')) import('./bridge.js').then((b) => { drawBridge = b.bridge({ descent: $('#descent'), hero: $('#hero'), copy: $('#hero .hero-copy'), stage: $('#hero .hero-stage'), canvas: $('#bridgeGL'), lock: $('#bridgeLock'), story: storySec, panel: $('#storyGL').parentElement, sticky: $('#storyGL').closest('.story-sticky'), fallback: $('#tagFallback') }); }); }); };
+  if ($('#descent') && $('#bridgeGL')) import('./bridge.js').then((b) => { drawBridge = b.bridge({ descent: $('#descent'), hero: $('#hero'), copy: $('#hero .hero-copy'), stage: $('#hero .hero-stage'), canvas: $('#bridgeGL'), hudEl: $('#bridgeHUD'), story: storySec, panel: $('#storyGL').parentElement, sticky: $('#storyGL').closest('.story-sticky'), fallback: $('#tagFallback') }); }); }); };
 /* ---------- parallax pictures ---------- */
 const pics = $$('.card-pic img');
 
