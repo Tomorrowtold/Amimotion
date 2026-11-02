@@ -1080,3 +1080,5 @@ html.tag-live .tag-fallback{opacity:0!important;transition:none}
 .hero .scroll-cue i{position:absolute;left:50%;top:8px;width:3px;height:3px;margin-left:-1.5px;border-radius:50%;background:var(--located);animation:cue2 2.2s cubic-bezier(.6,0,.3,1) infinite}
 @keyframes cue2{0%{transform:translateY(0);opacity:0}20%{opacity:1}70%{transform:translateY(16px);opacity:0}100%{opacity:0}}
 .cap h2 .ln:first-child span[data-b]{background:none}
+.cap .q-big.now,.cap .q-big{animation:none;background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--ink)}
+.cap .q-big:not(.lit){color:rgba(11,18,56,.3)}
