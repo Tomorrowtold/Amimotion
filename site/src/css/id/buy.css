@@ -34,3 +34,5 @@
 .parts.c4>li .pic{margin:0 0 var(--s-4)!important;border-radius:12px;overflow:hidden;aspect-ratio:4/3}
 .parts.c4>li .pic img{width:100%;height:100%;object-fit:cover}
 .parts.c4>li:not(:has(.pic)){justify-content:flex-end;background:var(--w-plate,var(--surface))}
+/* inline headings: a heading part that wraps to two lines is revealed as one box, so its rising mask no longer cuts off the second line */
+.look-inline .sec>h2 .km-r{display:inline-block;max-width:100%}
