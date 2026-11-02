@@ -566,7 +566,7 @@ def build():
     public = []
     for url, (meta, body) in pages.items():
         header = header_html(url, meta.get("world"), over_photo(meta, body))
-        page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
+        page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main" tabindex="-1">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
         out.parent.mkdir(parents=True, exist_ok=True); out.write_text(page)
@@ -631,8 +631,16 @@ def build():
     (DIST / "assets" / "ask.json").write_text(json.dumps({"p": ask_pages, "e": rows}, ensure_ascii=False, separators=(",", ":")))
 
     if args.indexnow_key: (DIST / f"{args.indexnow_key}.txt").write_text(args.indexnow_key)
+    # Security headers for a static host. Every script and style is first-party; inline ones are the per-page CSS, the
+    # JSON-LD, the motion flag and the speculation rules, so 'unsafe-inline' stays and nothing else is allowed in.
+    # connect-src names the one outside endpoint a form may post to (HubSpot forms, used once config.js names it).
+    csp = ("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
+           "font-src 'self'; media-src 'self' blob:; connect-src 'self' https://api.hsforms.com; frame-src 'self'; worker-src 'self' blob:; "
+           "object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'; upgrade-insecure-requests")
     (DIST / "_headers").write_text("/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n"
-        + ("" if args.indexable else "  X-Robots-Tag: noindex, nofollow\n")
+        + f"  Content-Security-Policy: {csp}\n  X-Frame-Options: SAMEORIGIN\n  Cross-Origin-Opener-Policy: same-origin\n"
+        + "  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()\n"
+        + ("  Strict-Transport-Security: max-age=31536000; includeSubDomains\n" if args.indexable else "  X-Robots-Tag: noindex, nofollow\n")
         + "\n/assets/*\n  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000\n\n/llms*.txt\n  Content-Type: text/plain; charset=utf-8\n")
     print(f"built {len(pages)} pages -> {DIST}{' (share)' if SHARE else ''}{' (indexable)' if args.indexable else ' (review: noindex)'}")
 

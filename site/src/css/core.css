@@ -40,6 +40,8 @@
 .ds :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:var(--radius-control)}
 .skip-link{position:absolute;left:16px;top:-100px;z-index:60;background:var(--ground);color:var(--ink);padding:8px 12px;font:500 15px/1 var(--font-text)}
 .skip-link:focus{top:12px}
+/* the skip link moves focus to <main> (tabindex -1): the region takes focus without drawing a ring round the page */
+main:focus{outline:none}
 
 /* ---------- buttons (M14): a pill with a chevron that moves 3 px; press scales to .97 ---------- */
 .cta{display:inline-flex;align-items:center;justify-content:center;gap:.55em;height:48px;padding:0 22px;background:var(--action);color:var(--on-action)!important;border:0;border-radius:var(--radius-pill);font:500 var(--size-small)/1 var(--font-text);text-decoration:none!important;white-space:nowrap;cursor:pointer;transition:background-color var(--t-fast) var(--ease-ds),transform var(--t-fast) var(--ease-ds)}
