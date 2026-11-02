@@ -27,3 +27,12 @@ main>.sec.band:has(+.sec:not(.band)),main>.sec.band:has(+.close){border-radius:0
 .head-pic .pic{overflow:visible!important}.head.has-still .head-pic{padding-bottom:var(--s-7)}
 /* one label column for every sheet: values start on the same line from table to table, labels sit on the value's baseline */
 @media (min-width:640px){.spec{table-layout:fixed;width:100%}.spec th{width:28%}.spec th,.spec td{vertical-align:baseline}}
+/* desktop: each part's sheet holds its own picture under the sticky heading, the way a compare page keeps the
+   product above its column. Existing renders only, small sizes, painted by CSS (no words, nothing for assistive tech) */
+@media (min-width:1024px){
+  #amigo-tag::after,#amimo-anchor::after,#amihub-software::after{content:"";display:block;width:min(100%,320px);aspect-ratio:3/2;margin-top:var(--s-6);border-radius:16px;
+    background:center/78% auto no-repeat var(--sp-pic),radial-gradient(closest-side,#fff 58%,#eaf0fa 100%)}
+  #amigo-tag::after{--sp-pic:image-set(url("/assets/home/amigo-page-800.avif") type("image/avif"),url("/assets/home/amigo-page-800.webp") type("image/webp"))}
+  #amimo-anchor::after{--sp-pic:image-set(url("/assets/home/amimo-page-640.avif") type("image/avif"),url("/assets/home/amimo-page-640.webp") type("image/webp"))}
+  #amihub-software::after{background:center/cover no-repeat image-set(url("/assets/hall/hall-waits-32-800.avif") type("image/avif"),url("/assets/hall/hall-waits-32-800.webp") type("image/webp")) #e9eff9}
+}
