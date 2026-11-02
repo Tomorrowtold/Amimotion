@@ -34,6 +34,14 @@ HEX = dict(
     floor='#f6f4ef', machine='#e4e2dc', hardware='#3a3d42',
     blue='#66a5fa', amber='#f0a43a', outline='#d6d4ce',
 )
+# Retint: pass --palette my.json ({"floor": "#...", "machine": "#...", "hardware": "#...", "blue": "#...",
+# "amber": "#...", "outline": "#..."}; any subset). Shadow is not a material: it is what the light does to the
+# floor, so a new shadow target is met by the key/fill ratio (--key, --world) and checked in the grade.
+def _palette_override(argv):
+    if '--palette' in argv:
+        import json
+        HEX.update(json.load(open(argv[argv.index('--palette') + 1])))
+_palette_override(sys.argv)
 BEVEL = 0.022          # one bevel radius for the whole hall (m)
 MARK_W = 0.085         # trail and tick width on the floor (m)
 TICK_LEN = 1.0        # a checkpoint tick (m)

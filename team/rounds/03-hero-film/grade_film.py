@@ -5,7 +5,7 @@
     python3 grade_film.py still  <raw.png> <out.png>        # grade one still (any size; patch scales with it)
 
 The grade is one per-channel gain in linear light, the same for every frame, so the open floor lands exactly on
-the page ground #f5f5f2 (DESIGN_SYSTEM.md 3.1: "grade the hall floor to #f5f5f2"; the floor albedo in the model is
+the page ground #f5f5f2, with a highlight shoulder at the ground value (DESIGN_SYSTEM.md 3.1: "grade the hall floor to #f5f5f2"; the floor albedo in the model is
 the shared-world #f6f4ef, 1.01:1 from the page). Nothing else: no grain, no vignette, no lens tells. It is a model,
 and a model photographed well has none of those.
 """
@@ -15,7 +15,9 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import img16
 
-GROUND = np.array([245, 245, 242], np.float32) / 255.0
+# The page ground the open floor is graded to. Retint the page: HALL_GROUND=#rrggbb python3 grade_film.py ...
+_G = os.environ.get('HALL_GROUND', '#f5f5f2').lstrip('#')
+GROUND = np.array([int(_G[i:i + 2], 16) for i in (0, 2, 4)], np.float32) / 255.0
 # open-floor reference patch, as fractions of the frame (aisle near the camera, nothing ever passes it at t=0)
 PATCH = (0.95, 0.99, 0.80, 0.95)   # y0, y1, x0, x1: open aisle floor at the bottom right, clear at t = 0
 
@@ -55,7 +57,15 @@ def gain():
 def grade(raw, out, g=None):
     g = gain() if g is None else g
     a = img16.read(raw)
-    b = enc(lin(a) * g)
+    l = lin(a) * g
+    # page shoulder: open floor that the key lights brighter than the reference patch (up to #faf9f6 at the far
+    # left) is pulled back to the page ground, keeping 15 % of the excess, so the frame has no lighter box on
+    # the page. Anything at or below the ground value is untouched.
+    Y = l @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+    Yg = float(lin(GROUND) @ np.array([0.2126, 0.7152, 0.0722], np.float32))
+    r = np.maximum(Y / Yg, 1.0)
+    l = l / (r ** 0.85)[..., None]
+    b = enc(l)
     im = Image.fromarray((b * 255 + 0.5).clip(0, 255).astype(np.uint8))
     im.save(out)
     return b
