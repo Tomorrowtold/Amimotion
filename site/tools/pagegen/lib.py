@@ -501,6 +501,10 @@ def write(path, title, description, blocks, tone=None, **meta):
     joined = "".join(b for b in blocks if b)
     if any(k in joined for k in ('class="local', "data-closer", "data-explain")):
         meta["scripts"] = (meta.get("scripts", "") + " inner").strip()
+    # round 20 (Theo): the kinetic type system (inner.css, km.js) on every inner page except the tools, which keep theirs
+    if not url.startswith(("/tools/", "/diagnostic/")):
+        meta["scripts"] = (meta.get("scripts", "") + " km").strip()
+        blocks = [b.replace('<div class="head', '<div data-km class="head', 1) if b and b.startswith('<div class="head') else b for b in blocks]
     sc = meta.get("scripts", "")
     if "tools" in sc: meta["css"] = "tool"
     if "diag" in sc: meta["css"] = "diag"

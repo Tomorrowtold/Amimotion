@@ -450,3 +450,21 @@ main .qstart a:hover{background:var(--pressed)}
 @media (max-width:1023px){.related.tiles ul:has(>li:nth-child(4):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:639px){.related.tiles ul:has(>li:nth-child(4):last-child){grid-template-columns:minmax(0,1fr)}}
 .closer li>h3{align-self:end}.closer li>p{align-self:start;margin-top:var(--s-3)}
+
+/* ======================================================================================================
+   Round 20 (Theo, team/rounds/20-learn/notes.md): the kinetic type system. Headlines are set like film titles:
+   each line rises out of its own mask (a clip that travels with it, so no wrapper markup). The H1 does it at load in
+   CSS alone; section headings do it as they enter (km.js adds .km-r, then .in). Figures count up in tabular numerals.
+   Native scroll throughout. Without .motion (reduced motion, ?still, no JS) nothing here applies.
+   ====================================================================================================== */
+.ds{--km-ease:cubic-bezier(.16,1,.3,1)}
+@keyframes km-rise{from{transform:translateY(105%);clip-path:inset(-.2em -.1em 105% -.1em)}to{transform:none;clip-path:inset(-.2em -.1em -.3em -.1em)}}
+@keyframes km-fade{from{opacity:0;transform:translateY(14px)}}
+.motion [data-km] h1>span{animation:km-rise 1.05s var(--km-ease) backwards}
+.motion [data-km] h1>span+span{animation-delay:.14s}
+.motion [data-km] .words{animation:km-fade .9s var(--km-ease) .38s backwards}
+.motion [data-km] .crumbs{animation:km-fade .7s var(--km-ease) backwards}
+.km-r{display:block;transition:transform .95s var(--km-ease) calc(var(--i,0) * 110ms),clip-path .95s var(--km-ease) calc(var(--i,0) * 110ms);clip-path:inset(-.2em -.1em -.3em -.1em)}
+.km-r:not(.in){transform:translateY(105%);clip-path:inset(-.2em -.1em 105% -.1em)}
+.close p>.km-r{display:block}
+.km-n,.figures dt,.giant-num{font-variant-numeric:tabular-nums}

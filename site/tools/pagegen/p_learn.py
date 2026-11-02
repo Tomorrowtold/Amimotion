@@ -15,6 +15,7 @@ PAGEGEN = HERE.parents[3] / "site" / "tools" / "pagegen"
 if __name__ != "__main__" or "--md" not in sys.argv:
     sys.path.insert(0, str(PAGEGEN))
     from lib import *  # noqa
+    import learn_figs
     BUILD = True
 else:
     BUILD = False
@@ -669,6 +670,15 @@ RES_READ = [
 # ------------------------------------------------------------------------------------------------
 # Build the pages with lib.py
 # ------------------------------------------------------------------------------------------------
+def read_fig(parts_, fig):
+    """read() with the guide's figure: on desktop the figure sits in the left rail above the on-this-page list, and both
+    stay in view while its layers draw (the list marks the section being drawn); on phones it sits above the text."""
+    if not fig: return read(parts_)
+    toc = '<nav class="toc" aria-label="On this page"><ol>' + "".join(f'<li><a href="#{i}">{h}</a></li>' for i, h, _ in parts_) + "</ol></nav>"
+    body = "".join(f'<h2 id="{i}">{h}</h2>{x}' for i, h, x in parts_)
+    return f'<div class="read has-fig"><div class="rail">{fig}{toc}</div>{prose(body)}</div>'
+
+
 def rel(keys):
     return [L[k] if isinstance(k, str) else k for k in keys]
 
@@ -676,13 +686,16 @@ def rel(keys):
 def build():
     for g in G:
         crumb = L[next(k for k, v in L.items() if v[0] == f"/learn/{g['slug']}/")][1]
+        # round 20 (Theo): the H1's question answers itself (class qa, km.js), and the guide's own figure draws beside the text
+        hd = head(g["h1"], g["soft"], g["lede"], short=g["short"], trail=[("Field guides", "/learn/"), (label(f"/learn/{g['slug']}/", crumb), None)], media=pic(g["pic"]))
+        hd = hd.replace('<h1 id="page-title">', '<h1 id="page-title" class="qa">', 1)
         write(f"/learn/{g['slug']}/", g["title"], g["desc"], [
-            head(g["h1"], g["soft"], g["lede"], short=g["short"], trail=[("Field guides", "/learn/"), (label(f"/learn/{g['slug']}/", crumb), None)], media=pic(g["pic"])),
-            section(read(g["parts"]), label="The guide"),
+            hd,
+            section(read_fig(g["parts"], learn_figs.figure(g["slug"])), label="The guide"),
             section(faq(g["faqs"], "Common follow-ups.")) if g["faqs"] else "",
             section(vp("Read next."), links(rel(g["related"]))),
             close(),
-        ], type="article")
+        ], type="article", css="learn")
 
     # round 13 (The Pudding): each guide's tile carries its own picture (a hall crop or the CAD still); the diagnostic is one tile
     TILES = {f"/learn/{g['slug']}/": tilepic(g["pic"]) for g in G}
