@@ -81,8 +81,10 @@
   </div>
 </section>
 
-<!-- 1c. PLAN YOUR FIRST BAY: a banner that opens into the planner -->
-<section class="sim" id="sim" aria-label="Plan your first bay">
+<!-- 1c. ONE SCREEN: plan your first bay, the people, the products -->
+<section class="trio" id="trio" aria-label="Plan, people and products">
+<div class="trio-sticky">
+<div class="sim" id="sim" aria-label="Plan your first bay">
   <div class="sim-card" data-sim>
     <i class="sim-orb a" aria-hidden="true"></i><i class="sim-orb b" aria-hidden="true"></i><i class="sim-orb c" aria-hidden="true"></i><i class="sim-light" aria-hidden="true"></i>
     <svg class="sim-art" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path class="sim-path" d="M-20 250 C 220 250, 260 120, 470 120 S 760 210, 900 150 S 1120 60, 1230 70"/><circle class="sim-wait" cx="900" cy="150" r="9"/><circle class="sim-ring" cx="900" cy="150" r="22"/><circle class="sim-tag" cx="470" cy="120" r="6"/></svg>
@@ -101,10 +103,9 @@
       <iframe class="sim-frame" title="Plan your first bay" tabindex="0"></iframe>
     </div>
   </div>
-</section>
+</div>
 
-<!-- 1d. THE PEOPLE -->
-<section class="team" id="team" aria-labelledby="team-h">
+<div class="team" id="team" aria-labelledby="team-h">
   <div class="team-in">
     <h2 class="team-h" id="team-h"><span>Hardware veterans.</span> <span>Building spatial intelligence.</span></h2>
     <ul class="team-row">
@@ -134,10 +135,9 @@
       </li>
     </ul>
   </div>
-</section>
+</div>
 
-<!-- 1e. THE PRODUCTS: one at a time, then one system -->
-<section class="kn" id="system" aria-labelledby="sys-title">
+<div class="kn" id="system" aria-labelledby="sys-title">
   <div class="kn-sticky">
     <div class="kn-grid">
       <div class="kn-side">
@@ -172,7 +172,21 @@
       <p class="links"><a class="arrow-link" href="/technology/">How it locates a tag</a><a class="arrow-link" href="/specs/">Specifications</a><a class="arrow-link" href="/developers/">For developers</a></p>
     </div>
   </div>
+</div>
+</div>
 </section>
+
+<!-- 1d. FLOORS: pitch black, drawn in code -->
+<section class="inds" id="industries" aria-labelledby="inds-h">
+  <h2 class="inds-h" id="inds-h">Different floors. One live map.</h2>
+  <div class="inds-row">
+    <a class="ind" href="/industries/manufacturing/" data-scene="factory"><canvas aria-hidden="true"></canvas><span class="ind-w"><span class="ind-n">Manufacturing</span><span class="ind-p">Trolleys and bins between cells, lines and inspection.</span></span></a>
+    <a class="ind" href="/industries/warehousing/" data-scene="warehouse"><canvas aria-hidden="true"></canvas><span class="ind-w"><span class="ind-n">Warehousing</span><span class="ind-p">Pallets, staging lanes and docks, with forklifts on the same map.</span></span></a>
+    <a class="ind" href="/industries/robotics/" data-scene="robots"><canvas aria-hidden="true"></canvas><span class="ind-w"><span class="ind-n">Robotics and AMRs</span><span class="ind-p">Robots and the trolleys they tow, beside everything else you tag.</span></span></a>
+  </div>
+  <a class="inds-more" href="/industries/">Know more</a>
+</section>
+
 
 
 

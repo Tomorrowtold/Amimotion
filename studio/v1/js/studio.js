@@ -96,13 +96,14 @@ const knSet = (st) => {
 };
 const knFrame = () => {
   if (!kn || reduce) return;
-  const r = kn.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
+  const sc = innerWidth > 860 && $('#trio') ? $('#trio') : kn;
+  const r = sc.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
   const p = clamp(-r.top / (r.height - innerHeight));
   knSet(p < KN_AT[0] ? -1 : p < KN_AT[1] ? 0 : p < KN_AT[2] ? 1 : 2);
   kn.style.setProperty('--f', sm(.84, .94, p).toFixed(3));
 };
 if (kn) kn.querySelectorAll('.kn-go').forEach((b) => b.addEventListener('click', () => {
-  const i = +b.dataset.i, top = kn.getBoundingClientRect().top + scrollY, span = kn.offsetHeight - innerHeight;
+  const sc = innerWidth > 860 && $('#trio') ? $('#trio') : kn, i = +b.dataset.i, top = sc.getBoundingClientRect().top + scrollY, span = sc.offsetHeight - innerHeight;
   scrollTo({ top: top + span * ([.22, .5, .8][i]), behavior: reduce ? 'auto' : 'smooth' });
 }));
 
@@ -212,8 +213,96 @@ if (simSec) {
     simSec.classList.add('open'); win.hidden = false;
     const go = () => { try { const d = frame.contentDocument; dress(d); const pick = () => { const b = d.querySelector(`.diag-opt[data-v="${v}"]`); if (b) { if (b.getAttribute('aria-pressed') !== 'true') b.click(); } else setTimeout(pick, 120); }; pick(); } catch (e) {} };
     if (!frame.src) { frame.addEventListener('load', go, { once: true }); frame.src = './diagnostic/index.html'; } else go();
-    setTimeout(() => win.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }), 250);
+    if (!simSec.closest('.trio')) setTimeout(() => win.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }), 250);
   };
   simSec.querySelectorAll('.sim-opt').forEach((b) => b.addEventListener('click', () => open(b.dataset.v)));
   simSec.querySelector('.sim-close').addEventListener('click', () => { simSec.classList.remove('open'); win.hidden = true; });
+  const shut = () => { simSec.classList.remove('open'); win.hidden = true; };
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && !win.hidden) shut(); });
+  document.addEventListener('pointerdown', (e) => { if (!win.hidden && !win.contains(e.target) && !e.target.closest('.sim-opt')) shut(); });
 }
+
+
+/* ---------- floors: three living plans drawn on black ---------- */
+(() => {
+  const cards = $$('.ind'); if (!cards.length) return;
+  const BLUE = '31,107,255', IND = '120,110,255', AMB = '255,176,32', LINE = 'rgba(150,170,255,.24)';
+  const poly = (pts) => { const seg = []; let L = 0; for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push([pts[i - 1], pts[i], L, d]); L += d; } return { seg, L }; };
+  const at = (P, t) => { let d = ((t % 1) + 1) % 1 * P.L; for (const [a, b, s, l] of P.seg) if (d <= s + l) { const f = (d - s) / l; return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]; } return P.seg[P.seg.length - 1][1]; };
+  // every scene lives in a 100 x 100 plan, drawn in a gentle isometric tilt
+  const SC = {
+    factory: () => {
+      const cells = [[8, 10, 22, 18], [38, 10, 22, 18], [68, 10, 24, 18], [8, 62, 22, 22], [38, 62, 22, 22], [68, 62, 24, 22]];
+      const paths = [poly([[19, 30], [19, 45], [49, 45], [49, 30]]), poly([[49, 30], [49, 45], [80, 45], [80, 30]]), poly([[80, 30], [80, 45], [80, 60]]), poly([[19, 60], [19, 45], [49, 45], [49, 60]])];
+      const movers = paths.map((p, i) => ({ p, sp: .05 + i * .012, o: i * .27 }));
+      return { boxes: cells, paths, movers, waits: [[49, 52], [80, 52]], grid: true };
+    },
+    warehouse: () => {
+      const racks = []; for (let i = 0; i < 6; i++) racks.push([8 + i * 15, 8, 6, 58]);
+      const paths = [0, 1, 2, 3, 4].map((i) => poly([[17.5 + i * 15, 70], [17.5 + i * 15, 10], [17.5 + i * 15, 70]]));
+      const dock = [[10, 86, 14, 8], [30, 86, 14, 8], [50, 86, 14, 8], [70, 86, 14, 8]];
+      const movers = paths.map((p, i) => ({ p, sp: .04 + (i % 3) * .015, o: i * .31, big: true }));
+      return { boxes: racks.concat(dock), paths, movers, waits: [[17, 90], [57, 90]], rack: true };
+    },
+    robots: () => {
+      const loop = poly([[14, 16], [86, 16], [86, 84], [14, 84], [14, 16]]), inner = poly([[34, 36], [66, 36], [66, 64], [34, 64], [34, 36]]);
+      const cross = poly([[14, 50], [86, 50]]);
+      const movers = [{ p: loop, sp: .045, o: 0, robot: true, tow: true }, { p: loop, sp: .045, o: .5, robot: true }, { p: inner, sp: .07, o: .2, robot: true, tow: true }, { p: cross, sp: .09, o: .1 }];
+      return { boxes: [[44, 44, 12, 12]], paths: [loop, inner, cross], movers, waits: [[86, 50]], zone: [44, 44, 12, 12] };
+    },
+  };
+  cards.forEach((card) => {
+    const cv = card.querySelector('canvas'), ctx = cv.getContext('2d'), S = SC[card.dataset.scene]();
+    let W = 0, H = 0, dpr = 1, vis = false, mx = 0, my = 0, hov = 0, hovT = 0;
+    const fit = () => { dpr = Math.min(2, devicePixelRatio || 1); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; };
+    new ResizeObserver(fit).observe(cv); fit();
+    new IntersectionObserver((es) => { vis = es[0].isIntersecting; }).observe(cv);
+    card.addEventListener('pointermove', (e) => { const r = card.getBoundingClientRect(); mx = (e.clientX - r.left) / r.width - .5; my = (e.clientY - r.top) / r.height - .5; });
+    card.addEventListener('pointerenter', () => (hovT = 1)); card.addEventListener('pointerleave', () => { hovT = 0; mx = my = 0; });
+    const trails = S.movers.map(() => []);
+    const draw = (now) => {
+      requestAnimationFrame(draw); if (!vis || !W) return;
+      const t = now / 1000; hov += (hovT - hov) * .06;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+      // isometric plan, centred, leaning toward the pointer
+      const k = Math.min(W * 1.05, H * 1.75) / 110 * (1 + hov * .07), cx = W / 2 + mx * 14, cy = H * .4 + my * 10;
+      const ang = -.52 + mx * .08, sq = .56 - my * .04, c = Math.cos(ang), s = Math.sin(ang);
+      const P = (x, y) => { x -= 50; y -= 50; return [cx + (x * c - y * s) * k, cy + (x * s + y * c) * k * sq]; };
+      // floor dots
+      { const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * .6); g.addColorStop(0, 'rgba(60,70,220,.16)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
+      ctx.fillStyle = 'rgba(130,150,255,.18)';
+      for (let x = 0; x <= 100; x += 5) for (let y = 0; y <= 100; y += 5) { const [px, py] = P(x, y); ctx.fillRect(px - .6, py - .6, 1.2, 1.2); }
+      const quad = (x, y, w, h) => { ctx.beginPath(); const a = P(x, y), b = P(x + w, y), d = P(x + w, y + h), e = P(x, y + h); ctx.moveTo(...a); ctx.lineTo(...b); ctx.lineTo(...d); ctx.lineTo(...e); ctx.closePath(); };
+      // structures: thin walls with a lifted top edge for depth
+      S.boxes.forEach(([x, y, w, h]) => {
+        quad(x, y, w, h); ctx.fillStyle = 'rgba(90,100,170,.06)'; ctx.fill(); ctx.strokeStyle = LINE; ctx.lineWidth = 1; ctx.stroke();
+        const lift = S.rack ? 7 : 4; ctx.save(); ctx.translate(0, -lift); quad(x, y, w, h); ctx.strokeStyle = 'rgba(170,185,255,.4)'; ctx.stroke(); ctx.restore();
+        [[x, y], [x + w, y], [x + w, y + h], [x, y + h]].forEach(([u, v]) => { const [px, py] = P(u, v); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py - lift); ctx.stroke(); });
+      });
+      if (S.zone) { const [x, y, w, h] = S.zone, f = (Math.sin(t * 2) + 1) / 2; quad(x, y, w, h); ctx.setLineDash([3, 3]); ctx.strokeStyle = `rgba(${BLUE},${.35 + f * .4})`; ctx.stroke(); ctx.setLineDash([]); }
+      // the routes, faint
+      ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(31,107,255,.28)';
+      S.paths.forEach((p) => { ctx.beginPath(); p.seg.forEach(([a, b], i) => { const A = P(...a), B = P(...b); if (!i) ctx.moveTo(...A); ctx.lineTo(...B); }); ctx.stroke(); });
+      // waits: amber pools that breathe
+      S.waits.forEach(([x, y], i) => {
+        const [px, py] = P(x, y), f = ((t * .5 + i * .37) % 1);
+        const g = ctx.createRadialGradient(px, py, 0, px, py, 26); g.addColorStop(0, `rgba(${AMB},.45)`); g.addColorStop(1, `rgba(${AMB},0)`);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(px, py, 26, 26 * sq, 0, 0, 7); ctx.fill();
+        ctx.strokeStyle = `rgba(${AMB},${(1 - f) * .7})`; ctx.beginPath(); ctx.ellipse(px, py, 6 + f * 22, (6 + f * 22) * sq, 0, 0, 7); ctx.stroke();
+        ctx.fillStyle = `rgb(${AMB})`; ctx.beginPath(); ctx.arc(px, py - 3, 3.2, 0, 7); ctx.fill();
+      });
+      // movers: located dots with light trails
+      S.movers.forEach((m, i) => {
+        const u = t * m.sp + m.o, [x, y] = at(m.p, u), [px, py] = P(x, y), tr = trails[i];
+        tr.push([px, py]); if (tr.length > 46) tr.shift();
+        for (let j = 1; j < tr.length; j++) { ctx.strokeStyle = `rgba(${m.robot ? IND : BLUE},${(j / tr.length) * .8})`; ctx.lineWidth = 2 * (j / tr.length); ctx.beginPath(); ctx.moveTo(...tr[j - 1]); ctx.lineTo(...tr[j]); ctx.stroke(); }
+        if (m.tow) { const [bx, by] = P(...at(m.p, u - .025)); ctx.fillStyle = 'rgba(200,210,255,.55)'; ctx.fillRect(bx - 3, by - 6, 6, 5); }
+        const col = m.robot ? IND : BLUE, r = m.big ? 4.2 : 3.4;
+        ctx.shadowColor = `rgba(${col},1)`; ctx.shadowBlur = 14; ctx.fillStyle = `rgb(${col})`;
+        ctx.beginPath(); m.robot ? ctx.ellipse(px, py - 3, r + 1, (r + 1) * .8, 0, 0, 7) : ctx.arc(px, py - 3, r, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(px, py - 3, 1.2, 0, 7); ctx.fill();
+      });
+    };
+    if (reduce) { vis = true; draw(4000); } else requestAnimationFrame(draw);
+  });
+})();
