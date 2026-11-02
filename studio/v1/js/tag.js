@@ -126,12 +126,14 @@ export async function init(canvas, fallback, hero) {
     if (phone()) { const cr = canvas.getBoundingClientRect(), a = hero.querySelector('h1').getBoundingClientRect(), b = hero.querySelector('p').getBoundingClientRect(); fx = .5; fy = clamp(((a.bottom + b.top) / 2 - cr.top) / h, .3, .7); }
     dist = phone() ? 150 / (2 * Math.tan(10 * Math.PI / 180) * cam.aspect) : Math.max(560, 260 / (2 * Math.tan(10 * Math.PI / 180) * cam.aspect));
     cam.setViewOffset(w, h, -(fx - .5) * w, -(fy - .5) * h, w, h); cam.updateProjectionMatrix();
+    globalThis.__tagFrame = { fx, fy };
   };
   size(); addEventListener('resize', size);
   // the canvas can settle after the first frame (fonts, layout): refit whenever its box changes
   let lastBox = '';
   const refit = () => { const b = canvas.clientWidth + 'x' + canvas.clientHeight; if (b !== lastBox) { lastBox = b; size(); } };
 
+  const box = new THREE.Box3(), V = new THREE.Vector3(); let landing = false;
   let wxSet = false, px = 0, py = 0, tx = 0, ty = 0, on = true, t0 = performance.now(), lift = 0;
   addEventListener('pointermove', (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, { passive: true });
   new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on) requestAnimationFrame(loop); }).observe(hero);
@@ -166,8 +168,25 @@ export async function init(canvas, fallback, hero) {
     pathMat.uniforms.fadeAll.value = phone() ? 0 : fade; floorMat.uniforms.fadeAll.value = (t < START ? clamp(t / START) : clamp((CYCLE - c) / .8) * .6 + .4) * (1 - sp * .8);
 
     shadow.material.opacity = clamp(1 - tag.position.y / 80) * (1 - sp * .5);
-    refit(); const d = dist;
+    refit(); let d = dist;
     cam.position.set(Math.sin(.15 + px * .05) * d, d * .62, Math.cos(.15 + px * .05) * d); cam.lookAt(0, -4, 0);
+
+    // the landing (bridge.js): the tag falls onto its own trolley in the plant, to the size of the rendered tag on its deck
+    const B = globalThis.__bridge;
+    if (B) {
+      if (!landing) { landing = true; canvas.style.transition = 'none'; }
+      const k = B.k, w = canvas.clientWidth, h = canvas.clientHeight;
+      tag.position.y = lerp(tag.position.y, 0, k); tag.rotation.x = lerp(tag.rotation.x, 0, k); tag.rotation.z = lerp(tag.rotation.z, 0, k); top.position.z = 0;
+      cam.setViewOffset(w, h, -(B.sx - .5) * w, -(B.sy - .5) * h, w, h); cam.updateProjectionMatrix();
+      cam.updateMatrixWorld(); tag.updateMatrixWorld(true); box.setFromObject(tag);
+      let x0 = 1e9, x1 = -1e9; for (let i = 0; i < 8; i++) { V.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).project(cam); x0 = Math.min(x0, V.x); x1 = Math.max(x1, V.x); }
+      const natPx = Math.max(1, (x1 - x0) * w / 2), want = Math.exp(lerp(Math.log(natPx), Math.log(Math.max(2, B.px * 1.35)), k));
+      d = dist * natPx / want;
+      cam.position.set(Math.sin(.15) * d, d * .62, Math.cos(.15) * d); cam.lookAt(0, -4, 0);
+      cam.far = d * 4; cam.near = Math.max(1, d / 40); cam.updateProjectionMatrix();
+      const f = B.floor; pathMat.uniforms.fadeAll.value *= f; floorMat.uniforms.fadeAll.value *= f; shadow.material.opacity *= f;
+      canvas.style.opacity = B.fade;
+    } else if (landing) { landing = false; canvas.style.opacity = ''; cam.near = 10; cam.far = 5000; cam.updateProjectionMatrix(); size(); }
     renderer.render(scene, cam);
     requestAnimationFrame(loop);
   }

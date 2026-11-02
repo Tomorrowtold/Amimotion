@@ -3,9 +3,9 @@ const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, k) => a + (b - a) * k;
 const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 
-const VS = `attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}`;
-const FS = `precision highp float;varying vec2 v;
-uniform sampler2D tA,tB,tM;uniform vec2 res,span,tagPos,bayC;uniform vec3 cam;
+export const VS = `attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}`;
+export const FS = `precision highp float;varying vec2 v;
+uniform sampler2D tA,tB,tM;uniform vec2 res,span,tagPos,bayC;uniform vec3 cam;uniform vec4 vr;
 uniform float draw,dash,amber,onlyQ,hidePaths,bay,tagOn,time,grey;
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 void main(){
@@ -32,15 +32,20 @@ void main(){
   col=mix(col,vec3(.12,.42,1.),tagOn*(1.-smoothstep(0.,2.,abs(dd-(12.+pulse*60.))))*(1.-pulse)*.6);
   // cooler, quieter grade for "before"
   float g=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(g),col,.2)*vec3(.97,.985,1.02),grey*(1.-k)*(1.-inBay)*.6);
-  col*=mix(1.,.93,smoothstep(.45,1.15,length((uv-.5)*vec2(1.2,1.))));
+  vec2 pu=(uv-vr.xy)/vr.zw;col*=mix(1.,.93,smoothstep(.45,1.15,length((pu-.5)*vec2(1.2,1.))));
   col+=(h(uv*res+time)-.5)*.016;
   gl_FragColor=vec4(col,1.);}`;
 
 // chapters: [start, cam x, cam y, zoom, draw, dash, amber, onlyQ, hidePaths, bay, dot, grey]
-const T = [0.481, 0.484];      // the tag on the lone trolley
+export const T = [0.4792, 0.4848];      // the tag on the lone trolley (the rendered AmIGo on its deck)
+// how close the film starts: the hero's tag lands here, on its own trolley
+export const LAND_Z = () => innerWidth > 900 ? 2.2 : 3.0;
+// plate size, shared with the hero's landing so both draw the same pixels
+export const plateSize = () => { const px = Math.max(innerWidth, innerHeight * .8) * Math.min(devicePixelRatio, 2); return innerWidth > 900 ? (px > 1200 ? 2400 : 1600) : (px > 900 ? 1600 : 800); };
 const Q = [0.40, 0.80];      // inspection queue
 const K = [
-  { at: 0.00, cam: [0.60, 0.60, 1.05], draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 },
+  { at: 0.00, cam: [T[0], T[1], LAND_Z()], draw: 1.03, dash: 0, amber: 1, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 0 },
+  { at: 0.07, cam: [0.60, 0.60, 1.05], draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 },
   { at: 0.12, cam: [0.52, 0.50, 1.12], draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 },
   { at: 0.20, cam: [0.40, 0.36, 1.30], draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 },
   { at: 0.28, cam: [0.40, 0.36, 1.30], draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 },
@@ -75,13 +80,13 @@ export function story(section, canvas) {
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
   const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
+  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
   gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
-  const px = Math.max(innerWidth, innerHeight * .8) * Math.min(devicePixelRatio, 2); const big = px > 1700 ? 2400 : px > 900 ? 1600 : 800;
+  const big = plateSize();
   const tex = (src, unit) => new Promise((res) => { const im = new Image(); im.decoding = 'async'; im.onload = () => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im); for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v); res(); }; im.src = src; });
   let ready = false;
   Promise.all([tex(`assets/scene/hall-after-${big}.webp`, 0), tex(`assets/scene/hall-before-${big}.webp`, 1), tex(`assets/scene/hall-masks-${big}.png`, 2)]).then(() => {
-    gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); ready = true; canvas.classList.add('ready');
+    gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); gl.uniform4f(U.vr, 0, 0, 1, 1); ready = true; canvas.classList.add('ready');
   });
   let span = [1, 1];
   const hud = section.querySelector('#storyHUD'), hctx = hud && hud.getContext('2d');
@@ -102,14 +107,15 @@ export function story(section, canvas) {
   addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
   return (t) => {
     const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight)), po = remap(p);
-    caps.forEach((c, i) => { const on = p >= marks[i][0] && p < marks[i][1]; c.classList.toggle('on', on); links[i] && links[i].classList.toggle('on', on); });
+    const pinned = r.top <= 1;
+    caps.forEach((c, i) => { const on = pinned && p >= marks[i][0] && p < marks[i][1]; c.classList.toggle('on', on); links[i] && links[i].classList.toggle('on', on); });
     rail.style.transform = innerWidth > 900 ? `scaleX(${p})` : `scaleY(${p})`;
     section.dispatchEvent(new CustomEvent('progress', { detail: p }));
     if (!ready) return;
     const s = sample(po);
     if (!smooth) smooth = s; else for (const k in s) smooth[k] = Array.isArray(s[k]) ? s[k].map((x, j) => lerp(smooth[k][j], x, .14)) : lerp(smooth[k], s[k], .14);
     const z = smooth.cam[2], hx = span[0] / z / 2, hy = span[1] / z / 2;
-    qx = lerp(qx, mx, .05); qy = lerp(qy, my, .05);
+    const pk = clamp(po / .07); qx = lerp(qx, mx * pk, .05); qy = lerp(qy, my * pk, .05);
     const cx = clamp(smooth.cam[0] + qx * .012 / z, hx, 1 - hx), cy = clamp(smooth.cam[1] + qy * .012 / z, hy, 1 - hy);
     gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform2f(U.span, span[0], span[1]);
     gl.uniform3f(U.cam, cx, cy, z); gl.uniform2f(U.tagPos, T[0], T[1]); gl.uniform2f(U.bayC, .40, .80);
@@ -135,6 +141,7 @@ export function story(section, canvas) {
 /* ---------- the story layer: no words, only light, shape and motion ---------- */
 const TAGIMG = new Image(); TAGIMG.decoding = 'async'; TAGIMG.src = 'assets/hw/amigo-34.webp';
 const MOIMG = new Image(); MOIMG.decoding = 'async'; MOIMG.src = 'assets/hw/amimo-34.webp';
+export const LOCK = { r: 15, len: 6, w: 2 };
 const RED = '255,59,78', INDIGO = '75,61,240';
 const INK = '11,18,56', BLUE = '31,107,255', AMB = '255,176,32';
 const WALK = [[.97, .99], [.86, .9], [.93, .76], [.8, .67], [.64, .56], [.71, .44], [.6, .39], [.5, .43], [.33, .37], [.26, .45], [.12, .5], [.17, .64], [.07, .72]];
@@ -160,8 +167,12 @@ function drawHUD(x, p, t, cx, cy, z, span) {
   const P = (u, v) => [((u - cx) * z / span[0] + .5) * W, ((v - cy) * z / span[1] + .5) * H];
   x.clearRect(0, 0, W, H); x.lineCap = 'round'; x.lineJoin = 'round';
 
+  // 0. the landing: the lock the hero closed around the tag holds, then lets go as the colour drains
+  let a = clamp(1 - p / .035);
+  if (a > 0) { const [X, Y] = P(T[0], T[1]), d = W / x.canvas.clientWidth; x.save(); x.globalAlpha = a; x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = LOCK.w * d; brackets(x, X, Y, LOCK.r * d * (1 + (1 - a) * .8), LOCK.len, d); x.restore(); }
+
   // 1. the search: one dotted walk wanders the floor, glancing here and there, while the clock turns
-  let a = fade(p, -.1, .19);
+  a = fade(p, -.1, .19) * clamp((p - .045) / .03);
   if (a > 0) {
     const k = clamp(p / .155), N = 160;
     x.save(); x.globalAlpha = a; x.strokeStyle = `rgba(${INK},.55)`; x.lineWidth = 1.8 * s; x.setLineDash([1, 7 * s]); x.beginPath();

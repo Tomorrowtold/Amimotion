@@ -32,10 +32,11 @@ if (fine && !reduce) {
 }
 
 /* ---------- the film settles on a chapter when the visitor stops scrolling ---------- */
-let settleT = 0;
+let settleT = 0; const STILL = /[?&]still\b/.test(location.search); // screenshots: no settling
 const settle = () => {
-  if (reduce || !storySec || wheeling) return;
-  const top = storySec.offsetTop, len = storySec.offsetHeight - innerHeight, y = scrollY, p = (y - top) / len;
+  if (reduce || !storySec || wheeling || STILL) return;
+  const top = storySec.getBoundingClientRect().top + scrollY, len = storySec.offsetHeight - innerHeight, y = scrollY, p = (y - top) / len;
+  if (drawBridge && y > 2 && y < top - 2) { const k = y / top, to = k > .3 ? top : 0; target = to; cur = y; wheeling = true; return; }
   if (p < -.12 || p > .985) return;
   const rests = [0, ...[0, 1, 2, 3, 4, 5, 6].map((i) => (i + .82) / 7)];
   let best = rests[0]; for (const r of rests) if (Math.abs(r - p) < Math.abs(best - p)) best = r;
@@ -155,7 +156,10 @@ $$('details').forEach((d) => {
 /* ---------- the story film ---------- */
 const storySec = $('#story'); let drawStory = null, storyOn = false;
 new IntersectionObserver((es) => { storyOn = es[0].isIntersecting; }, { rootMargin: '200px' }).observe(storySec);
-const startGL = () => { if (!reduce) import('./story.js').then((m) => { drawStory = m.story(storySec, $('#storyGL')); }); };
+let drawBridge = null;
+const startGL = () => { if (!reduce) import('./story.js').then((m) => { drawStory = m.story(storySec, $('#storyGL'));
+  // the landing between the hero and the film
+  if ($('#descent') && $('#bridgeGL')) import('./bridge.js').then((b) => { drawBridge = b.bridge({ descent: $('#descent'), hero: $('#hero'), copy: $('#hero .hero-copy'), stage: $('#hero .hero-stage'), canvas: $('#bridgeGL'), lock: $('#bridgeLock'), story: storySec, panel: $('#storyGL').parentElement, sticky: $('#storyGL').closest('.story-sticky'), fallback: $('#tagFallback') }); }); }); };
 /* ---------- parallax pictures ---------- */
 const pics = $$('.card-pic img');
 
@@ -179,6 +183,7 @@ function frame(t) {
   cx = lerp(cx, mx, .2); cy = lerp(cy, my, .2);
   cursor && (cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`);
 
+  if (drawBridge) drawBridge(t);
   if (drawStory && storyOn) drawStory(t);
   knFrame();
   if (pf && !reduce) { const r = pro.getBoundingClientRect(); const k = clamp(-r.top / (r.height - innerHeight) * 1.25 + .15); const e = 1 - Math.pow(1 - k, 3);

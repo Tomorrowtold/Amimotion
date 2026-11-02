@@ -38,12 +38,15 @@
 
 <main id="main">
 
-<!-- 1. HERO -->
+<!-- 1. HERO, held still while its tag lands on its trolley -->
+<div class="descent" id="descent">
 <section class="hero" id="hero">
   <div class="hero-stage" aria-hidden="true">
     <picture class="tag-fallback" id="tagFallback">
       <img src="assets/home/amigo-side-1500.webp" alt="" width="1500" height="1000" fetchpriority="low">
     </picture>
+    <canvas class="bridge-gl" id="bridgeGL"></canvas>
+    <div class="bridge-lock" id="bridgeLock"><i></i><i></i><i></i><i></i></div>
     <canvas id="tagGL"></canvas>
     <div class="tag-shadow"></div>
   </div>
@@ -58,6 +61,7 @@
     <span class="scroll-cue" aria-hidden="true"><i></i></span>
   </div>
 </section>
+</div>
 
 <!-- 1b. THE STORY: one scroll film over the model hall -->
 <section class="story" id="story" aria-label="One trolley, one tag">
