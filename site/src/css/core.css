@@ -78,6 +78,8 @@
   .sheet-list a{font:400 var(--size-body)/1.3 var(--font-text);min-height:24px;padding-block:var(--s-2)}
 }
 @media (min-width:1024px){.phone{display:none}}
+/* the narrowest phones (320 to 359 px): the bar keeps logo, button and Menu on one line */
+@media (max-width:359px){.top{gap:2px}.logo{gap:6px}.logo .word{height:13px}.top > .cta{padding-inline:10px}.phone > summary{padding-inline:8px}}
 
 /* ---------- the footer: start from your job, the four sections, the entity paragraph ---------- */
 .foot{background:var(--surface);padding:var(--rhythm-m) var(--margin) var(--s-8);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);font:400 var(--size-small)/1.5 var(--font-text)}
