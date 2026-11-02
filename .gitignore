@@ -5,3 +5,7 @@ __pycache__/
 .DS_Store
 site/tools/private_names.txt
 team/rounds/02-design/research/hero-refs/*.png
+team/rounds/03-hero-film/frames/
+team/rounds/03-hero-film/frames_raw/
+team/rounds/03-hero-film/master/
+__pycache__/
