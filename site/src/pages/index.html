@@ -8,23 +8,19 @@ og: /assets/home/og-home.jpg
 <section class="hero" aria-labelledby="hero-title">
   <div class="words">
     <h1 id="hero-title"><span>Where work is.</span> <span>Where it waits.</span></h1>
-    <figure class="picture" data-hero-media>
-      <!-- FILM HOOK (hero film, 9 s, camera A). When the film ships, replace the <picture> below with:
-        <video data-hero-film muted loop playsinline preload="none" width="1600" height="2000"
-               poster="/assets/home/hero-film-poster-1200.avif"
-               aria-label="A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went. Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting.">
-          <source media="(max-width: 1023px)" src="/assets/home/hero-film-1x1.mp4" type="video/mp4">
-          <source src="/assets/home/hero-film-av1.mp4" type="video/mp4; codecs=av01.0.05M.08">
-          <source src="/assets/home/hero-film-h264.mp4" type="video/mp4">
-        </video>
-        and add class="picture film" to this figure. The layout keeps the same grid area (4:5 box, 1:1 on phones),
-        the poster stays with reduced motion or JavaScript off, and the script at the end of the page plays it only in view.
-        Keep the H1 as the LCP element: the poster is about 60 KB AVIF at 1200 px, never preloaded. -->
-      <picture>
-        <source type="image/avif" srcset="/assets/home/amigo-page-800.avif 800w, /assets/home/amigo-page-1600.avif 1600w, /assets/home/amigo-page-2400.avif 2400w, /assets/home/amigo-page-3840.avif 3840w, /assets/home/amigo-page-5120.avif 5120w, /assets/home/amigo-page-7680.avif 7680w" sizes="(max-width:1023px) 152vw, (max-aspect-ratio:4/5) 152vw, 76vw">
-        <source type="image/webp" srcset="/assets/home/amigo-page-800.webp 800w, /assets/home/amigo-page-1600.webp 1600w, /assets/home/amigo-page-2400.webp 2400w, /assets/home/amigo-page-3840.webp 3840w, /assets/home/amigo-page-5120.webp 5120w, /assets/home/amigo-page-7680.webp 7680w" sizes="(max-width:1023px) 152vw, (max-aspect-ratio:4/5) 152vw, 76vw">
-        <img src="/assets/home/amigo-page-1600.webp" width="7680" height="4198" fetchpriority="high" decoding="async" alt="The AmIGo tag in dark grey, with amimotion debossed on its top cover and a screw ear at each end.">
-      </picture>
+    <figure class="picture film" data-hero-film>
+      <!-- Hero film (9 s, camera A, Sky Ground): the poster is frame 0.0; the inline script attaches the video only after load,
+           plays it only in view, muted and looping. Reduced motion or JavaScript off: the poster stays. Phones get the 1:1 cut. -->
+      <div class="frame">
+        <picture>
+          <source media="(max-width:1023px), (max-aspect-ratio:4/5)" type="image/avif" srcset="/assets/home/hero-film/poster-1x1-600.avif 600w, /assets/home/hero-film/poster-1x1-1080.avif 1080w, /assets/home/hero-film/poster-1x1-1600.avif 1600w" sizes="100vw">
+          <source media="(max-width:1023px), (max-aspect-ratio:4/5)" type="image/webp" srcset="/assets/home/hero-film/poster-1x1-600.webp 600w, /assets/home/hero-film/poster-1x1-1080.webp 1080w, /assets/home/hero-film/poster-1x1-1600.webp 1600w" sizes="100vw">
+          <source type="image/avif" srcset="/assets/home/hero-film/poster-4x5-800.avif 800w, /assets/home/hero-film/poster-4x5-1200.avif 1200w, /assets/home/hero-film/poster-4x5-1600.avif 1600w" sizes="min(57vw, calc((100svh - 96px) * .8))">
+          <source type="image/webp" srcset="/assets/home/hero-film/poster-4x5-800.webp 800w, /assets/home/hero-film/poster-4x5-1200.webp 1200w, /assets/home/hero-film/poster-4x5-1600.webp 1600w" sizes="min(57vw, calc((100svh - 96px) * .8))">
+          <img src="/assets/home/hero-film/poster-4x5-800.webp" width="1600" height="2000" fetchpriority="high" decoding="async" alt="A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went. Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting.">
+        </picture>
+        <video muted playsinline loop preload="none" disablepictureinpicture disableremoteplayback aria-hidden="true" tabindex="-1" data-src="/assets/home/hero-film/hall"></video>
+      </div>
     </figure>
     <p class="lede">AmIMotion is spatial intelligence for factories and warehouses. A small tag rides on each trolley, bin and tool. Anchors on your columns hear its signal. One live map shows where it went and how long it has waited. You find out from a screen, not a walk.</p>
   </div>

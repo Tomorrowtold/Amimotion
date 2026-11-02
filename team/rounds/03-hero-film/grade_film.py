@@ -65,6 +65,14 @@ def grade(raw, out, g=None):
     Yg = float(lin(GROUND) @ np.array([0.2126, 0.7152, 0.0722], np.float32))
     r = np.maximum(Y / Yg, 1.0)
     l = l / (r ** 0.85)[..., None]
+    # ground hue at the top (Sky Ground): open floor and lit tops at or near the ground value take the ground's own hue,
+    # keeping their luminance. The key is a touch warm and the sky dome clips blue on the brightest floor, so without
+    # this the lit far floor reads as a warm-white box on the sky page. Darker tones (shadow, ink, hardware) untouched.
+    Y2 = l @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+    q = Y2 / Yg
+    t = np.clip((q - 0.88) / 0.12, 0, 1); t = (t * t * (3 - 2 * t))[..., None]
+    gl = lin(GROUND).astype(np.float32)
+    l = l * (1 - t) + (gl[None, None, :] * q[..., None]) * t
     b = enc(l)
     im = Image.fromarray((b * 255 + 0.5).clip(0, 255).astype(np.uint8))
     im.save(out)

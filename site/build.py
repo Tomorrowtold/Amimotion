@@ -239,8 +239,15 @@ NAV_JS = ("<script>(()=>{const d=document,P=[...d.querySelectorAll('details[data
           "d.addEventListener('click',e=>{P.forEach(p=>{if(p.open&&!p.contains(e.target))p.open=false})});"
           "d.addEventListener('keydown',e=>{if(e.key==='Escape')P.forEach(p=>{if(p.open){p.open=false;p.querySelector('summary').focus()}})})})()</script>")
 # the hero film hook: plays a [data-hero-film] video only while it is in view; never with reduced motion. No film yet: does nothing.
-FILM_JS = ("<script>(()=>{const v=document.querySelector('video[data-hero-film]');if(!v||matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver'in window))return;"
-           "new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){v.preload='auto';v.play().catch(()=>{})}else v.pause()}),{threshold:.25}).observe(v)})()</script>")
+FILM_JS = ("<script>(()=>{const f=document.querySelector('[data-hero-film]'),v=f&&f.querySelector('video');"
+           "if(!v||!('IntersectionObserver'in window))return;const q=matchMedia('(prefers-reduced-motion: reduce)');if(q.matches)return;"
+           "const b=v.dataset.src+(matchMedia('(max-width:1023px), (max-aspect-ratio:4/5)').matches?'-1x1':'-4x5');let r=0;"
+           "const load=()=>{if(r)return;r=1;[['-av1.mp4','video/mp4; codecs=\"av01.0.08M.08\"'],['-h264.mp4','video/mp4; codecs=\"avc1.640028\"']]"
+           ".forEach(([x,t])=>{const s=document.createElement('source');s.src=b+x;s.type=t;v.appendChild(s)});v.load()};"
+           "v.addEventListener('playing',()=>f.classList.add('is-playing'));"
+           "const go=()=>new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){load();v.play().catch(()=>{})}else v.pause()}),{threshold:.25}).observe(f);"
+           "document.readyState==='complete'?go():addEventListener('load',go);"
+           "q.addEventListener&&q.addEventListener('change',()=>{if(q.matches){v.pause();f.classList.remove('is-playing')}})})()</script>")
 
 
 def scripts(meta):

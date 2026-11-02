@@ -35,3 +35,7 @@ FRAME 13 63.6s
 FRAME 14 42.5s
 14:35.974  render           | Saved: 'frames_raw_sky/f0015.png.tmp.png'
 FRAME 15 60.4s
+16:11.339  render           | Saved: 'frames_raw_sky/f0016.png.tmp.png'
+FRAME 16 95.4s
+18:44.035  render           | Saved: 'frames_raw_sky/f0017.png.tmp.png'
+FRAME 17 152.7s
