@@ -19,7 +19,7 @@
 .diag-sub,.diag-stage .sub{color:var(--ink-soft);margin-top:var(--s-3)}
 .diag-options{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-2);margin-top:var(--s-6)}
 .diag-opt{display:flex;gap:var(--s-3);text-align:left;padding:var(--s-4);border:0;border-radius:var(--radius-control);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;transition:background-color var(--t-fast) var(--ease-ds)}
-.diag-opt:hover{background:var(--pressed)}
+@media (hover:hover){.diag-opt:hover{background:var(--pressed)}}
 .diag-opt[aria-pressed="true"]{background:var(--ink);color:var(--on-ink)}
 .diag-opt .key{display:none}
 .diag-opt b{display:block;font-weight:500}

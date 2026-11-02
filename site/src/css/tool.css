@@ -17,7 +17,7 @@ input[type=range]{width:100%;height:28px;margin:0;accent-color:var(--ink)}
 .seg label{position:relative;cursor:pointer}
 .seg input{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0}
 .seg span{display:block;padding:var(--s-3) var(--s-4);min-height:44px;background:var(--surface);border-radius:var(--radius-control);transition:background-color var(--t-fast) var(--ease-ds)}
-.seg label:hover span{background:var(--pressed)}
+@media (hover:hover){.seg label:hover span{background:var(--pressed)}}
 .seg input:checked+span{background:var(--ink);color:var(--on-ink)}
 .seg input:focus-visible+span{outline:2px solid var(--focus);outline-offset:3px}
 .seg i{display:block;font-style:normal;font-size:var(--size-small);color:var(--ink-soft)}
