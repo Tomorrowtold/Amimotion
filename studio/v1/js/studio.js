@@ -80,40 +80,31 @@ if (qb && !reduce) {
 }
 
 /* ---------- one system: vertical scroll moves the track sideways, tag, then anchor, then AmIHub ---------- */
-/* ---------- the products as a keynote: one at a time, then one system ---------- */
-const kn = $('#system'), knItems = kn ? [...kn.querySelectorAll('.kn-item')] : [], knTitle = kn && kn.querySelector('.kn-title');
+/* ---------- the products: names first, then one product per scroll ---------- */
+const kn = $('#system'), knItems = kn ? [...kn.querySelectorAll('.kn-item')] : [], knShots = kn ? [...kn.querySelectorAll('.kn-shot')] : [], knSweep = kn && kn.querySelector('.kn-sweep');
 if (kn && reduce) kn.classList.add('kn-static');
 const sm = (a, b, v) => { const t = clamp((v - a) / (b - a)); return t * t * (3 - 2 * t); };
-// keyframes per product: [p, x (vw), y (vh), scale, opacity, copy]
-const KN = (phone) => {
-  const F = phone ? [[-31, -6], [0, -6], [31, -6]] : [[-31, -2], [0, -2], [31, -2]], fs = phone ? .38 : .52;
-  return [
-    [[.08, 0, 40, .82, 0, 0], [.18, 0, 4, 1, 1, 1], [.34, 0, 4, 1, 1, 1], [.42, -70, 4, .8, 0, 0], [.80, -70, 0, .6, 0, 0], [.90, F[0][0], F[0][1], fs, 1, 0]],
-    [[.34, 70, 4, .8, 0, 0], [.42, 0, 4, 1, 1, 1], [.58, 0, 4, 1, 1, 1], [.66, -70, 4, .8, 0, 0], [.80, 0, 40, .6, 0, 0], [.90, F[1][0], F[1][1], fs, 1, 0]],
-    [[.58, 70, 4, .8, 0, 0], [.66, 0, 4, 1, 1, 1], [.80, 0, 4, 1, 1, 1], [.90, F[2][0], F[2][1], fs, 1, 0]],
-  ];
-};
-const lerpK = (K, p) => {
-  if (p <= K[0][0]) return K[0].slice(1);
-  for (let j = 1; j < K.length; j++) if (p <= K[j][0]) { const a = K[j - 1], b = K[j], t = sm(a[0], b[0], p); return a.slice(1).map((v, n) => v + (b[n + 1] - v) * t); }
-  return K[K.length - 1].slice(1);
+const KN_AT = [.1, .38, .66];
+let knStep = -2;
+const knSet = (st) => {
+  if (st === knStep) return;
+  const prev = knStep; knStep = st;
+  knItems.forEach((el, i) => el.classList.toggle('on', i === st));
+  knShots.forEach((el, i) => { el.classList.toggle('on', i === st); el.classList.toggle('out', i === prev && i !== st); });
+  kn.classList.toggle('lit', st >= 0);
+  if (st >= 0 && knSweep && !reduce) { knSweep.classList.remove('go'); void knSweep.offsetWidth; knSweep.classList.add('go'); }
 };
 const knFrame = () => {
   if (!kn || reduce) return;
   const r = kn.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
-  const p = clamp(-r.top / (r.height - innerHeight)), phone = innerWidth < 760, K = KN(phone);
-  const up = sm(.08, .17, p);
-  knTitle.style.setProperty('--ty', `${(-up * (phone ? 31 : 33)).toFixed(2)}vh`);
-  knTitle.style.setProperty('--ts', (1 - up * (phone ? .45 : .58)).toFixed(4));
-  knItems.forEach((el, i) => {
-    const [x, y, s, o, c] = lerpK(K[i], p);
-    el.style.setProperty('--x', `${x.toFixed(2)}vw`); el.style.setProperty('--y', `${y.toFixed(2)}vh`);
-    el.style.setProperty('--s', s.toFixed(4)); el.style.setProperty('--o', o.toFixed(3)); el.style.setProperty('--c', c.toFixed(3));
-    el.style.setProperty('--pe', c > .6 ? 'auto' : 'none'); el.style.pointerEvents = o > .5 ? 'auto' : 'none';
-  });
-  kn.style.setProperty('--w', sm(.86, .93, p).toFixed(3));
-  kn.style.setProperty('--f', sm(.9, .96, p).toFixed(3)); kn.style.setProperty('--fe', p > .9 ? 'auto' : 'none');
+  const p = clamp(-r.top / (r.height - innerHeight));
+  knSet(p < KN_AT[0] ? -1 : p < KN_AT[1] ? 0 : p < KN_AT[2] ? 1 : 2);
+  kn.style.setProperty('--f', sm(.84, .94, p).toFixed(3));
 };
+if (kn) kn.querySelectorAll('.kn-go').forEach((b) => b.addEventListener('click', () => {
+  const i = +b.dataset.i, top = kn.getBoundingClientRect().top + scrollY, span = kn.offsetHeight - innerHeight;
+  scrollTo({ top: top + span * ([.22, .5, .8][i]), behavior: reduce ? 'auto' : 'smooth' });
+}));
 
 /* ---------- book a call: four fields, then the calendar ---------- */
 const bookForm = $('.book-form');
@@ -137,6 +128,17 @@ if (bookForm) {
       location.href = `./contact/index.html?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`;
     }
   });
+}
+
+const bookDlg = $('#book');
+if (bookDlg && bookDlg.showModal) {
+  const openBook = (e) => { e.preventDefault(); bookDlg.showModal(); setTimeout(() => bookDlg.querySelector('input[name=name]').focus(), 60); };
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a'); if (!a || bookDlg.contains(a)) return;
+    if (/contact\//.test(a.getAttribute('href') || '') && /book a call/i.test(a.textContent)) openBook(e);
+  });
+  bookDlg.querySelector('.book-x').addEventListener('click', () => bookDlg.close());
+  bookDlg.addEventListener('click', (e) => { if (e.target === bookDlg) bookDlg.close(); });
 }
 
 /* ---------- details open with a soft height animation ---------- */
