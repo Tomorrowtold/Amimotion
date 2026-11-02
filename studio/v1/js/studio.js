@@ -224,7 +224,6 @@ if (simSec) {
     simSec.classList.add('open'); win.hidden = false; document.documentElement.classList.add('sim-lock'); wheeling = false;
     const go = () => { try { const d = frame.contentDocument; dress(d); const pick = () => { const b = d.querySelector(`.diag-opt[data-v="${v}"]`); if (b) { if (b.getAttribute('aria-pressed') !== 'true') b.click(); } else setTimeout(pick, 120); }; pick(); } catch (e) {} };
     if (!frame.src) { frame.addEventListener('load', go, { once: true }); frame.src = './diagnostic/index.html'; } else go();
-    if (!simSec.closest('.trio')) setTimeout(() => win.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }), 250);
   };
   simSec.querySelectorAll('.sim-opt').forEach((b) => b.addEventListener('click', () => open(b.dataset.v)));
   const shut = () => { simSec.classList.remove('open'); win.hidden = true; document.documentElement.classList.remove('sim-lock'); };
