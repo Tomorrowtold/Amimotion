@@ -25,4 +25,5 @@
 .parts.c2>li:hover .pic img{transform:scale(1.03)}
 .parts.c2>li:hover h3 a{color:var(--link);text-decoration:none}
 .parts.c2>li:hover h3 a::after{transform:translate(3px,-.1em) rotate(45deg)}
+@media (max-width:639px){.parts.c2{row-gap:var(--s-4)!important}}
 @media (prefers-reduced-motion:reduce){.parts.c2>li,.parts.c2 .pic img{transition:none}}
