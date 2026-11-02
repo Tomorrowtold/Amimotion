@@ -1,0 +1,4 @@
+.look-card .head-pic{display:block;grid-column:3 / span 8;margin-top:var(--s-7)!important}
+.head-pic img{mix-blend-mode:normal!important}
+.look-card .head-pic{grid-row:5}
+.look-card .head .words{grid-row:4}

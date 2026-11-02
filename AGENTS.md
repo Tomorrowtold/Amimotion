@@ -16,10 +16,13 @@ AmIMotion (Locatepro Technologies, Bengaluru) makes ultra-wideband indoor positi
 ## Rules that never move
 - Claims follow the claims register (kept privately by Shiv) and the founders' review (29 Oct 2026): "built on the FiRa and omlox specifications" (never "compliant" or "certified"); "down to ±10 cm" with AmIMo anchors, site-dependent; "runs in", never "deployed"; no "under a nanosecond"; Wi-Fi FTM "device support confirmed per site"; no phone-location claim; never "FCC certified". Milestones are plans, not facts.
 - No customer, prospect, backer or partner names in public copy, and no backers strip. Shiv holds the list privately; if unsure, leave a name out. AmIHub screenshots need the founders' permission before they appear.
-- Hardware is dark grey with an embossed lowercase "amimotion"; show it only from real photos or the CAD. Films carry a small "Simulation" label. Never write "3D illustration", "rendered" or similar about pictures, on a page or in alt text.
+- Hardware is dark grey with a debossed lowercase "amimotion" (as in the CAD top cover); show it only as photoreal renders from the founders' CAD. No "Simulation" labels or cautions anywhere (Shiv, 1 Nov 2026), so never use footage that would need one. Never write "3D illustration", "rendered" or similar about pictures, on a page or in alt text.
 - Design: black and white interface, colour only from pictures; brand blue #66a5fa for located, amber #f0a43a for waiting. Homepage: value propositions only, short copy, no jargon, the diagnostic as the main lead magnet. No sound, no sphere, no arcs or glowing rings, no IDs or fake data chips. Headlines two lines at most; no eyebrows, monospace, gradients or glass pills. Fast first load.
 - Keep all 50+ pages. Never name design sources (agencies, brands, repos) in shipped files.
 - Ask Shiv before deploying anywhere public.
+
+## The team of 100
+From 1 Nov 2026 the site is built by the team in `team/`: read `team/CHARTER.md` first, then load the profile of the role you are playing from `team/leads/` or `team/specialists/`. The charter's accountability string and depth rule apply to every change.
 
 ## Quality loop
 Read and follow the playbooks in `docs/skills/` (amimotion-taste-review/SKILL.md first, then pro-design and taste-skill) before any design change. After a change: build, open the page at 1440 and 390 wide, look at it yourself, check overflow and console errors, then report in two or three sentences.

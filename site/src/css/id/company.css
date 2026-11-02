@@ -1,0 +1,8 @@
+/* /company/: the studio portrait. A serif headline beside hands at work; what we will not claim is set struck through. */
+@media (min-width:1024px){
+  .head.has-still .words{grid-column:1 / span 6;display:block}
+  .head.has-still .head-pic{grid-column:7 / -1;margin:0!important}
+}
+.head h1{font-size:clamp(3rem,1.4rem + 4.6vw,7rem)!important}
+.co-plate img{border-radius:22px;aspect-ratio:6/5;object-fit:cover}
+#what-we-will-not-claim~ul li h3,#what-we-will-not-claim~.points li h3{text-decoration:line-through;text-decoration-color:var(--waiting);text-decoration-thickness:3px}

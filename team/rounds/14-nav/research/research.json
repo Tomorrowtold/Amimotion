@@ -1,0 +1,759 @@
+{
+ "apple": {
+  "390": {
+   "info": {
+    "h": 48,
+    "pos": "fixed",
+    "labels": [
+     "Main menu",
+     "Apple",
+     "Store menu",
+     "Store menu",
+     "Shop the Latest",
+     "Mac",
+     "iPad",
+     "iPhone",
+     "Apple Watch",
+     "Apple Vision Pro",
+     "AirPods",
+     "Home",
+     "Accessories",
+     "Find a Store",
+     "Order Status",
+     "Apple Upgrade",
+     "Apple Trade In",
+     "Financing",
+     "Personal Setup",
+     "Certified Refurbished",
+     "Education",
+     "Business",
+     "Veterans and Military",
+     "Government",
+     "Mac menu",
+     "Mac menu",
+     "Explore All Mac",
+     "MacBook Neo",
+     "MacBook Air",
+     "MacBook Pro"
+    ]
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 44,
+    "pos": "fixed",
+    "labels": [
+     "Main menu",
+     "Apple",
+     "Store",
+     "Store menu",
+     "Shop the latest Apple products",
+     "Mac",
+     "Mac menu",
+     "iMac",
+     "iPad",
+     "iPad menu",
+     "iPad-11",
+     "iPhone",
+     "iPhone menu",
+     "Watch",
+     "Watch menu",
+     "Vision",
+     "Vision menu",
+     "AirPods",
+     "AirPods menu",
+     "Home",
+     "Home menu",
+     "Entertainment",
+     "Entertainment menu",
+     "Accessories",
+     "Accessories menu",
+     "Support",
+     "Support menu",
+     "Search apple.com",
+     "Clear search",
+     "Submit search"
+    ]
+   }
+  }
+ },
+ "apple-iphone": {
+  "390": {
+   "info": {
+    "h": 48,
+    "pos": "absolute",
+    "labels": [
+     "Main menu",
+     "Apple",
+     "Store menu",
+     "Store menu",
+     "Shop the Latest",
+     "Mac",
+     "iPad",
+     "iPhone",
+     "Apple Watch",
+     "Apple Vision Pro",
+     "AirPods",
+     "Home",
+     "Accessories",
+     "Find a Store",
+     "Order Status",
+     "Apple Upgrade",
+     "Apple Trade In",
+     "Financing",
+     "Personal Setup",
+     "Certified Refurbished",
+     "Education",
+     "Business",
+     "Veterans and Military",
+     "Government",
+     "Mac menu",
+     "Mac menu",
+     "Explore All Mac",
+     "MacBook Neo",
+     "MacBook Air",
+     "MacBook Pro"
+    ]
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 44,
+    "pos": "absolute",
+    "labels": [
+     "Main menu",
+     "Apple",
+     "Store",
+     "Store menu",
+     "Shop the latest Apple products",
+     "Mac",
+     "Mac menu",
+     "iMac",
+     "iPad",
+     "iPad menu",
+     "iPad-11",
+     "iPhone",
+     "iPhone menu",
+     "Watch",
+     "Watch menu",
+     "Vision",
+     "Vision menu",
+     "AirPods",
+     "AirPods menu",
+     "Home",
+     "Home menu",
+     "Entertainment",
+     "Entertainment menu",
+     "Accessories",
+     "Accessories menu",
+     "Support",
+     "Support menu",
+     "Search apple.com",
+     "Clear search",
+     "Submit search"
+    ]
+   }
+  }
+ },
+ "stripe": {
+  "390": {
+   "info": {
+    "h": 66,
+    "pos": "relative",
+    "labels": [
+     "Stripe homepage",
+     "Products",
+     "Solutions",
+     "Developers",
+     "Resources",
+     "Pricing",
+     "Sign in",
+     "See all productsExplore our full product catalog",
+     "Start now",
+     "Contact sales",
+     "Back",
+     "Toggle navigation menu",
+     "Sign inSign in",
+     "Contact sales"
+    ]
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 76,
+    "pos": "relative",
+    "labels": [
+     "Stripe homepage",
+     "Products",
+     "Solutions",
+     "Developers",
+     "Resources",
+     "Pricing",
+     "Guide me",
+     "Sign in",
+     "Get recommendationsTell us about your business",
+     "See all productsExplore our full product catalog",
+     "Start now",
+     "Contact sales",
+     "Back",
+     "Toggle navigation menu",
+     "Sign in\nSign in",
+     "Contact sales"
+    ]
+   }
+  }
+ },
+ "linear": {
+  "390": {
+   "info": {
+    "h": 65,
+    "pos": "fixed",
+    "labels": [
+     "Navigate to home",
+     "Product",
+     "Resources",
+     "Customers",
+     "Pricing",
+     "Now",
+     "Contact",
+     "Docs",
+     "Open app",
+     "Log in",
+     "Sign up"
+    ]
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 73,
+    "pos": "fixed",
+    "labels": [
+     "Navigate to home",
+     "Product",
+     "Resources",
+     "Customers",
+     "Pricing",
+     "Now",
+     "Contact",
+     "Docs",
+     "Open app",
+     "Log in",
+     "Sign up"
+    ]
+   }
+  }
+ },
+ "vercel": {
+  "390": {
+   "info": {
+    "h": 64,
+    "pos": "sticky",
+    "labels": [
+     "Vercel",
+     "Copy Wordmark",
+     "Copy Logo",
+     "Download Brand Assets",
+     "Brand Guidelines",
+     "Products",
+     "AI SDK",
+     "AI Gateway",
+     "Sandbox",
+     "Passport",
+     "Connect",
+     "eve",
+     "Security",
+     "Content Delivery",
+     "Fluid Compute",
+     "Observability",
+     "Workflows",
+     "CI/CD",
+     "Next.js",
+     "Vercel Agent",
+     "Vercel Plugin",
+     "Open Source",
+     "Domains↗",
+     "v0↗",
+     "Resources",
+     "Docs",
+     "About",
+     "Blog",
+     "Changelog",
+     "Knowledge Base"
+    ]
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 64,
+    "pos": "sticky",
+    "labels": [
+     "Vercel",
+     "Copy Wordmark",
+     "Copy Logo",
+     "Download Brand Assets",
+     "Brand Guidelines",
+     "Products",
+     "Resources",
+     "Enterprise",
+     "Pricing",
+     "Get a Demo",
+     "Log In",
+     "Sign Up",
+     "Ask AI",
+     "Dashboard",
+     "Open menu"
+    ]
+   }
+  }
+ },
+ "anduril": {
+  "390": {
+   "info": {
+    "h": 0,
+    "pos": "fixed",
+    "labels": [
+     "Anduril Logo",
+     "Subterranean",
+     "Space",
+     "Arsenal",
+     "Seapower",
+     "Dive-LD",
+     "Dive-XL",
+     "Copperhead",
+     "Seabed Sentry",
+     "Counter Intrusion",
+     "Air Defense",
+     "Connected Warfare",
+     "Sentry",
+     "Pulsar",
+     "Wisp",
+     "Ghost",
+     "Steelfin",
+     "Anvil",
+     "Roadrunner",
+     "Sentry",
+     "Pulsar",
+     "Wisp",
+     "Spyglass",
+     "Spark",
+     "EagleEye",
+     "Menace-I",
+     "Menace-X",
+     "Menace-T",
+     "Voyager",
+     "Lattice Mesh"
+    ]
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 72,
+    "pos": "fixed",
+    "labels": [
+     "Anduril Homepage",
+     "Subterranean",
+     "Space",
+     "Arsenal",
+     "Seapower",
+     "Dive-LD",
+     "Dive-XL",
+     "Copperhead",
+     "Seabed Sentry",
+     "Counter Intrusion",
+     "Air Defense",
+     "Connected Warfare",
+     "Sentry",
+     "Pulsar",
+     "Wisp",
+     "Ghost",
+     "Steelfin",
+     "Anvil",
+     "Roadrunner",
+     "Sentry",
+     "Pulsar",
+     "Wisp",
+     "Spyglass",
+     "Spark",
+     "EagleEye",
+     "Menace-I",
+     "Menace-X",
+     "Menace-T",
+     "Voyager",
+     "Lattice Mesh"
+    ]
+   }
+  }
+ },
+ "vention": {
+  "390": {
+   "info": {
+    "h": 70,
+    "pos": "sticky",
+    "labels": [
+     "vention-logo-sm",
+     "Platform",
+     "MachineMotion AI—Controller",
+     "GRIIP—Generalized AI Pipeline",
+     "AI-Defined AutomationNew",
+     "Manufacturing Automation Platform",
+     "MachineBuilder—Design",
+     "MachineLogic—Program",
+     "MachineAnalytics—Operate",
+     "Remote Support—Optimize",
+     "Subscriptions",
+     "Extrusions",
+     "Actuators",
+     "Conveyors",
+     "Robot Arms",
+     "Go to parts library",
+     "Solutions",
+     "Automotive",
+     "Aerospace & Defense",
+     "Consumer Goods",
+     "Education & Research",
+     "Physical AI & Robotics LabNew",
+     "See customer stories",
+     "Cobot Palletizer—Rapid Series",
+     "Industrial Palletizer",
+     "DepalletizerNew",
+     "Robotic Sanding—Rapid Series",
+     "AI-Powered Bin Picking—Rapid Series",
+     "End-of-Line Packaging",
+     "Machine Tending—Click & Customize"
+    ]
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 70,
+    "pos": "sticky",
+    "labels": [
+     "vention-logo-sm",
+     "Platform",
+     "Solutions",
+     "Shop",
+     "Resources",
+     "Company",
+     "Shopping cart",
+     "Shopping cart",
+     "Region and language",
+     "Book a Demo",
+     "Design Now"
+    ]
+   }
+  }
+ },
+ "rivian": {
+  "390": {
+   "info": {
+    "h": 50,
+    "pos": "relative",
+    "labels": [
+     "Home",
+     "Vehicles",
+     "Charging",
+     "Technology",
+     "Discover",
+     "Gear Shop",
+     "Demo drive",
+     "Sign in",
+     "Open"
+    ]
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 56,
+    "pos": "relative",
+    "labels": [
+     "Home",
+     "Vehicles",
+     "Charging",
+     "Technology",
+     "Discover",
+     "Gear Shop",
+     "Demo drive",
+     "Sign in",
+     "Open"
+    ]
+   }
+  }
+ },
+ "nothing": {
+  "390": {
+   "info": {
+    "h": 80,
+    "pos": "fixed",
+    "labels": [
+     "EXPLORE OFFERS LEARN MORE",
+     "Close offers banner"
+    ]
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 80,
+    "pos": "fixed",
+    "labels": [
+     "EXPLORE OFFERS LEARN MORE",
+     "Close offers banner"
+    ]
+   }
+  }
+ },
+ "framer": {
+  "390": {
+   "info": null
+  },
+  "1440": {
+   "info": {
+    "h": 64,
+    "pos": "relative",
+    "labels": [
+     "Framer",
+     "Platform",
+     "Solutions",
+     "Resources",
+     "Enterprise",
+     "Pricing",
+     "Log in",
+     "Sign up",
+     "Copy logo SVG",
+     "Brand guidelines"
+    ]
+   }
+  }
+ },
+ "figma": {
+  "390": {
+   "info": {
+    "h": 0,
+    "pos": "fixed",
+    "labels": [
+     "Products",
+     "Design and explore",
+     "Build and ship products",
+     "Figma DesignDesign and prototype in one place",
+     "Figma MakePrompt to code anything you can imagine",
+     "Figma WeaveAI workflows for imagery, video, audio, and more",
+     "Dev ModeTranslate designs into code",
+     "Figma MotionNewAnimate your designs",
+     "Figma SpecsBetaCapture intent and share context",
+     "FigJamCollaborate with a digital whiteboard",
+     "Figma SlidesCo-create presentations",
+     "Figma DrawIllustrate with advanced vector tools",
+     "Figma SitesBetaPublish fully responsive websites",
+     "Figma BuzzBetaProduce on-brand assets at scale",
+     "AI workflows",
+     "Release notes",
+     "Downloads",
+     "Solutions",
+     "Design systems",
+     "Prototyping",
+     "UX design",
+     "Web design",
+     "Wireframing",
+     "Online whiteboard",
+     "Agile",
+     "Strategic planning",
+     "Brainstorming",
+     "Diagramming",
+     "Product development",
+     "Web development"
+    ]
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 78,
+    "pos": "fixed",
+    "labels": [
+     "Products",
+     "Design and explore",
+     "Build and ship products",
+     "Figma DesignDesign and prototype in one place",
+     "Figma MakePrompt to code anything you can imagine",
+     "Figma WeaveAI workflows for imagery, video, audio, and more",
+     "Dev ModeTranslate designs into code",
+     "Figma MotionNewAnimate your designs",
+     "Figma SpecsBetaCapture intent and share context",
+     "FigJamCollaborate with a digital whiteboard",
+     "Figma SlidesCo-create presentations",
+     "Figma DrawIllustrate with advanced vector tools",
+     "Figma SitesBetaPublish fully responsive websites",
+     "Figma BuzzBetaProduce on-brand assets at scale",
+     "AI workflows",
+     "Release notes",
+     "Downloads",
+     "Solutions",
+     "Design systems",
+     "Prototyping",
+     "UX design",
+     "Web design",
+     "Wireframing",
+     "Online whiteboard",
+     "Agile",
+     "Strategic planning",
+     "Brainstorming",
+     "Diagramming",
+     "Product development",
+     "Web development"
+    ]
+   }
+  }
+ },
+ "notion": {
+  "390": {
+   "info": {
+    "h": 64,
+    "pos": "relative",
+    "labels": [
+     "Notion – Home",
+     "Product",
+     "See all features→",
+     "See what’s new→",
+     "Notion App→",
+     "Resources",
+     "Enterprise",
+     "Small businesses",
+     "Startups",
+     "Developers",
+     "What's New",
+     "Customer stories",
+     "Webinars",
+     "Templates",
+     "Consultants",
+     "Academy",
+     "Product tours",
+     "Help Center",
+     "Pricing",
+     "Request a demo",
+     "Log in",
+     "Get Notion free",
+     "Toggle main menu"
+    ]
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 64,
+    "pos": "relative",
+    "labels": [
+     "Notion – Home",
+     "Product",
+     "Capture",
+     "Find",
+     "Automate",
+     "Resources",
+     "Pricing",
+     "Request a demo",
+     "Log in",
+     "Get Notion free",
+     "Toggle main menu"
+    ]
+   }
+  }
+ },
+ "raycast": {
+  "390": {
+   "info": null
+  },
+  "1440": {
+   "info": null
+  }
+ },
+ "arc": {
+  "390": {
+   "info": {
+    "h": 87,
+    "pos": "static",
+    "labels": []
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 104,
+    "pos": "static",
+    "labels": []
+   }
+  }
+ },
+ "samsara": {
+  "390": {
+   "info": {
+    "h": 0,
+    "pos": "relative",
+    "labels": [
+     "Build your own AI agents with Samsara Agent Studio",
+     "Samsara home",
+     "Products",
+     "Solutions",
+     "Resources",
+     "About",
+     "Pricing",
+     "Search",
+     "Login",
+     "Check our prices",
+     "Cameras and VideoAI dash cams, site security, in-cab alerts",
+     "AI Multicam",
+     "Site Visibility",
+     "Safety ROI Calculator",
+     "Fleet TelematicsReal-time GPS, routing, fuel, compliance",
+     "GPS Fleet Tracking",
+     "Routing & Dispatch",
+     "Commercial Navigation",
+     "FirstNet",
+     "ELD Compliance",
+     "Electric Vehicles",
+     "Fuel & Energy",
+     "Fuel Savings Calculator",
+     "Equipment ManagementDiagnostics, maintenance, location tracking",
+     "Maintenance",
+     "DVIR",
+     "Trailer Tracking",
+     "Asset Tracking",
+     "Reefer Monitoring",
+     "Asset Tag"
+    ]
+   }
+  },
+  "1440": {
+   "info": {
+    "h": 0,
+    "pos": "relative",
+    "labels": [
+     "Build your own AI agents with Samsara Agent Studio",
+     "Samsara home",
+     "Products",
+     "Solutions",
+     "Resources",
+     "About",
+     "Pricing",
+     "Search",
+     "Login",
+     "Check our prices",
+     "Cameras and VideoAI dash cams, site security, in-cab alerts",
+     "AI Multicam",
+     "Site Visibility",
+     "Safety ROI Calculator",
+     "Fleet TelematicsReal-time GPS, routing, fuel, compliance",
+     "GPS Fleet Tracking",
+     "Routing & Dispatch",
+     "Commercial Navigation",
+     "FirstNet",
+     "ELD Compliance",
+     "Electric Vehicles",
+     "Fuel & Energy",
+     "Fuel Savings Calculator",
+     "Equipment ManagementDiagnostics, maintenance, location tracking",
+     "Maintenance",
+     "DVIR",
+     "Trailer Tracking",
+     "Asset Tracking",
+     "Reefer Monitoring",
+     "Asset Tag"
+    ]
+   }
+  }
+ }
+}

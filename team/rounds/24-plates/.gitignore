@@ -1,0 +1,3 @@
+# big outputs live on the project-files mount, not in git
+*.png
+*.jpg

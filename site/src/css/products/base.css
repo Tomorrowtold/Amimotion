@@ -1,0 +1,115 @@
+/* products/base.css: the shared frame of the product sites (AmIGo, AmIMo, AmIHub) and the spatial intelligence page.
+   Each is an inner page of AmIMotion (the capsule nav stays on top, the parent brand) but reads like its own product
+   site: its own palette, grade and type rhythm set in products/<id>.css through the --p-* tokens below. Copy is the
+   site's locked copy, only arranged. The side rail (.p-rail) is not a nav: it only shows where you are. */
+.pl{--p-bg:var(--ground);--p-fg:var(--ink);--p-soft:var(--ink-soft);--p-mute:color-mix(in srgb,var(--p-fg) 46%,transparent);--p-line:color-mix(in srgb,var(--p-fg) 11%,transparent);
+  --p-accent:var(--action);--p-card:var(--surface);--p-r:28px;--p-w:min(1180px,100% - 2 * var(--margin));--p-ease:cubic-bezier(.16,1,.3,1);
+  background:var(--p-bg);color:var(--p-fg)}
+body.pl{margin:0}
+.pl main{display:block;overflow-x:clip}
+.pl main a{color:inherit}
+.pl .p-wrap{width:var(--p-wrap,var(--p-w));margin-inline:auto}
+.pl section,.pl .p-hero{position:relative}
+.pl h1,.pl h2,.pl h3{font-family:var(--font-display);font-weight:600;color:var(--p-fg);text-wrap:balance}
+:where(.pl) :where(h1,h2,h3,p,figure,ul,ol,dl,dd){margin:0}
+.pl p{text-wrap:pretty}
+:where(.pl main) :where(ul,ol){padding:0;list-style:none}
+.pl img,.pl video{display:block;max-width:100%;height:auto}
+/* breadcrumbs: small, the parent brand first */
+.pl .crumbs{font:500 13px/1 var(--font-text);color:var(--p-mute);display:flex;gap:6px;flex-wrap:wrap;justify-content:var(--crumb-j,flex-start)}
+.pl .crumbs a{color:var(--p-mute);text-decoration:none}.pl .crumbs a:hover{color:var(--p-fg)}
+.pl .crumbs [aria-current]{color:var(--p-fg)}
+/* type */
+.pl .p-h{font-size:clamp(2.4rem,1.2rem + 3.3vw,5rem);line-height:1.02;letter-spacing:-.04em}
+.pl .p-h span{display:block}
+.pl .p-h span+span{color:var(--p-mute)}
+.pl .p-h.one span+span{display:inline;color:var(--p-mute)}
+.pl .p-lead{font:400 clamp(1.2rem,.95rem + .75vw,1.75rem)/1.42 var(--font-text);letter-spacing:-.012em;color:var(--p-fg);max-width:34em}
+.pl .p-body{font:400 var(--size-body)/1.6 var(--font-text);color:var(--p-soft)}
+.pl .p-body p+p{margin-top:1em}
+.pl .p-body b,.pl .p-body strong{color:var(--p-fg);font-weight:500}
+.pl h3{font-size:clamp(1.2rem,1.05rem + .45vw,1.5rem);line-height:1.2;letter-spacing:-.02em}
+.pl .more{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font:500 var(--size-small)/1.3 var(--font-text)}
+.pl .more a{color:var(--p-accent);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.pl .more a::after{content:"";width:7px;height:7px;border:solid currentColor;border-width:1.6px 1.6px 0 0;transform:rotate(45deg);transition:transform .3s var(--p-ease)}
+.pl .more a:hover::after{transform:translateX(3px) rotate(45deg)}
+.pl .more .sep{display:none}
+.pl .p-sec{padding-block:var(--p-pad,clamp(88px,10vw,180px))}
+.pl .p-sec.tight{--p-pad:clamp(56px,6vw,104px)}
+.pl .p-headrow{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:var(--s-6) var(--s-8);align-items:end;margin-bottom:clamp(40px,5vw,80px)}
+@media (max-width:900px){.pl .p-headrow{grid-template-columns:1fr}}
+/* cards and grids */
+.pl .p-grid{display:grid;gap:var(--p-gap,16px);grid-template-columns:repeat(var(--cols,3),minmax(0,1fr))}
+@media (max-width:1023px){.pl .p-grid{--cols:2!important}}
+@media (max-width:640px){.pl .p-grid{--cols:1!important}}
+.pl .p-card{background:var(--p-card);border-radius:var(--p-r);padding:clamp(22px,2.4vw,36px);position:relative;overflow:hidden}
+.pl .p-card p{font:400 var(--size-small)/1.55 var(--font-text);color:var(--p-soft);margin-top:10px}
+.pl .p-media{border-radius:var(--p-r);overflow:hidden;position:relative;background:var(--p-card)}
+.pl .p-media img,.pl .p-media video{width:100%;height:100%;object-fit:cover}
+/* figures (the register's numbers) */
+.pl .p-figs{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));border-top:1px solid var(--p-line)}
+.pl .p-figs>div{padding:26px 24px 0 0}
+.pl .p-figs>div+div{padding-left:24px;border-left:1px solid var(--p-line)}
+.pl .p-figs dt{font:600 clamp(1.9rem,1.2rem + 1.9vw,3.2rem)/1 var(--font-display);letter-spacing:-.035em;color:var(--p-fg);font-variant-numeric:tabular-nums}
+.pl .p-figs dd{margin:12px 0 0;font:500 var(--size-small)/1.3 var(--font-text);color:var(--p-fg)}
+.pl .p-figs small{display:block;margin-top:4px;font:400 14px/1.4 var(--font-text);color:var(--p-mute)}
+@media (max-width:900px){.pl .p-figs{--cols:2!important}.pl .p-figs>div:nth-child(odd){border-left:0;padding-left:0}.pl .p-figs>div{padding-bottom:26px}}
+/* the datasheet */
+.pl .spec{width:100%;border-collapse:collapse;font:400 var(--size-small)/1.45 var(--font-text)}
+.pl .spec tbody{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(24px,4vw,72px)}
+.pl .spec tr{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:16px;padding:16px 0;border-top:1px solid var(--p-line)}
+.pl .spec th{text-align:left;font-weight:400;color:var(--p-mute)}
+.pl .spec td{color:var(--p-fg)}
+@media (max-width:900px){.pl .spec tbody{grid-template-columns:1fr}}
+.pl .note{margin-top:24px;font:400 14px/1.5 var(--font-text);color:var(--p-mute);max-width:52em}
+/* questions */
+.pl .faq{border-top:1px solid var(--p-line)}
+.pl .faq details{border-bottom:1px solid var(--p-line)}
+.pl .faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:24px;align-items:center;padding:24px 0;font:500 clamp(1.05rem,.95rem + .3vw,1.25rem)/1.35 var(--font-text);color:var(--p-fg)}
+.pl .faq summary::-webkit-details-marker{display:none}
+.pl .faq summary::after{content:"";flex:none;width:28px;height:28px;border-radius:50%;background:linear-gradient(currentColor,currentColor) center/11px 1.5px no-repeat,linear-gradient(currentColor,currentColor) center/1.5px 11px no-repeat;box-shadow:inset 0 0 0 1px var(--p-line);transition:transform .35s var(--p-ease)}
+.pl .faq details[open] summary::after{transform:rotate(45deg)}
+.pl .faq details p{padding:0 56px 26px 0;font:400 var(--size-body)/1.6 var(--font-text);color:var(--p-soft);max-width:46em}
+.pl .p-faqgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:var(--s-7)}
+@media (max-width:900px){.pl .p-faqgrid{grid-template-columns:1fr}}
+/* related pages */
+.pl .related ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:clamp(32px,4vw,56px)}
+.pl .related li{border-top:1px solid var(--p-line);padding-top:16px}
+.pl .related a{font:500 var(--size-small)/1.3 var(--font-text);color:var(--p-fg);text-decoration:none}
+.pl .related a:hover{color:var(--p-accent)}
+.pl .related span{display:block;margin-top:4px;font:400 14px/1.4 var(--font-text);color:var(--p-mute)}
+@media (max-width:760px){.pl .related ul{grid-template-columns:1fr}}
+/* buttons */
+.pl .p-btn{display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 26px;border-radius:999px;font:500 16px/1 var(--font-text);text-decoration:none;color:var(--p-on-accent,#fff)!important;background:var(--p-accent);transition:transform .3s var(--p-ease),box-shadow .3s}
+.pl .p-btn:hover{transform:translateY(-1px)}
+/* the closing call */
+.pl .close{padding-block:clamp(96px,11vw,200px);text-align:center}
+.pl .close p{display:flex;flex-direction:column;align-items:center;gap:18px;width:var(--p-w);margin-inline:auto}
+.pl .close p>span:first-child{font:600 clamp(2.4rem,1.2rem + 3.6vw,5.4rem)/1 var(--font-display);letter-spacing:-.045em;color:var(--p-fg);text-wrap:balance}
+.pl .close .sub{font:400 var(--size-lede)/1.4 var(--font-text);color:var(--p-soft);max-width:30em}
+.pl .close a{margin-top:14px;display:inline-flex;align-items:center;height:56px;padding:0 30px;border-radius:999px;font:500 17px/1 var(--font-text);text-decoration:none;color:var(--p-on-accent,#fff)!important;background:var(--p-accent);transition:transform .3s var(--p-ease)}
+.pl .close a:hover{transform:translateY(-2px)}
+/* reveal: words never wait on motion (they are visible without JS and with reduced motion) */
+@media (prefers-reduced-motion:no-preference){@supports (animation-timeline:view()){
+  .pl .rv{animation:p-rise linear both;animation-timeline:view();animation-range:entry 0% entry 38%}
+  @keyframes p-rise{from{opacity:.001;transform:translateY(28px)}to{opacity:1;transform:none}}
+}}
+/* the rail: not a nav. A column of hairline ticks at the left edge, one per section, built by site.js from each
+   section's own heading; the tick of the section you read grows and its name appears beside it. Nothing to click,
+   hidden from screen readers. Ticks only from 1280 px; the name shows only where the margin can hold it. */
+.p-rail{position:fixed;z-index:30;left:clamp(18px,2vw,36px);top:50%;transform:translateY(-50%);pointer-events:none;
+  opacity:0;transition:opacity .6s var(--p-ease);color:var(--p-fg);font:500 11.5px/1 var(--font-text);letter-spacing:.01em}
+.p-rail.on{opacity:1}
+.p-rail b{display:block;font:600 10px/1 var(--font-text);letter-spacing:.18em;text-transform:uppercase;margin:0 0 16px;color:var(--p-rail-name,var(--p-accent));writing-mode:vertical-rl;transform:rotate(180deg);opacity:.8}
+.p-rail ol{position:relative;list-style:none;margin:0;padding:0;display:grid;gap:11px}
+.p-rail li{position:relative;height:1px;width:10px;background:var(--p-mute);opacity:.55;transition:width .5s var(--p-ease),opacity .4s,background .4s;white-space:nowrap;color:transparent;font-size:0}
+.p-rail li.past{opacity:.85}
+.p-rail li.here{width:26px;opacity:1;background:var(--p-rail-ink,var(--p-accent));height:1.5px}
+.p-rail li::after{content:attr(data-n);position:absolute;left:38px;top:50%;transform:translate(-6px,-50%);opacity:0;font:500 11.5px/1 var(--font-text);color:var(--p-fg);transition:opacity .4s,transform .5s var(--p-ease)}
+.p-rail li.here::after{opacity:.9;transform:translate(0,-50%)}
+@media (max-width:1279px){.p-rail{display:none}}
+@media (max-width:1599px){.p-rail li::after{display:none}}
+/* the capsule's locator is off here: the rail shows place */
+.pl .where{display:none!important}
+.p-rail[data-tone=dark]{--p-fg:#fff;--p-mute:rgba(255,255,255,.55);--p-line:rgba(255,255,255,.18)}
+.p-rail[data-tone=light]{--p-fg:#0a0a0b;--p-mute:rgba(10,10,11,.5);--p-line:rgba(10,10,11,.14)}

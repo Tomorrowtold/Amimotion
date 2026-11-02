@@ -1,0 +1,129 @@
+[
+ {
+  "id": "porcelain",
+  "name": "Porcelain",
+  "line": "Cool, clean porcelain white with blue-black ink. Apple-clean, a touch of cold.",
+  "tokens": {
+   "ground": "#f7f8fa",
+   "surface": "#edf0f4",
+   "pressed": "#e2e6ec",
+   "ink": "#0c1320",
+   "ink-soft": "#465061",
+   "ink-hover": "#222b3a",
+   "on-ink": "#f7f8fa",
+   "hardware": "#3a3d42",
+   "link": "#1557c7",
+   "focus": "#1557c7",
+   "brand": "#66a5fa",
+   "located": "#66a5fa",
+   "waiting": "#f0a43a"
+  },
+  "hall": {
+   "floor": "#f7f8fa",
+   "machines": "#e6e9ee",
+   "shadow": "#c4cad3"
+  }
+ },
+ {
+  "id": "aluminium",
+  "name": "Aluminium",
+  "line": "Machined light grey ground with white raised surfaces and true black ink, like the product box.",
+  "tokens": {
+   "ground": "#eceef0",
+   "surface": "#ffffff",
+   "pressed": "#e1e4e8",
+   "ink": "#0a0b0d",
+   "ink-soft": "#42464d",
+   "ink-hover": "#26292e",
+   "on-ink": "#ffffff",
+   "hardware": "#3a3d42",
+   "link": "#134fb3",
+   "focus": "#134fb3",
+   "brand": "#66a5fa",
+   "located": "#3a86f2",
+   "waiting": "#f5b82e",
+   "waiting-edge": "#b07a12"
+  },
+  "hall": {
+   "floor": "#eceef0",
+   "machines": "#fafbfc",
+   "shadow": "#bfc3c9"
+  }
+ },
+ {
+  "id": "skywash",
+  "name": "Sky wash",
+  "line": "White page with pale brand-blue surfaces: the blue is in the air, not only in the mark.",
+  "tokens": {
+   "ground": "#fbfcfe",
+   "surface": "#e9f1fd",
+   "pressed": "#d9e7fb",
+   "ink": "#0a1430",
+   "ink-soft": "#43506b",
+   "ink-hover": "#1f2b48",
+   "on-ink": "#fbfcfe",
+   "hardware": "#3a3d42",
+   "link": "#175dd0",
+   "focus": "#175dd0",
+   "brand": "#66a5fa",
+   "located": "#2f7bea",
+   "waiting": "#f7c548",
+   "waiting-edge": "#a8801a"
+  },
+  "hall": {
+   "floor": "#f8fafd",
+   "machines": "#e2eaf6",
+   "shadow": "#c1cde0"
+  }
+ },
+ {
+  "id": "mineral",
+  "name": "Mineral",
+  "line": "Pale sage-grey ground and green-black ink: calm, natural, unexpected next to blue.",
+  "tokens": {
+   "ground": "#f2f4f0",
+   "surface": "#e6eae3",
+   "pressed": "#dadfd6",
+   "ink": "#111915",
+   "ink-soft": "#46514a",
+   "ink-hover": "#242e28",
+   "on-ink": "#f2f4f0",
+   "hardware": "#3a3d42",
+   "link": "#1a56b0",
+   "focus": "#1a56b0",
+   "brand": "#66a5fa",
+   "located": "#4a93f7",
+   "waiting": "#e8730c"
+  },
+  "hall": {
+   "floor": "#f2f4f0",
+   "machines": "#dfe4db",
+   "shadow": "#bec6ba"
+  }
+ },
+ {
+  "id": "iris",
+  "name": "Iris",
+  "line": "Lavender-mist ground with violet-black ink and an indigo link. Nobody in industrial tech is here.",
+  "tokens": {
+   "ground": "#f5f4f9",
+   "surface": "#eae8f3",
+   "pressed": "#dedbec",
+   "ink": "#16142a",
+   "ink-soft": "#4c4966",
+   "ink-hover": "#2b2842",
+   "on-ink": "#f5f4f9",
+   "hardware": "#3a3d42",
+   "link": "#3b45c4",
+   "focus": "#3b45c4",
+   "brand": "#66a5fa",
+   "located": "#3a86f2",
+   "waiting": "#f08a4b"
+  },
+  "hall": {
+   "floor": "#f5f4f9",
+   "machines": "#e5e2ef",
+   "shadow": "#c6c1d8"
+  }
+ }
+]

@@ -1,0 +1,15 @@
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch(); const pg = await b.newPage({ viewport: { width: 1440, height: 900 } });
+await pg.goto('http://127.0.0.1:8141/specs/');
+const st = () => pg.evaluate(() => ({ f: document.activeElement.textContent.slice(0, 30), open: [...document.querySelectorAll('details[data-panel]')].filter(p => p.open).map(p => p.querySelector('summary').textContent), exp: document.querySelector('.links summary').getAttribute('aria-expanded') }));
+for (let i = 0; i < 3; i++) await pg.keyboard.press('Tab'); console.log('tab3', await st());
+await pg.keyboard.press('Enter'); console.log('enter', await st());
+await pg.keyboard.press('Tab'); console.log('tab', await st());
+await pg.keyboard.press('Escape'); console.log('esc', await st());
+await pg.keyboard.press('Enter'); for (let i = 0; i < 25; i++) await pg.keyboard.press('Tab'); console.log('tab out', await st());
+await pg.keyboard.press('Control+k'); console.log('ctrl-k', await st());
+await pg.keyboard.type('omlox'); await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(300); await pg.keyboard.press('ArrowDown'); console.log('arrows', await st());
+await pg.keyboard.press('Escape'); console.log('esc2', await st());
+const cls = await pg.evaluate(async () => { const y = []; new PerformanceObserver(l => l.getEntries().forEach(e => y.push(e.value))).observe({ type: 'layout-shift', buffered: true }); document.querySelector('.links summary').click(); await new Promise(r => setTimeout(r, 400)); document.querySelectorAll('.links summary')[2].click(); await new Promise(r => setTimeout(r, 400)); return y.reduce((a, b) => a + b, 0) });
+console.log('CLS incl load+open', cls);
+await b.close() })();

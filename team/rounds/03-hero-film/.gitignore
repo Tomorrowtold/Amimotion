@@ -1,0 +1,6 @@
+frames_raw/
+frames/
+master/*-raw.png
+__pycache__/
+master/poster-6400x8000.png
+master/hall.blend

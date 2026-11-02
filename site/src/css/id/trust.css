@@ -1,0 +1,6 @@
+/* /trust/: plain cards, one fact each, like a privacy label; the headline holds a lot of air. */
+.head{padding-block:var(--s-8)}
+.head h1{font-size:clamp(3rem,1.4rem + 4.8vw,7.2rem)}
+.head .words{display:block;grid-column:1 / span 7}
+.points.c3>li{background:var(--surface)!important;border-radius:26px!important;padding:var(--s-7) var(--s-6)!important;min-height:260px}
+.points.c3 h3{font-size:1.6rem!important;letter-spacing:-.015em!important}

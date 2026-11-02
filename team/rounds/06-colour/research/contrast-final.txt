@@ -1,0 +1,146 @@
+
+== Pure Electric
+  ground    #ffffff  oklch(100.0% 0.000 90)
+  surface   #f3f6fc  oklch(97.3% 0.009 265)
+  ink       #0a0c14  oklch(15.6% 0.017 273)
+  ink-soft  #4b5163  oklch(43.7% 0.031 271)
+  link      #1559ff  oklch(54.2% 0.254 263)
+  located   #1f6bff  oklch(57.7% 0.232 262)
+  waiting   #ffb020  oklch(81.3% 0.165 75)
+  ink on ground                           19.52:1  Lc  105.7  ok
+  ink on surface                          18.04:1  Lc  100.2  ok
+  ink-soft on ground                       7.91:1  Lc   87.4  ok
+  ink-soft on surface                       7.3:1  Lc   81.9  ok
+  link on ground                           5.38:1  Lc   75.7  ok
+  link on surface                          4.97:1  Lc   70.2  ok
+  button text on button                   19.52:1  Lc -107.6  ok
+  focus ring on ground                     5.38:1  Lc   75.7  ok
+  located mark on ground (fill only)       4.56:1  Lc   70.8  ok
+  waiting mark on ground (fill only)       1.83:1  Lc   33.9  ok
+  ink label on located fill                4.28:1  Lc   32.9  FAIL
+  ink label on waiting fill               10.68:1  Lc   69.6  ok
+  white label on located fill              4.56:1  Lc  -76.3  ok
+  located vs ground, WCAG 1.4.11           4.56:1  Lc   70.8  ok
+  waiting edge vs ground, 1.4.11           4.33:1  Lc   69.6  ok
+  normal  located #1f6bff waiting #ffb020  dE_ok 46.1  dL 23.6
+  deutan  located #006cfc waiting #dfc728  dE_ok 46.2  dL 25.3
+  protan  located #0080ff waiting #ccb400  dE_ok 39.3  dL 15.2
+  tritan  located #0091ab waiting #ff9b97  dE_ok 29.3  dL 18.6
+
+== Indigo Lead
+  ground    #ffffff  oklch(100.0% 0.000 90)
+  surface   #e8f1ff  oklch(95.6% 0.021 259)
+  ink       #1e1a6b  oklch(28.8% 0.134 276)
+  ink-soft  #4a4780  oklch(42.9% 0.093 284)
+  link      #4b3df0  oklch(50.6% 0.252 276)
+  located   #1f6bff  oklch(57.7% 0.232 262)
+  waiting   #ffb020  oklch(81.3% 0.165 75)
+  ink on ground                           14.84:1  Lc  101.1  ok
+  ink on surface                          13.04:1  Lc   92.3  ok
+  ink-soft on ground                       8.39:1  Lc   88.8  ok
+  ink-soft on surface                      7.37:1  Lc   80.0  ok
+  link on ground                           6.51:1  Lc   81.2  ok
+  link on surface                          5.72:1  Lc   72.4  ok
+  button text on button                   14.84:1  Lc -104.0  ok
+  focus ring on ground                     6.51:1  Lc   81.2  ok
+  located mark on ground (fill only)       4.56:1  Lc   70.8  ok
+  waiting mark on ground (fill only)       1.83:1  Lc   33.9  ok
+  ink label on located fill                3.25:1  Lc   28.3  FAIL
+  ink label on waiting fill                8.11:1  Lc   65.0  ok
+  white label on located fill              4.56:1  Lc  -76.3  ok
+  located vs ground, WCAG 1.4.11           4.56:1  Lc   70.8  ok
+  waiting edge vs ground, 1.4.11           4.33:1  Lc   69.6  ok
+  button text on coloured button           6.51:1  Lc  -86.3  ok
+  button vs ground, 1.4.11                 6.51:1  Lc   81.2  ok
+  hardware on ground                       10.9:1  Lc   95.3  ok
+  normal  located #1f6bff waiting #ffb020  dE_ok 46.1  dL 23.6
+  deutan  located #006cfc waiting #dfc728  dE_ok 46.2  dL 25.3
+  protan  located #0080ff waiting #ccb400  dE_ok 39.3  dL 15.2
+  tritan  located #0091ab waiting #ff9b97  dE_ok 29.3  dL 18.6
+
+== Sky Ground
+  ground    #f0f6ff  oklch(97.1% 0.014 258)
+  surface   #ffffff  oklch(100.0% 0.000 90)
+  ink       #0b1238  oklch(20.4% 0.074 270)
+  ink-soft  #3d4870  oklch(41.1% 0.069 271)
+  link      #4b3df0  oklch(50.6% 0.252 276)
+  located   #1f6bff  oklch(57.7% 0.232 262)
+  waiting   #ffb020  oklch(81.3% 0.165 75)
+  ink on ground                            16.7:1  Lc   98.9  ok
+  ink on surface                          18.14:1  Lc  104.6  ok
+  ink-soft on ground                       8.19:1  Lc   84.6  ok
+  ink-soft on surface                       8.9:1  Lc   90.3  ok
+  link on ground                           5.99:1  Lc   75.5  ok
+  link on surface                          6.51:1  Lc   81.2  ok
+  button text on button                   18.14:1  Lc -106.8  ok
+  focus ring on ground                     5.99:1  Lc   75.5  ok
+  located mark on ground (fill only)        4.2:1  Lc   65.1  ok
+  waiting mark on ground (fill only)       1.68:1  Lc   28.2  ok
+  ink label on located fill                3.98:1  Lc   31.8  FAIL
+  ink label on waiting fill                9.92:1  Lc   68.6  ok
+  white label on located fill              4.56:1  Lc  -76.3  ok
+  located vs ground, WCAG 1.4.11            4.2:1  Lc   65.1  ok
+  waiting edge vs ground, 1.4.11           3.98:1  Lc   63.9  ok
+  button text on coloured button           6.51:1  Lc  -86.3  ok
+  button vs ground, 1.4.11                 5.99:1  Lc   75.5  ok
+  hardware on ground                      10.04:1  Lc   89.6  ok
+  normal  located #1f6bff waiting #ffb020  dE_ok 46.1  dL 23.6
+  deutan  located #006cfc waiting #dfc728  dE_ok 46.2  dL 25.3
+  protan  located #0080ff waiting #ccb400  dE_ok 39.3  dL 15.2
+  tritan  located #0091ab waiting #ff9b97  dE_ok 29.3  dL 18.6
+
+== Indigo Band
+  ground    #ffffff  oklch(100.0% 0.000 90)
+  surface   #f4f6fb  oklch(97.3% 0.007 269)
+  ink       #0c0b1f  oklch(16.4% 0.041 283)
+  ink-soft  #4b4a60  oklch(41.9% 0.036 287)
+  link      #4338ca  oklch(45.7% 0.215 277)
+  located   #66a5fa  oklch(71.6% 0.141 256)
+  waiting   #ffb020  oklch(81.3% 0.165 75)
+  ink on ground                           19.39:1  Lc  105.6  ok
+  ink on surface                          17.93:1  Lc  100.2  ok
+  ink-soft on ground                       8.58:1  Lc   89.5  ok
+  ink-soft on surface                      7.94:1  Lc   84.1  ok
+  link on ground                            7.9:1  Lc   86.5  ok
+  link on surface                          7.31:1  Lc   81.1  ok
+  button text on button                   19.39:1  Lc -107.6  ok
+  focus ring on ground                      7.9:1  Lc   86.5  ok
+  located mark on ground (fill only)       2.52:1  Lc   49.3  ok
+  waiting mark on ground (fill only)       1.83:1  Lc   33.9  ok
+  ink label on located fill                7.69:1  Lc   54.3  ok
+  ink label on waiting fill                10.6:1  Lc   69.5  ok
+  white label on located fill              2.52:1  Lc  -54.3  FAIL
+  located vs ground, WCAG 1.4.11           2.52:1  Lc   49.3  FAIL
+  waiting edge vs ground, 1.4.11           1.83:1  Lc   33.9  FAIL
+  normal  located #66a5fa waiting #ffb020  dE_ok 32.1  dL 9.7
+  deutan  located #6e9df8 waiting #dfc728  dE_ok 32.7  dL 12.3
+  protan  located #81abfe waiting #ccb400  dE_ok 28.6  dL 2.2
+  tritan  located #00b8c4 waiting #ff9b97  dE_ok 25.4  dL 7.8
+
+== Duotone
+  ground    #ffffff  oklch(100.0% 0.000 90)
+  surface   #d9e9ff  oklch(92.9% 0.035 256)
+  ink       #2a1a8f  oklch(33.7% 0.177 277)
+  ink-soft  #4a4380  oklch(42.0% 0.099 287)
+  link      #4a2cf5  oklch(49.2% 0.272 276)
+  located   #1f6bff  oklch(57.7% 0.232 262)
+  waiting   #ff5c4d  oklch(68.9% 0.201 29)
+  ink on ground                           12.78:1  Lc   97.8  ok
+  ink on surface                          10.38:1  Lc   83.8  ok
+  ink-soft on ground                       8.73:1  Lc   89.8  ok
+  ink-soft on surface                      7.09:1  Lc   75.9  ok
+  link on ground                           7.07:1  Lc   83.0  ok
+  link on surface                          5.74:1  Lc   69.0  ok
+  button text on button                   12.78:1  Lc -101.3  ok
+  focus ring on ground                     7.07:1  Lc   83.0  ok
+  located mark on ground (fill only)       4.56:1  Lc   70.8  ok
+  waiting mark on ground (fill only)       3.05:1  Lc   56.3  ok
+  ink label on located fill                 2.8:1  Lc   25.0  FAIL
+  ink label on waiting fill                4.19:1  Lc   39.5  FAIL
+  white label on located fill              4.56:1  Lc  -76.3  ok
+  located vs ground, WCAG 1.4.11           4.56:1  Lc   70.8  ok
+  waiting edge vs ground, 1.4.11           3.05:1  Lc   56.3  ok
+  normal  located #1f6bff waiting #ff5c4d  dE_ok 40.3  dL 11.2
+  deutan  located #006cfc waiting #b2a148  dE_ok 36.3  dL 13.3
+  protan  located #0080ff waiting #897d4a  dE_ok 28.0  dL 2.7
+  tritan  located #0091ab waiting #ff325a  dE_ok 34.2  dL 4.8
