@@ -139,7 +139,7 @@ export function story(section, canvas) {
   let smooth = null, mx = 0, my = 0, qx = 0, qy = 0, beat = -1, lit = -1;
   addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
   return (t) => {
-    const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight)), bf = Math.min(NB - .0001, p * NB), pinned = r.top <= 1;
+    const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight)), bf = Math.min(NB - .0001, p * NB), pinned = r.top <= 1 || section.classList.contains('pre-on');
     const bNow = Math.floor(bf), ch = BEATS[bNow].ch;
     // the words: the chapter shows, and its words light up beat by beat (a word lights as its picture starts)
     const lb = pinned ? Math.floor(bf + .12) : -1;

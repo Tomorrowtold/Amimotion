@@ -36,7 +36,7 @@ let settleT = 0; const STILL = /[?&]still\b/.test(location.search); // screensho
 const settle = () => {
   if (reduce || !storySec || wheeling || STILL) return;
   const top = storySec.getBoundingClientRect().top + scrollY, len = storySec.offsetHeight - innerHeight, y = scrollY, p = (y - top) / len;
-  if (drawBridge && y > 2 && y < top - 2) { const k = y / top, to = k > .3 ? top : 0; target = to; cur = y; wheeling = true; return; }
+  if (drawBridge && y < top - 2) return; // the landing is driven by the hand alone: no auto-scroll
   if (p < -.12 || p > .985) return;
   const nb = +storySec.dataset.beats || 7; const rests = [0, ...Array.from({ length: nb }, (_, i) => (i + .78) / nb)];
   let best = rests[0]; for (const r of rests) if (Math.abs(r - p) < Math.abs(best - p)) best = r;

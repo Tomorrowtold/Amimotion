@@ -743,6 +743,8 @@ body:has(.sim-frame:hover) #cursor{opacity:0!important}
 .bridge-lock i:nth-child(4){border-right:0;border-top:0;margin:-7px 0 0 -1px}
 .story{z-index:3}
 .story.pre .story-sticky{visibility:hidden}
+.story.pre .rail{visibility:visible;opacity:var(--pre,0);transform:translateY(calc(var(--preY,0) * -1px))}
+.story.pre .caps{visibility:visible;opacity:var(--pre,0);transform:translateY(calc(var(--preY,0) * -1px))}
 .hero-copy{will-change:transform,opacity}
 @media (prefers-reduced-motion:reduce){.descent .hero{position:relative}.hero-stage .bridge-gl,.hero-stage .bridge-hud{display:none}}
 

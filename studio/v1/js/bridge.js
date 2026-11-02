@@ -11,7 +11,7 @@ const sm = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 
 const io = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 const TAG_W = 17 / 2400;          // the rendered tag's width, as a share of the plate's width
 const SNAP = /[?&]still\b/.test(location.search);
-const IMPACT = .42, WAVE = [.5, .88], PULL = [.5, .93];
+const IMPACT = .4, WAVE = [.4, .86], PULL = [.44, .94];
 
 export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel, sticky, fallback }) {
   const gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'high-performance' });
@@ -34,7 +34,7 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
   // the runway: the hero holds still for D pixels of scroll; then the film is already pinned in its place
   let D = 0, topY = 0, dpr = 1;
   const layout = () => {
-    D = Math.round(innerHeight * 1.5);
+    D = Math.round(innerHeight * 1.1);
     topY = descent.getBoundingClientRect().top + scrollY;
     hero.style.top = `${Math.max(0, topY)}px`;
     descent.style.height = `${hero.offsetHeight + D}px`;
@@ -50,18 +50,18 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
   return (t) => {
     const y = scrollY, d = clamp((y - topY + Math.max(0, topY)) / D);
     story.classList.toggle('pre', y < D - .5);
-    if (y > D + innerHeight) { if (last !== 2) { canvas.style.visibility = hudEl.style.visibility = 'hidden'; last = 2; } dS = 1; globalThis.__bridge = null; return; }
+    if (y > D + innerHeight) { story.classList.remove('pre-on'); if (last !== 2) { canvas.style.visibility = hudEl.style.visibility = 'hidden'; last = 2; } dS = 1; globalThis.__bridge = null; return; }
     // the scroll, smoothed: the fall and the wave move like film, not in steps
     dS = Math.abs(d - dS) < .0005 || SNAP ? d : lerp(dS, d, .16);
     const e = dS;
     if (e <= 0) {
-      if (last !== 0) { canvas.style.visibility = hudEl.style.visibility = 'hidden'; copy.style.transform = ''; copy.style.opacity = ''; hero.style.setProperty('--glow', 1); if (fallback) fallback.style.opacity = ''; if (shade) shade.style.opacity = ''; last = 0; }
+      if (last !== 0) { canvas.style.visibility = hudEl.style.visibility = 'hidden'; copy.style.transform = ''; copy.style.opacity = ''; hero.style.setProperty('--glow', 1); if (fallback) fallback.style.opacity = ''; if (shade) shade.style.opacity = ''; sticky.style.setProperty('--pre', 0); story.classList.remove('pre-on'); last = 0; }
       globalThis.__bridge = null; return;
     }
     last = 1;
 
     // the words lift away first
-    const kc = sm(0, .24, e);
+    const kc = sm(0, .1, e);
     copy.style.transform = `translate3d(0,${-kc * 18}vh,0)`; copy.style.opacity = 1 - kc;
     if (fallback && !fallback.classList.contains('gone')) fallback.style.opacity = 1 - sm(.1, .4, e);
     if (shade) shade.style.opacity = 1 - sm(0, .15, e);
@@ -70,22 +70,24 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
     const cr = canvas.getBoundingClientRect(), pr = panel.getBoundingClientRect(), st = sticky.getBoundingClientRect().top;
     const cw = cr.width, ch = cr.height;
     const R1 = [pr.left - cr.left, pr.top - st - cr.top, pr.width, pr.height];
-    const kR = io(sm(PULL[0], PULL[1], e));
+    const kR = sm(PULL[0], PULL[1], e);
     const R = [lerp(0, R1[0], kR), lerp(0, R1[1], kR), lerp(cw, R1[2], kR), lerp(ch, R1[3], kR)];
     const rad = parseFloat(getComputedStyle(panel).borderTopLeftRadius) || 24;
     canvas.style.visibility = hudEl.style.visibility = ready ? 'visible' : 'hidden';
     const clip = `inset(${R[1]}px ${cw - R[0] - R[2]}px ${ch - R[1] - R[3]}px ${R[0]}px round ${rad * kR}px)`;
     canvas.style.clipPath = clip; hudEl.style.clipPath = clip;
-    canvas.style.opacity = sm(.02, .2, e);
+    canvas.style.opacity = sm(.08, .2, e);
     // focus: soft while it falls, a snap into focus at the moment it lands
-    const blur = e < IMPACT - .04 ? lerp(11, 4, sm(.08, IMPACT - .04, e)) : 4 * (1 - sm(IMPACT - .04, IMPACT + .02, e));
+    const blur = e < IMPACT ? lerp(10, 0, sm(.08, IMPACT - .06, e)) : 0;
     canvas.style.filter = blur > .2 ? `blur(${blur.toFixed(1)}px)` : '';
     hero.style.setProperty('--glow', 1 - sm(.1, .5, e));
+    // the story's first words rise in while the frame is still folding into its panel: no empty beat between hero and film
+    sticky.style.setProperty('--pre', sm(.82, .95, e).toFixed(3)); sticky.style.setProperty('--preY', Math.max(0, D - y).toFixed(1)); story.classList.toggle('pre-on', e > .8);
 
     // the camera on the plate: during the fall the rendered tag stays under the falling one; then the pull back to the whole plant
     const tf = globalThis.__tagFrame || { fx: innerWidth > 900 ? .69 : .5, fy: .5 };
     const zFall = Math.exp(lerp(Math.log(5.5), Math.log(LAND_Z()), io(sm(.04, IMPACT, e))));
-    const kP = io(sm(PULL[0], PULL[1], e));
+    const kP = sm(PULL[0], PULL[1], e);
     const z = Math.exp(lerp(Math.log(zFall), Math.log(WIDE[2]), kP));
     const ra = R[2] / R[3], sp = ra > .8 ? [1, .8 / ra] : [ra / .8, 1];
     const aEnd = [(T[0] - WIDE[0]) * WIDE[2] / sp[0] + .5, (T[1] - WIDE[1]) * WIDE[2] / sp[1] + .5];
@@ -110,7 +112,7 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
     const S = [R[0] + a[0] * R[2], R[1] + a[1] * R[3] + shake];
     const platePx = TAG_W * z * R[2] / sp[0];
     // the falling tag: it shrinks slowly, then faster and faster, like something dropping away from you
-    globalThis.__bridge = { d: e, sx: S[0] / cw, sy: S[1] / ch, px: platePx, k: Math.pow(sm(.03, IMPACT, e), 2.1), fade: 1 - sm(IMPACT, IMPACT + .06, e), floor: 1 - sm(0, .16, e) };
+    globalThis.__bridge = { d: e, sx: S[0] / cw, sy: S[1] / ch, px: platePx, k: Math.pow(sm(.03, IMPACT, e), 2.1), fade: 1 - sm(IMPACT, IMPACT + .06, e), floor: 1 - sm(0, .06, e) };
 
     // the lock and the located tags, drawn exactly as the film draws them
     hx.clearRect(0, 0, hudEl.width, hudEl.height);
