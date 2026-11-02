@@ -33,6 +33,11 @@ ap.add_argument("--indexnow-key", default="")
 args = ap.parse_args()
 SITE, SHARE, BRIEF, TODAY = args.base_url.rstrip("/"), args.share, not args.no_brief, date.today().isoformat()
 ENTITY = json.loads((SRC / "data" / "entity.json").read_text())
+NAV = json.loads((SRC / "data" / "nav.json").read_text())
+# one label per URL (homepage-final.md, Nav panels): bar, sheet, footer, section bars, breadcrumbs and llms.txt
+LABEL = {s["url"]: s["label"] for s in NAV["sections"]}
+for _s in NAV["sections"]:
+    for _l, _u, _line in _s["items"]: LABEL.setdefault(_u, _l)
 
 part = lambda n: (SRC / "partials" / n).read_text()
 
@@ -123,7 +128,7 @@ def page_schema(meta, url, body, titles):
                   "additionalProperty": specs_of(body)})
     if kind == "software":
         g.append({"@type": "SoftwareApplication", "@id": full + "#software", "name": meta.get("product", "AmIHub"), "description": meta.get("description"),
-                  "applicationCategory": "BusinessApplication", "operatingSystem": "On-premise or cloud", "publisher": {"@id": SITE + "/#org"},
+                  "applicationCategory": "BusinessApplication", "operatingSystem": "Runs on an industrial PC inside your plant, with no internet needed", "publisher": {"@id": SITE + "/#org"},
                   "additionalProperty": specs_of(body)})
     if kind == "article":
         g.append({"@type": "TechArticle", "@id": full + "#article", "headline": meta.get("title"), "description": meta.get("description"),
@@ -139,7 +144,7 @@ def page_schema(meta, url, body, titles):
         crumbs, acc = [("Home", "/")], "/"
         for seg in url.strip("/").split("/"):
             acc += seg + "/"
-            if acc in titles: crumbs.append((titles[acc], acc))
+            if acc in titles: crumbs.append((LABEL.get(acc, titles[acc]), acc))
         g.append({"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": n, "item": SITE + u} for i, (n, u) in enumerate(crumbs)]})
     return json.dumps({"@context": "https://schema.org", "@graph": g}, ensure_ascii=False, separators=(",", ":"))
 
@@ -160,25 +165,83 @@ def head(meta, url, body, titles):
 <meta name="description" content="{e(d)}">
 <meta name="robots" content="{robots}">
 <link rel="canonical" href="{SITE}{url}">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#f5f5f2">
 <meta property="og:type" content="website"><meta property="og:site_name" content="AmIMotion"><meta property="og:locale" content="en_IN">
 <meta property="og:title" content="{e(t)}"><meta property="og:description" content="{e(d)}">
 <meta property="og:url" content="{SITE}{url}"><meta property="og:image" content="{SITE}{og}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/img/AmIMotion_Icon.svg" type="image/svg+xml">
 <link rel="alternate" type="text/plain" title="AmIMotion for AI assistants" href="/llms.txt">
-<link rel="preload" href="/assets/fonts/InterTight.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/site.css">
+{styles(meta)}
 <script>document.documentElement.classList.replace('no-js','js')</script>
 <script type="application/ld+json">{page_schema(meta, url, body, titles)}</script>
 </head>
-<body>
-{part('sprite.html')}"""
+<body{' class="ds"' if meta.get("layout") == "home" else ''}>
+{'' if meta.get("layout") == "home" else part('sprite.html')}"""
+
+
+def styles(meta):
+    if meta.get("layout") == "home":
+        # the homepage carries its whole stylesheet in the first round trip: no render-blocking request
+        css = (SRC / "css" / "core.css").read_text() + (SRC / "css" / "home.css").read_text()
+        css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+        css = re.sub(r"\s*\n\s*", "", css)
+        return ('<link rel="preload" href="/assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>\n'
+                f"<style>{css}</style>")
+    return ('<link rel="preload" href="/assets/fonts/InterTight.woff2" as="font" type="font/woff2" crossorigin>\n'
+            '<link rel="stylesheet" href="/assets/css/site.css">\n<link rel="stylesheet" href="/assets/css/core.css">')
+
+
+A = lambda u, t, extra="": f'<a href="{u}"{extra}>{html.escape(t)}</a>'
+
+
+def header_html():
+    """The bar (homepage-final.md screen 0): logo, four sections as panels, one button. Panels are native <details>,
+    so they open on click or tap with JavaScript off; a closed panel is out of the tab order."""
+    nx = NAV["closing"]
+    next_line = f'{nx[0]} {A(nx[2], nx[1])}'
+    panels = []
+    for s in NAV["sections"]:
+        rows = "".join(f'<li><a href="{u}"><b>{html.escape(l)}</b><span>{html.escape(line)}</span></a></li>' for l, u, line in s["items"])
+        panels.append(f'<li><details data-panel><summary>{s["label"]}</summary><div class="drop">'
+                      f'<a class="drop-hub" href="{s["url"]}">{s["label"]}</a><ul class="drop-list">{rows}</ul>'
+                      f'<p class="drop-next">{next_line}</p></div></details></li>')
+    groups = "".join(f'<div class="sheet-group">{A(s["url"], s["label"])}<ul class="sheet-list">'
+                     + "".join(f"<li>{A(u, l)}</li>" for l, u, _ in s["items"] if u != nx[2]) + "</ul></div>" for s in NAV["sections"])
+    return (f'<a class="skip-link" href="#main">Skip to content</a>\n<header class="top ds">\n'
+            f'<a class="logo" href="/" aria-label="AmIMotion home">{part("logo.html")}</a>\n'
+            f'<nav class="main" aria-label="Main"><ul class="links">{"".join(panels)}</ul></nav>\n'
+            f'<a class="cta" href="/contact/">Book a call</a>\n'
+            f'<details class="phone" data-panel><summary>Menu</summary><nav class="sheet" aria-label="Menu">'
+            f'{A(nx[2], nx[1], " class=\"sheet-first\"")}{groups}</nav></details>\n</header>')
+
+
+def footer_html():
+    """Screen 7 of homepage-final.md: start from your job, four columns with the nav labels, the entity paragraph."""
+    roles = "".join(f"<div><dt>{html.escape(r)}</dt><dd>" + ' <span aria-hidden="true">·</span> '.join(A(u, l) for l, u in ls) + "</dd></div>" for r, ls in NAV["roles"])
+    cols = "".join(f'<div>{A(s["url"], s["label"], " class=\"hub\"")}<ul>' + "".join(f"<li>{A(u, l)}</li>" for l, u, _ in s["items"]) + "</ul></div>" for s in NAV["sections"])
+    return (f'<footer class="foot ds">\n<h2>Start from your job.</h2>\n<dl class="roles">{roles}</dl>\n'
+            f'<nav class="foot-cols" aria-label="All pages">{cols}</nav>\n'
+            f'<p class="entity">{html.escape(ENTITY["long"])}</p>\n'
+            f'<p class="contact"><a href="mailto:sales@amimotion.com">sales@amimotion.com</a> <span aria-hidden="true">·</span> <a href="/privacy/">Privacy</a></p>\n'
+            '<p class="legal">NXP and Trimension are trademarks of NXP B.V. FiRa and omlox are trademarks of their owners. Specifications are indicative. Final datasheets are shared under NDA.</p>\n'
+            "</footer>")
+
+
+# panels: one open at a time, Escape and a click outside close them. Without this script they still open and close.
+NAV_JS = ("<script>(()=>{const d=document,P=[...d.querySelectorAll('details[data-panel]')];"
+          "P.forEach(p=>p.addEventListener('toggle',()=>{if(p.open)P.forEach(q=>{if(q!==p)q.open=false})}));"
+          "d.addEventListener('click',e=>{P.forEach(p=>{if(p.open&&!p.contains(e.target))p.open=false})});"
+          "d.addEventListener('keydown',e=>{if(e.key==='Escape')P.forEach(p=>{if(p.open){p.open=false;p.querySelector('summary').focus()}})})})()</script>")
+# the hero film hook: plays a [data-hero-film] video only while it is in view; never with reduced motion. No film yet: does nothing.
+FILM_JS = ("<script>(()=>{const v=document.querySelector('video[data-hero-film]');if(!v||matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver'in window))return;"
+           "new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){v.preload='auto';v.play().catch(()=>{})}else v.pause()}),{threshold:.25}).observe(v)})()</script>")
 
 
 def scripts(meta):
+    if meta.get("layout") == "home": return NAV_JS + FILM_JS
     s = meta.get("scripts", "").split()
-    out = ['<script src="/assets/js/site.js" defer></script>']
+    out = [NAV_JS, '<script src="/assets/js/site.js" defer></script>']
     if "hero" in s: out.append('<script src="/assets/js/hero.js" defer></script>')
     if "diag" in s:
         out.append('<script src="/assets/js/config.js" defer></script><script src="/assets/js/diagnostic.js" defer></script>')
@@ -208,12 +271,7 @@ def relativise(page, url):
 
 
 # The guided path: each section's pages in order, so every page can show where you are and what comes next
-TOURS = [
-    ("Platform", [("/platform/", "Overview"), ("/products/amigo/", "AmIGo"), ("/products/amimo/", "AmIMo"), ("/products/amihub/", "AmIHub"), ("/technology/", "Technology"), ("/specs/", "Specs"), ("/developers/", "Developers")]),
-    ("Solutions", [("/solutions/", "Overview"), ("/solutions/wip/", "Work in progress"), ("/solutions/assets/", "Tools and vehicles"), ("/use-cases/", "Use cases"), ("/industries/", "Industries")]),
-    ("Resources", [("/resources/", "Overview"), ("/diagnostic/", "Diagnose"), ("/tools/", "Tools"), ("/films/", "Films"), ("/learn/", "Field guides"), ("/glossary/", "Glossary"), ("/faq/", "Questions")]),
-    ("Company", [("/company/", "About"), ("/pilot/", "Pilot"), ("/trust/", "Trust"), ("/contact/", "Contact")]),
-]
+TOURS = [(sec["label"], [(sec["url"], "Overview")] + [(u, l) for l, u, _ in sec["items"]]) for sec in NAV["sections"]]
 NEXT_LINE = {"/platform/": "Start with the tag", "/products/amigo/": "Then the anchor", "/products/amimo/": "Then the software",
              "/products/amihub/": "How the accuracy is reached", "/technology/": "Every figure we publish", "/specs/": "Build on it", "/developers/": "What it solves", "/industries/": "Try it on your floor",
              "/faq/": "Who builds it", "/trust/": "Talk to the team"}
@@ -247,6 +305,13 @@ def subnav(url):
     return bar, band
 
 
+def crumb_labels(body):
+    """Visible breadcrumbs use the nav label of each URL, the same as the bar and BreadcrumbList."""
+    def fix(m):
+        return re.sub(r'<a href="([^"]+)">([^<]*)</a>', lambda a: f'<a href="{a.group(1)}">{LABEL.get(a.group(1), a.group(2))}</a>', m.group(0))
+    return re.sub(r'<nav class="crumbs".*?</nav>', fix, body, flags=re.S)
+
+
 SCENES = {k: v for k, v in json.loads((SRC / "data" / "scenes.json").read_text()).items() if not k.startswith("_")}
 PH_RE = re.compile(r'<div class="card ph mood-(\w+)(?: ratio-(\w+))?">(\s*)<p class="ph-brief"><b>(P\d+)</b>')
 
@@ -259,8 +324,11 @@ def scenes(body):
         if kind[0] == "screen":
             im = f'<img src="/assets/scene/{stem}.webp" alt="{alt}" width="2000" height="994" loading="lazy" decoding="async" style="object-position:{pos}">'
         else:
-            im = (f'<img src="/assets/scene/{stem}-1600.webp" srcset="/assets/scene/{stem}-900.webp 900w, /assets/scene/{stem}-1600.webp 1600w" '
-                  f'sizes="(max-width: 900px) 92vw, 1200px" alt="{alt}" width="1600" height="900" loading="lazy" decoding="async" style="object-position:{pos}">')
+            # AVIF first, WebP fallback (both cut by the round 04 build; AVIF is about half the bytes)
+            sz = 'sizes="(max-width: 900px) 92vw, 1200px"'
+            im = (f'<picture><source type="image/avif" srcset="/assets/scene/{stem}-900.avif 900w, /assets/scene/{stem}-1600.avif 1600w" {sz}>'
+                  f'<img src="/assets/scene/{stem}-1600.webp" srcset="/assets/scene/{stem}-900.webp 900w, /assets/scene/{stem}-1600.webp 1600w" '
+                  f'{sz} alt="{alt}" width="1600" height="900" loading="lazy" decoding="async" style="object-position:{pos}"></picture>')
         return f'<div class="card ph scene{" screen" if kind[0] == "screen" else ""} mood-{mood}{" ratio-" + ratio if ratio else ""}">{ws}{im}<p class="ph-brief"><b>{code}</b>'
     return PH_RE.sub(sub, body)
 
@@ -268,26 +336,30 @@ def scenes(body):
 def build():
     if DIST.exists(): shutil.rmtree(DIST)
     (DIST / "assets").mkdir(parents=True)
-    for sub in ("fonts", "img", "intro", "vendor", "film", "photo", "scene"):
+    # assets/intro (the old AI-made hero turn) is no longer shipped: nothing may use it
+    for sub in ("fonts", "img", "home", "vendor", "film", "photo", "scene"):
         if (SRC / "assets" / sub).exists(): shutil.copytree(SRC / "assets" / sub, DIST / "assets" / sub)
     shutil.copytree(SRC / "js", DIST / "assets" / "js", dirs_exist_ok=True)
     (DIST / "assets" / "css").mkdir()
     css = (SRC / "css" / "site.css").read_text()
     if SHARE: css = css.replace('url("/assets/', 'url("../')
     (DIST / "assets" / "css" / "site.css").write_text(css)
+    core = (SRC / "css" / "core.css").read_text()
+    if SHARE: core = core.replace('url("/assets/', 'url("../')
+    (DIST / "assets" / "css" / "core.css").write_text(core)
 
     pages = {}
     for f in sorted((SRC / "pages").rglob("*.html")):
         rel = f.relative_to(SRC / "pages")
-        meta, body = front(f.read_text()); body = scenes(body)
+        meta, body = front(f.read_text()); body = scenes(crumb_labels(body))
         pages[url_for(rel) if rel.name != "404.html" else "/404.html"] = (meta, body)
     titles = {u: m.get("crumb") or m.get("title", "").split(" | ")[0] for u, (m, _) in pages.items()}
 
     public = []
     for url, (meta, body) in pages.items():
-        header = part("header.html").replace("{{tone}}", meta.get("tone", "light"))
+        header = header_html()
         bar, band = subnav(url) if url not in ("/", "/404.html") else ("", "")
-        page = head(meta, url, body, titles) + "\n" + header + "\n" + bar + f'<main id="main"' + (' class="has-sub"' if bar else "") + f'>\n{body}\n{band}</main>\n' + part("footer.html") + "\n" + scripts(meta) + "\n</body>\n</html>\n"
+        page = head(meta, url, body, titles) + "\n" + header + "\n" + bar + f'<main id="main"' + (' class="has-sub"' if bar else "") + f'>\n{body}\n{band}</main>\n' + footer_html() + "\n" + (part("km.html") if "data-km=" in body else "") + "\n" + scripts(meta) + "\n</body>\n</html>\n"
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
         out.parent.mkdir(parents=True, exist_ok=True); out.write_text(page)
@@ -308,14 +380,17 @@ def build():
 
     # llms.txt (index of the site) and llms-full.txt (every page as plain text) for AI assistants
     facts = "\n".join(f"- {x}" for x in ENTITY["facts"])
-    groups = {"Products": ("/platform", "/products", "/technology"), "Solutions and use cases": ("/solutions", "/use-cases", "/industries", "/pilot"),
-              "Answers": ("/learn", "/glossary", "/faq", "/what-is-amimotion", "/industrial-spatial-intelligence"),
-              "Tools": ("/diagnostic", "/tools"), "Films": ("/films",), "Company": ("/company", "/contact", "/trust", "/privacy")}
-    lines = {k: [] for k in groups}
-    for u in sorted(public):
-        m = pages[u][0]
-        for k, pre in groups.items():
-            if u.startswith(pre): lines[k].append(f"- [{titles[u]}]({SITE}{u}): {m.get('description', '')}"); break
+    # the four nav sections and their pages, in nav order, with the nav labels; then every other public page
+    listed, sections = set(), []
+    for sec in NAV["sections"]:
+        rows = []
+        for u in [sec["url"]] + [u for _, u, _ in sec["items"]]:
+            if u in pages and u in public and u not in listed:
+                listed.add(u); rows.append(f"- [{LABEL[u]}]({SITE}{u}): {pages[u][0].get('description', '')}")
+        sections.append((sec["label"], rows))
+    rest = [f"- [{titles[u]}]({SITE}{u}): {pages[u][0].get('description', '')}" for u in sorted(public) if u not in listed and u != "/"]
+    if rest: sections.append(("More pages", rest))
+    lines = dict(sections)
     (DIST / "llms.txt").write_text(f"# AmIMotion\n\n> {ENTITY['long']}\n\n{ENTITY['short']}\n\n## Key facts (with their qualifiers)\n\n{facts}\n\n"
         + "\n\n".join(f"## {k}\n\n" + "\n".join(v) for k, v in lines.items() if v) + f"\n\n## Home\n\n- [AmIMotion]({SITE}/): {pages['/'][0].get('description', '')}\n")
     (DIST / "llms-full.txt").write_text(f"# AmIMotion: the full site as text\n\n> {ENTITY['long']}\n\n## Key facts\n\n{facts}\n\n"

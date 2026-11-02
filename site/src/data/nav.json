@@ -1,0 +1,60 @@
+{
+  "about": "The one nav tree (homepage-final.md, Nav panels, 1 Nov 2026). One label per URL: build.py renders the bar, its panels, the phone sheet, the footer columns, the section bars, BreadcrumbList JSON-LD and llms.txt from this file. Change a label here and it changes everywhere.",
+  "closing": ["Not sure where to start?", "Plan your first bay.", "/diagnostic/"],
+  "sections": [
+    {"label": "How it works", "url": "/platform/", "items": [
+      ["AmIGo tag", "/products/amigo/", "Rides on what moves"],
+      ["AmIMo anchor", "/products/amimo/", "Hears every tag"],
+      ["AmIHub", "/products/amihub/", "One live map"],
+      ["Ask your floor", "/use-cases/ask-your-plant/", "AI assistants and MCP"],
+      ["How it locates a tag", "/technology/", "Steel, racking, signal and outages"],
+      ["When a tag goes quiet", "/learn/location-data-quality/", "Last seen, sleep and gaps"],
+      ["Specifications", "/specs/", "Every figure and its condition"],
+      ["Trust and data", "/trust/", "Where your data lives"],
+      ["For developers", "/developers/", "API and MCP docs"]
+    ]},
+    {"label": "Where it helps", "url": "/solutions/", "items": [
+      ["Work in progress", "/solutions/wip/", "See where work waits"],
+      ["Where is that trolley?", "/use-cases/find-the-asset/", "Find it from a screen"],
+      ["How waits are timed", "/learn/dwell-time/", "Zones, entries, exits and waits"],
+      ["Which job is on the trolley?", "/learn/association/", "Linking trolleys to jobs"],
+      ["Tools and vehicles", "/solutions/assets/", "Fixtures, forklifts, AMRs"],
+      ["Manufacturing", "/industries/manufacturing/", "Bays, lines and inspection"],
+      ["Warehousing", "/industries/warehousing/", "Pallets, staging lanes, docks"],
+      ["Robotics and AMRs", "/industries/robotics/", "Robots and carriers on one map"]
+    ]},
+    {"label": "Start small", "url": "/start/", "items": [
+      ["How a pilot runs", "/pilot/", "One flow, one bay"],
+      ["How to buy", "/how-to-buy/", "Call, NDA pack, survey, pilot"],
+      ["Plan your first bay", "/diagnostic/", "Six questions, a plan back"],
+      ["How many anchors you need", "/tools/anchors/", "A first estimate, before the survey"],
+      ["Time spent searching", "/tools/search-time/", "Your own numbers"],
+      ["Your pilot on one page", "/tools/pilot/", "To share with your team"],
+      ["Measure before you claim", "/learn/pilot-baseline/", "Set a baseline first"],
+      ["Field guides", "/learn/", "Plain answers, one per page"],
+      ["Films", "/films/", "The video hub"]
+    ]},
+    {"label": "About us", "url": "/company/", "items": [
+      ["What is AmIMotion?", "/what-is-amimotion/", "The company in one page"],
+      ["What is spatial intelligence?", "/industrial-spatial-intelligence/", "The category"],
+      ["People and privacy", "/trust/people/", "What a pilot tags, and why"],
+      ["Questions", "/faq/", "Short answers"],
+      ["Glossary", "/glossary/", "Floor words and tech words"],
+      ["Book a call", "/contact/", "Talk to the team"]
+    ]}
+  ],
+  "roles": [
+    ["Plant heads", [["How a pilot runs", "/pilot/"]]],
+    ["Production and planning", [["Work in progress", "/solutions/wip/"], ["Which job is on the trolley?", "/learn/association/"]]],
+    ["Shift supervisors", [["Where is that trolley?", "/use-cases/find-the-asset/"]]],
+    ["Lean and IE leads", [["How waits are timed", "/learn/dwell-time/"]]],
+    ["Maintenance and OT", [["How it locates a tag", "/technology/"]]],
+    ["MES and ERP owners", [["Which job is on the trolley?", "/learn/association/"]]],
+    ["IT and security", [["Trust and data", "/trust/"]]],
+    ["Group operations and digital", [["How to buy", "/how-to-buy/"]]],
+    ["Procurement and finance", [["How to buy", "/how-to-buy/"]]],
+    ["Owners and MDs", [["About us", "/company/"]]],
+    ["Safety and EHS", [["People and privacy", "/trust/people/"]]],
+    ["Developers and integrators", [["For developers", "/developers/"]]]
+  ]
+}

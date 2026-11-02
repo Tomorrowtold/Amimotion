@@ -1,0 +1,86 @@
+/* home.css: the homepage only (homepage-final.md screens 1 to 6). Inlined with core.css; nothing else loads.
+   Nothing moves on load, nothing waits for JavaScript, no glow, no glass, no reveal. */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font:400 var(--size-body)/1.55 var(--font-text);font-kerning:normal;-webkit-font-smoothing:antialiased;overflow-x:clip}
+img{display:block;max-width:100%}
+h1,h2,h3{font-family:var(--font-display);font-weight:600;margin:0}
+p{margin:0 0 var(--s-5)}
+main a{color:var(--link);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+main a:hover{text-decoration-thickness:2px}
+
+/* ---------- Hero (frame/hero.html, round 5): the tag sits on the page itself ---------- */
+.hero{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:1fr auto auto 1fr;column-gap:var(--gutter);padding-inline:var(--margin);height:calc(100svh - var(--bar));min-height:560px;overflow-x:clip}
+.words{display:contents}
+.hero h1,.hero .lede{grid-column:1 / span 5;position:relative;z-index:1}
+.hero h1{grid-row:2;font:600 max(var(--size-display),min(4.2vw,11rem))/1 var(--font-display);letter-spacing:-.025em;margin:0 0 var(--s-6)}
+.hero h1 span{display:block;white-space:nowrap}
+.hero .lede{grid-row:3;font-size:max(var(--size-lede),min(.95vw,2.375rem));line-height:1.5;color:var(--ink-soft);margin:0 0 var(--s-6);max-width:34em;text-wrap:pretty}
+.picture{grid-column:5 / -1;grid-row:1 / -1;align-self:center;margin:0 calc(-1 * var(--margin)) 0 0;min-width:0}
+.picture picture{display:block}
+.picture img{width:115%;max-width:none;margin-left:-5%;height:auto}
+/* FILM HOOK. The 9 s camera A film replaces the still in the same grid area, so nothing around it moves.
+   Swap <picture> for the block in the comment in index.html; .picture.film then holds a 4:5 box (1:1 on phones),
+   the poster paints first, and the inline script plays it only in view (never with reduced motion or JS off). */
+.picture.film{align-self:stretch;display:flex;align-items:center;justify-content:flex-end;margin:0 calc(-1 * var(--margin)) 0 0}
+.picture.film video{display:block;height:100%;max-height:calc(100svh - var(--bar));width:auto;aspect-ratio:4 / 5;object-fit:cover;background:var(--surface)}
+@media (max-width:1023px),(max-aspect-ratio:4/5){
+  .hero{display:block;height:auto;min-height:0}
+  .hero h1{font-size:min(4.5rem,calc((100vw - 2 * var(--margin)) / 7.6));margin:var(--s-6) 0 0}
+  .picture{margin:calc(-1 * var(--s-4)) 0 calc(-1 * var(--s-2)) -26vw;width:152vw}
+  .picture img{width:100%;margin:0}
+  .picture.film{margin:var(--s-5) calc(-1 * var(--margin));width:auto}
+  .picture.film video{width:100%;height:auto;aspect-ratio:1 / 1}
+  .hero .lede{margin:calc(-1 * var(--s-2)) 0 var(--s-7)}
+}
+
+/* ---------- Screens 2 to 6: one heading row, then a 5:7 split ---------- */
+.screen{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);padding:var(--rhythm-l) var(--margin) 0;align-items:start}
+.screen h2{grid-column:1 / -1;font-size:var(--size-h2);line-height:1.05;letter-spacing:-.02em;margin-bottom:var(--s-8);max-width:22em;text-wrap:balance}
+.screen h2 span{display:block}
+.copy{grid-column:1 / span 5;min-width:0}
+.copy p{max-width:34em}
+.copy .lead{font-size:var(--size-lede);line-height:1.45;color:var(--ink)}
+.more{margin-top:var(--s-6);font-weight:500}
+.more .sep{color:var(--ink-soft);padding-inline:var(--s-2)}
+.shot{grid-column:6 / -1;margin:0;min-width:0}
+.flip .copy{grid-column:8 / -1;grid-row:2}
+.flip .shot{grid-column:1 / span 7;grid-row:2}
+.wide{grid-column:1 / -1;margin:var(--rhythm-s) 0 0}
+/* a reserved picture: the final aspect ratio on one step of the ground, until the model hall still exists */
+.slot{display:block;width:100%;background:var(--surface)}
+.r43{aspect-ratio:4 / 3}
+.r169{aspect-ratio:16 / 9}
+.r32{aspect-ratio:3 / 2}
+.ask{font:600 var(--size-h3)/1.2 var(--font-display);letter-spacing:-.01em;margin-bottom:var(--s-6);max-width:20em}
+.it{grid-column:7 / -1;font-size:var(--size-small);line-height:1.5;color:var(--ink-soft);max-width:40em;padding-top:var(--s-2)}
+.it p{max-width:none}
+.parts{grid-column:1 / -1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--gutter);row-gap:var(--s-8);list-style:none;margin:0;padding:0}
+.parts li{min-width:0}
+.parts picture,.parts .slot{display:block;margin-bottom:var(--s-5)}
+.parts img{width:100%;height:auto}
+.parts h3{font-size:var(--size-h3);line-height:1.2;letter-spacing:-.01em;margin-bottom:var(--s-3)}
+.parts p{color:var(--ink-soft)}
+.spec-line{grid-column:1 / -1;margin-top:var(--s-6)}
+.spec-line p{font-weight:500;margin-bottom:var(--s-2)}
+.buy{grid-column:7 / -1;color:var(--ink-soft)}
+.buy b{color:var(--ink);font-weight:500}
+.next{grid-column:1 / -1;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:var(--s-8);margin:var(--rhythm-s) 0 var(--rhythm-l)}
+.next > div{grid-column:span 5}
+.next > div + div{grid-column:7 / -1}
+.next h3{font-size:var(--size-h3);line-height:1.2;letter-spacing:-.01em;margin-bottom:var(--s-3)}
+.next p{color:var(--ink-soft);max-width:30em}
+.next .cta{margin-top:var(--s-2)}
+@media (max-width:1023px){
+  .screen{display:block;padding-top:var(--rhythm-m)}
+  .screen h2{margin-bottom:var(--s-6)}
+  .shot,.wide{margin:var(--s-6) calc(-1 * var(--margin)) 0}
+  .flip .shot{margin:0 calc(-1 * var(--margin)) var(--s-6)}
+  .it{margin-top:var(--s-6)}
+  .parts{grid-template-columns:minmax(0,1fr);margin-top:0}
+  .buy{margin-top:var(--s-6)}
+  .next{display:block;margin-bottom:var(--rhythm-m)}
+  .next > div + div{margin-top:var(--s-8)}
+}
+@media (min-width:640px) and (max-width:1023px){.parts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
