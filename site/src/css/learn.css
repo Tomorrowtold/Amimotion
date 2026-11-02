@@ -96,6 +96,8 @@
 /* 5. the guides' comparison tables: text, not figures, so proportional numerals (the tabular zero is slashed); on a
       phone each row is a small card: the row name in ink, each column's name a small caption over its answer */
 .prose .compare{font-variant-numeric:normal}
+.prose .compare thead tr{border-bottom:1px solid color-mix(in srgb,var(--ink) 35%,transparent)}
+.prose .compare thead th{font-size:var(--size-small);font-weight:500;letter-spacing:.01em;padding-bottom:var(--s-3)}
 @media (max-width:639px){
   .prose .compare tbody th{font:600 1.06rem/1.3 var(--font-display);color:var(--ink);padding-bottom:var(--s-2)}
   .prose .compare td[data-h]{padding-bottom:var(--s-3);line-height:1.5}
