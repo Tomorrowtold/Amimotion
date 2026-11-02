@@ -63,7 +63,7 @@ void main(){float on=1.-smoothstep(draw-.004,draw+.004,vU);
   float edge=1.-smoothstep(.55,1.,abs(vS));
   float tail=smoothstep(0.,.25,vU);
   vec3 c=mix(vec3(.12,.42,1.),vec3(.55,.75,1.),front);
-  gl_FragColor=vec4(c,(on*.9*tail+front*.8)*edge*fadeAll);}`;
+  gl_FragColor=vec4(c,(on*.75*tail+front*.9)*edge*fadeAll);}`;
 
 function ribbon(pts, w) {
   const curve = new THREE.CatmullRomCurve3(pts.map(([x, z]) => new THREE.Vector3(x, 0, z)), false, 'centripetal');
@@ -77,9 +77,9 @@ function ribbon(pts, w) {
 }
 // three routes a trolley might take before it stops (floor units; the tag sits at 0,0)
 const ROUTES = [
-  [[-420, 260], [-250, 210], [-170, 60], [-60, 40], [0, 0]],
   [[380, 300], [240, 120], [80, 160], [30, 60], [0, 0]],
-  [[-380, -220], [-200, -120], [-150, 40], [-50, 30], [0, 0]],
+  [[440, -220], [260, -170], [170, -40], [60, -24], [0, 0]],
+  [[220, 440], [170, 270], [50, 210], [20, 80], [0, 0]],
 ];
 
 export async function init(canvas, fallback, hero) {
@@ -103,20 +103,23 @@ export async function init(canvas, fallback, hero) {
 
   const FLOOR_Y = -16;
   const floorMat = new THREE.ShaderMaterial({ vertexShader: FLOOR_VS, fragmentShader: FLOOR_FS, transparent: true, depthWrite: false, uniforms: { t: { value: 0 }, ring: { value: 0 }, wait: { value: 0 }, fadeAll: { value: 1 } } });
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), floorMat); floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_Y; scene.add(floor);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), floorMat); floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_Y; floor.visible = false; scene.add(floor);
 
   const pathMat = new THREE.ShaderMaterial({ vertexShader: PATH_VS, fragmentShader: PATH_FS, transparent: true, depthWrite: false, uniforms: { draw: { value: 0 }, fadeAll: { value: 1 } } });
-  const paths = ROUTES.map((r) => { const m = new THREE.Mesh(ribbon(r, 2.1), pathMat); m.position.y = FLOOR_Y + .05; m.visible = false; scene.add(m); return m; });
+  const paths = ROUTES.map((r) => { const m = new THREE.Mesh(ribbon(r, 1.15), pathMat); m.position.y = FLOOR_Y + .05; m.visible = false; scene.add(m); return m; });
 
   // contact shadow
   const shadowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(11,18,56,.55)'); g.addColorStop(.45, 'rgba(11,18,56,.16)'); g.addColorStop(1, 'rgba(11,18,56,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); })();
   const shadow = new THREE.Mesh(new THREE.PlaneGeometry(170, 130), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false })); shadow.rotation.x = -Math.PI / 2; shadow.position.y = FLOOR_Y + .1; scene.add(shadow);
 
+  const poolTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(255,176,32,.55)'); g.addColorStop(.35, 'rgba(255,176,32,.22)'); g.addColorStop(1, 'rgba(255,176,32,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); })();
+  const pool = new THREE.Mesh(new THREE.PlaneGeometry(300, 230), new THREE.MeshBasicMaterial({ map: poolTex, transparent: true, depthWrite: false, opacity: 0 })); pool.rotation.x = -Math.PI / 2; pool.position.y = FLOOR_Y + .06; scene.add(pool);
+  const mirror = tag.clone(true); mirror.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = .07; o.material.depthWrite = false; } }); mirror.visible = false; scene.add(mirror);
   const key = new THREE.DirectionalLight(0xffffff, 1.4); key.position.set(-200, 260, 120); scene.add(key);
   const rim = new THREE.DirectionalLight(0x7fa6ff, 1.8); rim.position.set(240, 70, -260); scene.add(rim);
 
   // ---------- the world assembles around the tag, in the same quiet language ----------
-  const W = new THREE.Group(); W.position.set(18, FLOOR_Y + .04, -10); W.scale.set(.56, 1, .56); scene.add(W);
+  const W = new THREE.Group(); W.position.set(18, FLOOR_Y + .04, -10); W.scale.set(.56, 1, .56); W.visible = false; scene.add(W);
   const fadeR = (r) => clamp((380 - r) / 160);
   // floor markings: bays and an aisle, drawn as thin lines that write themselves
   const MARK_VS = `attribute float u;attribute float rr;varying float vU;varying float vR;void main(){vU=u;vR=rr;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`;
@@ -215,10 +218,13 @@ export async function init(canvas, fallback, hero) {
     const fade = t < START ? 0 : clamp(c / .4) * clamp((CYCLE - c) / .8);
     pathMat.uniforms.fadeAll.value = fade * (1 - sp); floorMat.uniforms.fadeAll.value = (t < START ? clamp(t / START) : clamp((CYCLE - c) / .8) * .6 + .4) * (1 - sp * .8);
 
+    const waitK = t < START ? 0 : clamp((c - 3.4) / 7) * clamp((CYCLE - c) / .9);
+    pool.material.opacity = waitK * (1 - sp) * .9;
+    mirror.position.set(tag.position.x, 2 * FLOOR_Y - tag.position.y, tag.position.z); mirror.rotation.set(-tag.rotation.x, tag.rotation.y, -tag.rotation.z); mirror.scale.set(1, -1, 1);
+    mirror.children[0].children[0].children[0].position.z = top.position.z;
     shadow.material.opacity = clamp(1 - tag.position.y / 80) * (1 - sp * .5);
     const d = dist;
     cam.position.set(Math.sin(.15 + px * .05) * d, d * .62, Math.cos(.15 + px * .05) * d); cam.lookAt(0, -4, 0);
-    world(t);
     renderer.render(scene, cam);
     requestAnimationFrame(loop);
   }
