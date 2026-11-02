@@ -669,6 +669,34 @@ body:has(.sim-frame:hover) #cursor{opacity:0!important}
   background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),inset 0 1px 0 rgba(255,255,255,.14);transition:background .25s}
 .inds-more:hover{background:rgba(255,255,255,.12)}
 @media (max-width:860px){.inds-row{flex-direction:column;height:auto}.ind{flex:none;height:30svh}.inds-row:hover .ind,.inds-row .ind:hover{flex-grow:0}}
+/* ---------- floors v2: real floors at night, lit where it matters ---------- */
+.inds-row{perspective:1400px}
+.ind{background:#030409 center/cover no-repeat;transform-style:preserve-3d;
+  transition:flex-grow .9s cubic-bezier(.16,1,.3,1),box-shadow .5s,transform .6s cubic-bezier(.16,1,.3,1),filter .6s}
+.ind[data-scene=factory]{background-image:url(../assets/floors/factory-poster.webp)}
+.ind[data-scene=warehouse]{background-image:url(../assets/floors/warehouse-poster.webp)}
+.ind[data-scene=robots]{background-image:url(../assets/floors/robots-poster.webp)}
+.ind canvas{opacity:0;transition:opacity 1.2s ease}
+.ind.lit canvas{opacity:1}
+/* the words sit on a floor of shadow, a soft edge of light rims the card */
+.ind::after{background:linear-gradient(180deg,rgba(2,3,8,.35) 0,transparent 22%,transparent 50%,rgba(2,3,8,.9) 100%)}
+.ind::before{content:"";position:absolute;inset:0;z-index:1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .5s;
+  background:radial-gradient(60% 50% at var(--mx,50%) var(--my,40%),rgba(140,170,255,.10),transparent 70%);mix-blend-mode:screen}
+.ind:hover::before,.ind:focus-visible::before{opacity:1}
+.ind{box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),inset 0 1px 0 rgba(255,255,255,.09),0 30px 60px -30px rgba(0,0,0,.9)}
+.inds-row:hover .ind{filter:brightness(.62) saturate(.8)}
+.inds-row .ind:hover,.inds-row .ind:focus-visible{filter:none;transform:translateZ(18px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  box-shadow:inset 0 0 0 1px rgba(120,160,255,.28),inset 0 1px 0 rgba(255,255,255,.14),0 40px 80px -30px rgba(0,0,0,.95),0 0 80px -24px rgba(31,107,255,.45)}
+.ind-w{z-index:2;transform:translateZ(30px);transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.ind-n{text-shadow:0 2px 24px rgba(0,0,0,.6)}
+.ind:hover .ind-p,.ind:focus-visible .ind-p{color:rgba(255,255,255,.86)}
+.ind-p{transition:color .4s}
+/* Know more carries the same blue light */
+.inds-more{transition:background .3s,box-shadow .4s,color .3s}
+.inds-more:hover,.inds-more:focus-visible{background:rgba(31,107,255,.16);box-shadow:inset 0 0 0 1px rgba(102,165,250,.55),0 0 40px -8px rgba(31,107,255,.6)}
+.inds::before{background:radial-gradient(closest-side,rgba(75,61,240,.14),transparent)}
+@media (max-width:860px){.inds-row{height:auto}.inds-row:hover .ind{filter:none}.inds-row .ind:hover{transform:none}}
+@media (prefers-reduced-motion:reduce){.ind,.ind-w{transition:none}.inds-row .ind:hover{transform:none}}
 .trio .sim{position:relative;z-index:2}.trio .sim.open{z-index:80}
 .trio .team-row{flex:1;min-height:0;align-items:stretch}
 .trio .tm{display:flex;flex-direction:column;min-height:0}

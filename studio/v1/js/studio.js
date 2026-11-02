@@ -223,86 +223,105 @@ if (simSec) {
 }
 
 
-/* ---------- floors: three living plans drawn on black ---------- */
+/* ---------- floors: three real floors at night; what moves carries blue, what waits carries amber ---------- */
 (() => {
   const cards = $$('.ind'); if (!cards.length) return;
-  const BLUE = '31,107,255', IND = '120,110,255', AMB = '255,176,32', LINE = 'rgba(150,170,255,.24)';
-  const poly = (pts) => { const seg = []; let L = 0; for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push([pts[i - 1], pts[i], L, d]); L += d; } return { seg, L }; };
-  const at = (P, t) => { let d = ((t % 1) + 1) % 1 * P.L; for (const [a, b, s, l] of P.seg) if (d <= s + l) { const f = (d - s) / l; return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]; } return P.seg[P.seg.length - 1][1]; };
-  // every scene lives in a 100 x 100 plan, drawn in a gentle isometric tilt
-  const SC = {
-    factory: () => {
-      const cells = [[8, 10, 22, 18], [38, 10, 22, 18], [68, 10, 24, 18], [8, 62, 22, 22], [38, 62, 22, 22], [68, 62, 24, 22]];
-      const paths = [poly([[19, 30], [19, 45], [49, 45], [49, 30]]), poly([[49, 30], [49, 45], [80, 45], [80, 30]]), poly([[80, 30], [80, 45], [80, 60]]), poly([[19, 60], [19, 45], [49, 45], [49, 60]])];
-      const movers = paths.map((p, i) => ({ p, sp: .05 + i * .012, o: i * .27 }));
-      return { boxes: cells, paths, movers, waits: [[49, 52], [80, 52]], grid: true };
-    },
-    warehouse: () => {
-      const racks = []; for (let i = 0; i < 6; i++) racks.push([8 + i * 15, 8, 6, 58]);
-      const paths = [0, 1, 2, 3, 4].map((i) => poly([[17.5 + i * 15, 70], [17.5 + i * 15, 10], [17.5 + i * 15, 70]]));
-      const dock = [[10, 86, 14, 8], [30, 86, 14, 8], [50, 86, 14, 8], [70, 86, 14, 8]];
-      const movers = paths.map((p, i) => ({ p, sp: .04 + (i % 3) * .015, o: i * .31, big: true }));
-      return { boxes: racks.concat(dock), paths, movers, waits: [[17, 90], [57, 90]], rack: true };
-    },
-    robots: () => {
-      const loop = poly([[14, 16], [86, 16], [86, 84], [14, 84], [14, 16]]), inner = poly([[34, 36], [66, 36], [66, 64], [34, 64], [34, 36]]);
-      const cross = poly([[14, 50], [86, 50]]);
-      const movers = [{ p: loop, sp: .045, o: 0, robot: true, tow: true }, { p: loop, sp: .045, o: .5, robot: true }, { p: inner, sp: .07, o: .2, robot: true, tow: true }, { p: cross, sp: .09, o: .1 }];
-      return { boxes: [[44, 44, 12, 12]], paths: [loop, inner, cross], movers, waits: [[86, 50]], zone: [44, 44, 12, 12] };
-    },
+  const band = cards[0].closest('.inds');
+  const small = matchMedia('(max-width:700px)').matches;
+  const lowData = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
+  // every literal path is written out so the site build can find and copy it
+  const SRC = {
+    factory: { ph: small ? 'assets/floors/factory-900.webp' : 'assets/floors/factory-1600.webp', mk: 'assets/floors/factory-mask.png', pa: 'assets/floors/factory-path.png', f: [.42, .55], d: 0 },
+    warehouse: { ph: small ? 'assets/floors/warehouse-900.webp' : 'assets/floors/warehouse-1600.webp', mk: 'assets/floors/warehouse-mask.png', pa: 'assets/floors/warehouse-path.png', f: [.5, .6], d: .35 },
+    robots: { ph: small ? 'assets/floors/robots-900.webp' : 'assets/floors/robots-1600.webp', mk: 'assets/floors/robots-mask.png', pa: 'assets/floors/robots-path.png', f: [.47, .6], d: .7, z: 1.2 },
   };
+  const VS = `attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}`;
+  const FS = `precision highp float;varying vec2 v;
+uniform sampler2D P,M,L;uniform vec2 C,E,R;uniform float Z,T,H,G,B;
+float hs(vec2 q){return fract(sin(dot(q,vec2(12.9898,78.233)))*43758.5453);}
+void main(){
+  vec2 u=C+(v-.5)*E/Z;
+  vec3 ph=texture2D(P,u).rgb; vec4 m=texture2D(M,u); vec2 l=texture2D(L,u).rg;
+  float g=dot(ph,vec3(.2126,.7152,.0722));
+  float vy=mix(.55,1.15,1.-u.y);
+  // the plant after hours: colour drained, cool, the roof falling into the dark
+  vec3 night=(g+(ph-g)*.12)*vec3(.55,.64,.95)*.13*vy+vec3(.006,.008,.02);
+  // hover: the floor comes up under a cool work light
+  vec3 o=mix(night,ph*vec3(.6,.67,.82)*.5*vy,H*.55);
+  float br=.88+.12*sin(T*1.25+B*6.);
+  vec3 blue=ph*vec3(.72,.88,1.25)*.95+vec3(0.,.03,.12);
+  vec3 amb=(g*.6+ph*.4)*vec3(1.3,.84,.4)*1.05;
+  o=mix(o,blue,m.r*.9*(.85+.15*H));
+  o=mix(o,amb*br,m.g*.88);
+  o+=vec3(1.,.58,.16)*m.b*(.15+.85*g)*.42*br;
+  // the line on the floor draws in, then light travels along it toward what moves
+  float on=l.r<.999?smoothstep(G+.004,G-.012,l.r):0.;
+  float hd=fract(T*.16+B)*1.5;
+  float cm=exp(-pow((hd-l.r)*9.,2.))*step(l.r,hd);
+  o+=vec3(.25,.5,1.)*l.g*on*(1.+1.4*cm);
+  float vg=smoothstep(1.25,.25,length((v-.5)*vec2(1.1,1.5)));
+  o*=mix(.55,1.,vg);
+  o=1.-exp(-o*1.25);
+  o+=(hs(v*R+fract(T*7.))-.5)*.014;
+  gl_FragColor=vec4(o,1.);
+}`;
+  const load = (src) => new Promise((ok, no) => { const i = new Image(); i.decoding = 'async'; i.onload = () => ok(i); i.onerror = no; i.src = src; });
+  const ease = (x) => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
+  let seen = -1;
+  const scenes = [];
   cards.forEach((card) => {
-    const cv = card.querySelector('canvas'), ctx = cv.getContext('2d'), S = SC[card.dataset.scene]();
-    let W = 0, H = 0, dpr = 1, vis = false, mx = 0, my = 0, hov = 0, hovT = 0;
-    const fit = () => { dpr = Math.min(2, devicePixelRatio || 1); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; };
+    const cv = card.querySelector('canvas'), S = SRC[card.dataset.scene]; if (!S) return;
+    const gl = !lowData && cv.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false });
+    if (!gl) return;
+    const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); return o; };
+    const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return;
+    gl.useProgram(pr);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const ap = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
+    const U = {}; ['P', 'M', 'L', 'C', 'E', 'R', 'Z', 'T', 'H', 'G', 'B'].forEach((k) => (U[k] = gl.getUniformLocation(pr, k)));
+    const sc = { card, cv, gl, U, S, W: 0, H: 0, vis: false, mx: 0, my: 0, px: 0, py: 0, hov: 0, hovT: 0, ready: false, iw: 4, ih: 3 };
+    const fit = () => { const d = Math.min(1.5, devicePixelRatio || 1); sc.W = cv.clientWidth; sc.H = cv.clientHeight; cv.width = Math.max(1, sc.W * d | 0); cv.height = Math.max(1, sc.H * d | 0); };
     new ResizeObserver(fit).observe(cv); fit();
-    new IntersectionObserver((es) => { vis = es[0].isIntersecting; }).observe(cv);
-    card.addEventListener('pointermove', (e) => { const r = card.getBoundingClientRect(); mx = (e.clientX - r.left) / r.width - .5; my = (e.clientY - r.top) / r.height - .5; });
-    card.addEventListener('pointerenter', () => (hovT = 1)); card.addEventListener('pointerleave', () => { hovT = 0; mx = my = 0; });
-    const trails = S.movers.map(() => []);
-    const draw = (now) => {
-      requestAnimationFrame(draw); if (!vis || !W) return;
-      const t = now / 1000; hov += (hovT - hov) * .06;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-      // isometric plan, centred, leaning toward the pointer
-      const k = Math.min(W * 1.05, H * 1.75) / 110 * (1 + hov * .07), cx = W / 2 + mx * 14, cy = H * .4 + my * 10;
-      const ang = -.52 + mx * .08, sq = .56 - my * .04, c = Math.cos(ang), s = Math.sin(ang);
-      const P = (x, y) => { x -= 50; y -= 50; return [cx + (x * c - y * s) * k, cy + (x * s + y * c) * k * sq]; };
-      // floor dots
-      { const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * .6); g.addColorStop(0, 'rgba(60,70,220,.16)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
-      ctx.fillStyle = 'rgba(130,150,255,.18)';
-      for (let x = 0; x <= 100; x += 5) for (let y = 0; y <= 100; y += 5) { const [px, py] = P(x, y); ctx.fillRect(px - .6, py - .6, 1.2, 1.2); }
-      const quad = (x, y, w, h) => { ctx.beginPath(); const a = P(x, y), b = P(x + w, y), d = P(x + w, y + h), e = P(x, y + h); ctx.moveTo(...a); ctx.lineTo(...b); ctx.lineTo(...d); ctx.lineTo(...e); ctx.closePath(); };
-      // structures: thin walls with a lifted top edge for depth
-      S.boxes.forEach(([x, y, w, h]) => {
-        quad(x, y, w, h); ctx.fillStyle = 'rgba(90,100,170,.06)'; ctx.fill(); ctx.strokeStyle = LINE; ctx.lineWidth = 1; ctx.stroke();
-        const lift = S.rack ? 7 : 4; ctx.save(); ctx.translate(0, -lift); quad(x, y, w, h); ctx.strokeStyle = 'rgba(170,185,255,.4)'; ctx.stroke(); ctx.restore();
-        [[x, y], [x + w, y], [x + w, y + h], [x, y + h]].forEach(([u, v]) => { const [px, py] = P(u, v); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py - lift); ctx.stroke(); });
+    new IntersectionObserver((es) => { sc.vis = es[0].isIntersecting; }, { rootMargin: '120px' }).observe(cv);
+    card.addEventListener('pointermove', (e) => { const r = card.getBoundingClientRect(); sc.mx = (e.clientX - r.left) / r.width - .5; sc.my = (e.clientY - r.top) / r.height - .5; card.style.setProperty('--mx', (sc.mx + .5) * 100 + '%'); card.style.setProperty('--my', (sc.my + .5) * 100 + '%'); card.style.setProperty('--ry', (sc.mx * 5).toFixed(2) + 'deg'); card.style.setProperty('--rx', (-sc.my * 4).toFixed(2) + 'deg'); });
+    card.addEventListener('pointerenter', () => (sc.hovT = 1)); card.addEventListener('pointerleave', () => { sc.hovT = 0; sc.mx = sc.my = 0; card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); });
+    card.addEventListener('focus', () => (sc.hovT = 1)); card.addEventListener('blur', () => (sc.hovT = 0));
+    Promise.all([load(S.ph), load(S.mk), load(S.pa)]).then((ims) => {
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      ims.forEach((im, i) => {
+        const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, t);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       });
-      if (S.zone) { const [x, y, w, h] = S.zone, f = (Math.sin(t * 2) + 1) / 2; quad(x, y, w, h); ctx.setLineDash([3, 3]); ctx.strokeStyle = `rgba(${BLUE},${.35 + f * .4})`; ctx.stroke(); ctx.setLineDash([]); }
-      // the routes, faint
-      ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(31,107,255,.28)';
-      S.paths.forEach((p) => { ctx.beginPath(); p.seg.forEach(([a, b], i) => { const A = P(...a), B = P(...b); if (!i) ctx.moveTo(...A); ctx.lineTo(...B); }); ctx.stroke(); });
-      // waits: amber pools that breathe
-      S.waits.forEach(([x, y], i) => {
-        const [px, py] = P(x, y), f = ((t * .5 + i * .37) % 1);
-        const g = ctx.createRadialGradient(px, py, 0, px, py, 26); g.addColorStop(0, `rgba(${AMB},.45)`); g.addColorStop(1, `rgba(${AMB},0)`);
-        ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(px, py, 26, 26 * sq, 0, 0, 7); ctx.fill();
-        ctx.strokeStyle = `rgba(${AMB},${(1 - f) * .7})`; ctx.beginPath(); ctx.ellipse(px, py, 6 + f * 22, (6 + f * 22) * sq, 0, 0, 7); ctx.stroke();
-        ctx.fillStyle = `rgb(${AMB})`; ctx.beginPath(); ctx.arc(px, py - 3, 3.2, 0, 7); ctx.fill();
-      });
-      // movers: located dots with light trails
-      S.movers.forEach((m, i) => {
-        const u = t * m.sp + m.o, [x, y] = at(m.p, u), [px, py] = P(x, y), tr = trails[i];
-        tr.push([px, py]); if (tr.length > 46) tr.shift();
-        for (let j = 1; j < tr.length; j++) { ctx.strokeStyle = `rgba(${m.robot ? IND : BLUE},${(j / tr.length) * .8})`; ctx.lineWidth = 2 * (j / tr.length); ctx.beginPath(); ctx.moveTo(...tr[j - 1]); ctx.lineTo(...tr[j]); ctx.stroke(); }
-        if (m.tow) { const [bx, by] = P(...at(m.p, u - .025)); ctx.fillStyle = 'rgba(200,210,255,.55)'; ctx.fillRect(bx - 3, by - 6, 6, 5); }
-        const col = m.robot ? IND : BLUE, r = m.big ? 4.2 : 3.4;
-        ctx.shadowColor = `rgba(${col},1)`; ctx.shadowBlur = 14; ctx.fillStyle = `rgb(${col})`;
-        ctx.beginPath(); m.robot ? ctx.ellipse(px, py - 3, r + 1, (r + 1) * .8, 0, 0, 7) : ctx.arc(px, py - 3, r, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
-        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(px, py - 3, 1.2, 0, 7); ctx.fill();
-      });
-    };
-    if (reduce) { vis = true; draw(4000); } else requestAnimationFrame(draw);
+      gl.uniform1i(U.P, 0); gl.uniform1i(U.M, 1); gl.uniform1i(U.L, 2);
+      sc.iw = ims[0].naturalWidth; sc.ih = ims[0].naturalHeight; sc.ready = true;
+    }).catch(() => {});
+    scenes.push(sc);
   });
+  if (!scenes.length) return;
+  // the lines start drawing when the band arrives
+  new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { seen = performance.now(); io.disconnect(); } }, { threshold: .35 }).observe(band);
+  const draw = (sc, now) => {
+    const { gl, U, cv, S } = sc; if (!sc.ready || !sc.W) return;
+    const t = now / 1000;
+    sc.hov += (sc.hovT - sc.hov) * .07; sc.px += (sc.mx - sc.px) * .06; sc.py += (sc.my - sc.py) * .06;
+    // cover the card with the still, held on its focus point
+    const ca = sc.W / sc.H, ia = sc.iw / sc.ih;
+    let ex = 1, ey = 1; if (ca > ia) ey = ia / ca; else ex = ca / ia;
+    const z = (S.z || 1.035) + sc.hov * .06;
+    const hx = ex / z / 2, hy = ey / z / 2;
+    let cx = S.f[0] + sc.px * .03, cy = 1 - S.f[1] - sc.py * .025;
+    cx = Math.min(1 - hx, Math.max(hx, cx)); cy = Math.min(1 - hy, Math.max(hy, cy));
+    const g = reduce ? 1 : seen < 0 ? 0 : ease((now - seen) / 1000 / 2.2 - S.d);
+    gl.viewport(0, 0, cv.width, cv.height);
+    gl.uniform2f(U.C, cx, cy); gl.uniform2f(U.E, ex, ey); gl.uniform2f(U.R, cv.width, cv.height);
+    gl.uniform1f(U.Z, z); gl.uniform1f(U.T, reduce ? 2 : t); gl.uniform1f(U.H, sc.hov); gl.uniform1f(U.G, g * 1.02); gl.uniform1f(U.B, S.d);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    if (!sc.on) { sc.on = true; sc.card.classList.add('lit'); }
+  };
+  const loop = (now) => { requestAnimationFrame(loop); scenes.forEach((sc) => { if (sc.vis) draw(sc, now); }); };
+  if (reduce) { const once = () => { scenes.forEach((sc) => draw(sc, 1e4)); if (scenes.some((s) => !s.ready)) setTimeout(once, 200); }; once(); }
+  else requestAnimationFrame(loop);
 })();
