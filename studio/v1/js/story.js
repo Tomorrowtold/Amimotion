@@ -33,6 +33,7 @@ void main(){
   col=mix(col,vec3(.12,.42,1.),tagOn*(1.-smoothstep(0.,2.,abs(dd-(12.+pulse*60.))))*(1.-pulse)*.6);
   // cooler, quieter grade for "before"
   float g=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(g),col,.2)*vec3(.97,.985,1.02),grey*(1.-k)*(1.-inBay)*.6);
+  col*=mix(1.,.93,smoothstep(.45,1.15,length((uv-.5)*vec2(1.2,1.))));
   col+=(h(uv*res+time)-.5)*.016;
   gl_FragColor=vec4(col,1.);}`;
 
@@ -73,7 +74,7 @@ export function story(section, canvas) {
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   const U = {}; ['tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
   gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
-  const big = innerWidth * Math.min(devicePixelRatio, 2) > 900 ? 1600 : 800;
+  const px = Math.max(innerWidth, innerHeight * .8) * Math.min(devicePixelRatio, 2); const big = px > 1700 ? 2400 : px > 900 ? 1600 : 800;
   const tex = (src, unit) => new Promise((res) => { const im = new Image(); im.decoding = 'async'; im.onload = () => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im); for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v); res(); }; im.src = src; });
   let ready = false;
   Promise.all([tex(`assets/scene/hall-after-${big}.webp`, 0), tex(`assets/scene/hall-before-${big}.webp`, 1), tex(`assets/scene/hall-masks-${big}.png`, 2)]).then(() => {
@@ -83,12 +84,13 @@ export function story(section, canvas) {
   const size = () => { const d = Math.min(devicePixelRatio, 1.75); canvas.width = canvas.clientWidth * d; canvas.height = canvas.clientHeight * d; gl.viewport(0, 0, canvas.width, canvas.height); const ra = canvas.width / canvas.height, ia = .8; span = ra > ia ? [1, ia / ra] : [ra / ia, 1]; };
   size(); addEventListener('resize', size);
 
-  const caps = [...section.querySelectorAll('.cap')], rail = section.querySelector('.rail i');
+  const caps = [...section.querySelectorAll('.cap')], rail = section.querySelector('.rail b'), links = [...section.querySelectorAll('.rail a')];
+  links.forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); const top = section.offsetTop + (section.offsetHeight - innerHeight) * +a.dataset.to; scrollTo({ top, behavior: 'smooth' }); }));
   const marks = caps.map((c) => [+c.dataset.from, +c.dataset.to]);
   let smooth = null;
   return (t) => {
     const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight));
-    caps.forEach((c, i) => c.classList.toggle('on', p >= marks[i][0] && p < marks[i][1]));
+    caps.forEach((c, i) => { const on = p >= marks[i][0] && p < marks[i][1]; c.classList.toggle('on', on); links[i] && links[i].classList.toggle('on', on); });
     rail.style.transform = `scaleY(${p})`;
     section.dispatchEvent(new CustomEvent('progress', { detail: p }));
     if (!ready) return;

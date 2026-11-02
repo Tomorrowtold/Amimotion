@@ -10,7 +10,7 @@ const slow = conn.saveData || /(^|-)2g/.test(conn.effectiveType || '');
 
 /* ---------- reveal on view ---------- */
 const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -12% 0px' });
-$$('.k-lines,.k-fade,.k-pic,.wordmark').forEach((el) => { if (!el.closest('.hero')) io.observe(el); });
+$$('.k-lines,.k-fade,.k-pic,.k-rise,.wordmark').forEach((el) => { if (!el.closest('.hero')) io.observe(el); });
 requestAnimationFrame(() => setTimeout(() => { $('#h1').classList.add('in'); $$('.hero .k-fade').forEach((e, i) => setTimeout(() => e.classList.add('in'), 380 + i * 160)); }, 120));
 
 /* ---------- menu ---------- */
@@ -54,23 +54,53 @@ if (fine && !reduce) {
   });
 }
 
-/* ---------- the question types itself ---------- */
-const q = $('#question'), qt = $('.q-text', q), full = qt.textContent;
-if (!reduce) {
-  qt.textContent = '';
-  new IntersectionObserver((es, o) => es.forEach((e) => {
-    if (!e.isIntersecting) return; o.disconnect();
-    let i = 0; const step = () => { i++; qt.textContent = full.slice(0, i); if (i < full.length) setTimeout(step, 22 + Math.random() * 38); else q.classList.add('done'); };
-    setTimeout(step, 300);
-  }), { threshold: .6 }).observe(q);
-} else q.classList.add('done');
+/* ---------- the film's question types itself when its chapter opens ---------- */
+const qb = document.querySelector('.cap .q-big');
+if (qb && !reduce) {
+  const full = qb.textContent; qb.setAttribute('aria-label', full); let timer = 0, typed = false;
+  new MutationObserver(() => {
+    const on = qb.parentElement.classList.contains('on');
+    if (on && !typed) { typed = true; let i = 0; qb.textContent = ''; const step = () => { i++; qb.textContent = full.slice(0, i); if (i < full.length) timer = setTimeout(step, 18 + Math.random() * 30); }; timer = setTimeout(step, 250); }
+    if (!on && typed) { clearTimeout(timer); typed = false; qb.textContent = full; }
+  }).observe(qb.parentElement, { attributes: true, attributeFilter: ['class'] });
+}
+
+/* ---------- product stage tabs ---------- */
+const tabs = $$('.tabs [role=tab]'), panels = $$('.panel'), sps = $$('.sp'), ink = $('.tab-ink');
+let tabIdx = 0, touched = false;
+function selectTab(i, focus) {
+  tabIdx = i;
+  tabs.forEach((t, j) => { t.setAttribute('aria-selected', j === i); t.tabIndex = j === i ? 0 : -1; });
+  panels.forEach((p, j) => { p.hidden = j !== i; });
+  sps.forEach((p, j) => p.classList.toggle('on', j === i));
+  const t = tabs[i]; ink.style.transform = `translateX(${t.offsetLeft}px) scaleX(${t.offsetWidth / 100})`;
+  if (focus) t.focus();
+}
+tabs.forEach((t, i) => {
+  t.addEventListener('click', () => { touched = true; selectTab(i); });
+  t.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { touched = true; selectTab((i + (e.key === 'ArrowRight' ? 1 : 2)) % 3, true); } });
+});
+addEventListener('resize', () => selectTab(tabIdx));
+document.fonts.ready.then(() => selectTab(0));
+let stageOn = false; new IntersectionObserver((es) => { stageOn = es[0].isIntersecting; }, { threshold: .5 }).observe($('#stage'));
+if (!reduce) setInterval(() => { if (stageOn && !touched && !$('#stage details[open]')) selectTab((tabIdx + 1) % 3); }, 5200);
+
+/* ---------- details open with a soft height animation ---------- */
+$$('details').forEach((d) => {
+  const sum = d.querySelector('summary'), more = d.querySelector('.more');
+  sum.addEventListener('click', (e) => {
+    if (reduce) return; e.preventDefault();
+    if (d.open) { const h = more.offsetHeight; more.animate([{ height: h + 'px', opacity: 1 }, { height: '0px', opacity: 0 }], { duration: 380, easing: 'cubic-bezier(.22,.7,.2,1)' }).onfinish = () => { d.open = false; }; }
+    else { d.open = true; const h = more.offsetHeight; more.animate([{ height: '0px', opacity: 0 }, { height: h + 'px', opacity: 1 }], { duration: 520, easing: 'cubic-bezier(.22,.7,.2,1)' }); }
+  });
+});
 
 /* ---------- the story film ---------- */
 const storySec = $('#story'); let drawStory = null, storyOn = false;
 new IntersectionObserver((es) => { storyOn = es[0].isIntersecting; }, { rootMargin: '200px' }).observe(storySec);
 const startGL = () => { if (!reduce) import('./story.js').then((m) => { drawStory = m.story(storySec, $('#storyGL')); }); };
 /* ---------- parallax pictures ---------- */
-const pics = $$('.pic-inner');
+const pics = $$('.card-pic img');
 
 /* ---------- bar ---------- */
 const bar = $('#bar'); let lastY = 0;
@@ -87,7 +117,7 @@ function frame(t) {
   cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`;
 
   if (drawStory && storyOn) drawStory(t);
-  if (!reduce) for (const el of pics) { const r = el.parentElement.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue; const k = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; el.style.transform = `translate3d(0,${k * -6}%,0)`; }
+  if (!reduce) for (const el of pics) { const r = el.parentElement.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue; const k = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; el.style.setProperty('--py', `${k * -5}%`); }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);

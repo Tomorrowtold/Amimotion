@@ -76,111 +76,119 @@
       <div class="cap" data-from=".76" data-to=".9"><h2 class="h2 k-cap"><span class="ln"><span>Ask your floor a question.</span></span></h2><p class="q-big">Which trolleys have waited at inspection for more than an hour?</p></div>
       <div class="cap" data-from=".9" data-to="1.01"><h2 class="h2 k-cap"><span class="ln"><span>Start with one bay.</span></span></h2><p>You see your own waits in one bay, and prove the numbers, before you decide on more.</p></div>
     </div>
-    <div class="rail" aria-hidden="true"><i></i></div>
+    <nav class="rail" aria-label="Chapters"><i></i><b></b>
+      <a href="#story" data-to="0.02">Search</a><a href="#story" data-to="0.24">Scans</a><a href="#story" data-to="0.40">Tag</a><a href="#story" data-to="0.56">Paths</a><a href="#story" data-to="0.70">Waits</a><a href="#story" data-to="0.84">Ask</a><a href="#story" data-to="0.97">One bay</a></nav>
   </div>
 </section>
 
-<!-- 2. FIND IT -->
-<section class="screen find" id="find">
-  <div class="wrap two">
-    <div class="copy">
-      <h2 class="h2 k-lines"><span class="ln"><span>A scan tells you where it last passed.</span></span> <span class="ln"><span>A tag tells you where it stopped.</span></span></h2>
-      <p class="big k-fade">Between scans at each checkpoint, work moves and waits out of sight.</p>
-      <p class="k-fade">Think of the last time someone went looking for a trolley. The walk. The calls to stores. The second walk.</p>
-      <p class="k-fade">Look it up on AmIHub's live map instead. You see where it was last seen, and when. The tag sends a signal as it moves, so nobody scans it along the way. It goes on the trolley, not on the person pushing it.</p>
-      <a class="arrow-link k-fade" href="/use-cases/find-the-asset/">Where is that trolley?</a>
-    </div>
-    <figure class="pic pic-find k-pic">
-      <div class="pic-inner"><img src="assets/scene/hall-after-1600.webp" alt="A model factory floor. One trolley marked by a blue line from the press to where it stopped." width="1600" height="2000" loading="lazy"></div>
-    </figure>
-  </div>
-</section>
-
-<!-- 3. SEE WHERE WORK WAITS -->
-<section class="screen waits" id="waits">
+<!-- 2-4. THREE IDEAS, VISUAL FIRST -->
+<section class="screen ideas" id="ideas" aria-label="Find it, see waits, ask">
   <div class="wrap">
-    <h2 class="mega k-lines"><span class="ln"><span>See where</span></span><span class="ln"><span>work <em>waits.</em></span></span></h2>
-    <div class="two flip">
-      <figure class="pic pic-queue k-pic">
-        <div class="pic-inner"><img src="assets/scene/hall-after-1600.webp" alt="A model inspection station. Three trolleys in the queue in front of it and one pallet in a staging lane are marked amber because they are waiting." width="1600" height="2000" loading="lazy"></div>
-      </figure>
-      <div class="copy">
-        <p class="big k-fade">The map notes when each trolley or pallet enters a zone and when it leaves. You name the zones. You see how long each one has waited, while it is still waiting.</p>
-        <p class="k-fade">Supervisors see each wait live, during the shift, not at the next morning's review. You set who sees what, by role. AmIHub also sends each entry and exit to any system you name, as it happens.</p>
-        <p class="k-fade">Link each trolley to the job it carries, in AmIHub or from your own system. Nobody scans it along the way. Its wait then counts as that job's wait.</p>
-        <p class="k-fade strong">Why it waited is for your team to say.</p>
-        <p class="links k-fade"><a class="arrow-link" href="/learn/dwell-time/">How waits are timed</a><a class="arrow-link" href="/learn/association/">Which job is on the trolley?</a></p>
+    <div class="cards">
+      <article class="card k-rise">
+        <figure class="card-pic"><img src="assets/scene/hall-after-1600.webp" alt="A model factory floor. One trolley marked by a blue line from the press to where it stopped." width="1600" height="2000" loading="lazy" style="--x:56%;--y:46%;--z:2.1"></figure>
+        <h2 class="h3">A tag tells you where it stopped.</h2>
+        <p>Look it up on AmIHub's live map instead. You see where it was last seen, and when.</p>
+        <details><summary><span>Read more</span></summary><div class="more">
+          <p>A scan tells you where it last passed. A tag tells you where it stopped.</p>
+          <p>Between scans at each checkpoint, work moves and waits out of sight.</p>
+          <p>Think of the last time someone went looking for a trolley. The walk. The calls to stores. The second walk.</p>
+          <p>The tag sends a signal as it moves, so nobody scans it along the way. It goes on the trolley, not on the person pushing it.</p>
+          <p><a class="arrow-link" href="/use-cases/find-the-asset/">Where is that trolley?</a></p></div></details>
+      </article>
+      <article class="card k-rise">
+        <figure class="card-pic"><img src="assets/scene/hall-after-1600.webp" alt="A model inspection station. Three trolleys in the queue in front of it and one pallet in a staging lane are marked amber because they are waiting." width="1600" height="2000" loading="lazy" style="--x:34%;--y:84%;--z:1.9"></figure>
+        <h2 class="h3">See where work <em>waits.</em></h2>
+        <p>The map notes when each trolley or pallet enters a zone and when it leaves. You name the zones.</p>
+        <details><summary><span>Read more</span></summary><div class="more">
+          <p>You see how long each one has waited, while it is still waiting.</p>
+          <p>Supervisors see each wait live, during the shift, not at the next morning's review. You set who sees what, by role. AmIHub also sends each entry and exit to any system you name, as it happens.</p>
+          <p>Link each trolley to the job it carries, in AmIHub or from your own system. Nobody scans it along the way. Its wait then counts as that job's wait.</p>
+          <p class="strong">Why it waited is for your team to say.</p>
+          <p class="links"><a class="arrow-link" href="/learn/dwell-time/">How waits are timed</a><a class="arrow-link" href="/learn/association/">Which job is on the trolley?</a></p></div></details>
+      </article>
+      <article class="card k-rise">
+        <figure class="card-pic"><img src="assets/scene/hall-waits-1600.webp" alt="The same model factory floor with everything pale except three trolleys at inspection, marked amber: the ones that have waited." width="1600" height="2000" loading="lazy" style="--x:38%;--y:78%;--z:1.35"></figure>
+        <h2 class="h3">Ask your floor a question.</h2>
+        <p>Ask in plain words. An AI assistant answers from AmIHub's live map. Asking changes nothing.</p>
+        <details><summary><span>Read more</span></summary><div class="more">
+          <p class="strong">Which trolleys have waited at inspection for more than an hour?</p>
+          <p>Any change, such as raising a work order in AmIHub, needs a person's approval. You can require it from a supervisor.</p>
+          <p class="small">AmIHub has an MCP server built in. MCP is an open standard that lets AI assistants use other software. Any assistant that supports MCP can connect. We show it live on a call. The server is part of AmIHub, so it can run on a PC inside your plant. If the assistant runs inside your network too, nothing has to leave it. Each assistant gets its own access: read-only, or only the actions you allow. Every request it makes is logged.</p>
+          <p class="links"><a class="arrow-link" href="/use-cases/ask-your-plant/">Ask your floor</a><a class="arrow-link" href="/trust/">Trust and data</a></p></div></details>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 5. ONE SYSTEM: a product stage -->
+<section class="screen system" id="system">
+  <div class="wrap">
+    <h2 class="mega k-lines"><span class="ln"><span>Three parts work</span></span><span class="ln"><span>as one system.</span></span></h2>
+    <div class="stage" id="stage">
+      <div class="stage-pics" aria-hidden="true">
+        <img class="sp on" data-i="0" src="assets/home/amigo-side-1500.webp" alt="" width="1500" height="1000" loading="lazy">
+        <img class="sp" data-i="1" src="assets/home/amimo-page-1200.webp" alt="" width="1200" height="800" loading="lazy">
+        <img class="sp sp-hub" data-i="2" src="assets/scene/hall-after-1600.webp" alt="" width="1600" height="2000" loading="lazy">
+        <i class="stage-floor"></i>
+      </div>
+      <div class="stage-side">
+        <div class="tabs" role="tablist" aria-label="The three parts">
+          <button role="tab" id="t0" aria-controls="p0" aria-selected="true">AmIGo tag</button>
+          <button role="tab" id="t1" aria-controls="p1" aria-selected="false" tabindex="-1">AmIMo anchor</button>
+          <button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">AmIHub</button>
+          <i class="tab-ink" aria-hidden="true"></i>
+        </div>
+        <div class="panel" role="tabpanel" id="p0" aria-labelledby="t0">
+          <h3 class="vh">AmIGo tag</h3>
+          <p class="lead">Screws or sticks onto the trolley. Sends a short UWB radio pulse when it moves and sleeps when it stops.</p>
+          <details><summary><span>Read more</span></summary><div class="more"><p>While it sleeps, the map shows where it was last seen. If it comes off the trolley, the map still shows its last-seen spot. One battery lasts 1 to 3 years, depending on use. AmIHub tracks each tag's health and battery level.</p></div></details>
+        </div>
+        <div class="panel" role="tabpanel" id="p1" aria-labelledby="t1" hidden>
+          <h3 class="vh">AmIMo anchor</h3>
+          <p class="lead">Fixed to a column or wall 3 to 8 m up. Records when each pulse arrives and the angle it came from.</p>
+          <details><summary><span>Read more</span></summary><div class="more"><p>Needs only power, from DC or PoE. It syncs over the air, with no sync cable. It sends its data to AmIHub over Wi-Fi, so it needs no separate data cable. Ethernet is also an option. Each reaches about 50 m around it in clear line of sight. Racking and steel change that, so we survey your floor and set the count. With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor. You set anchors up from a phone app. AmIHub finds each one on its own and raises an alert if one goes dark.</p></div></details>
+        </div>
+        <div class="panel" role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+          <h3 class="vh">AmIHub</h3>
+          <p class="lead">Works out where each tag is from those times and angles. Runs on an industrial PC inside your plant, with no internet needed.</p>
+          <details><summary><span>Read more</span></summary><div class="more"><p>Your MES, ERP and WMS connect to it through open REST, MQTT, WebSocket and omlox hub interfaces. Your team, your systems and AI assistants read the same live map. Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited.</p></div></details>
+        </div>
+        <p class="spec-line">Built on the FiRa and omlox specifications.</p>
+        <p class="links"><a class="arrow-link" href="/technology/">How it locates a tag</a><a class="arrow-link" href="/specs/">Specifications</a><a class="arrow-link" href="/developers/">For developers</a></p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 4. ASK YOUR FLOOR -->
-<section class="screen ask" id="ask">
-  <div class="ask-bg"><img src="assets/scene/hall-waits-1600.webp" alt="The same model factory floor with everything pale except three trolleys at inspection, marked amber: the ones that have waited." width="1600" height="2000" loading="lazy"></div>
-  <div class="wrap ask-inner">
-    <h2 class="h2 k-lines"><span class="ln"><span>Ask your floor a question.</span></span></h2>
-    <p class="question" id="question" aria-label="Which trolleys have waited at inspection for more than an hour?"><span class="q-text" aria-hidden="true">Which trolleys have waited at inspection for more than an hour?</span><i class="caret" aria-hidden="true"></i></p>
-    <div class="two ask-cols">
-      <p class="big k-fade">Ask in plain words. An AI assistant answers from AmIHub's live map. Asking changes nothing. Any change, such as raising a work order in AmIHub, needs a person's approval. You can require it from a supervisor.</p>
-      <p class="small k-fade">AmIHub has an MCP server built in. MCP is an open standard that lets AI assistants use other software. Any assistant that supports MCP can connect. We show it live on a call. The server is part of AmIHub, so it can run on a PC inside your plant. If the assistant runs inside your network too, nothing has to leave it. Each assistant gets its own access: read-only, or only the actions you allow. Every request it makes is logged.</p>
-    </div>
-    <p class="links k-fade"><a class="arrow-link" href="/use-cases/ask-your-plant/">Ask your floor</a><a class="arrow-link" href="/trust/">Trust and data</a></p>
-  </div>
-</section>
-
-<!-- 5. ONE SYSTEM -->
-<section class="screen system" id="system">
-  <div class="wrap">
-    <h2 class="mega k-lines"><span class="ln"><span>Three parts work</span></span><span class="ln"><span>as one system.</span></span></h2>
-    <div class="parts">
-      <article class="part">
-        <figure class="part-pic tilt"><img src="assets/home/amigo-side-1500.webp" alt="The AmIGo tag, a small dark grey tag with amimotion on its cover." width="1500" height="1000" loading="lazy"></figure>
-        <h3>AmIGo tag</h3>
-        <p>Screws or sticks onto the trolley. Sends a short UWB radio pulse when it moves and sleeps when it stops. While it sleeps, the map shows where it was last seen. If it comes off the trolley, the map still shows its last-seen spot. One battery lasts 1 to 3 years, depending on use. AmIHub tracks each tag's health and battery level.</p>
-      </article>
-      <article class="part">
-        <figure class="part-pic tilt"><img src="assets/home/amimo-page-1200.webp" alt="The AmIMo anchor, a dark grey box with a network port." width="1200" height="800" loading="lazy"></figure>
-        <h3>AmIMo anchor</h3>
-        <p>Fixed to a column or wall 3 to 8 m up. Records when each pulse arrives and the angle it came from. Needs only power, from DC or PoE. It syncs over the air, with no sync cable. It sends its data to AmIHub over Wi-Fi, so it needs no separate data cable. Ethernet is also an option. Each reaches about 50 m around it in clear line of sight. Racking and steel change that, so we survey your floor and set the count. With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor. You set anchors up from a phone app. AmIHub finds each one on its own and raises an alert if one goes dark.</p>
-      </article>
-      <article class="part">
-        <figure class="part-pic part-hub tilt"><img src="assets/scene/hall-after-800.webp" alt="A model factory floor with paths in blue and waits in amber." width="800" height="1000" loading="lazy"></figure>
-        <h3>AmIHub</h3>
-        <p>Works out where each tag is from those times and angles. Runs on an industrial PC inside your plant, with no internet needed. Your MES, ERP and WMS connect to it through open REST, MQTT, WebSocket and omlox hub interfaces. Your team, your systems and AI assistants read the same live map. Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited.</p>
-      </article>
-    </div>
-    <p class="spec-line k-fade">Built on the FiRa and omlox specifications.</p>
-    <p class="links k-fade"><a class="arrow-link" href="/technology/">How it locates a tag</a><a class="arrow-link" href="/specs/">Specifications</a><a class="arrow-link" href="/developers/">For developers</a></p>
-  </div>
-</section>
-
 <!-- 6. START WITH ONE BAY -->
 <section class="screen start" id="start">
-  <div class="wrap"><h2 class="mega k-lines"><span class="ln"><span>Start with</span></span><span class="ln"><span>one bay.</span></span></h2></div>
-  <div class="wrap two">
-    <div class="copy">
-      <p class="big k-fade">A pilot follows one flow in one bay or line. You choose the flow. The pilot times today's waits first, over a window you choose. That is your baseline. Before it starts, we agree how to count a wait that runs past shift end. We also agree who on your team acts when work waits too long.</p>
-      <p class="k-fade">The pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project. It would need its own policy. You also set how long the map keeps its history.</p>
-      <p class="k-fade">You see your own waits in one bay, and prove the numbers, before you decide on more. Then grow plant-wide on the same AmIHub, without re-fitting the first bay. A second plant gets its own survey, and AmIHub can run both from one console.</p>
-      <p class="links k-fade"><a class="arrow-link" href="/trust/people/">People and privacy</a><a class="arrow-link" href="/learn/pilot-baseline/">Measure before you claim</a></p>
+  <div class="wrap">
+    <h2 class="mega k-lines"><span class="ln"><span>Start with</span></span><span class="ln"><span>one bay.</span></span></h2>
+    <div class="start-row">
+      <p class="big k-fade">A pilot follows one flow in one bay or line. You choose the flow.</p>
+      <details class="k-fade"><summary><span>How a pilot runs</span></summary><div class="more">
+        <p>The pilot times today's waits first, over a window you choose. That is your baseline. Before it starts, we agree how to count a wait that runs past shift end. We also agree who on your team acts when work waits too long.</p>
+        <p>The pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project. It would need its own policy. You also set how long the map keeps its history.</p>
+        <p>You see your own waits in one bay, and prove the numbers, before you decide on more. Then grow plant-wide on the same AmIHub, without re-fitting the first bay. A second plant gets its own survey, and AmIHub can run both from one console.</p>
+        <p class="links"><a class="arrow-link" href="/trust/people/">People and privacy</a><a class="arrow-link" href="/learn/pilot-baseline/">Measure before you claim</a></p>
+      </div></details>
+      <details class="k-fade"><summary><span>What you buy</span></summary><div class="more">
+        <p>AmIGo tags, AmIMo anchors and AmIHub, plus our survey and an anchor plan for your floor. Designed and built in India, with local stock and local engineers on your site. One contract and one support line cover every layer. Your team or your integrator can build on it at any layer, through open interfaces. After the first call, we share datasheets, architecture, prices and pilot options under NDA. AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO.</p>
+      </div></details>
     </div>
-    <div class="copy buy k-fade">
-      <h3>What you buy.</h3>
-      <p>AmIGo tags, AmIMo anchors and AmIHub, plus our survey and an anchor plan for your floor. Designed and built in India, with local stock and local engineers on your site. One contract and one support line cover every layer. Your team or your integrator can build on it at any layer, through open interfaces. After the first call, we share datasheets, architecture, prices and pilot options under NDA. AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO.</p>
+    <div class="ctas">
+      <a class="cta cta-plan magnet" href="/diagnostic/">
+        <span class="cta-h">Plan your first bay.</span>
+        <span class="cta-p">Six questions about how work moves in your plant. You get a plan for where to start, before anyone calls you.</span>
+        <span class="btn btn-secondary"><span>Plan your first bay</span></span>
+      </a>
+      <a class="cta cta-call magnet" href="/contact/">
+        <span class="cta-h">See it on real data.</span>
+        <span class="cta-p">The call is a live demo on real AmIHub data, not slides.</span>
+        <span class="btn btn-primary"><span>Book a call</span></span>
+      </a>
     </div>
-  </div>
-  <div class="wrap ctas">
-    <a class="cta cta-plan magnet" href="/diagnostic/">
-      <span class="cta-h">Plan your first bay.</span>
-      <span class="cta-p">Six questions about how work moves in your plant. You get a plan for where to start, before anyone calls you.</span>
-      <span class="btn btn-secondary"><span>Plan your first bay</span></span>
-    </a>
-    <a class="cta cta-call magnet" href="/contact/">
-      <span class="cta-h">See it on real data.</span>
-      <span class="cta-p">The call is a live demo on real AmIHub data, not slides.</span>
-      <span class="btn btn-primary"><span>Book a call</span></span>
-    </a>
   </div>
 </section>
 
