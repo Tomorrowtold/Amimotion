@@ -74,7 +74,7 @@ main a:hover{text-decoration-thickness:2px}
 .motion .macro{transform:translateX(calc((.5 - var(--p)) * 6vw)) scale(calc(.96 + .1 * var(--p)));transform-origin:100% 100%}
 @media (max-width:1023px){
   .spec{min-height:0;padding-bottom:0;align-content:start}
-  .macro{position:relative;bottom:auto;right:auto;width:118vw;margin:var(--s-6) 0 0 auto;left:calc(var(--margin) + 4vw);transform:none}
+  .macro{order:3;position:relative;bottom:auto;right:auto;width:118vw;margin:var(--s-6) 0 0 auto;left:calc(var(--margin) + 4vw);transform:none}
   .motion .macro{transform:translateX(calc((.5 - var(--p)) * 8vw))}
 }
 
@@ -161,8 +161,8 @@ main a:hover{text-decoration-thickness:2px}
 .waits{position:relative}
 .waits-panel{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--ground)}
 .waits-panel picture,.waits-panel > picture img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:40% 50%}
-.waits-panel h2{position:absolute;left:var(--margin);bottom:clamp(32px,7svh,96px);max-width:min(9em,58vw);font-size:clamp(3rem,1.6rem + 5vw,8.5rem);line-height:.95;letter-spacing:-.045em;color:var(--ink)}
-.waits-panel h2 .q{display:inline-block;height:.78em;width:auto;vertical-align:-.02em;border-radius:.16em;margin-inline:.06em .02em}
+.waits-panel h2{position:absolute;left:var(--margin);bottom:clamp(32px,6svh,96px);max-width:5.4em;font-size:clamp(2.75rem,1rem + 4.4vw,7.5rem);line-height:.95;letter-spacing:-.045em;color:var(--ink)}
+.waits-panel h2 .q{display:inline-block;height:.8em;width:auto;vertical-align:-.04em;border-radius:.14em;margin-inline:.04em .06em;box-shadow:0 0 0 1px var(--hairline)}
 .waits-copy{position:relative;z-index:1;background:var(--surface);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);padding:var(--rhythm-m) var(--margin) var(--rhythm-l);border-top:1px solid var(--hairline)}
 .waits-copy .lead{grid-column:1 / span 5;margin:0}
 .waits-copy .rest{grid-column:7 / span 5}
@@ -170,9 +170,10 @@ main a:hover{text-decoration-thickness:2px}
 .motion .waits-panel > picture{transform:scale(calc(1 + .06 * clamp(0,var(--p) / .45,1)));transform-origin:40% 70%}
 .motion .waits-panel h2 > *{opacity:clamp(0,(var(--p) - .1 - var(--i) * .035) / .05,1)}
 @media (max-width:1023px){
-  .waits-panel{height:min(100svh,125vw)}
-  .waits-panel picture,.waits-panel > picture img{object-position:30% 50%}
-  .waits-panel h2{max-width:none;right:var(--margin);font-size:min(4.5rem,13vw)}
+  .waits-panel{position:relative;height:auto;padding-bottom:var(--s-6)}
+  .waits-panel picture{position:relative;inset:auto;display:block;aspect-ratio:1 / 1;overflow:hidden}
+  .waits-panel > picture img{position:absolute;object-position:38% 70%}
+  .waits-panel h2{position:static;max-width:none;margin:var(--s-6) var(--margin) 0;font-size:min(4.5rem,15vw)}
   .waits-copy{display:block;padding-top:var(--rhythm-s)}
   .waits-copy .lead{margin-bottom:var(--s-6)}
 }
@@ -217,7 +218,7 @@ main a:hover{text-decoration-thickness:2px}
 .motion .fam picture{transform:translateX(calc((.5 - var(--p)) * 3vw))}
 .parts-run{padding-inline:var(--margin)}
 .mosaic{display:grid;grid-template-columns:7fr 5fr;grid-template-rows:1fr 1fr;gap:var(--gutter)}
-.tile{position:relative;display:block;overflow:hidden;border-radius:6px;background:var(--surface);min-height:0}
+.tile{position:relative;display:block;overflow:hidden;border-radius:6px;background:var(--ground);box-shadow:inset 0 0 0 1px var(--hairline);min-height:0}
 .tile picture,.tile img{width:100%;height:100%;object-fit:cover}
 .t-hub{grid-row:1 / span 2;aspect-ratio:3 / 2}
 .t-go img,.t-mo img{object-fit:contain;padding:4%}
@@ -233,7 +234,6 @@ main a:hover{text-decoration-thickness:2px}
 .js .tabs label:active{transform:scale(var(--press-scale))}
 .js .parts-run:has(#part-hub:checked) label[for=part-hub],.js .parts-run:has(#part-go:checked) .tabs label[for=part-go],.js .parts-run:has(#part-mo:checked) .tabs label[for=part-mo]{background:var(--ink);color:var(--on-ink);box-shadow:none}
 .js .parts-run:has(#part-hub:checked) .tabs label[for=part-hub]{background:var(--ink);color:var(--on-ink)}
-.js .parts-run .tile[for=part-hub]{background:var(--surface)}
 .js .parts-run:has(:focus-visible) .tabs label{outline:none}
 .js .parts-run:has(#part-hub:focus-visible) .tabs label[for=part-hub],.js .parts-run:has(#part-go:focus-visible) .tabs label[for=part-go],.js .parts-run:has(#part-mo:focus-visible) .tabs label[for=part-mo]{outline:2px solid var(--focus);outline-offset:2px}
 .js .parts{display:block;margin-top:var(--s-6);max-width:52em}
