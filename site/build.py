@@ -194,7 +194,7 @@ def head(meta, url, body, titles):
 <script>(()=>{{const h=document.documentElement;h.classList.replace('no-js','js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/[?&]still\\b/.test(location.search))h.classList.add('motion')}})()</script>
 <script type="application/ld+json">{page_schema(meta, url, body, titles)}</script>
 </head>
-<body class="ds">"""
+<body class="ds"{(' data-world="' + e(meta["world"]) + '"') if meta.get("world") else ''}>"""
 
 
 def css_min(css):
@@ -207,7 +207,7 @@ def styles(meta):
     """Every page carries its whole stylesheet in the first round trip: core.css (tokens, bar, footer) plus one
     template file (home.css, or inner.css with tool.css or diag.css where a page has a tool). No render-blocking
     request; the display face is preloaded."""
-    files = ["core.css"] + (["home.css"] if meta.get("layout") == "home" else ["inner.css"] + [f"{x}.css" for x in meta.get("css", "").split()])
+    files = ["core.css"] + (["home.css"] if meta.get("layout") == "home" else ["inner.css"] + [f"{x}.css" for x in meta.get("css", "").split()] + ["worlds.css"])
     css = css_min("".join((SRC / "css" / f).read_text() for f in files))
     return ('<link rel="preload" href="/assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>\n'
             f"<style>{css}</style>")
@@ -416,7 +416,7 @@ def build():
     # assets/intro (the old AI-made hero turn) is no longer shipped: nothing may use it
     # shipped: fonts, CAD stills, film files. Not shipped: assets/intro (the old AI-made turn), assets/scene (the dark
     # glowing scene stills, replaced by reserved slots in round 05), vendor (three.js, no longer loaded)
-    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech", "locate"):
+    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech", "locate", "worlds"):
         if (SRC / "assets" / sub).exists(): shutil.copytree(SRC / "assets" / sub, DIST / "assets" / sub)
     # three.js ships again for one use: the homepage locate stage (round 19), loaded lazily, never in the first screen
     (DIST / "assets" / "vendor").mkdir()
