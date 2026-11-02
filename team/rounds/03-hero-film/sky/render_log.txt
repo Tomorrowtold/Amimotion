@@ -1,0 +1,37 @@
+00:00.338  cycles           | WARNING CUEW initialization failed: Error opening the library
+/home/user/amimotion/team/rounds/03-hero-film/build_hall.py:373: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/home/user/amimotion/team/rounds/03-hero-film/build_hall.py:596: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  w.use_nodes = True
+00:43.710  render           | Saved: 'frames_raw_sky/f0000.png.tmp.png'
+FRAME 0 43.4s
+01:43.605  render           | Saved: 'frames_raw_sky/f0001.png.tmp.png'
+FRAME 1 59.9s
+02:48.452  render           | Saved: 'frames_raw_sky/f0002.png.tmp.png'
+FRAME 2 64.8s
+03:52.728  render           | Saved: 'frames_raw_sky/f0003.png.tmp.png'
+FRAME 3 64.3s
+05:02.902  render           | Saved: 'frames_raw_sky/f0004.png.tmp.png'
+FRAME 4 70.2s
+05:57.003  render           | Saved: 'frames_raw_sky/f0005.png.tmp.png'
+FRAME 5 54.1s
+07:08.412  render           | Saved: 'frames_raw_sky/f0006.png.tmp.png'
+FRAME 6 71.4s
+08:09.802  render           | Saved: 'frames_raw_sky/f0007.png.tmp.png'
+FRAME 7 61.4s
+08:51.856  render           | Saved: 'frames_raw_sky/f0008.png.tmp.png'
+FRAME 8 42.1s
+09:32.155  render           | Saved: 'frames_raw_sky/f0009.png.tmp.png'
+FRAME 9 40.3s
+10:12.398  render           | Saved: 'frames_raw_sky/f0010.png.tmp.png'
+FRAME 10 40.2s
+10:51.543  render           | Saved: 'frames_raw_sky/f0011.png.tmp.png'
+FRAME 11 39.1s
+11:49.459  render           | Saved: 'frames_raw_sky/f0012.png.tmp.png'
+FRAME 12 57.9s
+12:53.070  render           | Saved: 'frames_raw_sky/f0013.png.tmp.png'
+FRAME 13 63.6s
+13:35.611  render           | Saved: 'frames_raw_sky/f0014.png.tmp.png'
+FRAME 14 42.5s
+14:35.974  render           | Saved: 'frames_raw_sky/f0015.png.tmp.png'
+FRAME 15 60.4s

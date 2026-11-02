@@ -241,6 +241,31 @@ MOVERS = dict(  # key -> (kind, builder name)
     ti=('trolley', 'trolley'), q1=('trolley', 'trolley'), q2=('trolley', 'trolley'), q3=('trolley', 'trolley'),
     pallet=('pallet', 'pallet'), fork=('forklift', 'forklift'), tug=('tugger', 'tugger'), amr=('amr', 'amr'),
     tool=('toolcart', 'toolcart'), fix=('fixture', 'fixture'), bin1=('bin', 'bin'), bin2=('bin', 'bin'))
+# ---- stills-only props and states (never passed by the film; the film's hall is unchanged without them)
+#   --tow           a trolley hitched 1.5 m behind the AMR (the AMR towing one trolley)
+#   --dropoff       a drop-off zone outline at the line end of the back aisle
+#   --drop-trolleys two trolleys parked in that zone, on amber (keys d1, d2)
+#   --amr-s S       park the AMR (and its tow) at arc length S of its path (27.6 = inside the drop-off zone)
+#   --q3-press      the third queue trolley's path starts at press 2 and passes checkpoint desk 1
+#   --trail-len L   trail length in metres (default 7)
+DROP = (12.5, 16.7, 23.1, 25.3)
+class _Offset:
+    def __init__(self, m, ds): self.m, self.ds = m, ds
+    def s(self, tau): return self.m.s(tau) - self.ds
+if '--amr-s' in sys.argv:
+    _s = float(sys.argv[sys.argv.index('--amr-s') + 1]); M['amr'] = Motion([(-50.0, -40.0, _s, _s)])
+if '--tow' in sys.argv:
+    P['tow'] = P['amr']; M['tow'] = _Offset(M['amr'], 1.45); MOVERS['tow'] = ('trolley', 'trolley')
+if '--drop-trolleys' in sys.argv:
+    for _k, _x in (('d1', 13.7), ('d2', 15.5)):
+        P[_k] = Path([(-6.0, 24.2), (_x, 24.2)], r=1.0); M[_k] = Motion([(-50.0, -40.0, 0.0, P[_k].L)])
+        MOVERS[_k] = ('trolley', 'trolley'); AMBER_AT[_k] = 0.0
+if '--q3-press' in sys.argv:
+    P['q3'] = Path([(-2.8, 19.6), (-1.4, 19.6), (0.1, 18.1), (0.1, 7.2), (-1.2, 5.4), QUEUE_SLOTS[2]], r=1.1)
+    M['q3'] = Motion([(-50.0, -40.0, 0.0, P['q3'].L)])
+if '--trail-len' in sys.argv:
+    TRAIL_L = float(sys.argv[sys.argv.index('--trail-len') + 1])
+
 # pallet's line belongs to the forklift kind (it was carried); it reveals with the trolleys' queue? No: with the
 # forklift and tugger, since the forklift brought it.
 KIND_REVEAL = dict(trolley='trolley', pallet='forklift', forklift='forklift', tugger='tugger', amr='amr',
@@ -268,6 +293,15 @@ def ticks_at(tau):
     return [(k, _nearest_s(P[k], pt)) for k, pt in TICK_PTS.items() if tau >= TICK_T[k]]
 
 
+def _keyset(flag):
+    # stills only: --trails k1,k2 / --amber k1,k2 keep only those movers' marks ('none' keeps none). The film never passes them.
+    if flag in sys.argv:
+        v = sys.argv[sys.argv.index(flag) + 1]
+        return set() if v == 'none' else set(v.split(','))
+    return None
+ONLY_TRAILS, ONLY_AMBER = _keyset('--trails'), _keyset('--amber')
+
+
 def marks_at(t, force=None):
     """What ink is on the floor at display time t: (trails, ticks, amber keys)."""
     st = force or state_of(t)
@@ -283,11 +317,15 @@ def marks_at(t, force=None):
         rk = KIND_REVEAL[kind]
         if st == 'build' and tt < REVEAL[rk]:
             continue
+        if ONLY_TRAILS is not None and key not in ONLY_TRAILS:
+            continue
         s = M[key].s(tau)
         seg = P[key].segment(s - TRAIL_L, s)
         if seg:
             trails.append(seg)
     for key, ta in AMBER_AT.items():
+        if ONLY_AMBER is not None and key not in ONLY_AMBER:
+            continue
         if st == 'after' or tt >= ta:
             amber.append(key)
     if st == 'build':
@@ -449,6 +487,8 @@ def build(engine='CYCLES', W=1600, H=2000, samples=32):
     outline('zone_inspect', *INSPECT_ZONE)
     outline('zone_queue', *QUEUE)
     outline('zone_staging', *STAGING)
+    if '--dropoff' in sys.argv:
+        outline('zone_drop', *DROP)
 
     # ---- machines
     for i, (px, py) in enumerate(PRESSES):
@@ -595,7 +635,8 @@ def build(engine='CYCLES', W=1600, H=2000, samples=32):
     w = bpy.data.worlds.new('world'); sc.world = w
     w.use_nodes = True
     bg = w.node_tree.nodes['Background']
-    bg.inputs['Color'].default_value = (1.0, 1.0, 1.0, 1)
+    # dome colour: --world-color #rrggbb (Sky Ground uses a pale sky dome so shadows read sky-grey, not warm grey)
+    bg.inputs['Color'].default_value = srgb_to_lin(opt('--world-color', '#ffffff'))
     bg.inputs['Strength'].default_value = float(opt('--world', 0.67))
     ld = bpy.data.lights.new('key', 'AREA')
     ld.shape = 'DISK'; ld.size = 26.0; ld.energy = float(opt('--key', 16500.0)); ld.color = (1.0, 0.995, 0.985)
@@ -610,20 +651,29 @@ def build(engine='CYCLES', W=1600, H=2000, samples=32):
     lo.rotation_euler = d.to_track_quat('-Z', 'Y').to_euler()
 
     # ---- camera A
+    # stills only: --cam height,pitch,lens,yaw,tx,ty overrides camera A (the film never passes it)
+    tz = 0.0
+    if opt('--cam'):   # height,pitch,lens,yaw,tx,ty[,tz]: tz lifts the target (look up at an anchor with pitch < 0)
+        v_ = [float(v) for v in opt('--cam').split(',')]
+        CAM.update(height=v_[0], pitch=v_[1], lens=v_[2], yaw=v_[3], target=(v_[4], v_[5]))
+        tz = v_[6] if len(v_) > 6 else 0.0
     cd = bpy.data.cameras.new('A'); cd.lens = CAM['lens']; cd.sensor_width = 36.0; cd.sensor_fit = 'AUTO'
     cd.clip_start = 0.5; cd.clip_end = 300
     co = bpy.data.objects.new('A', cd); link(co); sc.camera = co
     yaw = math.radians(CAM['yaw']); pitch = math.radians(CAM['pitch'])
-    hd = CAM['height'] / math.tan(pitch)
+    hd = (CAM['height'] - tz) / math.tan(pitch)
     tx, ty = CAM['target']
     co.location = (tx - hd * math.sin(yaw), ty - hd * math.cos(yaw), CAM['height'])
-    look = Vector((tx, ty, 0)) - co.location
+    look = Vector((tx, ty, tz)) - co.location
     co.rotation_euler = look.to_track_quat('-Z', 'Y').to_euler()
     cd.dof.use_dof = False
+    if opt('--ortho'):   # camera P: orthographic plan view (stills only), --ortho <scale in m>
+        cd.type = 'ORTHO'; cd.ortho_scale = float(opt('--ortho'))
 
     # ink layer: a container mesh object rebuilt each frame
     me = bpy.data.meshes.new('ink'); ink = bpy.data.objects.new('ink', me); link(ink)
     ink.data.materials.append(MAT['blue']); ink.data.materials.append(MAT['amber'])
+    ink.data.materials.append(MAT['hardware'])   # index 2: --links lines (camera P plan only)
     return dict(roots=roots, ink=ink, MAT=MAT)
 
 
@@ -703,6 +753,10 @@ def pose(rig, t, force=None):
             rounded_rect_into(bm, x, y, 1.6, 1.4, h, 0.12, 0.0025, 1)
         else:
             rounded_rect_into(bm, x, y, 1.42, 0.98, h, 0.12, 0.0025, 1)
+    if '--links' in sys.argv:   # camera P plan: one 30 mm dark line from the inspected trolley's tag to each bay anchor's column foot
+        x, y = P['ti'].at(M['ti'].s(tau))
+        for cx, cy in ((-7.6, 8.0), (4.4, 8.0)):
+            ribbon_into(bm, [(x, y), (cx, cy)], 0.03, 0.005, 2)
     me = rig['ink'].data
     bm.to_mesh(me); bm.free(); me.update()
 
