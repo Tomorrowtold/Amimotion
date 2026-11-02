@@ -13,3 +13,7 @@
 /* Plan legs not yet reached stay legible as an outline of what comes next. */
 .w-route .leg[style*="0.15"]{opacity:.42!important}
 @media (prefers-reduced-motion:reduce){.w-route-on .steps li{transition:none}}
+/* the moment of decision: the way into the diagnostic is the one filled button in the head; any second link stays a quiet text link beside it */
+.head .more:has(>.cta){display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3) var(--s-6)}.head .more:has(>.cta) .sep{display:none}
+/* inline headings: a heading part that wraps to two lines is revealed as one box, so its rising mask no longer cuts off the second line */
+.look-inline .sec>h2 .km-r{display:inline-block;max-width:100%}

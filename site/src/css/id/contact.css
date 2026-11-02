@@ -23,3 +23,5 @@
 .head{padding-top:0!important}
 .head-pic::before{content:"";position:absolute;inset:0 0 auto;height:clamp(140px,22vh,220px);background:linear-gradient(rgba(18,32,82,.5),transparent);pointer-events:none}
 .head .crumbs{margin-top:calc(var(--bar) + var(--s-5) + 32px)}
+/* desktop: a lower band of the photograph and the two short paragraphs side by side, so the form card starts inside the first screen */
+@media (min-width:1024px){.head-pic img{height:clamp(380px,50svh,520px);object-position:50% 80%}.head .words{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);grid-column:1 / -1;padding-top:var(--s-5)}.head .words>.lede{grid-column:1 / span 5}.head .words>.short-answer{grid-column:7 / -1;margin-top:0}.head+.sec{padding-top:var(--s-7)}}
