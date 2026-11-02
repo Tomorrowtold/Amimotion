@@ -13,7 +13,7 @@
 .ds{
   --ground:#f0f6ff; --surface:#ffffff; --pressed:#e3eeff;
   --ink:#0b1238; --ink-soft:#3d4870; --ink-hover:#1c2350; --on-ink:#ffffff;
-  --action:#4b3df0; --action-hover:#3a2cd6; --on-action:#ffffff; --brand:#66a5fa; --waiting-edge:#a86d00;
+  --action:#4b3df0; --action-hover:#3a2cd6; --on-action:#ffffff; --brand:#66a5fa; --waiting-edge:#8f5c00;
   --hardware:#3a3d42; --link:#4b3df0; --focus:#4b3df0;
   --located:#1f6bff; --waiting:#ffb020;
   --hairline:rgba(11,18,56,.10);
@@ -40,6 +40,8 @@
 .ds :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:var(--radius-control)}
 .skip-link{position:absolute;left:16px;top:-100px;z-index:60;background:var(--ground);color:var(--ink);padding:8px 12px;font:500 15px/1 var(--font-text)}
 .skip-link:focus{top:12px}
+/* the skip link moves focus to <main> (tabindex -1): the region takes focus without drawing a ring round the page */
+main:focus{outline:none}
 
 /* ---------- buttons (M14): a pill with a chevron that moves 3 px; press scales to .97 ---------- */
 .cta{display:inline-flex;align-items:center;justify-content:center;gap:.55em;height:48px;padding:0 22px;background:var(--action);color:var(--on-action)!important;border:0;border-radius:var(--radius-pill);font:500 var(--size-small)/1 var(--font-text);text-decoration:none!important;white-space:nowrap;cursor:pointer;transition:background-color var(--t-fast) var(--ease-ds),transform var(--t-fast) var(--ease-ds)}
@@ -217,6 +219,8 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
    call) and grows upward into the menu: the five doors, then a door's own page with its stills */
 @media (max-width:1023px){
   .plogo{display:flex;align-items:center;gap:8px;height:100%;padding-inline:var(--margin);width:max-content}
+  /* a page whose photograph runs up under the bar (build.py over_photo): the wordmark turns white, like the crumbs */
+  .top.over .plogo{color:#fff;filter:drop-shadow(0 1px 8px rgba(11,18,56,.5))}
   .cap{top:auto;bottom:calc(10px + env(safe-area-inset-bottom));width:min(440px,calc(100% - 20px));height:56px;padding:0 6px;gap:6px}
   .top.compact .cap{top:auto;height:56px}
   .top.away .cap{transform:translateX(-50%) translateY(calc(100% + 24px))}

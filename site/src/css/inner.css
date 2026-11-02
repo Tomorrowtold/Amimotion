@@ -249,7 +249,8 @@ main .local a{text-decoration:none}
 .local ul{display:flex;gap:clamp(16px,1.6vw,32px);list-style:none;margin:0;padding:0;min-width:0;overflow-x:auto;scrollbar-width:none}
 .local ul::-webkit-scrollbar{display:none}
 .local li{margin:0;white-space:nowrap}
-.local ul a{display:block;padding-block:14px;font:400 15px/1.2 var(--font-text);color:var(--ink-soft)!important}
+/* set on the link too: kit.css text-wrap:pretty on main li resets the li's nowrap, and a phone wrapped each to 3 lines */
+.local ul a{white-space:nowrap;display:block;padding-block:14px;font:400 15px/1.2 var(--font-text);color:var(--ink-soft)!important}
 .local ul a:hover,.local ul a[aria-current]{color:var(--ink)!important}
 .local ul a[aria-current]{box-shadow:inset 0 -2px 0 var(--ink)}
 main .cta.pill,.local .cta{flex:none;height:36px;padding-inline:16px;border-radius:999px;font:500 15px/1 var(--font-text)}
@@ -462,7 +463,10 @@ main .qstart a:hover{background:var(--pressed)}
 @keyframes km-fade{from{opacity:0;transform:translateY(14px)}}
 .motion [data-km] h1>span{animation:km-rise 1.05s var(--km-ease) backwards}
 .motion [data-km] h1>span+span{animation-delay:.14s}
-.motion [data-km] .words{animation:km-fade .9s var(--km-ease) .38s backwards}
+/* the short answer is the page's first read (and its LCP): it lifts into place but is never invisible, so a slow
+   phone shows it with the first paint instead of 1.3 s later at the end of a fade */
+@keyframes km-lift{from{transform:translateY(14px)}}
+.motion [data-km] .words{animation:km-lift .9s var(--km-ease) .14s backwards}
 .motion [data-km] .crumbs{animation:km-fade .7s var(--km-ease) backwards}
 .km-r{display:block;transition:transform .95s var(--km-ease) calc(var(--i,0) * 110ms),clip-path .95s var(--km-ease) calc(var(--i,0) * 110ms);clip-path:inset(-.2em -.1em -.3em -.1em)}
 .km-r:not(.in){transform:translateY(105%);clip-path:inset(-.2em -.1em 105% -.1em)}

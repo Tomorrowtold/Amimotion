@@ -67,12 +67,15 @@ def url_for(rel):
 def text_of(fragment):
     t = re.sub(r"<(script|style|svg|template)[\s\S]*?</\1>", " ", fragment)
     t = re.sub(r"<[^>]+>", " ", t)
-    return re.sub(r"\s+", " ", html.unescape(t)).strip()
+    t = re.sub(r"\s+", " ", html.unescape(t)).strip()
+    return re.sub(r" ([.,;:!?)])", r"\1", t)   # "your <a>baseline</a>." reads "baseline.", not "baseline ."
 
 
 ORG = {
     "@type": "Organization", "@id": SITE + "/#org", "name": "AmIMotion", "alternateName": ENTITY["alternateName"],
-    "legalName": ENTITY["legalName"], "url": SITE + "/", "logo": SITE + "/assets/img/AmIMotion_Logo.svg", "email": ENTITY["email"],
+    "legalName": ENTITY["legalName"], "url": SITE + "/",
+    # the square mark every page already ships as its icon (the launch build copies only files a page references)
+    "logo": {"@type": "ImageObject", "@id": SITE + "/#logo", "url": SITE + "/assets/img/AmIMotion_Icon.svg", "width": 512, "height": 512}, "email": ENTITY["email"],
     "description": ENTITY["long"], "slogan": "Where work is. Where it waits.",
     "address": {"@type": "PostalAddress", "addressLocality": "Bengaluru", "addressRegion": "Karnataka", "addressCountry": "IN"},
     "knowsAbout": ENTITY["knowsAbout"], "sameAs": ENTITY["sameAs"],
@@ -117,15 +120,37 @@ def videos_of(body, url):
     return out
 
 
+# HowTo only where the page itself sets out steps a buyer follows, in order (not where it explains how the system works):
+# url -> the <h2> the steps sit under. The HowTo is named by the page title (the question the steps answer).
+HOWTO = {"/pilot/": "Five steps, in order.", "/how-to-buy/": "Four steps.",
+         "/learn/anchor-planning/": "How to get to a number", "/learn/value-without-mes/": "A pilot plan that works"}
+
+
+def howto_of(meta, url, body):
+    if url not in HOWTO: return None
+    h2 = HOWTO[url]
+    m = re.search(r"<h2[^>]*>(?:<span>)?" + re.escape(h2) + r"(?:</span>)?</h2>(.*?)<ol\b[^>]*>(.*?)</ol>", body, re.S)
+    if not m or "<h2" in m.group(1): raise SystemExit(f"build: HowTo steps for {url} not found under '{h2}'")
+    steps = []
+    for i, li in enumerate(re.findall(r"<li\b[^>]*>(.*?)</li>", m.group(2), re.S)):
+        h3 = re.search(r"<h3[^>]*>(.*?)</h3>(.*)", li, re.S)
+        st = {"@type": "HowToStep", "position": i + 1}
+        if h3: st.update(name=text_of(h3.group(1)).rstrip("."), text=text_of(h3.group(2)))
+        else: st["text"] = text_of(li)
+        steps.append(st)
+    return {"@type": "HowTo", "@id": SITE + url + "#howto", "name": meta.get("title", ""),
+            "description": meta.get("description", ""), "inLanguage": "en-IN", "step": steps}
+
+
 def page_schema(meta, url, body, titles):
     full = SITE + url
-    g = [ORG]
-    if url == "/":
-        g.append({"@type": "WebSite", "@id": SITE + "/#site", "url": SITE + "/", "name": "AmIMotion", "inLanguage": "en-IN",
-                  "description": ENTITY["short"], "publisher": {"@id": SITE + "/#org"}})
+    og = SITE + meta.get("og", "/assets/home/og-home.jpg")
+    # the WebSite node rides on every page, so each page's isPartOf resolves inside its own graph
+    g = [ORG, {"@type": "WebSite", "@id": SITE + "/#site", "url": SITE + "/", "name": "AmIMotion", "inLanguage": "en-IN",
+               "description": ENTITY["short"], "publisher": {"@id": SITE + "/#org"}}]
     wp = {"@type": meta.get("page", "WebPage"), "@id": full + "#page", "url": full, "name": meta.get("title", ""), "description": meta.get("description", ""),
           "isPartOf": {"@id": SITE + "/#site"}, "about": {"@id": SITE + "/#org"}, "publisher": {"@id": SITE + "/#org"},
-          "inLanguage": "en-IN", "dateModified": TODAY}
+          "primaryImageOfPage": {"@type": "ImageObject", "url": og}, "inLanguage": "en-IN", "dateModified": TODAY}
     if "short-answer" in body:   # the paragraph a voice assistant or answer engine should read out
         wp["speakable"] = {"@type": "SpeakableSpecification", "cssSelector": ["h1", ".short-answer"]}
     g.append(wp)
@@ -133,16 +158,18 @@ def page_schema(meta, url, body, titles):
     if kind == "product":
         g.append({"@type": "Product", "@id": full + "#product", "name": meta.get("product", meta.get("title")), "description": meta.get("description"),
                   "brand": {"@type": "Brand", "name": "AmIMotion"}, "manufacturer": {"@id": SITE + "/#org"},
-                  "category": meta.get("category", "Real-time location system"), "image": SITE + meta.get("og", "/assets/home/og-home.jpg"),
+                  "category": meta.get("category", "Real-time location system"), "image": og, "url": full, "mainEntityOfPage": {"@id": full + "#page"},
                   "additionalProperty": specs_of(body)})
+        wp["mainEntity"] = {"@id": full + "#product"}
     if kind == "software":
         g.append({"@type": "SoftwareApplication", "@id": full + "#software", "name": meta.get("product", "AmIHub"), "description": meta.get("description"),
                   "applicationCategory": "BusinessApplication", "operatingSystem": "Runs on an industrial PC inside your plant, with no internet needed", "publisher": {"@id": SITE + "/#org"},
-                  "additionalProperty": specs_of(body)})
+                  "url": full, "image": og, "mainEntityOfPage": {"@id": full + "#page"}, "additionalProperty": specs_of(body)})
+        wp["mainEntity"] = {"@id": full + "#software"}
     if kind == "article":
         g.append({"@type": "TechArticle", "@id": full + "#article", "headline": meta.get("title"), "description": meta.get("description"),
                   "author": {"@id": SITE + "/#org"}, "publisher": {"@id": SITE + "/#org"}, "about": {"@id": SITE + "/#org"},
-                  "datePublished": meta.get("published", "2026-10-28"), "dateModified": TODAY, "mainEntityOfPage": full, "inLanguage": "en-IN"})
+                  "datePublished": meta.get("published", "2026-10-28"), "dateModified": TODAY, "mainEntityOfPage": {"@id": full + "#page"}, "image": og, "inLanguage": "en-IN"})
     if meta.get("app"):   # a tool that runs in the browser (round 07 buying squad)
         g.append({"@type": "WebApplication", "@id": full + "#app", "name": meta["app"], "url": full, "applicationCategory": "BusinessApplication",
                   "operatingSystem": "Any modern browser", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": True, "publisher": {"@id": SITE + "/#org"}})
@@ -154,6 +181,13 @@ def page_schema(meta, url, body, titles):
     if faqs:
         g.append({"@type": "FAQPage", "@id": full + "#faq", "mainEntity": faqs})
     g.extend(videos_of(body, full))
+    ht = howto_of(meta, url, body)
+    if ht: g.append(ht)
+    if url == "/learn/":   # the field guides, in order, as the shelf's list (each by its nav label)
+        guides = sorted(u for u in titles if u.startswith("/learn/") and u != "/learn/")
+        g.append({"@type": "ItemList", "@id": full + "#guides", "name": "Field guides", "numberOfItems": len(guides),
+                  "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": LABEL.get(u, titles[u]), "url": SITE + u} for i, u in enumerate(guides)]})
+        wp["mainEntity"] = {"@id": full + "#guides"}
     trail = re.search(r'<nav class="crumbs"[^>]*>(.*?)</nav>', body, re.S)
     if trail:   # the visible breadcrumb trail, so the BreadcrumbList matches what people read (nav sections, not URL folders)
         crumbs = [(text_of(t), u) for u, t in re.findall(r'<a href="([^"]+)">(.*?)</a>', trail.group(1))] + [(LABEL.get(url, titles.get(url, "")), url)]
@@ -164,6 +198,8 @@ def page_schema(meta, url, body, titles):
             acc += seg + "/"
             if acc in titles: crumbs.append((LABEL.get(acc, titles[acc]), acc))
         g.append({"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": n, "item": SITE + u} for i, (n, u) in enumerate(crumbs)]})
+    if g[-1]["@type"] == "BreadcrumbList":
+        g[-1]["@id"] = full + "#crumbs"; wp["breadcrumb"] = {"@id": full + "#crumbs"}
     return json.dumps({"@context": "https://schema.org", "@graph": g}, ensure_ascii=False, separators=(",", ":"))
 
 
@@ -188,6 +224,7 @@ def head(meta, url, body, titles):
 <meta property="og:title" content="{e(t)}"><meta property="og:description" content="{e(d)}">
 <meta property="og:url" content="{SITE}{url}"><meta property="og:image" content="{SITE}{og}">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="image_src" href="{og}">
 <link rel="icon" href="/assets/img/AmIMotion_Icon.svg" type="image/svg+xml">
 <link rel="alternate" type="text/plain" title="AmIMotion for AI assistants" href="/llms.txt">
 {styles(meta)}
@@ -214,6 +251,13 @@ KIT_HEAD = """<script type="speculationrules">{"prerender":[{"where":{"and":[{"s
 <script>addEventListener('pageswap',e=>{if(!e.viewTransition||!e.activation)return;const u=e.activation.entry.url,a=[...document.querySelectorAll('main a[href]')].find(x=>x.href===u);const h=document.querySelector('.head h1');if(h)h.style.viewTransitionName='';if(a&&a.getBoundingClientRect().bottom>0&&a.getBoundingClientRect().top<innerHeight)(a.querySelector('b')||a).style.viewTransitionName='k-title'});addEventListener('pagereveal',e=>{if(!e.viewTransition)return;const h=document.querySelector('.head h1');if(!h)return;h.style.viewTransitionName='k-title';e.viewTransition.finished.finally(()=>h.style.viewTransitionName='')})</script>"""
 
 
+# The two faces the first screen paints: the headline (Display) and the short answer under it (Text Regular), which is
+# the page's largest text and so its LCP. Preloaded, they arrive with the HTML instead of after the inline CSS is parsed.
+# The serif and the medium weight stay on font-display: swap behind metric-matched fallbacks (no shift).
+FONT_PRELOAD = "".join(f'<link rel="preload" href="/assets/fonts/{f}.woff2" as="font" type="font/woff2" crossorigin>\n'
+                       for f in ("AmISansDisplay-SemiBold", "AmISansText-Regular"))
+
+
 def styles(meta):
     """Every page carries its whole stylesheet in the first round trip: core.css (tokens, bar, footer) plus one
     template file (home.css, or inner.css with tool.css or diag.css where a page has a tool). No render-blocking
@@ -222,12 +266,12 @@ def styles(meta):
     # site under the AmIMotion nav, so it carries core.css plus its own two files, none of the inner-page kit
     if meta.get("layout") == "product":
         css = css_min("".join((SRC / "css" / f).read_text() for f in ["core.css", "products/base.css", f"products/{meta['id']}.css"]))
-        return ('<link rel="preload" href="/assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>\n'
+        return (FONT_PRELOAD +
                 f"<style>{css}</style>")
     files = ["core.css"] + (["home.css"] if meta.get("layout") == "home" else ["inner.css"] + [f"{x}.css" for x in meta.get("css", "").split()] + ["worlds.css", "kit.css"])
     if meta.get("layout") != "home" and meta.get("id") and (SRC / "css" / "id" / f"{meta['id']}.css").exists(): files.append(f"id/{meta['id']}.css")
     css = css_min("".join((SRC / "css" / f).read_text() for f in files))
-    return ('<link rel="preload" href="/assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>\n'
+    return (FONT_PRELOAD +
             f"<style>{css}</style>")
 
 
@@ -281,12 +325,26 @@ CHEV = '<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2
 LOOK = '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6"/><path d="m13 13 5 5"/></svg>'
 
 
+_SIZES = {}
+def webp_size(src):
+    """Pixel size of a WebP under src/assets, read from its header, so every <img> carries width and height."""
+    if src not in _SIZES:
+        d = (SRC / src.lstrip("/")).read_bytes()[:30]
+        if d[12:16] == b"VP8 ": w, h = (int.from_bytes(d[26:28], "little") & 0x3fff), (int.from_bytes(d[28:30], "little") & 0x3fff)
+        elif d[12:16] == b"VP8L": v = int.from_bytes(d[21:25], "little"); w, h = (v & 0x3fff) + 1, ((v >> 14) & 0x3fff) + 1
+        else: w, h = int.from_bytes(d[24:27], "little") + 1, int.from_bytes(d[27:30], "little") + 1
+        _SIZES[src] = (w, h)
+    return _SIZES[src]
+
+
 def still(u):
-    """The picture an item shows in a panel: a nav still (CAD on a pale ground) or the graded still its page opens on."""
+    """The picture an item shows in a panel: a nav still (CAD on a pale ground) or the graded still its page opens on.
+    The panel's frame sets the shape (aspect-ratio, object-fit), so width and height only tell the browser the ratio early."""
     k = PIC.get(u)
     if not k: return ""
     src = f"/assets/worlds/{k[2:]}-800.webp" if k.startswith("w:") else f"/assets/nav/{k}-640.webp"
-    return f'<span class="pic"><img src="{src}" alt="" loading="lazy" decoding="async"></span>'
+    w, h = webp_size(src)
+    return f'<span class="pic"><img src="{src}" width="{w}" height="{h}" alt="" loading="lazy" decoding="async"></span>'
 
 
 def panel_group(name, kind, items, cur, where):
@@ -305,7 +363,16 @@ def panel_group(name, kind, items, cur, where):
     return f'<div class="grp g-{kind}"><p class="grp-name">{html.escape(name)}</p><ul class="{kind}">{body}</ul></div>'
 
 
-def header_html(url="/", world=None):
+def over_photo(meta, body):
+    """True when the page's first screen is a photograph or dark stage pulled up under the bar (a poster head, or a
+    page stylesheet with margin-top: calc(-1 * var(--bar))): on phones the logo then sits on the picture, not on ground."""
+    if re.search(r'class="head\b[^"]*\bw-poster\b', body): return True
+    if not meta.get("id"): return False
+    own = [SRC / "css" / "id" / f"{meta['id']}.css", SRC / "css" / "products" / f"{meta['id']}.css"]
+    return any(f.exists() and "calc(-1 * var(--bar)" in f.read_text() for f in own)
+
+
+def header_html(url="/", world=None, over=False):
     """The capsule (round 3 nav, /mnt/project-files/nav/concepts/). One floating piece of glass; four materials, four
     jobs: glass to move around, a lens bead that rests on the door you are in, a pressed well for Ask, one clay button.
     Five doors, each one world of the inner pages; a door's panel wears that world's ground and shows the stills its
@@ -329,7 +396,7 @@ def header_html(url="/", world=None):
     ask = (f'<details class="nask" data-panel><summary data-nav-id="header.ask" aria-label="Ask a question">{LOOK}<span class="t">Ask</span><kbd aria-hidden="true">/</kbd></summary>'
            f'<div class="drop nask-drop"><div class="nask-main">{ask_form("d")}</div><div class="nask-roles"><p>I\'m here as</p><ul>{roles}</ul></div></div></details>')
     menu = ''.join(f'<li><button type="button" data-pane="{i}">{s["label"]}{CHEV}</button></li>' for i, s in enumerate(NAV["sections"]))
-    return ('<a class="skip-link" href="#main">Skip to content</a>\n<header class="top ds">\n'
+    return (f'<a class="skip-link" href="#main">Skip to content</a>\n<header class="top ds{" over" if over else ""}">\n'
             f'<a class="logo plogo" href="/" aria-label="AmIMotion home">{part("logo.html")}</a>\n<div class="cap">'
             f'<a class="logo" href="/" aria-label="AmIMotion home" data-nav-id="header.home">{part("logo.html")}</a>\n'
             f'<nav class="main" aria-label="Main"><div class="doors">{"".join(doors)}<span class="lens" aria-hidden="true"></span></div></nav>\n'
@@ -498,8 +565,8 @@ def build():
 
     public = []
     for url, (meta, body) in pages.items():
-        header = header_html(url, meta.get("world"))
-        page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
+        header = header_html(url, meta.get("world"), over_photo(meta, body))
+        page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main" tabindex="-1">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
         out.parent.mkdir(parents=True, exist_ok=True); out.write_text(page)
@@ -507,8 +574,12 @@ def build():
 
     # sitemap with the pictures each page carries (image search and answer engines use them)
     def imgs(url):
-        found = re.findall(r'src="(/assets/(?:img|photo)/[\w.-]+\.(?:webp|jpg|png))"', pages[url][1])
-        return "".join(f"<image:image><image:loc>{SITE}{p}</image:loc></image:image>" for p in list(dict.fromkeys(found))[:8])
+        """The page's share picture, then every real picture its body shows (CAD renders, photos, hall stills), in order.
+        The homepage body is swapped for the studio film at integration, so it lists its share picture only."""
+        meta, body = pages[url]
+        found = [meta.get("og", "/assets/home/og-home.jpg")]
+        if url != "/": found += re.findall(r'<img\b[^>]*?\ssrc="(/assets/[\w./-]+\.(?:webp|jpg|png))"', body)
+        return "".join(f"<image:image><image:loc>{SITE}{p}</image:loc></image:image>" for p in list(dict.fromkeys(found))[:12])
     (DIST / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n'
         + "".join(f"  <url><loc>{SITE}{u}</loc><lastmod>{TODAY}</lastmod>{imgs(u)}</url>\n" for u in sorted(public)) + "</urlset>\n")
 
@@ -532,7 +603,9 @@ def build():
     if rest: sections.append(("More pages", rest))
     lines = dict(sections)
     (DIST / "llms.txt").write_text(f"# AmIMotion\n\n> {ENTITY['long']}\n\n{ENTITY['short']}\n\n## Key facts (with their qualifiers)\n\n{facts}\n\n"
-        + "\n\n".join(f"## {k}\n\n" + "\n".join(v) for k, v in lines.items() if v) + f"\n\n## Home\n\n- [AmIMotion]({SITE}/): {pages['/'][0].get('description', '')}\n")
+        + "\n\n".join(f"## {k}\n\n" + "\n".join(v) for k, v in lines.items() if v) + f"\n\n## Home\n\n- [AmIMotion]({SITE}/): {pages['/'][0].get('description', '')}\n"
+        + f"\n## Optional\n\n- [The full site as text]({SITE}/llms-full.txt): every public page above, as plain text, with its questions and answers.\n"
+        + f"- [Sitemap]({SITE}/sitemap.xml): every public page with its pictures.\n")
     (DIST / "llms-full.txt").write_text(f"# AmIMotion: the full site as text\n\n> {ENTITY['long']}\n\n## Key facts\n\n{facts}\n\n"
         + "\n\n".join(f"## {pages[u][0].get('title')}\nURL: {SITE}{u}\n\n{text_of(pages[u][1])}" for u in sorted(public)) + "\n")
 
@@ -558,8 +631,16 @@ def build():
     (DIST / "assets" / "ask.json").write_text(json.dumps({"p": ask_pages, "e": rows}, ensure_ascii=False, separators=(",", ":")))
 
     if args.indexnow_key: (DIST / f"{args.indexnow_key}.txt").write_text(args.indexnow_key)
+    # Security headers for a static host. Every script and style is first-party; inline ones are the per-page CSS, the
+    # JSON-LD, the motion flag and the speculation rules, so 'unsafe-inline' stays and nothing else is allowed in.
+    # connect-src names the one outside endpoint a form may post to (HubSpot forms, used once config.js names it).
+    csp = ("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
+           "font-src 'self'; media-src 'self' blob:; connect-src 'self' https://api.hsforms.com; frame-src 'self'; worker-src 'self' blob:; "
+           "object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'; upgrade-insecure-requests")
     (DIST / "_headers").write_text("/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n"
-        + ("" if args.indexable else "  X-Robots-Tag: noindex, nofollow\n")
+        + f"  Content-Security-Policy: {csp}\n  X-Frame-Options: SAMEORIGIN\n  Cross-Origin-Opener-Policy: same-origin\n"
+        + "  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()\n"
+        + ("  Strict-Transport-Security: max-age=31536000; includeSubDomains\n" if args.indexable else "  X-Robots-Tag: noindex, nofollow\n")
         + "\n/assets/*\n  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000\n\n/llms*.txt\n  Content-Type: text/plain; charset=utf-8\n")
     print(f"built {len(pages)} pages -> {DIST}{' (share)' if SHARE else ''}{' (indexable)' if args.indexable else ' (review: noindex)'}")
 
