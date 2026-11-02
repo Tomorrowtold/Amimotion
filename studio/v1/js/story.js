@@ -9,27 +9,44 @@ const sm = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 
 export const VS = `attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}`;
 export const FS = `precision highp float;varying vec2 v;
 uniform sampler2D tA,tB,tM;uniform vec2 res,span,tagPos,bayC,waveC;uniform vec3 cam;uniform vec4 vr;
-uniform float draw,dash,amber,onlyQ,hidePaths,bay,tagOn,time,grey,wave;
+uniform float draw,dash,amber,onlyQ,hidePaths,bay,tagOn,time,grey,wave,shock,shockA;
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 void main(){
   vec2 uv=vec2(v.x,1.-v.y);
   vec2 iu=cam.xy+(uv-.5)*span/cam.z;
-  vec3 A=texture2D(tA,iu).rgb,B=texture2D(tB,iu).rgb,M=texture2D(tM,iu).rgb;
+  // the impact: one ring of pressure runs out across the floor and bends the picture as it passes
+  vec2 sv=(iu-waveC)*vec2(.8,1.);float sd=length(sv);
+  float ring=exp(-pow((sd-shock)/.022,2.))*shockA;
+  iu-=normalize(sv+1e-5)*ring*.014/cam.z;
+  float ca=ring*.004;
+  vec3 A=vec3(texture2D(tA,iu+vec2(ca,0.)).r,texture2D(tA,iu).g,texture2D(tA,iu-vec2(ca,0.)).b);
+  vec3 B=texture2D(tB,iu).rgb,M=texture2D(tM,iu).rgb;
   // the landing's reveal: inside the wave the plant is already known
   float wd=length((iu-waveC)*vec2(.8,1.));
   float inW=(1.-smoothstep(wave-.05,wave,wd))*step(.001,wave);
   float onPath=step(.004,M.g)*M.r;
-  float line=onPath*max(1.-smoothstep(draw-.015,draw+.015,M.g),inW)*(1.-hidePaths);
+  float drawn=max(1.-smoothstep(draw-.015,draw+.015,M.g),inW)*(1.-hidePaths);
+  float line=onPath*drawn;
   float scans=onPath*(1.-smoothstep(.0,.035,abs(fract(M.g*5.+.5)-.5)))*dash*(1.-line);
-  float am=step(.02,M.b)*max(amber,inW)*(onlyQ>.5?step(iu.x,.62):1.);
+  float amOn=max(amber,inW)*(onlyQ>.5?step(iu.x,.62):1.);
+  float am=step(.02,M.b)*amOn;
   float k=max(max(line,scans),am);
   vec3 col=mix(B,A,k);
+  // light: a soft halo around every live path and every wait, and light travelling along the paths
+  vec2 o=vec2(.0035,.0028)/max(cam.z,.6);
+  vec3 m1=texture2D(tM,iu+o).rgb,m2=texture2D(tM,iu-o).rgb,m3=texture2D(tM,iu+vec2(o.x,-o.y)).rgb,m4=texture2D(tM,iu+vec2(-o.x,o.y)).rgb;
+  float halo=(m1.r+m2.r+m3.r+m4.r)*.25*drawn,ahalo=(step(.02,m1.b)+step(.02,m2.b)+step(.02,m3.b)+step(.02,m4.b))*.25*amOn;
+  col+=vec3(.16,.36,1.)*halo*(1.-onPath)*.22;
+  col+=vec3(1.,.62,.12)*ahalo*(1.-step(.02,M.b))*.16;
+  float com=pow(max(0.,1.-abs(fract(M.g*7.-time*.22)-.5)*2.),18.)*line;
+  col=mix(col,vec3(.78,.9,1.),com*.85);
   // the front of each drawing path glows
   float front=onPath*exp(-pow((M.g-draw)/.02,2.))*(1.-hidePaths)*step(.01,draw)*step(draw,1.02);
-  col=mix(col,vec3(.35,.62,1.),front*.8);
-  // the wave's edge: a soft band of light passing over the floor
-  float band=exp(-pow((wd-wave)/.018,2.))*step(.001,wave)*(1.-smoothstep(1.,1.25,wave));
-  col=mix(col,vec3(.86,.92,1.),band*.55);col=mix(col,vec3(.3,.55,1.),band*onPath*.6);
+  col=mix(col,vec3(.55,.78,1.),front*.9);
+  // the wave's edge: a band of light passing over the floor
+  float band=exp(-pow((wd-wave)/.02,2.))*step(.001,wave)*(1.-smoothstep(1.,1.25,wave));
+  col=mix(col,vec3(.9,.95,1.),band*.6);col=mix(col,vec3(.4,.65,1.),band*onPath*.7);
+  col+=vec3(.55,.7,1.)*ring*.5+vec3(1.)*exp(-sd*38.)*shockA*.55;
   // one bay in colour
   vec2 bd=(iu-bayC)*vec2(.8,1.25);float bl=length(bd);
   float inBay=(1.-smoothstep(bay-.035,bay+.02,bl))*step(.001,bay);
@@ -39,11 +56,19 @@ void main(){
   float pulse=fract(time*.55);
   col=mix(col,vec3(.12,.42,1.),tagOn*(1.-smoothstep(8.,9.5,dd)));
   col=mix(col,vec3(.12,.42,1.),tagOn*(1.-smoothstep(0.,2.,abs(dd-(12.+pulse*60.))))*(1.-pulse)*.6);
-  // cooler, quieter grade for "before"
-  float g=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(g),col,.2)*vec3(.97,.985,1.02),grey*(1.-k)*(1.-inBay)*.6);
-  vec2 pu=(uv-vr.xy)/vr.zw;col*=mix(1.,.93,smoothstep(.45,1.15,length((pu-.5)*vec2(1.2,1.))));
-  col+=(h(uv*res+time)-.5)*.016;
-  gl_FragColor=vec4(col,1.);}`;
+  // "before" is cooler and quieter
+  float g=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(g),col,.2)*vec3(.96,.98,1.03),grey*(1.-k)*(1.-inBay)*.6);
+  // the grade: a key light from the top left, cool shadows, clean whites, a touch more colour
+  g=dot(col,vec3(.299,.587,.114));
+  col=mix(vec3(g),col,1.14);
+  col=mix(col,col*vec3(.9,.94,1.06),pow(1.-g,1.6)*.9);
+  col=mix(col,col*col*(3.-2.*col),.22);
+  vec2 pu=(uv-vr.xy)/vr.zw;
+  col*=1.035-.07*(pu.x*.35+pu.y*.65);
+  float sheen=exp(-pow((pu.x*.7+pu.y*.3)-fract(time*.05)*2.2+.5,2.)/.02);col+=vec3(.9,.95,1.)*sheen*.035;
+  col*=mix(1.,.9,smoothstep(.45,1.15,length((pu-.5)*vec2(1.2,1.))));
+  col+=(h(uv*res+time)-.5)*.014;
+  gl_FragColor=vec4(clamp(col,0.,1.),1.);}`;
 
 // ---------- the floor: everything found in the render itself ----------
 export const T = [0.4792, 0.4848];      // the AmIGo rendered on the lone trolley's deck: the hero's tag lands here
@@ -94,8 +119,8 @@ export const BEATS = [
 ];
 export const NB = BEATS.length;
 const SNAP = /[?&]still\b/.test(location.search); // screenshots: no easing lag
-const PLAY = .62; // each beat plays in its first 62% of scroll, then holds while it is read
-export const REST = BEATS.map((_, i) => (i + .78) / NB);
+const PLAY = .8; // each beat plays in its first 80% of scroll, then holds while it is read
+export const REST = BEATS.map((_, i) => (i + .9) / NB);
 export const CH_FIRST = [0, 1, 2, 3, 4, 5, 6].map((c) => BEATS.findIndex((b) => b.ch === c));
 
 function sample(bf) {
@@ -113,7 +138,7 @@ export function story(section, canvas) {
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
   const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
+  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'shock', 'shockA'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
   gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
   const big = plateSize();
   const tex = (src, unit) => new Promise((res) => { const im = new Image(); im.decoding = 'async'; im.onload = () => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im); for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v); res(); }; im.src = src; });
@@ -128,6 +153,7 @@ export function story(section, canvas) {
   section.dataset.beats = NB;
 
   // the question's thread: a fine line from the words to the three answers on the floor
+  const media = canvas.parentElement;
   const sticky = section.querySelector('.story-sticky'), qEl = section.querySelector('.q-big');
   const NS = 'http://www.w3.org/2000/svg', thread = document.createElementNS(NS, 'svg'); thread.setAttribute('class', 'q-thread'); thread.setAttribute('aria-hidden', 'true');
   const tps = [0, 1, 2].map(() => { const g = document.createElementNS(NS, 'path'); g.setAttribute('pathLength', '1'); thread.appendChild(g); return g; });
@@ -139,7 +165,7 @@ export function story(section, canvas) {
   let smooth = null, mx = 0, my = 0, qx = 0, qy = 0, beat = -1, lit = -1;
   addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
   return (t) => {
-    const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight)), bf = Math.min(NB - .0001, p * NB), pinned = r.top <= 1;
+    const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight)), bf = Math.min(NB - .0001, p * NB), pinned = r.top <= 1 || section.classList.contains('pre-on');
     const bNow = Math.floor(bf), ch = BEATS[bNow].ch;
     // the words: the chapter shows, and its words light up beat by beat (a word lights as its picture starts)
     const lb = pinned ? Math.floor(bf + .12) : -1;
@@ -154,6 +180,7 @@ export function story(section, canvas) {
     if (!smooth || SNAP) smooth = s; else for (const k in s) smooth[k] = Array.isArray(s[k]) ? s[k].map((x, j) => lerp(smooth[k][j], x, .12)) : lerp(smooth[k], s[k], .12);
     const z = smooth.cam[2], hx = span[0] / z / 2, hy = span[1] / z / 2;
     const pk = clamp(bf / .5); qx = lerp(qx, mx * pk, .05); qy = lerp(qy, my * pk, .05);
+    media.style.setProperty('--ry', (qx * 4.5).toFixed(3) + 'deg'); media.style.setProperty('--rx', (-qy * 3.5).toFixed(3) + 'deg');
     const cx = clamp(smooth.cam[0] + qx * .012 / z, hx, 1 - hx), cy = clamp(smooth.cam[1] + qy * .012 / z, hy, 1 - hy);
     gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform2f(U.span, span[0], span[1]);
     gl.uniform3f(U.cam, cx, cy, z); gl.uniform2f(U.tagPos, T[0], T[1]); gl.uniform2f(U.bayC, .40, .80);

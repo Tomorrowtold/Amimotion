@@ -11,7 +11,7 @@ const sm = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 
 const io = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 const TAG_W = 17 / 2400;          // the rendered tag's width, as a share of the plate's width
 const SNAP = /[?&]still\b/.test(location.search);
-const IMPACT = .42, WAVE = [.5, .88], PULL = [.5, .93];
+const IMPACT = .34, WAVE = [.35, .7], PULL = [.38, .74], SHOCK = [.34, .62];
 
 export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel, sticky, fallback }) {
   const gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'high-performance' });
@@ -20,7 +20,7 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
   const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
+  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'shock', 'shockA'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
   gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
   const big = plateSize();
   const tex = (src, unit) => new Promise((res) => { const im = new Image(); im.decoding = 'async'; im.onload = () => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im); for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v); res(); }; im.src = src; });
@@ -34,7 +34,7 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
   // the runway: the hero holds still for D pixels of scroll; then the film is already pinned in its place
   let D = 0, topY = 0, dpr = 1;
   const layout = () => {
-    D = Math.round(innerHeight * 1.5);
+    D = Math.round(innerHeight * 1.0);
     topY = descent.getBoundingClientRect().top + scrollY;
     hero.style.top = `${Math.max(0, topY)}px`;
     descent.style.height = `${hero.offsetHeight + D}px`;
@@ -50,18 +50,18 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
   return (t) => {
     const y = scrollY, d = clamp((y - topY + Math.max(0, topY)) / D);
     story.classList.toggle('pre', y < D - .5);
-    if (y > D + innerHeight) { if (last !== 2) { canvas.style.visibility = hudEl.style.visibility = 'hidden'; last = 2; } dS = 1; globalThis.__bridge = null; return; }
+    if (y > D + innerHeight) { story.classList.remove('pre-on'); if (last !== 2) { canvas.style.visibility = hudEl.style.visibility = 'hidden'; last = 2; } dS = 1; globalThis.__bridge = null; return; }
     // the scroll, smoothed: the fall and the wave move like film, not in steps
     dS = Math.abs(d - dS) < .0005 || SNAP ? d : lerp(dS, d, .16);
     const e = dS;
     if (e <= 0) {
-      if (last !== 0) { canvas.style.visibility = hudEl.style.visibility = 'hidden'; copy.style.transform = ''; copy.style.opacity = ''; hero.style.setProperty('--glow', 1); if (fallback) fallback.style.opacity = ''; if (shade) shade.style.opacity = ''; last = 0; }
-      globalThis.__bridge = null; return;
+      if (last !== 0) { canvas.style.visibility = hudEl.style.visibility = 'hidden'; copy.style.transform = ''; copy.style.opacity = ''; hero.style.setProperty('--glow', 1); if (fallback) fallback.style.opacity = ''; if (shade) shade.style.opacity = ''; sticky.style.setProperty('--pre', 0); last = 0; }
+      globalThis.__bridge = null; story.classList.remove('pre-on'); return;
     }
     last = 1;
 
     // the words lift away first
-    const kc = sm(0, .24, e);
+    const kc = sm(0, .2, e);
     copy.style.transform = `translate3d(0,${-kc * 18}vh,0)`; copy.style.opacity = 1 - kc;
     if (fallback && !fallback.classList.contains('gone')) fallback.style.opacity = 1 - sm(.1, .4, e);
     if (shade) shade.style.opacity = 1 - sm(0, .15, e);
@@ -78,9 +78,12 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
     canvas.style.clipPath = clip; hudEl.style.clipPath = clip;
     canvas.style.opacity = sm(.02, .2, e);
     // focus: soft while it falls, a snap into focus at the moment it lands
-    const blur = e < IMPACT - .04 ? lerp(11, 4, sm(.08, IMPACT - .04, e)) : 4 * (1 - sm(IMPACT - .04, IMPACT + .02, e));
+    const blur = e < IMPACT - .03 ? lerp(12, 3, sm(.06, IMPACT - .03, e)) : 3 * (1 - sm(IMPACT - .03, IMPACT + .005, e));
     canvas.style.filter = blur > .2 ? `blur(${blur.toFixed(1)}px)` : '';
     hero.style.setProperty('--glow', 1 - sm(.1, .5, e));
+    // the story's first words arrive while the frame is still folding: no gap between the two
+    sticky.style.setProperty('--pre', sm(.62, .82, e).toFixed(3));
+    sticky.style.setProperty('--preY', Math.max(0, D - y).toFixed(1)); story.classList.toggle('pre-on', e > .6);
 
     // the camera on the plate: during the fall the rendered tag stays under the falling one; then the pull back to the whole plant
     const tf = globalThis.__tagFrame || { fx: innerWidth > 900 ? .69 : .5, fy: .5 };
@@ -91,16 +94,19 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
     const aEnd = [(T[0] - WIDE[0]) * WIDE[2] / sp[0] + .5, (T[1] - WIDE[1]) * WIDE[2] / sp[1] + .5];
     const a = [lerp(tf.fx, aEnd[0], kP), lerp(tf.fy, aEnd[1], kP)];
     // the impact: a short, small shake of the whole frame
-    const ti = e - IMPACT, shake = ti > 0 && ti < .08 ? Math.exp(-ti * 55) * Math.sin(ti * 260) * 3.2 : 0;
+    const ti = e - IMPACT, shake = ti > 0 && ti < .08 ? Math.exp(-ti * 55) * Math.sin(ti * 240) * 6 : 0;
     const cam = [T[0] - (a[0] - .5) * sp[0] / z, T[1] - (a[1] - .5) * sp[1] / z - shake / (R[3] * z / sp[1])];
     const span = [sp[0] * cw / R[2], sp[1] * ch / R[3]];
     const camE = [cam[0] + ((cw / 2 - R[0]) / R[2] - .5) * sp[0] / z, cam[1] + ((ch / 2 - R[1]) / R[3] - .5) * sp[1] / z];
     const wave = 1.35 * io(sm(WAVE[0], WAVE[1], e));
+    const ks = clamp((e - SHOCK[0]) / (SHOCK[1] - SHOCK[0])), shock = .95 * (1 - Math.pow(1 - ks, 2.4)), shockA = ks > 0 && ks < 1 ? Math.pow(1 - ks, 1.6) : 0;
+    // the floor recoils from the hit: a small tilt in depth that settles flat as the frame folds into the panel
+    const tilt = 9 * sm(IMPACT, IMPACT + .05, e) * (1 - io(sm(IMPACT + .05, PULL[1], e)));
     if (ready) {
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.uniform4f(U.vr, R[0] / cw, R[1] / ch, R[2] / cw, R[3] / ch);
       gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform2f(U.span, span[0], span[1]); gl.uniform3f(U.cam, camE[0], camE[1], z);
-      gl.uniform2f(U.tagPos, T[0], T[1]); gl.uniform2f(U.bayC, .4, .8); gl.uniform2f(U.waveC, T[0], T[1]); gl.uniform1f(U.wave, wave);
+      gl.uniform2f(U.tagPos, T[0], T[1]); gl.uniform2f(U.bayC, .4, .8); gl.uniform2f(U.waveC, T[0], T[1]); gl.uniform1f(U.wave, wave); gl.uniform1f(U.shock, shock); gl.uniform1f(U.shockA, shockA);
       gl.uniform1f(U.draw, 0); gl.uniform1f(U.amber, 0); gl.uniform1f(U.grey, 0);
       gl.uniform1f(U.dash, 0); gl.uniform1f(U.onlyQ, 0); gl.uniform1f(U.hidePaths, 0); gl.uniform1f(U.bay, 0); gl.uniform1f(U.tagOn, 0); gl.uniform1f(U.time, t * .001);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -109,6 +115,8 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
     // where the trolley's tag is on screen, in CSS pixels
     const S = [R[0] + a[0] * R[2], R[1] + a[1] * R[3] + shake];
     const platePx = TAG_W * z * R[2] / sp[0];
+    const tf3 = tilt > .01 ? `perspective(1300px) rotateX(${tilt.toFixed(2)}deg)` : '';
+    canvas.style.transformOrigin = hudEl.style.transformOrigin = `${S[0]}px ${S[1]}px`; canvas.style.transform = hudEl.style.transform = tf3;
     // the falling tag: it shrinks slowly, then faster and faster, like something dropping away from you
     globalThis.__bridge = { d: e, sx: S[0] / cw, sy: S[1] / ch, px: platePx, k: Math.pow(sm(.03, IMPACT, e), 2.1), fade: 1 - sm(IMPACT, IMPACT + .06, e), floor: 1 - sm(0, .16, e) };
 
@@ -116,6 +124,9 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
     hx.clearRect(0, 0, hudEl.width, hudEl.height);
     const P = (u, v) => [(R[0] + ((u - cam[0]) * z / sp[0] + .5) * R[2]) * dpr, (R[1] + ((v - cam[1]) * z / sp[1] + .5) * R[3]) * dpr];
     const kl = io(sm(IMPACT, IMPACT + .07, e));
+    if (shockA > 0) { const [FX, FY] = P(T[0], T[1]), fr = (20 + ks * 520) * dpr, g = hx.createRadialGradient(FX, FY, 0, FX, FY, fr);
+      g.addColorStop(0, `rgba(255,255,255,${.85 * shockA})`); g.addColorStop(.35, `rgba(180,205,255,${.35 * shockA})`); g.addColorStop(1, 'rgba(180,205,255,0)'); hx.fillStyle = g; hx.fillRect(FX - fr, FY - fr, fr * 2, fr * 2);
+      hx.save(); hx.globalAlpha = shockA * .9; hx.strokeStyle = 'rgba(31,107,255,.8)'; hx.lineWidth = 2 * dpr; hx.beginPath(); hx.ellipse(FX, FY, fr * .62, fr * .62 * .62, -.5, 0, 7); hx.stroke(); hx.restore(); }
     drawLanding(hx, P, dpr, (i) => i === 0 ? clamp((e - IMPACT) / .12) : clamp((wave - dist[i]) / .1), sm(IMPACT, IMPACT + .03, e), (1 - kl) * 1.6 + (z - WIDE[2]) * .7);
   };
 }

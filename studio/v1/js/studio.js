@@ -36,9 +36,9 @@ let settleT = 0; const STILL = /[?&]still\b/.test(location.search); // screensho
 const settle = () => {
   if (reduce || !storySec || wheeling || STILL) return;
   const top = storySec.getBoundingClientRect().top + scrollY, len = storySec.offsetHeight - innerHeight, y = scrollY, p = (y - top) / len;
-  if (drawBridge && y > 2 && y < top - 2) { const k = y / top, to = k > .3 ? top : 0; target = to; cur = y; wheeling = true; return; }
+  if (drawBridge && y > 2 && y < top - 2) { const k = y / top, to = k > .08 ? top : 0; target = to; cur = y; wheeling = true; return; }
   if (p < -.12 || p > .985) return;
-  const nb = +storySec.dataset.beats || 7; const rests = [0, ...Array.from({ length: nb }, (_, i) => (i + .78) / nb)];
+  const nb = +storySec.dataset.beats || 7; const rests = [0, ...Array.from({ length: nb }, (_, i) => (i + .9) / nb)];
   let best = rests[0]; for (const r of rests) if (Math.abs(r - p) < Math.abs(best - p)) best = r;
   const to = top + best * len; if (Math.abs(to - y) < 6) return;
   target = to; cur = y; wheeling = true;
@@ -85,7 +85,7 @@ if (qb && !reduce) {
 const kn = $('#system'), knItems = kn ? [...kn.querySelectorAll('.kn-item')] : [], knShots = kn ? [...kn.querySelectorAll('.kn-shot')] : [], knSweep = kn && kn.querySelector('.kn-sweep');
 if (kn && reduce) kn.classList.add('kn-static');
 const sm = (a, b, v) => { const t = clamp((v - a) / (b - a)); return t * t * (3 - 2 * t); };
-const KN_AT = [.1, .38, .66];
+const KN_AT = [-1, .36, .68];
 let knStep = -2;
 const knSet = (st) => {
   if (st === knStep) return;
@@ -102,10 +102,12 @@ const knFrame = () => {
   const p = clamp(-r.top / (r.height - innerHeight));
   knSet(p < KN_AT[0] ? -1 : p < KN_AT[1] ? 0 : p < KN_AT[2] ? 1 : 2);
   kn.style.setProperty('--f', sm(.84, .94, p).toFixed(3));
+  // the product turns slowly in the light while it is on stage
+  if (knStep >= 0) { const a0 = knStep === 0 ? 0 : KN_AT[knStep], a1 = KN_AT[knStep + 1] || 1; knShots[knStep].style.setProperty('--spin', ((clamp((p - a0) / (a1 - a0)) - .5) * -14).toFixed(2) + 'deg'); }
 };
 if (kn) kn.querySelectorAll('.kn-go').forEach((b) => b.addEventListener('click', () => {
   const sc = kn, i = +b.dataset.i, top = sc.getBoundingClientRect().top + scrollY, span = sc.offsetHeight - innerHeight;
-  scrollTo({ top: top + span * ([.22, .5, .8][i]), behavior: reduce ? 'auto' : 'smooth' });
+  scrollTo({ top: top + span * ([.12, .5, .82][i]), behavior: reduce ? 'auto' : 'smooth' });
 }));
 
 /* ---------- book a call: four fields, then the calendar ---------- */
