@@ -146,3 +146,5 @@
 .am-close p{position:relative;z-index:1}
 .am-close .am-pill{margin-top:20px;height:52px!important;padding:0 26px!important;background:linear-gradient(180deg,#fff,#e4e4e2)!important;color:#000!important}
 .am-spot.low{top:-30%;width:max(1200px,90%);-webkit-mask:linear-gradient(#000 40%,transparent 85%);mask:linear-gradient(#000 40%,transparent 85%)}
+/* the rail over a dark band: name and current tick turn white so they still read */
+.site-amimo .p-rail[data-tone=dark]{--p-rail-ink:#fff;--p-rail-name:#fff}
