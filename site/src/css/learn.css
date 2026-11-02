@@ -79,3 +79,11 @@
 .prose .w-lab label{font:400 max(var(--size-small),.9rem)/1.45 var(--font-text)}
 .prose .w-lab .w-lbl{font:500 13px var(--font-text);letter-spacing:.06em}
 @media (max-width:639px){.prose .w-lab .w-lbl{font-size:20px;letter-spacing:.02em}}
+
+/* 4. the true-size figure (accuracy) cannot shrink, so its rail keeps the contents list in view by tightening it;
+      on a short laptop screen the rail stops being sticky rather than cut the list off */
+@media (min-width:1024px){
+  .read.has-fig .rail:has(.gsvg.true) .toc{margin-top:var(--s-4)}
+  .read.has-fig .rail:has(.gsvg.true) .toc li{padding-block:6px}
+}
+@media (min-width:1024px) and (max-height:839px){.read.has-fig .rail:has(.gsvg.true){position:static}}
