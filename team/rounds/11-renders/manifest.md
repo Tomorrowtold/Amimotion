@@ -29,7 +29,7 @@ Formats:
 | R8 job crops | Home S7 | **landed** |
 | R9 closer-look angles | Product pages | **AmIGo landed**; AmIMo rendering |
 | R10 AmIGo lowers onto trolley | AmIGo page | **landed** |
-| R11 AmIGo covers part | AmIGo page | see notes |
+| R11 AmIGo covers part | AmIGo page | **landed** (founders to check, see below) |
 | R12 hall line drawing | /technology/ header | **landed** |
 | R13 AmIMo on column | AmIMo hero, S5 tab | **landed** (no cable, see below) |
 
@@ -235,6 +235,20 @@ In the racks crop, the master's top edge cuts the rack rows (camera A is framed 
 
 - Opaque, on #f0f6ff. With reduced motion, show the last frame (`-011`): the tag on the rail.
 - Alt (last frame): "The AmIGo tag set flat on the rail of a trolley."
+
+## R11 AmIGo covers part (AmIGo page): landed, founders to check before publishing
+
+- 24 frames. The top cover (the logo face) lifts 18 mm straight up off the bottom cover with a smoothstep ease, el 25°, 85 mm, f/11.
+- CAD parts only. The open tag shows the bottom cover's empty inside, with its walls and one screw boss, because the founders' CAD holds no circuit board or battery. Nothing was invented to fill it.
+- An empty shell may read as "there is nothing inside". Before this goes live, the founders should confirm they are happy to show the inside, or share the internal CAD.
+
+| Files | Size | Frames | Mean / total |
+|---|---|---|---|
+| `products/amigo-covers/amigo-covers-1200-000.avif` to `-023` | 1200 x 1200 | 24 | 15.6 KB / 375 KB |
+| `products/amigo-covers/amigo-covers-600-000.avif` to `-023` | 600 x 600 | 24 | 5.7 KB / 136 KB |
+
+- Opaque, on #f0f6ff. With reduced motion, show frame 0 (closed).
+- Alt (stage): "The AmIGo tag's two covers: the top cover lifts off the bottom cover."
 
 ## R13 AmIMo on a column (AmIMo hero, S5 tab): landed
 
