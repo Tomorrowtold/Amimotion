@@ -229,8 +229,12 @@
       if (!mini) {
         const xl = padL + 11 * (bw + gap) + bw;
         label(c, `${fmt(tgt.year)} h a year`, xl, ys(S.b11) - 9, { size: 13, align: 'right', color: C.ink });
-        c.fillStyle = C.pressed; c.fillRect(padL, padT - 27, 14, 9); c.strokeStyle = C.ink; c.globalAlpha = .55; c.strokeRect(px(padL), px(padT - 27), 14, 9); c.globalAlpha = 1;
-        label(c, unit === week ? `one block = one week of searching, ${fmt1(week)} h` : `one block = one month of searching, ${fmt1(unit)} h`, padL + 22, padT - 18, { size: 11 });
+        // the legend never clips: on a narrow sheet it starts at the sheet's edge and steps its type down to fit
+        const key = unit === week ? `one block = one week of searching, ${fmt1(week)} h` : `one block = one month of searching, ${fmt1(unit)} h`;
+        let ks = 11; c.font = FONT(ks); const kx = padL + 22 + c.measureText(key).width > w - padR ? 0 : padL;
+        while (ks > 8 && kx + 22 + (c.font = FONT(ks), c.measureText(key).width) > w - padR) ks -= .5;
+        c.fillStyle = C.pressed; c.fillRect(kx, padT - 27, 14, 9); c.strokeStyle = C.ink; c.globalAlpha = .55; c.strokeRect(px(kx), px(padT - 27), 14, 9); c.globalAlpha = 1;
+        label(c, key, kx + 22, padT - 18, { size: ks });
       } else {
         label(c, 'hours searched, Jan to Dec', 12, 18, { size: 12 });
         label(c, `${fmt(tgt.year)} h a year`, w - 12, 18, { size: 12, align: 'right', color: C.ink });
