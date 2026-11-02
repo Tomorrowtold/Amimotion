@@ -103,7 +103,7 @@ export async function init(canvas, fallback, hero) {
 
   const FLOOR_Y = -16;
   const floorMat = new THREE.ShaderMaterial({ vertexShader: FLOOR_VS, fragmentShader: FLOOR_FS, transparent: true, depthWrite: false, uniforms: { t: { value: 0 }, ring: { value: 0 }, wait: { value: 0 }, fadeAll: { value: 1 } } });
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), floorMat); floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_Y; floor.visible = false; scene.add(floor);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), floorMat); floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_Y; scene.add(floor);
 
   const pathMat = new THREE.ShaderMaterial({ vertexShader: PATH_VS, fragmentShader: PATH_FS, transparent: true, depthWrite: false, uniforms: { draw: { value: 0 }, fadeAll: { value: 1 } } });
   const paths = ROUTES.map((r) => { const m = new THREE.Mesh(ribbon(r, 2.1), pathMat); m.position.y = FLOOR_Y + .05; m.visible = false; scene.add(m); return m; });
@@ -114,6 +114,60 @@ export async function init(canvas, fallback, hero) {
 
   const key = new THREE.DirectionalLight(0xffffff, 1.4); key.position.set(-200, 260, 120); scene.add(key);
   const rim = new THREE.DirectionalLight(0x7fa6ff, 1.8); rim.position.set(240, 70, -260); scene.add(rim);
+
+  // ---------- the world assembles around the tag, in the same quiet language ----------
+  const W = new THREE.Group(); W.position.set(18, FLOOR_Y + .04, -10); W.scale.set(.56, 1, .56); scene.add(W);
+  const fadeR = (r) => clamp((380 - r) / 160);
+  // floor markings: bays and an aisle, drawn as thin lines that write themselves
+  const MARK_VS = `attribute float u;attribute float rr;varying float vU;varying float vR;void main(){vU=u;vR=rr;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`;
+  const MARK_FS = `precision highp float;varying float vU;varying float vR;uniform float draw;uniform vec3 col;uniform float alpha;
+    void main(){float on=1.-smoothstep(draw-.003,draw+.003,vU);float f=smoothstep(380.,220.,vR);gl_FragColor=vec4(col,on*alpha*f);}`;
+  function polyRibbon(pts, w) {
+    const L = [0]; for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    const tot = L[L.length - 1], pos = [], us = [], rs = [], idx = []; let n = 0;
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, z0] = pts[i - 1], [x1, z1] = pts[i], dx = x1 - x0, dz = z1 - z0, l = Math.hypot(dx, dz), nx = -dz / l * w, nz = dx / l * w;
+      for (const [x, z, u] of [[x0, z0, L[i - 1] / tot], [x1, z1, L[i] / tot]]) for (const sd of [-1, 1]) { pos.push(x + nx * sd, 0, z + nz * sd); us.push(u); rs.push(Math.hypot(x, z)); }
+      idx.push(n, n + 1, n + 2, n + 1, n + 3, n + 2); n += 4;
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('u', new THREE.Float32BufferAttribute(us, 1)); g.setAttribute('rr', new THREE.Float32BufferAttribute(rs, 1)); g.setIndex(idx); return g;
+  }
+  const rect = (x0, z0, x1, z1) => [[x0, z0], [x1, z0], [x1, z1], [x0, z1], [x0, z0]];
+  const MARKS = [rect(-310, -230, -130, -80), rect(110, -250, 300, -110), rect(70, 70, 280, 190), [[-420, 40], [-150, 40]], [[-420, 64], [-150, 64]], [[-40, -330], [-40, -160]]];
+  const marks = MARKS.map((pts, i) => { const m = new THREE.ShaderMaterial({ vertexShader: MARK_VS, fragmentShader: MARK_FS, transparent: true, depthWrite: false, uniforms: { draw: { value: 0 }, col: { value: new THREE.Color(0x0b1238) }, alpha: { value: .16 } } }); const me = new THREE.Mesh(polyRibbon(pts, .9), m); W.add(me); return m; });
+  // columns rise at the back, each carrying an anchor that lights when it hears the tag
+  const colMat = new THREE.MeshPhysicalMaterial({ color: 0xe9eef7, roughness: .6, clearcoat: .2, transparent: true, opacity: 1 });
+  const COLS = [[-120, -210], [100, -280], [140, -130]];
+  const cols = COLS.map(([x, z]) => {
+    const g = new THREE.Group(); g.position.set(x, 0, z);
+    const c = new THREE.Mesh(new THREE.CylinderGeometry(.7, .7, 50, 8), new THREE.MeshBasicMaterial({ color: 0x9aa6c4, transparent: true, opacity: .55 })); c.position.y = 25; g.add(c);
+    const node = new THREE.Mesh(new THREE.SphereGeometry(3.4, 20, 14), new THREE.MeshBasicMaterial({ color: 0x1f6bff, transparent: true, opacity: 0 })); node.position.set(0, 50, 7); g.add(node);
+    const halo = new THREE.Mesh(new THREE.RingGeometry(5, 6.2, 40), new THREE.MeshBasicMaterial({ color: 0x1f6bff, transparent: true, opacity: 0, side: 2, depthWrite: false })); halo.position.copy(node.position); g.add(halo);
+    const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 50, 7), new THREE.Vector3((-18 / .56) - x, 6, (10 / .56) - z)]);
+    const line = new THREE.Line(lg, new THREE.LineBasicMaterial({ color: 0x1f6bff, transparent: true, opacity: 0 })); g.add(line);
+    g.scale.y = .001; W.add(g); return { g, node, halo, line };
+  });
+  // other tags across the floor: a few moving in blue, a few waiting in amber
+  const disc = (c) => new THREE.Mesh(new THREE.CircleGeometry(4.2, 28), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0, depthWrite: false }));
+  const ring = (c) => new THREE.Mesh(new THREE.RingGeometry(6, 7.2, 36), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0, depthWrite: false }));
+  const MOVERS = [[[-400, 52], [-160, 52]], [[-40, -320], [-40, -170]], [[300, -270], [130, -270]]];
+  const movers = MOVERS.map((seg, i) => { const d = disc(0x1f6bff); d.rotation.x = -Math.PI / 2; W.add(d); return { d, seg, ph: i * .37 }; });
+  const WAITERS = [[110, 130], [170, 130], [230, 130], [-220, -155]];
+  const waiters = WAITERS.map(([x, z], i) => { const d = disc(0xffb020), r = ring(0xffb020); for (const m of [d, r]) { m.rotation.x = -Math.PI / 2; m.position.set(x, .1, z); W.add(m); } return { d, r, i }; });
+  function world(t) {
+    const b = Math.max(0, t - 1.15); // the world starts when the tag lands
+    marks.forEach((m, i) => { m.uniforms.draw.value = eo((b - .1 - i * .12) / 1.3) * 1.01; });
+    cols.forEach((c, i) => {
+      const k = eo((b - .5 - i * .14) / 1.1); c.g.scale.y = Math.max(.001, k); colMat.opacity = 1;
+      const hear = clamp((b - 1.6 - i * .1) / .25), pulse = (t * .7 + i * .33) % 1;
+      c.node.material.opacity = hear; c.halo.material.opacity = hear * (1 - pulse) * .6; c.halo.scale.setScalar(1 + pulse * 2.4);
+      c.halo.lookAt(cam.position);
+      const ping = Math.exp(-Math.pow(((t - 1.15 - 1.8 - i * .1) % 6.5 + 6.5) % 6.5 - .2, 2) / .06);
+      c.line.material.opacity = hear * ping * .55;
+    });
+    movers.forEach((m) => { const k = (t * .06 + m.ph) % 1, e = k < .5 ? k * 2 : 2 - k * 2; const [a, z] = m.seg; m.d.position.set(lerp(a[0], z[0], e), .1, lerp(a[1], z[1], e)); m.d.material.opacity = clamp((b - 2.2) / .6) * fadeR(Math.hypot(m.d.position.x, m.d.position.z)) * .9; });
+    waiters.forEach((w) => { const on = clamp((b - 2.6 - w.i * .12) / .5), p = (t * .5 + w.i * .25) % 1; const f = fadeR(Math.hypot(w.d.position.x, w.d.position.z)); w.d.material.opacity = on * f * .95; w.r.material.opacity = on * f * (1 - p) * .55; w.r.scale.setScalar(1 + p * 1.6); });
+  }
 
   const phone = () => innerWidth < 900; let dist = 560;
   const size = () => {
@@ -153,7 +207,7 @@ export async function init(canvas, fallback, hero) {
 
     // the story under the tag, on a loop: a path arrives, it is heard, then it waits
     const lt = Math.max(0, t - START), ci = Math.floor(lt / CYCLE), c = (lt % CYCLE);
-    paths.forEach((m) => { m.visible = false; });
+    paths.forEach((m, i) => { m.visible = i === ci % ROUTES.length; });
     if (!landedSent && t > 1.0) { landedSent = true; hero.dispatchEvent(new Event('landed')); }
     pathMat.uniforms.draw.value = t < START ? 0 : clamp(c / 2.6) * 1.01;
     floorMat.uniforms.ring.value = c > 2.6 && c < 5.6 ? (c - 2.6) / 1.5 : 0;
@@ -164,6 +218,7 @@ export async function init(canvas, fallback, hero) {
     shadow.material.opacity = clamp(1 - tag.position.y / 80) * (1 - sp * .5);
     const d = dist;
     cam.position.set(Math.sin(.15 + px * .05) * d, d * .62, Math.cos(.15 + px * .05) * d); cam.lookAt(0, -4, 0);
+    world(t);
     renderer.render(scene, cam);
     requestAnimationFrame(loop);
   }

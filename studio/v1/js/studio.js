@@ -135,6 +135,5 @@ const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
 addEventListener('load', () => idle(() => {
   startGL();
   if (slow || reduce) return;
-  import('./world.js').then((m) => m.world($('#worldGL'), $('#hero'))).catch(() => {});
   import('./tag.js').then((m) => m.init($('#tagGL'), $('#tagFallback'), $('#hero'))).catch(() => {});
 }));

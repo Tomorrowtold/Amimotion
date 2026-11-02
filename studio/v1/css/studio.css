@@ -378,5 +378,3 @@ em{font-style:normal}
 /* v7 hero world: the plant before, then after, changing outward from the tag */
 .world-gl{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 1.6s var(--ease)}
 .world-gl.ready{opacity:1}
-.hero::before{display:none}
-.hero{background:var(--ground,#f0f6ff)}
