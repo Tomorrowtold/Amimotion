@@ -6,7 +6,7 @@ const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, k) => a + (b - a) * k;
 const eo = (x) => 1 - Math.pow(1 - clamp(x), 3);
 
-async function mesh(name, meta) {
+export async function mesh(name, meta) {
   const m = meta[name];
   const buf = await (await fetch(`assets/cad/${name}.mesh`)).arrayBuffer();
   const q = new Uint16Array(buf, 0, m.nv * 3), p = new Float32Array(m.nv * 3);
@@ -20,7 +20,7 @@ async function mesh(name, meta) {
 }
 
 // a photographer's studio: one long overhead softbox, two strip lights, a cool bounce
-function studioEnv(renderer) {
+export function studioEnv(renderer) {
   const s = new THREE.Scene(); s.background = new THREE.Color(0xa4a8b0);
   const box = (w, h, pos, c, k) => { const mt = new THREE.MeshBasicMaterial({ color: c, side: 2 }); mt.color.multiplyScalar(k); const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mt); m.position.copy(pos); m.lookAt(0, 0, 0); s.add(m); };
   box(14, 3.2, new THREE.Vector3(0, 9, 0), 0xffffff, 5.5);
@@ -48,6 +48,39 @@ void main(){
   float glow=0.;
   float wa=max(max(track,glow),max(arc,head));
   col=mix(col,vec3(1.,.69,.13),wa/(a+wa+1e-4));a+=wa;
+  gl_FragColor=vec4(col,a*fadeAll);}`;
+
+
+// the ground: a polished pale slab the tag stands on. Skylights lay soft pools of daylight across it and drift with the
+// sun; the saw-cut joints of the slab run away from you; the far floor dissolves into the page.
+export const GROUND_VS = `varying vec3 vW;void main(){vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}`;
+export const GROUND_FS = `precision highp float;varying vec3 vW;
+uniform float t,fadeAll,leftFade,farR;uniform vec2 res;uniform vec3 lightC;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
+float box(vec2 p,vec2 b,float r){vec2 d=abs(p)-b+r;return length(max(d,0.))+min(max(d.x,d.y),0.)-r;}
+void main(){
+  vec2 p=vW.xz; float r=length(p);
+  // slab: a touch cooler and darker than the page so light can land on it
+  vec3 col=vec3(.86,.895,.955);
+  float grain=n(p*.045)*.6+n(p*.17)*.4; col*=1.-.022*grain;
+  // daylight from the roof: soft panes in a grid, drifting slowly
+  vec2 q=p+vec2(t*7.,t*2.); vec2 cell=vec2(560.,400.); vec2 c=mod(q+cell*.5,cell)-cell*.5;
+  float pane=1.-smoothstep(-18.,46.,box(c,vec2(170.,58.),26.));
+  vec3 day=vec3(1.,.985,.955);
+  col=mix(col,day,pane*.9);
+  // the key pool under the tag
+  float pool=exp(-pow(length((p-lightC.xy)*vec2(1.,1.25))/lightC.z,2.));
+  col=mix(col,vec3(.985,.99,1.),pool*.85);
+  // saw-cut joints, running away from you
+  vec2 j=abs(mod(p+300.,600.)-300.); float joint=1.-smoothstep(.0,1.3,min(j.x,j.y));
+  col=mix(col,vec3(.8,.85,.93),joint*.28*(1.-pool*.7));
+  // contact: the floor darkens a little in the tag's own shadow side (soft, cool)
+  // fade: the far floor dissolves into the page; the words on the left sit on clear page
+  float a=(1.-smoothstep(farR*.35,farR,r));
+  vec2 s=gl_FragCoord.xy/res; a*=mix(1.,smoothstep(.12,.52,s.x),leftFade);
+  a*=1.-smoothstep(.82,1.,s.y)*.6;
+  a*=.9;
   gl_FragColor=vec4(col,a*fadeAll);}`;
 
 // the path: a ribbon on the floor that draws itself into the tag
@@ -99,6 +132,9 @@ export async function init(canvas, fallback, hero) {
   const FLOOR_Y = -16;
   const floorMat = new THREE.ShaderMaterial({ vertexShader: FLOOR_VS, fragmentShader: FLOOR_FS, transparent: true, depthWrite: false, uniforms: { t: { value: 0 }, ring: { value: 0 }, wait: { value: 0 }, fadeAll: { value: 1 } } });
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), floorMat); floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_Y; scene.add(floor);
+  const groundMat = new THREE.ShaderMaterial({ vertexShader: GROUND_VS, fragmentShader: GROUND_FS, transparent: true, depthWrite: false, uniforms: { t: { value: 0 }, fadeAll: { value: 1 }, leftFade: { value: 1 }, farR: { value: 1500 }, res: { value: new THREE.Vector2(1, 1) }, lightC: { value: new THREE.Vector3(-30, 20, 330) } } });
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(4000, 4000), groundMat); ground.rotation.x = -Math.PI / 2; ground.position.y = FLOOR_Y - .2; ground.renderOrder = -2; scene.add(ground);
+
 
   const pathMat = new THREE.ShaderMaterial({ vertexShader: PATH_VS, fragmentShader: PATH_FS, transparent: true, depthWrite: false, uniforms: { draw: { value: 0 }, fadeAll: { value: 1 } } });
   const glowMat = new THREE.ShaderMaterial({ vertexShader: PATH_VS, fragmentShader: PATH_FS.replace('gl_FragColor=vec4(c,', 'gl_FragColor=vec4(c,.10*'), transparent: true, depthWrite: false, uniforms: pathMat.uniforms });
@@ -106,7 +142,7 @@ export async function init(canvas, fallback, hero) {
   const paths = ROUTES.map((r) => { const m = new THREE.Mesh(ribbon(r, 1.5), pathMat); m.position.y = FLOOR_Y + .05; m.visible = false; scene.add(m); return m; });
 
   // contact shadow
-  const shadowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(11,18,56,.42)'); g.addColorStop(.18, 'rgba(11,18,56,.24)'); g.addColorStop(.5, 'rgba(11,18,56,.07)'); g.addColorStop(1, 'rgba(11,18,56,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); })();
+  const shadowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(11,18,56,.55)'); g.addColorStop(.18, 'rgba(11,18,56,.32)'); g.addColorStop(.5, 'rgba(11,18,56,.07)'); g.addColorStop(1, 'rgba(11,18,56,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); })();
   const shadow = new THREE.Mesh(new THREE.PlaneGeometry(160, 118), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false })); shadow.rotation.x = -Math.PI / 2; shadow.position.y = FLOOR_Y + .1; scene.add(shadow);
 
   const key = new THREE.DirectionalLight(0xffffff, 1.4); key.position.set(-200, 260, 120); scene.add(key);
@@ -161,6 +197,9 @@ export async function init(canvas, fallback, hero) {
     const fade = t < START ? 0 : clamp(c / .4) * clamp((CYCLE - c) / .8);
     pathMat.uniforms.fadeAll.value = phone() ? 0 : fade; floorMat.uniforms.fadeAll.value = (phone() ? 0 : 1) * (t < START ? clamp(t / START) : clamp((CYCLE - c) / .8) * .6 + .4) * (1 - sp * .8);
 
+    const gu = groundMat.uniforms; gu.t.value = t; gu.res.value.set(canvas.width, canvas.height); gu.leftFade.value = phone() ? 0 : 1;
+    gu.lightC.value.set(-30 - px * 120, 20 - py * 60, 330);
+    gu.fadeAll.value = (phone() ? .75 : 1) * clamp(t / .9) * (1 - sp * .6);
     shadow.material.opacity = clamp(1 - tag.position.y / 80) * (1 - sp * .5);
     refit(); let d = dist;
     cam.position.set(Math.sin(.15 + px * .05) * d, d * .62, Math.cos(.15 + px * .05) * d); cam.lookAt(0, -4, 0);
@@ -178,7 +217,7 @@ export async function init(canvas, fallback, hero) {
       d = dist * natPx / want;
       cam.position.set(Math.sin(.15) * d, d * .62, Math.cos(.15) * d); cam.lookAt(0, -4, 0);
       cam.far = d * 4; cam.near = Math.max(1, d / 40); cam.updateProjectionMatrix();
-      const f = B.floor; pathMat.uniforms.fadeAll.value *= f; floorMat.uniforms.fadeAll.value *= f; shadow.material.opacity *= f;
+      const f = B.floor; groundMat.uniforms.fadeAll.value *= f; pathMat.uniforms.fadeAll.value *= f; floorMat.uniforms.fadeAll.value *= f; shadow.material.opacity *= f;
       canvas.style.opacity = B.fade;
     } else if (landing) { landing = false; canvas.style.opacity = ''; cam.near = 10; cam.far = 5000; cam.updateProjectionMatrix(); size(); }
     if (!(B && B.fade < .01)) renderer.render(scene, cam);

@@ -3,7 +3,7 @@
 // Then one wave of light runs out from that tag across the whole floor: every path, every wait and every other tag
 // lights up as it passes, while the camera pulls back to the whole plant and the frame folds into the film's panel.
 // The film opens on that exact frame (story.js S0) and only then lets the colour drain.
-import { VS, FS, T, LAND_Z, WIDE, plateSize, MOVERS, moverDist, drawLanding } from './story.js';
+import { VS, FS, T, LAND_Z, WIDE, plateSize, MOVERS, moverDist, drawLanding, plateTex } from './story.js';
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, k) => a + (b - a) * k;
@@ -20,12 +20,13 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
   const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
+  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'dof', 'sky'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
   gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
   const big = plateSize();
   const tex = (src, unit) => new Promise((res) => { const im = new Image(); im.decoding = 'async'; im.onload = () => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im); for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v); res(); }; im.src = src; });
   let ready = false;
-  Promise.all([tex(`assets/scene/hall-after-${big}.webp`, 0), tex(`assets/scene/hall-before-${big}.webp`, 1), tex(`assets/scene/hall-masks-${big}.png`, 2)]).then(() => {
+  Promise.all([plateTex(gl, `assets/scene/hall-after-${big}.webp`, 0), plateTex(gl, `assets/scene/hall-before-${big}.webp`, 1), plateTex(gl, `assets/scene/hall-masks-${big}.png`, 2, false)]).then(() => {
+    gl.uniform1f(U.sky, 1); gl.uniform1f(U.dof, 0);
     gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); ready = true;
   });
   const hx = hudEl.getContext('2d');
@@ -102,7 +103,7 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.uniform4f(U.vr, R[0] / cw, R[1] / ch, R[2] / cw, R[3] / ch);
       gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform2f(U.span, span[0], span[1]); gl.uniform3f(U.cam, camE[0], camE[1], z);
-      gl.uniform2f(U.tagPos, T[0], T[1]); gl.uniform2f(U.bayC, .4, .8); gl.uniform2f(U.waveC, T[0], T[1]); gl.uniform1f(U.wave, wave);
+      gl.uniform2f(U.tagPos, T[0], T[1]); gl.uniform2f(U.bayC, .4, .8); gl.uniform2f(U.waveC, T[0], T[1]); gl.uniform1f(U.wave, wave); gl.uniform1f(U.dof, (innerWidth > 900 ? 1 : .6) * kR);
       gl.uniform1f(U.draw, 0); gl.uniform1f(U.amber, 0); gl.uniform1f(U.grey, 0);
       gl.uniform1f(U.dash, 0); gl.uniform1f(U.onlyQ, 0); gl.uniform1f(U.hidePaths, 0); gl.uniform1f(U.bay, 0); gl.uniform1f(U.tagOn, 0); gl.uniform1f(U.time, t * .001);
       gl.drawArrays(gl.TRIANGLES, 0, 3);

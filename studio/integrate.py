@@ -17,7 +17,7 @@ REPO = Path(__file__).resolve().parent.parent
 STUDIO = REPO / "studio" / "v1"
 WORK = Path(os.environ.get("STUDIO_WORK", "/tmp/claude-0/integrate"))
 OUT = REPO / "studio" / "out"
-BRANCH = "origin/claude/project-thread-2b0ak4"   # main site + inner pages + the approved nav (2 Nov)
+BRANCH = "origin/claude/project-thread-lihvsj"   # main site + inner pages + nav + product sites + new footer (2 Nov)
 
 def sh(*a, **k): return subprocess.run(a, check=True, **k)
 

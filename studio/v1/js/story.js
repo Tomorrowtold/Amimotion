@@ -9,12 +9,15 @@ const sm = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 
 export const VS = `attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}`;
 export const FS = `precision highp float;varying vec2 v;
 uniform sampler2D tA,tB,tM;uniform vec2 res,span,tagPos,bayC,waveC;uniform vec3 cam;uniform vec4 vr;
-uniform float draw,dash,amber,onlyQ,hidePaths,bay,tagOn,time,grey,wave;
+uniform float draw,dash,amber,onlyQ,hidePaths,bay,tagOn,time,grey,wave,dof,sky;
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 void main(){
   vec2 uv=vec2(v.x,1.-v.y);
   vec2 iu=cam.xy+(uv-.5)*span/cam.z;
-  vec3 A=texture2D(tA,iu).rgb,B=texture2D(tB,iu).rgb,M=texture2D(tM,iu).rgb;
+  // a lens on a model: sharp through the middle of the frame, falling softly out of focus toward its edges
+  vec2 fu=(uv-vr.xy)/vr.zw; float tilt=smoothstep(.2,.56,abs(fu.y-.5))*1.6+smoothstep(.3,.62,abs(fu.x-.5))*.7;
+  float lb=tilt*dof;
+  vec3 A=texture2D(tA,iu,lb).rgb,B=texture2D(tB,iu,lb).rgb,M=texture2D(tM,iu).rgb;
   // the landing's reveal: inside the wave the plant is already known
   float wd=length((iu-waveC)*vec2(.8,1.));
   float inW=(1.-smoothstep(wave-.05,wave,wd))*step(.001,wave);
@@ -39,6 +42,11 @@ void main(){
   float pulse=fract(time*.55);
   col=mix(col,vec3(.12,.42,1.),tagOn*(1.-smoothstep(8.,9.5,dd)));
   col=mix(col,vec3(.12,.42,1.),tagOn*(1.-smoothstep(0.,2.,abs(dd-(12.+pulse*60.))))*(1.-pulse)*.6);
+  // daylight through the roof: soft panes drift across the plant; outside them the light is cooler and lower
+  vec2 fl=mat2(.72,.69,-.62,.79)*(iu*vec2(1.,1.25));   // the floor's own axes in the render
+  vec2 sq=fl+vec2(time*.004,time*.0012); vec2 sc=vec2(.3,.22); vec2 sl=mod(sq+sc*.5,sc)-sc*.5;
+  vec2 sd=abs(sl)-vec2(.085,.03)+.03; float pane=1.-smoothstep(-.03,.05,length(max(sd,0.))+min(max(sd.x,sd.y),0.)-.03);
+  col*=mix(vec3(1.),mix(vec3(.955,.968,1.0),vec3(1.025,1.012,.985),pane),sky);
   // cooler, quieter grade for "before"
   float g=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(g),col,.2)*vec3(.97,.985,1.02),grey*(1.-k)*(1.-inBay)*.6);
   col=mix(col,col*col*(3.-2.*col),.14);
@@ -52,6 +60,22 @@ export const LAND_Z = () => innerWidth > 900 ? 2.2 : 3.0;   // how close the lan
 export const WIDE = [0.5, 0.5, 1.0];                         // the whole plant, where the film opens
 export const plateSize = () => { const px = Math.max(innerWidth, innerHeight * .8) * Math.min(devicePixelRatio, 2); return innerWidth > 900 ? (px > 1200 ? 2400 : 1600) : (px > 900 ? 1600 : 800); };
 export const LOCK = { r: 15, len: 6, w: 2 };
+// the plates, loaded to power-of-two sizes with mipmaps so the lens can soften them; the masks stay exact
+export function plateTex(gl, src, unit, mip = true) {
+  return new Promise((res) => {
+    const im = new Image(); im.decoding = 'async'; im.crossOrigin = 'anonymous';
+    im.onload = () => {
+      let srcEl = im;
+      if (mip) { const P2 = (n) => Math.pow(2, Math.round(Math.log2(n))); const c = document.createElement('canvas'); c.width = Math.min(4096, P2(im.naturalWidth)); c.height = Math.min(4096, P2(im.naturalHeight)); const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(im, 0, 0, c.width, c.height); srcEl = c; }
+      const tx = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tx);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, srcEl);
+      if (mip) gl.generateMipmap(gl.TEXTURE_2D);
+      for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, mip ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
+      res();
+    };
+    im.src = src;
+  });
+}
 // every tag rendered on the floor (dark AmIGo pixels found in the plate): the trolley first, then bin, tool and the rest
 export const MOVERS = [[.4792, .4848], [.2375, .3206], [.1945, .4275], [.7213, .2755], [.8975, .6083], [.1871, .6205], [.5101, .7342], [.3728, .7992], [.2201, .8717], [.8857, .7407]];
 export const moverDist = (m) => Math.hypot((m[0] - T[0]) * .8, m[1] - T[1]);
@@ -114,13 +138,13 @@ export function story(section, canvas) {
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
   const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
+  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'dof', 'sky'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
   gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
   const big = plateSize();
   const tex = (src, unit) => new Promise((res) => { const im = new Image(); im.decoding = 'async'; im.onload = () => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im); for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v); res(); }; im.src = src; });
   let ready = false;
-  Promise.all([tex(`assets/scene/hall-after-${big}.webp`, 0), tex(`assets/scene/hall-before-${big}.webp`, 1), tex(`assets/scene/hall-masks-${big}.png`, 2)]).then(() => {
-    gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); gl.uniform4f(U.vr, 0, 0, 1, 1); gl.uniform1f(U.wave, 0); gl.uniform2f(U.waveC, T[0], T[1]); ready = true; canvas.classList.add('ready');
+  Promise.all([plateTex(gl, `assets/scene/hall-after-${big}.webp`, 0), plateTex(gl, `assets/scene/hall-before-${big}.webp`, 1), plateTex(gl, `assets/scene/hall-masks-${big}.png`, 2, false)]).then(() => {
+    gl.uniform1f(U.sky, 1); gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); gl.uniform4f(U.vr, 0, 0, 1, 1); gl.uniform1f(U.wave, 0); gl.uniform2f(U.waveC, T[0], T[1]); ready = true; canvas.classList.add('ready');
   });
   let span = [1, 1];
   const hud = section.querySelector('#storyHUD'), hctx = hud && hud.getContext('2d');
@@ -159,7 +183,7 @@ export function story(section, canvas) {
     gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform2f(U.span, span[0], span[1]);
     gl.uniform3f(U.cam, cx, cy, z); gl.uniform2f(U.tagPos, T[0], T[1]); gl.uniform2f(U.bayC, .40, .80);
     gl.uniform1f(U.draw, smooth.draw); gl.uniform1f(U.dash, smooth.dash); gl.uniform1f(U.amber, smooth.amber); gl.uniform1f(U.onlyQ, smooth.onlyQ > .5 ? 1 : 0);
-    gl.uniform1f(U.hidePaths, smooth.hide); gl.uniform1f(U.bay, smooth.bay); gl.uniform1f(U.tagOn, smooth.dot); gl.uniform1f(U.grey, smooth.grey); gl.uniform1f(U.time, t * .001);
+    gl.uniform1f(U.hidePaths, smooth.hide); gl.uniform1f(U.bay, smooth.bay); gl.uniform1f(U.tagOn, smooth.dot); gl.uniform1f(U.grey, smooth.grey); gl.uniform1f(U.time, t * .001); gl.uniform1f(U.dof, innerWidth > 900 ? 1 : .6);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     if (hctx) drawHUD(hctx, bf, t * .001, cx, cy, z, span);
     // the question's threads, from the words to the answers

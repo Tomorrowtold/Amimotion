@@ -205,6 +205,9 @@ addEventListener('load', () => idle(() => {
   startGL();
   if (slow || reduce) return;
   import('./tag.js').then((m) => m.init($('#tagGL'), $('#tagFallback'), $('#hero'))).catch(() => {});
+  // the three parts, live from CAD, once the visitor is near them
+  const knStage = kn && kn.querySelector('.kn-stage');
+  if (knStage && window.WebGLRenderingContext) { const o = new IntersectionObserver((es) => { if (es[0].isIntersecting) { o.disconnect(); import('./products3d.js').then((m) => m.mount(knStage, kn)).catch((e) => console.warn(e)); } }, { rootMargin: '120% 0px' }); o.observe(knStage); }
 }));
 
 /* ---------- plan your first bay: the first answer opens the real planner in a glass window ---------- */
