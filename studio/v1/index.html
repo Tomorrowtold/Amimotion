@@ -59,7 +59,6 @@
   </div>
 </section>
 
-
 <!-- 1b. THE STORY: one scroll film over the model hall -->
 <section class="story" id="story" aria-label="One trolley, one tag">
   <div class="story-sticky">
@@ -104,10 +103,10 @@
   </div>
 </section>
 
-<!-- 1d. WHO LEADS IT -->
+<!-- 1d. THE PEOPLE -->
 <section class="team" id="team" aria-labelledby="team-h">
   <div class="team-in">
-    <h2 class="team-h" id="team-h">Who leads it</h2>
+    <h2 class="team-h" id="team-h"><span>Hardware veterans.</span> <span>Building spatial intelligence.</span></h2>
     <ul class="team-row">
       <li class="tm">
         <figure class="tm-pic" tabindex="0" aria-describedby="tm-kaushal-kukkar">
@@ -134,6 +133,65 @@
         <p class="tm-role">Head of Software</p>
       </li>
     </ul>
+  </div>
+</section>
+
+<!-- 1e. THE PRODUCTS: one at a time, then one system -->
+<section class="kn" id="system" aria-labelledby="sys-title">
+  <div class="kn-sticky">
+    <h2 class="kn-title" id="sys-title"><span>Three parts work</span> <span>as one system.</span></h2>
+    <svg class="kn-wire" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="kn-g" x1="0" x2="1"><stop offset="0" stop-color="#4b3df0"/><stop offset=".5" stop-color="#1f6bff"/><stop offset="1" stop-color="#66a5fa"/></linearGradient></defs><path class="kn-w0" d="M0 100 H1000"/><path class="kn-w1" d="M0 100 H1000"/></svg>
+    <div class="kn-stage">
+      <article class="kn-item kn-tag" data-i="0" aria-labelledby="kn-h0">
+        <div class="kn-pic"><span class="kn-halo" aria-hidden="true"></span><img class="kn-img" src="assets/hw/amigo-34-k1600.webp" alt="The AmIGo tag, dark grey, with the amimotion name pressed into its lid" width="1600" height="1194" loading="lazy" decoding="async"></div>
+        <div class="kn-copy">
+          <h3 class="kn-name" id="kn-h0">AmIGo tag</h3>
+          <div class="kn-more"><p class="kn-lead">Screws or sticks onto the trolley. Sends a short UWB radio pulse when it moves and sleeps when it stops.</p>
+          <details><summary><span>Read more</span></summary><div class="more"><p>While it sleeps, the map shows where it was last seen. If it comes off the trolley, the map still shows its last-seen spot. One battery lasts 1 to 3 years, depending on use. AmIHub tracks each tag's health and battery level.</p></div></details></div>
+        </div>
+      </article>
+      <article class="kn-item kn-anchor" data-i="1" aria-labelledby="kn-h1">
+        <div class="kn-pic"><span class="kn-halo" aria-hidden="true"></span><img class="kn-img" src="assets/hw/amimo-34-k1600.webp" alt="The AmIMo anchor, a dark grey box with the amimotion name on its side and a network port" width="1600" height="1388" loading="lazy" decoding="async"></div>
+        <div class="kn-copy">
+          <h3 class="kn-name" id="kn-h1">AmIMo anchor</h3>
+          <div class="kn-more"><p class="kn-lead">Fixed to a column or wall 3 to 8 m up. Records when each pulse arrives and the angle it came from.</p>
+          <details><summary><span>Read more</span></summary><div class="more"><p>Needs only power, from DC or PoE. It syncs over the air, with no sync cable. It sends its data to AmIHub over Wi-Fi, so it needs no separate data cable. Ethernet is also an option. Each reaches about 50 m around it in clear line of sight. Racking and steel change that, so we survey your floor and set the count. With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor. You set anchors up from a phone app. AmIHub finds each one on its own and raises an alert if one goes dark.</p></div></details></div>
+        </div>
+      </article>
+      <article class="kn-item kn-hub" data-i="2" aria-labelledby="kn-h2">
+        <div class="kn-pic"><span class="kn-halo" aria-hidden="true"></span><div class="kn-screen"><img class="kn-img" src="assets/scene/hall-after-1600.webp" alt="AmIHub's live map of a model plant: blue paths where work moved, amber where it waits" width="1600" height="2000" loading="lazy" decoding="async"></div></div>
+        <div class="kn-copy">
+          <h3 class="kn-name" id="kn-h2">AmIHub</h3>
+          <div class="kn-more"><p class="kn-lead">Works out where each tag is from those times and angles. Runs on an industrial PC inside your plant, with no internet needed.</p>
+          <details><summary><span>Read more</span></summary><div class="more"><p>Your MES, ERP and WMS connect to it through open REST, MQTT, WebSocket and omlox hub interfaces. Your team, your systems and AI assistants read the same live map. Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited.</p></div></details></div>
+        </div>
+      </article>
+    </div>
+    <div class="kn-foot">
+      <p class="spec-line">Built on the FiRa and omlox specifications.</p>
+      <p class="links"><a class="arrow-link" href="/technology/">How it locates a tag</a><a class="arrow-link" href="/specs/">Specifications</a><a class="arrow-link" href="/developers/">For developers</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- 1f. BOOK A CALL -->
+<section class="book" id="book" aria-labelledby="book-h">
+  <div class="book-card">
+    <i class="book-orb a" aria-hidden="true"></i><i class="book-orb b" aria-hidden="true"></i>
+    <div class="book-words">
+      <h2 class="book-h" id="book-h">Book a call</h2>
+      <p class="book-sub">The call is a live demo on real AmIHub data, not slides.</p>
+    </div>
+    <form class="book-form" novalidate>
+      <label class="bf"><span>Name</span><input name="name" autocomplete="name" required></label>
+      <label class="bf"><span>Work email</span><input name="email" type="email" autocomplete="email" required></label>
+      <label class="bf"><span>Company website</span><input name="website" type="url" inputmode="url" autocomplete="url" placeholder="yourcompany.com"></label>
+      <fieldset class="bf bf-role"><legend>Your role</legend>
+        <div class="bf-chips"><label><input type="radio" name="role" value="Plant or operations head"><span>Plant or operations head</span></label><label><input type="radio" name="role" value="Production or production control"><span>Production or production control</span></label><label><input type="radio" name="role" value="Supply chain &amp; logistics"><span>Supply chain &amp; logistics</span></label><label><input type="radio" name="role" value="Engineering, OT or IT"><span>Engineering, OT or IT</span></label><label><input type="radio" name="role" value="Something else"><span>Something else</span></label></div>
+      </fieldset>
+      <p class="bf-err" role="alert" hidden></p>
+      <button class="book-go" type="submit"><span>Book a call</span><i aria-hidden="true"></i></button>
+    </form>
   </div>
 </section>
 
@@ -176,50 +234,6 @@
     </div>
   </div>
 </section>
-
-<!-- 5. ONE SYSTEM: scroll moves sideways through the tag, the anchor and AmIHub -->
-<section class="sys" id="system" aria-labelledby="sys-title">
-  <div class="sys-sticky">
-    <div class="sys-head">
-      <h2 class="sys-title k-lines" id="sys-title"><span class="ln"><span>Three parts work</span></span><span class="ln"><span>as one system.</span></span></h2>
-      <ol class="sys-steps" aria-hidden="true"><li class="on">AmIGo tag</li><li>AmIMo anchor</li><li>AmIHub</li></ol>
-    </div>
-    <div class="sys-view">
-      <div class="sys-track">
-        <svg class="sys-wire" viewBox="0 0 300 10" preserveAspectRatio="none" aria-hidden="true"><path d="M0 5 H300" pathLength="1"/></svg>
-          <article class="sys-slide sys-tag" aria-labelledby="sys-h0">
-            <div class="sys-pic"><img src="assets/hw/amigo-dark-1200.webp" alt="The AmIGo tag, dark grey, with the amimotion name pressed into its lid" width="1200" height="679" loading="lazy"><span class="sys-glow" aria-hidden="true"></span></div>
-            <div class="sys-words">
-              <h3 class="sys-name" id="sys-h0">AmIGo tag</h3>
-              <p class="sys-lead">Screws or sticks onto the trolley. Sends a short UWB radio pulse when it moves and sleeps when it stops.</p>
-              <details><summary><span>Read more</span></summary><div class="more"><p>While it sleeps, the map shows where it was last seen. If it comes off the trolley, the map still shows its last-seen spot. One battery lasts 1 to 3 years, depending on use. AmIHub tracks each tag's health and battery level.</p></div></details>
-            </div>
-          </article>
-          <article class="sys-slide sys-anchor" aria-labelledby="sys-h1">
-            <div class="sys-pic"><img src="assets/hw/amimo-dark-1200.webp" alt="The AmIMo anchor, a dark grey box with the amimotion name on its side and a network port" width="1200" height="679" loading="lazy"><span class="sys-glow" aria-hidden="true"></span></div>
-            <div class="sys-words">
-              <h3 class="sys-name" id="sys-h1">AmIMo anchor</h3>
-              <p class="sys-lead">Fixed to a column or wall 3 to 8 m up. Records when each pulse arrives and the angle it came from.</p>
-              <details><summary><span>Read more</span></summary><div class="more"><p>Needs only power, from DC or PoE. It syncs over the air, with no sync cable. It sends its data to AmIHub over Wi-Fi, so it needs no separate data cable. Ethernet is also an option. Each reaches about 50 m around it in clear line of sight. Racking and steel change that, so we survey your floor and set the count. With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor. You set anchors up from a phone app. AmIHub finds each one on its own and raises an alert if one goes dark.</p></div></details>
-            </div>
-          </article>
-          <article class="sys-slide sys-hub" aria-labelledby="sys-h2">
-            <div class="sys-pic"><img class="sys-map" src="assets/scene/hall-after-1600.webp" alt="AmIHub's live map of a model plant: blue paths where work moved, amber where it waits" width="1600" height="2000" loading="lazy"><span class="sys-glow" aria-hidden="true"></span></div>
-            <div class="sys-words">
-              <h3 class="sys-name" id="sys-h2">AmIHub</h3>
-              <p class="sys-lead">Works out where each tag is from those times and angles. Runs on an industrial PC inside your plant, with no internet needed.</p>
-              <details><summary><span>Read more</span></summary><div class="more"><p>Your MES, ERP and WMS connect to it through open REST, MQTT, WebSocket and omlox hub interfaces. Your team, your systems and AI assistants read the same live map. Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited.</p></div></details>
-            </div>
-          </article>
-      </div>
-    </div>
-    <div class="sys-foot">
-      <p class="spec-line">Built on the FiRa and omlox specifications.</p>
-      <p class="links"><a class="arrow-link" href="/technology/">How it locates a tag</a><a class="arrow-link" href="/specs/">Specifications</a><a class="arrow-link" href="/developers/">For developers</a></p>
-    </div>
-  </div>
-</section>
-
 
 <!-- 6. START WITH ONE BAY -->
 <section class="screen start" id="start">

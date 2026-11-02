@@ -80,18 +80,64 @@ if (qb && !reduce) {
 }
 
 /* ---------- one system: vertical scroll moves the track sideways, tag, then anchor, then AmIHub ---------- */
-const sysSec = $('#system'), sysTrack = sysSec && sysSec.querySelector('.sys-track'), sysSteps = sysSec ? [...sysSec.querySelectorAll('.sys-steps li')] : [], sysSlides = sysSec ? [...sysSec.querySelectorAll('.sys-slide')] : [];
-const sysFrame = () => {
-  if (!sysTrack) return;
-  const r = sysSec.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
-  const p = clamp(-r.top / (r.height - innerHeight)), view = sysTrack.parentElement.clientWidth, span = sysTrack.scrollWidth - view;
-  // ease each move so every part rests in place before the next slides in
-  const seg = p * 2, i = Math.floor(seg), f = seg - i, k = i >= 2 ? 2 : i + (f < .35 ? 0 : f > .85 ? 1 : (f - .35) / .5);
-  const kk = i >= 2 ? 2 : i + (k - i < 0 ? 0 : (1 - Math.cos(Math.PI * (k - i))) / 2);
-  sysTrack.style.transform = `translate3d(${-kk / 2 * span}px,0,0)`;
-  sysSec.style.setProperty('--sw', (p * 1.02).toFixed(4));
-  const on = Math.round(kk); sysSteps.forEach((li, j) => li.classList.toggle('on', j === on)); sysSlides.forEach((sl, j) => sl.classList.toggle('on', j === on));
+/* ---------- the products as a keynote: one at a time, then one system ---------- */
+const kn = $('#system'), knItems = kn ? [...kn.querySelectorAll('.kn-item')] : [], knTitle = kn && kn.querySelector('.kn-title');
+if (kn && reduce) kn.classList.add('kn-static');
+const sm = (a, b, v) => { const t = clamp((v - a) / (b - a)); return t * t * (3 - 2 * t); };
+// keyframes per product: [p, x (vw), y (vh), scale, opacity, copy]
+const KN = (phone) => {
+  const F = phone ? [[-31, -6], [0, -6], [31, -6]] : [[-31, -2], [0, -2], [31, -2]], fs = phone ? .38 : .52;
+  return [
+    [[.08, 0, 40, .82, 0, 0], [.18, 0, 4, 1, 1, 1], [.34, 0, 4, 1, 1, 1], [.42, -70, 4, .8, 0, 0], [.80, -70, 0, .6, 0, 0], [.90, F[0][0], F[0][1], fs, 1, 0]],
+    [[.34, 70, 4, .8, 0, 0], [.42, 0, 4, 1, 1, 1], [.58, 0, 4, 1, 1, 1], [.66, -70, 4, .8, 0, 0], [.80, 0, 40, .6, 0, 0], [.90, F[1][0], F[1][1], fs, 1, 0]],
+    [[.58, 70, 4, .8, 0, 0], [.66, 0, 4, 1, 1, 1], [.80, 0, 4, 1, 1, 1], [.90, F[2][0], F[2][1], fs, 1, 0]],
+  ];
 };
+const lerpK = (K, p) => {
+  if (p <= K[0][0]) return K[0].slice(1);
+  for (let j = 1; j < K.length; j++) if (p <= K[j][0]) { const a = K[j - 1], b = K[j], t = sm(a[0], b[0], p); return a.slice(1).map((v, n) => v + (b[n + 1] - v) * t); }
+  return K[K.length - 1].slice(1);
+};
+const knFrame = () => {
+  if (!kn || reduce) return;
+  const r = kn.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
+  const p = clamp(-r.top / (r.height - innerHeight)), phone = innerWidth < 760, K = KN(phone);
+  const up = sm(.08, .17, p);
+  knTitle.style.setProperty('--ty', `${(-up * (phone ? 31 : 33)).toFixed(2)}vh`);
+  knTitle.style.setProperty('--ts', (1 - up * (phone ? .45 : .58)).toFixed(4));
+  knItems.forEach((el, i) => {
+    const [x, y, s, o, c] = lerpK(K[i], p);
+    el.style.setProperty('--x', `${x.toFixed(2)}vw`); el.style.setProperty('--y', `${y.toFixed(2)}vh`);
+    el.style.setProperty('--s', s.toFixed(4)); el.style.setProperty('--o', o.toFixed(3)); el.style.setProperty('--c', c.toFixed(3));
+    el.style.setProperty('--pe', c > .6 ? 'auto' : 'none'); el.style.pointerEvents = o > .5 ? 'auto' : 'none';
+  });
+  kn.style.setProperty('--w', sm(.86, .93, p).toFixed(3));
+  kn.style.setProperty('--f', sm(.9, .96, p).toFixed(3)); kn.style.setProperty('--fe', p > .9 ? 'auto' : 'none');
+};
+
+/* ---------- book a call: four fields, then the calendar ---------- */
+const bookForm = $('.book-form');
+if (bookForm) {
+  const err = bookForm.querySelector('.bf-err'), go = bookForm.querySelector('.book-go');
+  bookForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = bookForm.elements, name = f.name.value.trim(), email = f.email.value.trim(), site = f.website.value.trim(), role = (bookForm.querySelector('input[name=role]:checked') || {}).value || '';
+    f.name.setAttribute('aria-invalid', String(!name)); const okMail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email); f.email.setAttribute('aria-invalid', String(!okMail));
+    if (!name || !okMail) { err.hidden = false; err.textContent = !name ? 'Please add your name.' : 'Please add a valid work email.'; (!name ? f.name : f.email).focus(); return; }
+    err.hidden = true; go.disabled = true;
+    const CFG = window.AMIMOTION_CONFIG || {}, lead = { source: 'homepage-book', name, email, website: site, role, page: location.href };
+    if (CFG.leadEndpoint) { try { await fetch(CFG.leadEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(lead) }); } catch (x) {} }
+    const base = CFG.bookingUrl || '';
+    if (base) {
+      const u = new URL(base); u.searchParams.set('name', name); u.searchParams.set('email', email);
+      if (site) u.searchParams.set('a1', site); if (role) u.searchParams.set('a2', role);
+      u.searchParams.set('notes', [site, role].filter(Boolean).join(' · '));
+      location.href = u.toString();
+    } else {
+      location.href = `./contact/index.html?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`;
+    }
+  });
+}
 
 /* ---------- details open with a soft height animation ---------- */
 $$('details').forEach((d) => {
@@ -131,7 +177,7 @@ function frame(t) {
   cursor && (cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`);
 
   if (drawStory && storyOn) drawStory(t);
-  sysFrame();
+  knFrame();
   if (pf && !reduce) { const r = pro.getBoundingClientRect(); const k = clamp(-r.top / (r.height - innerHeight) * 1.25 + .15); const e = 1 - Math.pow(1 - k, 3);
     pf.style.setProperty('--pi', `${(1 - e) * 18}%`); pf.style.setProperty('--pj', `${(1 - e) * 22}%`); pf.style.setProperty('--pr', `${(1 - e) * 28}px`); pf.style.setProperty('--ps', `${1.18 - e * .18}`); }
   if (!reduce) for (const el of pics) { const r = el.parentElement.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue; const k = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; el.style.setProperty('--py', `${k * -5}%`); }
