@@ -99,8 +99,20 @@ PICS = {
 
 
 # round 08 stills (team/rounds/08-pictures/stills-index.md, learn squad table): L03 and L08 not made, they stay slots
-HALL_BASE = {"queue": "hall-inspect-43", "laststop": "hall-find-43", "bay": "hall-bay", "trolley": "hall-trolley-43", "checkpoints": "hall-before"}
+HALL_BASE = {"mixed": "hall-all", "queue": "hall-inspect-43", "laststop": "hall-find-43", "bay": "hall-bay", "trolley": "hall-trolley-43", "checkpoints": "hall-before"}
 ALT_FIX = {"laststop": "A model factory floor. One trolley stopped between the racks is marked blue. A blue line shows its path and ends where it stopped."}
+
+
+TILE = "(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw"
+
+
+def tilepic(key):
+    """A guide's picture as an index tile: 4:3, lazy. Guides without a briefed picture get a hall stand-in."""
+    if key in (None, "pair", "amigo", "amimo"):
+        if key: return still({"pair": "pair", "amigo": "amigo", "amimo": "amimo"}[key], TILE)
+        return slot("No briefed picture; index tile.", "photo", sizes=TILE, code="LT")
+    kind, args, _ = PICS[key]
+    return slot(args[0], "photo", ALT_FIX.get(key, args[2]), code=args[4], base=HALL_BASE.get(key) and HALL_BASE[key].replace("hall-bay", "hall-bay-32").replace("hall-before", "hall-before"), sizes=TILE)
 
 
 def pic(key):
@@ -672,6 +684,9 @@ def build():
             close(),
         ], type="article")
 
+    # round 13 (The Pudding): each guide's tile carries its own picture (a hall crop or the CAD still); the diagnostic is one tile
+    TILES = {f"/learn/{g['slug']}/": tilepic(g["pic"]) for g in G}
+    TILES["/diagnostic/"] = tilepic("bay")
     by = {}
     for g in G: by.setdefault(g["group"], []).append(L[next(k for k, v in L.items() if v[0] == f"/learn/{g['slug']}/")])
     write("/learn/", "Field guides: RTLS, UWB and WIP visibility",
@@ -680,7 +695,7 @@ def build():
               head("Field guides to factory location.", "One question per page.", "Fourteen short guides from AmIMotion. Each answers a question plants ask after a demo. No sign-up.",
                    short=LEARN_SHORT, trail=[("Field guides", None)]),
               section(vp("Four quick answers."), tiles(QUICK, cols=2)),
-              *[section(vp(gname + ".", None, gline), links(by[gname])) for gname, gline in GROUP_ORDER],
+              *[section(vp(gname + ".", None, gline), links(by[gname] + ([("/diagnostic/", "Plan your first bay", "Six questions, two minutes.")] if k == 0 else []), pics=TILES)) for k, (gname, gline) in enumerate(GROUP_ORDER)],
               section(vp("More answers."), links(rel(["faq", "gloss", "isi"]))),
               close(),
           ])

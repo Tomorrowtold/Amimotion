@@ -437,3 +437,7 @@ main .qstart a:hover{background:var(--pressed)}
 .sec .steps.pillars h3{font:600 clamp(1.5rem,1.05rem + 1.3vw,2.5rem)/1.1 var(--font-display);letter-spacing:-.02em}
 .steps.pillars p{font-size:max(var(--size-body),1.0625rem)}
 .offer{grid-template-rows:auto auto 1fr}
+/* articles: the on-this-page list stays in view beside the text (Red Blob, Stripe docs) */
+@media (min-width:1024px){.read .toc{position:sticky;top:var(--s-6);align-self:start}}
+.toc li{margin:0;padding:var(--s-2) 0;border-top:1px solid var(--hair)}
+.read .prose>.pic,.read .prose figure{margin:var(--s-7) 0}
