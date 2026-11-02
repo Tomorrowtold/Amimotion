@@ -21,7 +21,7 @@ Formats:
 | R1 AmIGo turntable | Home S1 | rendering (96 frames, 1440 px) |
 | R2 AmIGo macro | Home S1b | **landed** |
 | R3 family stage still | Home S5, /products/ | **landed** (3:1 and 4:5) |
-| R3b family dolly | Home S5 | queued |
+| R3b family dolly | Home S5 | **landed** |
 | R4 hall wide plus 4 zone masks | Home S4, /diagnostic/ | **landed** |
 | R5 before/after plus trail SVG | Home S2 | **landed** |
 | R6 queue full-bleed | Home S3 | **landed** (see below) |
@@ -65,6 +65,24 @@ A new macro of the tag's top cover (the `macro` shot): 100 mm, f/8, el 58°, foc
 - Plastic median 82/83/84, with no blue cast.
 - 4:5 phone version: a separate render of the same scene, rig and camera angle at 0.78 m, because a crop of the 3:1 frame cannot hold both products. The products span about 70 % of the width. Files `home/family-45-800.{avif,webp}` (800 x 1000) and `home/family-45-900.{avif,webp}` (900 x 1125), RGBA on the page.
 - Alt: "The AmIGo tag and the AmIMo anchor side by side at true size: a small dark grey tag with amimotion on its cover, and a larger dark grey box with a network port."
+
+## R3b family dolly (Home S5 scroll): landed
+
+- 24 frames on the R3 rig: the same studio, lens (85 mm), el 30° and f/11, with the camera 0.8 m out.
+- The camera and its look point track sideways along the frame's horizontal, from the tag's centre (frame 0) to the anchor's (frame 23). Frame spacing is linear: let the page's `--p` set the ease.
+- The track is 0.16 m, not the plan's 0.6 m. At true scale, 0.6 m would carry both products out of frame within a few frames.
+- Each frame is flat-fielded with its own rendered empty plate, so the paper cannot flicker. The products are cut by the frame edges as they pass, not faded.
+- The cavities (RJ45 opening, slots) were cleaned of low-sample sparkle by a dark-only 5 x 5 median.
+
+| Files | Size | Frames | Mean / total |
+|---|---|---|---|
+| `home/family-dolly/family-dolly-1920-000.avif` to `-023` | 1920 x 640 (3:1) | 24 | 19.9 KB / 477 KB |
+| `home/family-dolly/family-dolly-960-000.avif` to `-023` | 960 x 320 (3:1) | 24 | 8.9 KB / 214 KB |
+
+- Opaque AVIF. The ground decodes to #f0f6ff within 1 level, so put it on `var(--ground)`.
+- Frame 0 is the poster. With reduced motion or JavaScript off, show the R3 still (`family-31`) instead.
+- Alt: the R3 alt on the stage. The frames are `aria-hidden`.
+- Fix (also applied again to R2 and R3): a border render's black outside the region is the plate, but a black pixel inside the product (the RJ45 cavity) is real. `plate_grade.py` now treats only black regions that touch the frame edge as unrendered. The macro and family files above were regraded and recut under the same names.
 
 ## R4 hall wide and zone masks (Home S4 "Ask your floor", /diagnostic/): landed
 

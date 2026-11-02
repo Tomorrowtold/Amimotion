@@ -30,12 +30,26 @@ def load(p):
     return a[..., :3]
 
 
-def grade(frame, plate_lin, ground='#f0f6ff', grain=False, seed=11, edge=0.04):
+def grade(frame, plate_lin, ground='#f0f6ff', grain=False, seed=11, edge=0.04, despeckle=False):
     f = L(load(frame) if isinstance(frame, str) else frame)
+    if despeckle:
+        # low-sample sequences leave a few bright 'fireflies' inside dark cavities (RJ45 opening, slots): replace a
+        # pixel that is far brighter than its 5x5 median where that median is dark. Lit plastic and paper untouched.
+        Yf = f @ Y3; med = ndi.median_filter(Yf, size=5)
+        bad = (med < 0.03) & (Yf > med * 2.5 + 0.01)
+        bad = ndi.binary_dilation(bad)
+        if bad.any():
+            for c in range(3):
+                mc = ndi.median_filter(f[..., c], size=5); f[..., c] = np.where(bad, mc, f[..., c])
     h, w = f.shape[:2]
     if plate_lin.shape[:2] != (h, w):
         plate_lin = np.stack([np.asarray(Image.fromarray(plate_lin[..., c], 'F').resize((w, h), Image.BICUBIC)) for c in range(3)], -1)
-    unr = (f @ Y3) <= 1e-6
+    # unrendered = black regions a border render left, which touch the frame edge; a black cavity inside the
+    # product (RJ45 opening, screw holes) is a real dark pixel, not paper
+    z = (f @ Y3) <= 1e-6
+    lab, n = ndi.label(z)
+    edge_ids = np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))
+    unr = np.isin(lab, edge_ids[edge_ids > 0])
     # levels x0.95 and veiling glare (as grade()/page_grade()), on frame and plate alike
     G = 0.015 * float((plate_lin @ Y3).mean())
     f = f * 0.95 ** 2.2 + G; p = plate_lin * 0.95 ** 2.2 + G
@@ -89,5 +103,5 @@ if __name__ == '__main__':
     for fr in frames:
         dst = os.path.join(outdir, os.path.basename(fr))
         if os.path.exists(dst) and os.path.getmtime(dst) > os.path.getmtime(fr): continue
-        grade(fr, pl, ground, grain, edge=edge).save(dst, compress_level=2)
+        grade(fr, pl, ground, grain, edge=edge, despeckle='--despeckle' in sys.argv).save(dst, compress_level=2)
         print('graded', dst, flush=True)
