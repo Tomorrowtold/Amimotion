@@ -229,6 +229,16 @@
 .hb-devs li span{margin-left:auto;color:rgba(222,228,242,.5)}
 .hb-devs li.up i{background:var(--blue);box-shadow:0 0 0 3px rgba(77,141,255,.2)}
 .hb-devs li.off i{background:var(--amber);box-shadow:0 0 0 3px rgba(255,176,32,.2)}.hb-devs li.off span{color:var(--amber)}
+/* phone: the coordinate chip stays on one line under the fix, the timeline fits inside its card,
+   and the anchors panel takes its own room above the words instead of sitting under them */
+@media (max-width:560px){
+  .hb-chip{white-space:nowrap;transform:translateX(-50%);font-size:10.5px;padding:6px 9px}
+  .hb-tl{width:calc(100% - 44px);box-sizing:border-box;padding-left:46px}
+  .lane span{left:-46px;font-size:11px}
+  .hb-hours{font-size:10px}
+  .c-dev{min-height:0}
+  .c-dev figure{position:relative;inset:auto;padding:28px 0 22px}
+}
 /* grow: bays lighting up one after another */
 .hb-bays{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:80%}
 .hb-bays i{height:62px;border-radius:12px;display:flex;align-items:flex-end;padding:8px 10px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 0 0 1px rgba(255,255,255,.05)}
