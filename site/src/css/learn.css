@@ -6,7 +6,7 @@
 
 /* 1. the question and the answer */
 .motion .qa>span:first-child{transform:translateY(var(--s,0px));clip-path:inset(-.2em -.1em calc(var(--p,0) * 100% + var(--p,0) * .3em) -.1em);will-change:transform}
-.motion .qa>span:last-child{opacity:calc(.26 + var(--p,0) * .74);transition:opacity .2s linear}
+.motion .qa>span:last-child{opacity:calc(.55 + var(--p,0) * .45);transition:opacity .2s linear}
 .motion .qa.live>span:first-child{animation-fill-mode:backwards}
 
 /* 2. the rail and the figure */
