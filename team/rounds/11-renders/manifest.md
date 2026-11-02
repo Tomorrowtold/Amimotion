@@ -20,7 +20,7 @@ Formats:
 |---|---|---|
 | R1 AmIGo turntable | Home S1 | rendering (96 frames, 1440 px) |
 | R2 AmIGo macro | Home S1b | **landed** |
-| R3 family stage still | Home S5, /products/ | **landed** (3:1); 4:5 phone rendering |
+| R3 family stage still | Home S5, /products/ | **landed** (3:1 and 4:5) |
 | R3b family dolly | Home S5 | queued |
 | R4 hall wide plus 4 zone masks | Home S4, /diagnostic/ | **landed** |
 | R5 before/after plus trail SVG | Home S2 | **landed** |
@@ -49,7 +49,7 @@ A new macro of the tag's top cover (the `macro` shot): 100 mm, f/8, el 58°, foc
 - Not 3840: the frame holds the logo at about 1,150 px wide at 2400, which is more than S1b shows at 2x. A 3840 render would take about an hour of the shared CPU.
 - Alt (when it is not decorative): "Close up of the AmIGo tag's dark grey cover, with amimotion pressed into it and a screw ear at its side." Next to the "±10 cm" text it is decorative: use `alt=""`.
 
-## R3 family stage (Home S5, /products/): 3:1 landed, 4:5 phone queued
+## R3 family stage (Home S5, /products/): landed
 
 - Scene: AmIGo front-left and AmIMo back-right on one sweep, both at true CAD scale. The anchor lies on its flanged plate, as in `pair`.
 - Camera: 85 mm, el 30°, f/11, 1.0 m out. That is a camera height of about 0.5 m, not the plan's 0.35 m: at 0.35 m the 3:1 frame cut the anchor's top.
@@ -63,7 +63,7 @@ A new macro of the tag's top cover (the `macro` shot): 100 mm, f/8, el 58°, foc
 
 - Format: RGBA, transparent where it is the page. It sits on the sweep band (#f0f6ff) with no edge, and the words behind it show through the transparent area.
 - Plastic median 82/83/84, with no blue cast.
-- The 4:5 phone version (`home/family-45-*`) is a separate render of the same scene: a crop of the 3:1 frame cannot hold both products. It will be added here.
+- 4:5 phone version: a separate render of the same scene, rig and camera angle at 0.78 m, because a crop of the 3:1 frame cannot hold both products. The products span about 70 % of the width. Files `home/family-45-800.{avif,webp}` (800 x 1000) and `home/family-45-900.{avif,webp}` (900 x 1125), RGBA on the page.
 - Alt: "The AmIGo tag and the AmIMo anchor side by side at true size: a small dark grey tag with amimotion on its cover, and a larger dark grey box with a network port."
 
 ## R4 hall wide and zone masks (Home S4 "Ask your floor", /diagnostic/): landed

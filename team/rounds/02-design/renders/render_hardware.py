@@ -862,8 +862,8 @@ def shot_amimo_column():
     m.node_tree.links.new(tc.outputs['Object'], n.inputs['Vector']); m.node_tree.links.new(n.outputs['Fac'], bp.inputs['Height'])
     m.node_tree.links.new(bp.outputs['Normal'], b.inputs['Normal']); col.data.materials.append(m)
     _seq_settings(sc, SAMPLES)
-    area('key', (0.10, -0.30, 0.55), (0, 0, 0), 0.5, 140, 5900, size_y=0.4)            # el ~60 from the front-right
-    area('fill', (-0.45, -0.55, -0.15), (0, 0, 0), 1.0, 40, 5900, size_y=0.7)         # 1:6 from the left, low
+    area('key', (0.10, -0.30, 0.55), (0, 0, 0), 0.5, 300, 5900, size_y=0.4)            # el ~60 from the front-right
+    area('fill', (-0.45, -0.55, -0.15), (0, 0, 0), 1.0, 50, 5900, size_y=0.7)         # about 1:6 to the key, from the left, low
     area('rim', (-0.25, -0.05, 0.35), (0, 0, 0), 0.08, 30, 5900, size_y=0.5)
     camera((0.20, -0.38, -0.15), (0.0, -0.012, -0.002), lens=70, fstop=8.0, focus=(0.0, -0.02, -0.03))
     os.makedirs(OUT, exist_ok=True)
