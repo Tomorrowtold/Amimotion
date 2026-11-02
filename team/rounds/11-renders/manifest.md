@@ -23,7 +23,7 @@ Formats:
 | R3 family stage still | Home S5, /products/ | **landed** (3:1); 4:5 phone rendering |
 | R3b family dolly | Home S5 | queued |
 | R4 hall wide plus 4 zone masks | Home S4, /diagnostic/ | **landed** |
-| R5 before/after plus trail SVG | Home S2 | queued |
+| R5 before/after plus trail SVG | Home S2 | **landed** |
 | R6 queue full-bleed | Home S3 | **landed** (see below) |
 | R7 one bay | Home S6, /pilot/ | **landed** |
 | R8 job crops | Home S7 | **landed** |
@@ -81,6 +81,40 @@ The wide still is the existing `hall/hall-all` ladder: camera A, 16:9, after sta
 - Use it as `mask-image` on an overlay: a dark veil over `hall-all` with the zone cut out, or the colour still revealed over a dimmed copy. Scale it with the still: same box, `mask-size: 100% 100%`.
 - The masks have no alt (decorative). Each chip's button text names its zone.
 - The plan names three chips. The fourth mask is spare for /diagnostic/.
+
+## R5 before/after and trail (Home S2 "Find it"): landed
+
+Three stills from one camera, plus the trail as SVG.
+- Camera: camera A's height (11 m), pitch 50°, 26 mm, turned to yaw 16, as `hall-find`, so the rack aisle where trolley t3 stops faces the lens. The press line is at the left.
+- The forklift is left out of all three (`--hide fork`, as round 08 did for `hall-find`): at this moment it stands in the aisle mouth and hides the trolley.
+
+| Base | What it shows |
+|---|---|
+| `before-*` | Scan world (`--state before`, t = 3.7 s). Pale, with only the three blue checkpoint ticks at the desks. |
+| `after-clean-*` | Tag world, no marks. Everything has moved on and t3 has gone into the rack aisle. This is the base to draw the SVG over. |
+| `after-trail-*` | The same, with t3's own 7 m blue trail rendered on the floor. This is the still for JavaScript off and reduced motion, and the end state of the draw. |
+
+| Files | Sizes | Ratio | Bytes 2400 (AVIF / WebP) |
+|---|---|---|---|
+| `home/find/{before,after-clean,after-trail}-1610-{800,1600,2400}.{avif,webp}` | 800 x 500, 1600 x 1000, 2400 x 1500 | 16:10 | about 35 / 43 KB each |
+| `home/find/{before,after-clean,after-trail}-45-{800,1200}.{avif,webp}` | 800 x 1000, 1200 x 1500 | 4:5 (master x 1000 to 2200) | about 21 / 25 KB at 1200 |
+| `home/find/trail-1610.svg` | viewBox 0 0 2400 1500 | 16:10 | 1.9 KB |
+| `home/find/trail-45.svg` | viewBox 0 0 1200 1500 | 4:5 | 1.8 KB |
+
+The 4:5 files match the stand-in `scan-4x5-*` box. Swap `scan-4x5` for `before-45`, and the after picture for `after-clean-45` (with JavaScript) or `after-trail-45` (without).
+
+The SVG:
+- It is one `<path pathLength="1">` in #1f6bff, about 10 px wide at the master's scale, with round caps.
+- Draw it with `stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--p))`. It runs in travel order, from the desk-3 tick's end toward where t3 stopped.
+- It is split into subpaths where racks hide the floor: a ray cast from the camera checks each point. The SVG therefore never draws over a rack, and it ends where the rendered trail disappears into the aisle. 117 of 142 points are visible.
+- Lay it over the picture in the same box (`position:absolute; inset:0; width:100%; height:100%`). It is pixel-registered to the still.
+
+The "tighten on the stopped trolley" target: t3 stopped behind the first rack row at master pixel (1779, 544) in 16:10. That is `transform-origin: 74% 36%` for 16:10, and (779, 544) = `65% 36%` for 4:5. The trolley itself is hidden by the racks, as the copy says ("behind the racks").
+
+Alts:
+- before: "A model factory floor, all pale. Three short blue ticks mark where trolleys passed the scan desks."
+- after-trail: "The same floor. A blue line shows the path of one trolley into the aisle between the racks, where it stopped."
+- after-clean: decorative under the drawn SVG (`alt=""`), or the after-trail alt.
 
 ## R6 queue full-bleed (Home S3): landed
 
