@@ -14,8 +14,8 @@ $$('.k-lines,.k-fade,.k-pic,.k-rise,.wordmark').forEach((el) => { if (!el.closes
 requestAnimationFrame(() => setTimeout(() => { $('#h1').classList.add('in'); $$('.hero .k-fade').forEach((e, i) => setTimeout(() => e.classList.add('in'), 380 + i * 160)); }, 120));
 
 /* ---------- menu ---------- */
-const mb = $('#menuBtn'), sheet = $('#sheet');
-mb.addEventListener('click', () => { const o = mb.getAttribute('aria-expanded') !== 'true'; mb.setAttribute('aria-expanded', o); sheet.hidden = !o; });
+const mb = $('#menuBtn'), sheet = $('#sheet') || { hidden: true };
+if (mb) mb.addEventListener('click', () => { const o = mb.getAttribute('aria-expanded') !== 'true'; mb.setAttribute('aria-expanded', o); sheet.hidden = !o; });
 
 /* ---------- smooth scroll (wheel only, desktop) ---------- */
 let target = scrollY, cur = scrollY, wheeling = false;
@@ -35,12 +35,12 @@ if (fine && !reduce) {
 const cursor = $('#cursor');
 let mx = innerWidth / 2, my = innerHeight / 2, cx = mx, cy = my;
 addEventListener('pointermove', (e) => {
-  mx = e.clientX; my = e.clientY; if (e.pointerType === 'mouse') cursor.classList.add('on');
+  mx = e.clientX; my = e.clientY; if (!cursor) return; if (e.pointerType === 'mouse') cursor.classList.add('on');
   const t = e.target;
   cursor.classList.toggle('link', !!t.closest('a,button'));
   
 }, { passive: true });
-document.addEventListener('pointerleave', () => cursor.classList.remove('on'));
+document.addEventListener('pointerleave', () => cursor && cursor.classList.remove('on'));
 
 /* ---------- magnetic + tilt ---------- */
 if (fine && !reduce) {
@@ -102,8 +102,14 @@ const startGL = () => { if (!reduce) import('./story.js').then((m) => { drawStor
 /* ---------- parallax pictures ---------- */
 const pics = $$('.card-pic img');
 
+/* ---------- prologue film ---------- */
+const pro = $('#prologue'), pf = $('#prologueFrame'), pv = pro && pro.querySelector('video');
+if (pv) new IntersectionObserver((es) => es.forEach((e) => {
+  if (e.isIntersecting) { if (!pv.src && !slow) { pv.src = pv.dataset.src; } if (pv.src && !reduce) pv.play().catch(() => {}); } else pv.pause();
+}), { rootMargin: '200px' }).observe(pro);
+
 /* ---------- bar ---------- */
-const bar = $('#bar'); let lastY = 0;
+const bar = $('#bar') || document.createElement('i'); let lastY = 0;
 
 /* ---------- main loop ---------- */
 function frame(t) {
@@ -114,9 +120,11 @@ function frame(t) {
   if (Math.abs(y - lastY) > 2) lastY = y;
 
   cx = lerp(cx, mx, .2); cy = lerp(cy, my, .2);
-  cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`;
+  cursor && (cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`);
 
   if (drawStory && storyOn) drawStory(t);
+  if (pf && !reduce) { const r = pro.getBoundingClientRect(); const k = clamp(-r.top / (r.height - innerHeight) * 1.25 + .15); const e = 1 - Math.pow(1 - k, 3);
+    pf.style.setProperty('--pi', `${(1 - e) * 18}%`); pf.style.setProperty('--pj', `${(1 - e) * 22}%`); pf.style.setProperty('--pr', `${(1 - e) * 28}px`); pf.style.setProperty('--ps', `${1.18 - e * .18}`); }
   if (!reduce) for (const el of pics) { const r = el.parentElement.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue; const k = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; el.style.setProperty('--py', `${k * -5}%`); }
   requestAnimationFrame(frame);
 }

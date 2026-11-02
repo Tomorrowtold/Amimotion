@@ -315,3 +315,12 @@ summary:hover{background:#fff;box-shadow:inset 0 0 0 1px var(--ink-soft)}
   .rail{right:10px}
 }
 .rail i{transform:none}
+
+/* prologue film band: grows from a card to full bleed as you scroll */
+.prologue{height:180vh;position:relative}
+.prologue-sticky{position:sticky;top:0;height:100svh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.prologue-frame{position:relative;width:100%;height:100%;clip-path:inset(var(--pi,18%) var(--pj,22%) var(--pi,18%) var(--pj,22%) round var(--pr,28px));will-change:clip-path}
+.prologue-frame video{width:100%;height:100%;object-fit:cover;transform:scale(var(--ps,1.18));display:block}
+em{font-style:normal}
+.sp:not(.sp-hub){height:auto!important;max-width:none!important}
+@media (prefers-reduced-motion:reduce){.prologue{height:auto}.prologue-sticky{position:relative;height:70vh}.prologue-frame{clip-path:none}}
