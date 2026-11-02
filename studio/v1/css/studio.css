@@ -375,3 +375,9 @@ em{font-style:normal}
   .tag-fallback{left:0;padding:34svh 8vw 30svh}
 }
 
+
+/* captions: the outgoing line leaves fast so two never overlap */
+.cap:not(.on) p{transition-duration:.18s;transition-delay:0s}
+.cap:not(.on) .ln>span{transition-duration:.35s}
+/* phone: the still tag waits at the same size and place the live one will take */
+@media (max-width:900px){.hero-stage .tag-fallback{inset:0!important;padding:0!important;display:flex;align-items:center;justify-content:center}.hero-stage .tag-fallback img{width:62vw!important;max-height:28svh;object-fit:contain;animation:none}}

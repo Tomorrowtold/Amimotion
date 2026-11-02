@@ -31,6 +31,20 @@ if (fine && !reduce) {
   addEventListener('pointerdown', () => { wheeling = false; });
 }
 
+/* ---------- the film settles on a chapter when the visitor stops scrolling ---------- */
+let settleT = 0;
+const settle = () => {
+  if (reduce || !storySec || wheeling) return;
+  const top = storySec.offsetTop, len = storySec.offsetHeight - innerHeight, y = scrollY, p = (y - top) / len;
+  if (p < -.12 || p > .985) return;
+  const rests = [0, ...[0, 1, 2, 3, 4, 5, 6].map((i) => (i + .82) / 7)];
+  let best = rests[0]; for (const r of rests) if (Math.abs(r - p) < Math.abs(best - p)) best = r;
+  const to = top + best * len; if (Math.abs(to - y) < 6) return;
+  target = to; cur = y; wheeling = true;
+};
+addEventListener('touchstart', () => { wheeling = false; clearTimeout(settleT); }, { passive: true });
+addEventListener('scroll', () => { clearTimeout(settleT); if (!wheeling) settleT = setTimeout(settle, 240); }, { passive: true });
+
 /* ---------- cursor ---------- */
 const cursor = $('#cursor');
 let mx = innerWidth / 2, my = innerHeight / 2, cx = mx, cy = my;
@@ -113,7 +127,7 @@ const bar = $('#bar') || document.createElement('i'); let lastY = 0;
 
 /* ---------- main loop ---------- */
 function frame(t) {
-  if (wheeling) { cur = lerp(cur, target, .11); if (Math.abs(target - cur) < .5) { cur = target; wheeling = false; } scrollTo(0, cur); }
+  if (wheeling) { cur = lerp(cur, target, .11); if (Math.abs(target - cur) < .5) { cur = target; wheeling = false; clearTimeout(settleT); settleT = setTimeout(settle, 240); } scrollTo(0, cur); }
   const y = scrollY;
   bar.classList.toggle('scrolled', y > 20);
   bar.classList.toggle('hide', y > innerHeight * 1.2 && y > lastY + 2 && sheet.hidden);

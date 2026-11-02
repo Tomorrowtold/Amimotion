@@ -55,6 +55,10 @@ const K = [
   { at: 0.95, cam: [0.42, 0.72, 1.25], draw: 1.03, dash: 0, amber: 1, onlyQ: 0, hide: 1, bay: .2, dot: 0, grey: 1 },
   { at: 1.00, cam: [0.42, 0.72, 1.25], draw: 1.03, dash: 0, amber: 1, onlyQ: 0, hide: 1, bay: .2, dot: 0, grey: 1 },
 ];
+// Seven equal chapters for the visitor. Inside each, the picture plays out over the first 75%, then holds while they read.
+const OLD = [0, .17, .32, .45, .62, .76, .9, 1.0001];
+export const REST = OLD.slice(0, 7).map((_, i) => (i + .82) / 7);
+function remap(p) { const i = Math.min(6, Math.floor(p * 7)), u = clamp((p * 7 - i) / .75); return lerp(OLD[i], OLD[i + 1] - .002, u); }
 function sample(p) {
   let i = 0; while (i < K.length - 2 && p > K[i + 1].at) i++;
   const a = K[i], b = K[i + 1], k = ease(clamp((p - a.at) / (b.at - a.at)));
@@ -86,17 +90,17 @@ export function story(section, canvas) {
   size(); addEventListener('resize', size);
 
   const caps = [...section.querySelectorAll('.cap')], rail = section.querySelector('.rail b'), links = [...section.querySelectorAll('.rail a')];
-  links.forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); const top = section.offsetTop + (section.offsetHeight - innerHeight) * +a.dataset.to; scrollTo({ top, behavior: 'smooth' }); }));
-  const marks = caps.map((c) => [+c.dataset.from, +c.dataset.to]);
+  links.forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); const top = section.offsetTop + (section.offsetHeight - innerHeight) * REST[links.indexOf(a)]; scrollTo({ top, behavior: 'smooth' }); }));
+  const marks = caps.map((c, i) => [i / 7, i === 6 ? 1.01 : (i + 1) / 7]);
   let smooth = null, mx = 0, my = 0, qx = 0, qy = 0;
   addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
   return (t) => {
-    const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight));
+    const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight)), po = remap(p);
     caps.forEach((c, i) => { const on = p >= marks[i][0] && p < marks[i][1]; c.classList.toggle('on', on); links[i] && links[i].classList.toggle('on', on); });
     rail.style.transform = innerWidth > 900 ? `scaleX(${p})` : `scaleY(${p})`;
     section.dispatchEvent(new CustomEvent('progress', { detail: p }));
     if (!ready) return;
-    const s = sample(p);
+    const s = sample(po);
     if (!smooth) smooth = s; else for (const k in s) smooth[k] = Array.isArray(s[k]) ? s[k].map((x, j) => lerp(smooth[k][j], x, .14)) : lerp(smooth[k], s[k], .14);
     const z = smooth.cam[2], hx = span[0] / z / 2, hy = span[1] / z / 2;
     qx = lerp(qx, mx, .05); qy = lerp(qy, my, .05);
@@ -106,7 +110,7 @@ export function story(section, canvas) {
     gl.uniform1f(U.draw, smooth.draw); gl.uniform1f(U.dash, smooth.dash); gl.uniform1f(U.amber, smooth.amber); gl.uniform1f(U.onlyQ, smooth.onlyQ > .5 ? 1 : 0);
     gl.uniform1f(U.hidePaths, smooth.hide); gl.uniform1f(U.bay, smooth.bay); gl.uniform1f(U.tagOn, smooth.dot); gl.uniform1f(U.grey, smooth.grey); gl.uniform1f(U.time, t * .001);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
-    if (hctx) drawHUD(hctx, p, t * .001, cx, cy, z, span);
+    if (hctx) drawHUD(hctx, po, t * .001, cx, cy, z, span);
   };
 }
 
@@ -202,7 +206,7 @@ function drawHUD(x, p, t, cx, cy, z, span) {
   }
 
   // 3b. a loupe opens over the trolley and shows the real tag riding on it
-  a = fade(p, .385, .47);
+  a = fade(p, .385, .449, .012);
   if (a > 0 && TAGIMG.complete && TAGIMG.naturalWidth) {
     const [TX, TY] = P(.481, .484), k = eo((p - .385) / .03), R = Math.min(W, H) * .17 * k;
     const R0 = Math.min(W, H) * .17, LX = clamp(TX + (W < 700 ? -1 : 1) * Math.min(W * .26, 230 * s), R0 + 14 * s, W - R0 - 14 * s), LY = clamp(TY - Math.min(H * .24, 200 * s), R0 + 14 * s, H);

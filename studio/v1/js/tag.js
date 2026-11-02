@@ -128,6 +128,9 @@ export async function init(canvas, fallback, hero) {
     cam.setViewOffset(w, h, -(fx - .5) * w, -(fy - .5) * h, w, h); cam.updateProjectionMatrix();
   };
   size(); addEventListener('resize', size);
+  // the canvas can settle after the first frame (fonts, layout): refit whenever its box changes
+  let lastBox = '';
+  const refit = () => { const b = canvas.clientWidth + 'x' + canvas.clientHeight; if (b !== lastBox) { lastBox = b; size(); } };
 
   let wxSet = false, px = 0, py = 0, tx = 0, ty = 0, on = true, t0 = performance.now(), lift = 0;
   addEventListener('pointermove', (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, { passive: true });
@@ -163,7 +166,7 @@ export async function init(canvas, fallback, hero) {
     pathMat.uniforms.fadeAll.value = phone() ? 0 : fade; floorMat.uniforms.fadeAll.value = (t < START ? clamp(t / START) : clamp((CYCLE - c) / .8) * .6 + .4) * (1 - sp * .8);
 
     shadow.material.opacity = clamp(1 - tag.position.y / 80) * (1 - sp * .5);
-    const d = dist;
+    refit(); const d = dist;
     cam.position.set(Math.sin(.15 + px * .05) * d, d * .62, Math.cos(.15 + px * .05) * d); cam.lookAt(0, -4, 0);
     renderer.render(scene, cam);
     requestAnimationFrame(loop);
