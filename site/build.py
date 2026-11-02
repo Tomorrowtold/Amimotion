@@ -67,12 +67,15 @@ def url_for(rel):
 def text_of(fragment):
     t = re.sub(r"<(script|style|svg|template)[\s\S]*?</\1>", " ", fragment)
     t = re.sub(r"<[^>]+>", " ", t)
-    return re.sub(r"\s+", " ", html.unescape(t)).strip()
+    t = re.sub(r"\s+", " ", html.unescape(t)).strip()
+    return re.sub(r" ([.,;:!?)])", r"\1", t)   # "your <a>baseline</a>." reads "baseline.", not "baseline ."
 
 
 ORG = {
     "@type": "Organization", "@id": SITE + "/#org", "name": "AmIMotion", "alternateName": ENTITY["alternateName"],
-    "legalName": ENTITY["legalName"], "url": SITE + "/", "logo": SITE + "/assets/img/AmIMotion_Logo.svg", "email": ENTITY["email"],
+    "legalName": ENTITY["legalName"], "url": SITE + "/",
+    # the square mark every page already ships as its icon (the launch build copies only files a page references)
+    "logo": {"@type": "ImageObject", "@id": SITE + "/#logo", "url": SITE + "/assets/img/AmIMotion_Icon.svg", "width": 512, "height": 512}, "email": ENTITY["email"],
     "description": ENTITY["long"], "slogan": "Where work is. Where it waits.",
     "address": {"@type": "PostalAddress", "addressLocality": "Bengaluru", "addressRegion": "Karnataka", "addressCountry": "IN"},
     "knowsAbout": ENTITY["knowsAbout"], "sameAs": ENTITY["sameAs"],
@@ -117,15 +120,37 @@ def videos_of(body, url):
     return out
 
 
+# HowTo only where the page itself sets out steps a buyer follows, in order (not where it explains how the system works):
+# url -> the <h2> the steps sit under. The HowTo is named by the page title (the question the steps answer).
+HOWTO = {"/pilot/": "Five steps, in order.", "/how-to-buy/": "Four steps.",
+         "/learn/anchor-planning/": "How to get to a number", "/learn/value-without-mes/": "A pilot plan that works"}
+
+
+def howto_of(meta, url, body):
+    if url not in HOWTO: return None
+    h2 = HOWTO[url]
+    m = re.search(r"<h2[^>]*>(?:<span>)?" + re.escape(h2) + r"(?:</span>)?</h2>(.*?)<ol\b[^>]*>(.*?)</ol>", body, re.S)
+    if not m or "<h2" in m.group(1): raise SystemExit(f"build: HowTo steps for {url} not found under '{h2}'")
+    steps = []
+    for i, li in enumerate(re.findall(r"<li\b[^>]*>(.*?)</li>", m.group(2), re.S)):
+        h3 = re.search(r"<h3[^>]*>(.*?)</h3>(.*)", li, re.S)
+        st = {"@type": "HowToStep", "position": i + 1}
+        if h3: st.update(name=text_of(h3.group(1)).rstrip("."), text=text_of(h3.group(2)))
+        else: st["text"] = text_of(li)
+        steps.append(st)
+    return {"@type": "HowTo", "@id": SITE + url + "#howto", "name": meta.get("title", ""),
+            "description": meta.get("description", ""), "inLanguage": "en-IN", "step": steps}
+
+
 def page_schema(meta, url, body, titles):
     full = SITE + url
-    g = [ORG]
-    if url == "/":
-        g.append({"@type": "WebSite", "@id": SITE + "/#site", "url": SITE + "/", "name": "AmIMotion", "inLanguage": "en-IN",
-                  "description": ENTITY["short"], "publisher": {"@id": SITE + "/#org"}})
+    og = SITE + meta.get("og", "/assets/home/og-home.jpg")
+    # the WebSite node rides on every page, so each page's isPartOf resolves inside its own graph
+    g = [ORG, {"@type": "WebSite", "@id": SITE + "/#site", "url": SITE + "/", "name": "AmIMotion", "inLanguage": "en-IN",
+               "description": ENTITY["short"], "publisher": {"@id": SITE + "/#org"}}]
     wp = {"@type": meta.get("page", "WebPage"), "@id": full + "#page", "url": full, "name": meta.get("title", ""), "description": meta.get("description", ""),
           "isPartOf": {"@id": SITE + "/#site"}, "about": {"@id": SITE + "/#org"}, "publisher": {"@id": SITE + "/#org"},
-          "inLanguage": "en-IN", "dateModified": TODAY}
+          "primaryImageOfPage": {"@type": "ImageObject", "url": og}, "inLanguage": "en-IN", "dateModified": TODAY}
     if "short-answer" in body:   # the paragraph a voice assistant or answer engine should read out
         wp["speakable"] = {"@type": "SpeakableSpecification", "cssSelector": ["h1", ".short-answer"]}
     g.append(wp)
@@ -133,16 +158,18 @@ def page_schema(meta, url, body, titles):
     if kind == "product":
         g.append({"@type": "Product", "@id": full + "#product", "name": meta.get("product", meta.get("title")), "description": meta.get("description"),
                   "brand": {"@type": "Brand", "name": "AmIMotion"}, "manufacturer": {"@id": SITE + "/#org"},
-                  "category": meta.get("category", "Real-time location system"), "image": SITE + meta.get("og", "/assets/home/og-home.jpg"),
+                  "category": meta.get("category", "Real-time location system"), "image": og, "url": full, "mainEntityOfPage": {"@id": full + "#page"},
                   "additionalProperty": specs_of(body)})
+        wp["mainEntity"] = {"@id": full + "#product"}
     if kind == "software":
         g.append({"@type": "SoftwareApplication", "@id": full + "#software", "name": meta.get("product", "AmIHub"), "description": meta.get("description"),
                   "applicationCategory": "BusinessApplication", "operatingSystem": "Runs on an industrial PC inside your plant, with no internet needed", "publisher": {"@id": SITE + "/#org"},
-                  "additionalProperty": specs_of(body)})
+                  "url": full, "image": og, "mainEntityOfPage": {"@id": full + "#page"}, "additionalProperty": specs_of(body)})
+        wp["mainEntity"] = {"@id": full + "#software"}
     if kind == "article":
         g.append({"@type": "TechArticle", "@id": full + "#article", "headline": meta.get("title"), "description": meta.get("description"),
                   "author": {"@id": SITE + "/#org"}, "publisher": {"@id": SITE + "/#org"}, "about": {"@id": SITE + "/#org"},
-                  "datePublished": meta.get("published", "2026-10-28"), "dateModified": TODAY, "mainEntityOfPage": full, "inLanguage": "en-IN"})
+                  "datePublished": meta.get("published", "2026-10-28"), "dateModified": TODAY, "mainEntityOfPage": {"@id": full + "#page"}, "image": og, "inLanguage": "en-IN"})
     if meta.get("app"):   # a tool that runs in the browser (round 07 buying squad)
         g.append({"@type": "WebApplication", "@id": full + "#app", "name": meta["app"], "url": full, "applicationCategory": "BusinessApplication",
                   "operatingSystem": "Any modern browser", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": True, "publisher": {"@id": SITE + "/#org"}})
@@ -154,6 +181,8 @@ def page_schema(meta, url, body, titles):
     if faqs:
         g.append({"@type": "FAQPage", "@id": full + "#faq", "mainEntity": faqs})
     g.extend(videos_of(body, full))
+    ht = howto_of(meta, url, body)
+    if ht: g.append(ht)
     trail = re.search(r'<nav class="crumbs"[^>]*>(.*?)</nav>', body, re.S)
     if trail:   # the visible breadcrumb trail, so the BreadcrumbList matches what people read (nav sections, not URL folders)
         crumbs = [(text_of(t), u) for u, t in re.findall(r'<a href="([^"]+)">(.*?)</a>', trail.group(1))] + [(LABEL.get(url, titles.get(url, "")), url)]
@@ -164,6 +193,8 @@ def page_schema(meta, url, body, titles):
             acc += seg + "/"
             if acc in titles: crumbs.append((LABEL.get(acc, titles[acc]), acc))
         g.append({"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": n, "item": SITE + u} for i, (n, u) in enumerate(crumbs)]})
+    if g[-1]["@type"] == "BreadcrumbList":
+        g[-1]["@id"] = full + "#crumbs"; wp["breadcrumb"] = {"@id": full + "#crumbs"}
     return json.dumps({"@context": "https://schema.org", "@graph": g}, ensure_ascii=False, separators=(",", ":"))
 
 
@@ -188,6 +219,7 @@ def head(meta, url, body, titles):
 <meta property="og:title" content="{e(t)}"><meta property="og:description" content="{e(d)}">
 <meta property="og:url" content="{SITE}{url}"><meta property="og:image" content="{SITE}{og}">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="image_src" href="{og}">
 <link rel="icon" href="/assets/img/AmIMotion_Icon.svg" type="image/svg+xml">
 <link rel="alternate" type="text/plain" title="AmIMotion for AI assistants" href="/llms.txt">
 {styles(meta)}
@@ -507,8 +539,12 @@ def build():
 
     # sitemap with the pictures each page carries (image search and answer engines use them)
     def imgs(url):
-        found = re.findall(r'src="(/assets/(?:img|photo)/[\w.-]+\.(?:webp|jpg|png))"', pages[url][1])
-        return "".join(f"<image:image><image:loc>{SITE}{p}</image:loc></image:image>" for p in list(dict.fromkeys(found))[:8])
+        """The page's share picture, then every real picture its body shows (CAD renders, photos, hall stills), in order.
+        The homepage body is swapped for the studio film at integration, so it lists its share picture only."""
+        meta, body = pages[url]
+        found = [meta.get("og", "/assets/home/og-home.jpg")]
+        if url != "/": found += re.findall(r'<img\b[^>]*?\ssrc="(/assets/[\w./-]+\.(?:webp|jpg|png))"', body)
+        return "".join(f"<image:image><image:loc>{SITE}{p}</image:loc></image:image>" for p in list(dict.fromkeys(found))[:12])
     (DIST / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n'
         + "".join(f"  <url><loc>{SITE}{u}</loc><lastmod>{TODAY}</lastmod>{imgs(u)}</url>\n" for u in sorted(public)) + "</urlset>\n")
 
@@ -532,7 +568,9 @@ def build():
     if rest: sections.append(("More pages", rest))
     lines = dict(sections)
     (DIST / "llms.txt").write_text(f"# AmIMotion\n\n> {ENTITY['long']}\n\n{ENTITY['short']}\n\n## Key facts (with their qualifiers)\n\n{facts}\n\n"
-        + "\n\n".join(f"## {k}\n\n" + "\n".join(v) for k, v in lines.items() if v) + f"\n\n## Home\n\n- [AmIMotion]({SITE}/): {pages['/'][0].get('description', '')}\n")
+        + "\n\n".join(f"## {k}\n\n" + "\n".join(v) for k, v in lines.items() if v) + f"\n\n## Home\n\n- [AmIMotion]({SITE}/): {pages['/'][0].get('description', '')}\n"
+        + f"\n## Optional\n\n- [The full site as text]({SITE}/llms-full.txt): every public page above, as plain text, with its questions and answers.\n"
+        + f"- [Sitemap]({SITE}/sitemap.xml): every public page with its pictures.\n")
     (DIST / "llms-full.txt").write_text(f"# AmIMotion: the full site as text\n\n> {ENTITY['long']}\n\n## Key facts\n\n{facts}\n\n"
         + "\n\n".join(f"## {pages[u][0].get('title')}\nURL: {SITE}{u}\n\n{text_of(pages[u][1])}" for u in sorted(public)) + "\n")
 
