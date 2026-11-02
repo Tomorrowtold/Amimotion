@@ -214,7 +214,7 @@ guide(slug="alternatives", group="Choosing a system",
 guide(slug="uwb-rtls-india", group="Choosing a system",
       title="UWB RTLS companies in India: how to choose",
       desc="How to choose a UWB RTLS company in India: accuracy evidence, anchor cabling, on-premise data, MES links, standards and local support. AmIMotion is one.",
-      h1="UWB RTLS in India.", soft="How to choose a supplier.",
+      h1="UWB RTLS in India.", soft="How to choose.",
       lede="Seven questions to ask any supplier, global or Indian, and how AmIMotion answers them.",
       short="Plants in India can choose global RTLS suppliers or an Indian maker. Global RTLS suppliers include HID, which acquired the UWB maker Sewio in 2024, Ubisense, KINEXON, Pozyx and Zebra. "
             "AmIMotion, a brand of Locatepro Technologies in Bengaluru, designs and builds its UWB tags, anchors and AmIHub software in India, and starts with work-in-progress visibility in manufacturing. "
