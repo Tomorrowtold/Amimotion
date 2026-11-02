@@ -851,3 +851,15 @@ html.sim-lock{overflow:hidden}
 .trio .tm-name{letter-spacing:-.02em}
 .trio .tm-role{color:#5a6488;letter-spacing:.005em}
 .trio .team-h{letter-spacing:-.045em;text-wrap:balance}
+
+/* ===== products polish: AmIGo is on stage the moment the room arrives; the next product turns in with scroll ===== */
+.trio .kn{height:250vh}
+.trio .kn-sticky{top:72px}
+.kn-stage{perspective:1400px}
+.kn-shot{transform:translate3d(6%,2%,0) rotateY(-14deg) scale(.94);filter:blur(6px);transition:opacity .7s var(--ease-out),transform 1s var(--ease-out),filter .7s var(--ease-out)!important}
+.kn-shot.on{transform:none;filter:none}
+.kn-shot.out{transform:translate3d(-6%,-1%,0) rotateY(12deg) scale(.95);filter:blur(5px)}
+.kn-shot > .kn-img{filter:drop-shadow(0 36px 34px rgba(20,30,90,.22)) drop-shadow(0 6px 8px rgba(20,30,90,.14))}
+.trio .kn-sticky{box-shadow:0 0 0 1px rgba(11,18,56,.05),0 1px 2px rgba(11,18,56,.04),0 28px 56px -40px rgba(24,32,96,.32)!important;background:linear-gradient(170deg,#ffffff 0,#f6f9fe 60%,#eef3fc 100%)!important}
+.kn-c{opacity:.35}
+@media (prefers-reduced-motion:reduce){.kn-shot{transition:none!important}}

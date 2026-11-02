@@ -91,7 +91,7 @@ if (qb && !reduce) {
 const kn = $('#system'), knItems = kn ? [...kn.querySelectorAll('.kn-item')] : [], knShots = kn ? [...kn.querySelectorAll('.kn-shot')] : [], knSweep = kn && kn.querySelector('.kn-sweep');
 if (kn && reduce) kn.classList.add('kn-static');
 const sm = (a, b, v) => { const t = clamp((v - a) / (b - a)); return t * t * (3 - 2 * t); };
-const KN_AT = [.1, .38, .66];
+const KN_AT = [-1, .36, .68];
 let knStep = -2;
 const knSet = (st) => {
   if (st === knStep) return;
@@ -111,7 +111,7 @@ const knFrame = () => {
 };
 if (kn) kn.querySelectorAll('.kn-go').forEach((b) => b.addEventListener('click', () => {
   const sc = kn, i = +b.dataset.i, top = sc.getBoundingClientRect().top + scrollY, span = sc.offsetHeight - innerHeight;
-  scrollTo({ top: top + span * ([.22, .5, .8][i]), behavior: reduce ? 'auto' : 'smooth' });
+  scrollTo({ top: top + span * ([.12, .5, .82][i]), behavior: reduce ? 'auto' : 'smooth' });
 }));
 
 /* ---------- book a call: four fields, then the calendar ---------- */
