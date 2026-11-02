@@ -4,149 +4,264 @@ description: AmIMotion is spatial intelligence for factories and warehouses. A s
 layout: home
 og: /assets/home/og-home.jpg
 -->
-<!-- Copy: team/rounds/01-homepage-story/homepage-final.md, screens 1 to 6, exact. Design: team/rounds/02-design/DESIGN_SYSTEM.md and frame/hero.html (round 5). -->
-<section class="hero" aria-labelledby="hero-title">
-  <div class="words">
+<!-- Copy: team/rounds/01-homepage-story/homepage-final.md, screens 1 to 7, word for word. Layout, size, order and motion:
+     team/rounds/10-harvest/plan.md, section 1 (S1 to S7) and 3 (motion system). Every stage is a designed still with
+     JavaScript off or reduced motion; with motion on, one sticky stage per runway is driven by --p (0 to 1), written by
+     CSS scroll-driven animations where supported and by js/stage.js otherwise. Stand-ins until the round 11 renders land
+     are noted at each picture. -->
+
+<!-- S1 Hero, the AmIGo turntable (M01, M11, M12). H1 is the LCP element. -->
+<section class="hero" id="top" aria-labelledby="hero-title" data-stage data-dock-after>
+  <div class="hero-pin">
     <h1 id="hero-title"><span>Where work is.</span> <span>Where it waits.</span></h1>
-    <figure class="picture film" data-hero-film>
-      <!-- Hero film (9 s, camera A, Sky Ground): the poster is frame 0.0; the inline script attaches the video only after load,
-           plays it only in view, muted and looping. Reduced motion or JavaScript off: the poster stays. Phones get the 1:1 cut. -->
-      <div class="frame">
-        <picture>
-          <source media="(max-width:1023px), (max-aspect-ratio:4/5)" type="image/avif" srcset="/assets/home/hero-film/poster-1x1-600.avif 600w, /assets/home/hero-film/poster-1x1-1080.avif 1080w, /assets/home/hero-film/poster-1x1-1600.avif 1600w" sizes="100vw">
-          <source media="(max-width:1023px), (max-aspect-ratio:4/5)" type="image/webp" srcset="/assets/home/hero-film/poster-1x1-600.webp 600w, /assets/home/hero-film/poster-1x1-1080.webp 1080w, /assets/home/hero-film/poster-1x1-1600.webp 1600w" sizes="100vw">
-          <source type="image/avif" srcset="/assets/home/hero-film/poster-4x5-800.avif 800w, /assets/home/hero-film/poster-4x5-1200.avif 1200w, /assets/home/hero-film/poster-4x5-1600.avif 1600w" sizes="min(57vw, calc((100svh - 96px) * .8))">
-          <source type="image/webp" srcset="/assets/home/hero-film/poster-4x5-800.webp 800w, /assets/home/hero-film/poster-4x5-1200.webp 1200w, /assets/home/hero-film/poster-4x5-1600.webp 1600w" sizes="min(57vw, calc((100svh - 96px) * .8))">
-          <img src="/assets/home/hero-film/poster-4x5-800.webp" width="1600" height="2000" fetchpriority="high" decoding="async" alt="A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went. Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting.">
-        </picture>
-        <video muted playsinline loop preload="none" disablepictureinpicture disableremoteplayback aria-hidden="true" tabindex="-1" data-src="/assets/home/hero-film/hall"></video>
-      </div>
+    <p class="lede"><span style="--at:.42">AmIMotion is spatial intelligence for factories and warehouses.</span> <span style="--at:.49">A small tag rides on each trolley, bin and tool.</span> <span style="--at:.56">Anchors on your columns hear its signal.</span> <span style="--at:.63">One live map shows where it went and how long it has waited.</span> <span style="--at:.70">You find out from a screen, not a walk.</span></p>
+    <!-- Stand-in: the founders' CAD studio still of AmIGo (transparent, sits on the ground). Render job R1 (96-frame turntable,
+         1080 and 720 AVIF, frame 0 as poster) replaces it: set data-frames and data-frame-src and the canvas scrubs it. -->
+    <figure class="turn" data-turn data-frames="0" data-frame-src="">
+      <picture>
+        <source type="image/avif" srcset="/assets/home/amigo-page-800.avif 800w, /assets/home/amigo-page-1600.avif 1600w, /assets/home/amigo-page-2400.avif 2400w" sizes="(max-width:1023px) 92vw, 62vw">
+        <img src="/assets/home/amigo-page-1600.webp" srcset="/assets/home/amigo-page-800.webp 800w, /assets/home/amigo-page-1600.webp 1600w, /assets/home/amigo-page-2400.webp 2400w" sizes="(max-width:1023px) 92vw, 62vw" width="1600" height="875" decoding="async" alt="The AmIGo tag, a small dark grey tag with amimotion on its cover.">
+      </picture>
+      <canvas aria-hidden="true"></canvas>
     </figure>
-    <p class="lede">AmIMotion is spatial intelligence for factories and warehouses. A small tag rides on each trolley, bin and tool. Anchors on your columns hear its signal. One live map shows where it went and how long it has waited. You find out from a screen, not a walk.</p>
   </div>
 </section>
 
-<section class="screen" id="find" aria-labelledby="find-title">
-  <h2 id="find-title"><span>A scan tells you where it last passed.</span> <span>A tag tells you where it stopped.</span></h2>
-  <div class="copy">
-    <p class="lead">Between scans at each checkpoint, work moves and waits out of sight.</p>
-    <p>Think of the last time someone went looking for a trolley. The walk. The calls to stores. The second walk.</p>
-    <p>Look it up on AmIHub's live map instead. You see where it was last seen, and when. The tag sends a signal as it moves, so nobody scans it along the way. It goes on the trolley, not on the person pushing it.</p>
-    <p class="more"><a href="/use-cases/find-the-asset/">Where is that trolley?</a></p>
-  </div>
-  <figure class="shot">
-    <!-- ASSET: camera A still, cropped close (screen 2). The press line on the left, the racks on the right; everything pale
-         except one trolley stopped behind the racks on a blue floor tint, its one blue trail from the press ending where it stands.
-         Final aspect 4:3. AVIF + WebP ladder 800-3840. Alt: "A model factory floor. One trolley stopped behind the racks is marked blue.
-         A blue line shows its path from the press and ends where it stopped." Owner: Realism lab (model hall). -->
-    <picture><source type="image/avif" srcset="/assets/hall/hall-find-43-800.avif 800w, /assets/hall/hall-find-43-1600.avif 1600w, /assets/hall/hall-find-43-2400.avif 2400w" sizes="(max-width:1023px) 100vw, 58vw"><source type="image/webp" srcset="/assets/hall/hall-find-43-800.webp 800w, /assets/hall/hall-find-43-1600.webp 1600w, /assets/hall/hall-find-43-2400.webp 2400w" sizes="(max-width:1023px) 100vw, 58vw"><img src="/assets/hall/hall-find-43-1600.webp" width="2880" height="2160" loading="lazy" decoding="async" alt="A model factory floor. One trolley stopped between the racks is marked blue. A blue line shows its path and ends where it stopped."></picture>
+<!-- S1b ±10 cm, the giant spec callout (M02, M18). The figure is set as text; build.py checks it against the claims register. -->
+<section class="spec" aria-labelledby="spec-title" data-view>
+  <!-- Stand-in for render job R2 (AmIGo macro on the debossed logo): a crop of the 7680 CAD studio still, bleeding off the right edge. -->
+  <figure class="macro" aria-hidden="true">
+    <picture>
+      <source type="image/avif" srcset="/assets/home/amigo-macro-1200.avif 1200w, /assets/home/amigo-macro-2000.avif 2000w, /assets/home/amigo-macro-3200.avif 3200w" sizes="(max-width:1023px) 120vw, 50vw">
+      <img src="/assets/home/amigo-macro-1200.webp" srcset="/assets/home/amigo-macro-1200.webp 1200w, /assets/home/amigo-macro-2000.webp 2000w, /assets/home/amigo-macro-3200.webp 3200w" sizes="(max-width:1023px) 120vw, 50vw" width="3200" height="2349" loading="lazy" decoding="async" alt="">
+    </picture>
   </figure>
+  <h2 id="spec-title" class="giant"><data value="0.1">±10 cm</data></h2>
+  <p class="spec-line">With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor.</p>
 </section>
 
-<section class="screen flip" id="waits" aria-labelledby="waits-title">
-  <h2 id="waits-title">See where work waits.</h2>
-  <div class="copy">
+<!-- S1c Hall film, full bleed (M05, M24), then S2 slides over it. Plays only in view, muted, with a pause control.
+     The poster stays with JavaScript off or reduced motion (a play control is offered). -->
+<div class="stack">
+  <figure class="film" data-film data-src="/assets/home/hero-film/hall">
+    <picture>
+      <source media="(max-aspect-ratio:1/1)" type="image/avif" srcset="/assets/home/hero-film/poster-1x1-600.avif 600w, /assets/home/hero-film/poster-1x1-1080.avif 1080w, /assets/home/hero-film/poster-1x1-1600.avif 1600w" sizes="100vw">
+      <source media="(max-aspect-ratio:1/1)" type="image/webp" srcset="/assets/home/hero-film/poster-1x1-600.webp 600w, /assets/home/hero-film/poster-1x1-1080.webp 1080w, /assets/home/hero-film/poster-1x1-1600.webp 1600w" sizes="100vw">
+      <source type="image/avif" srcset="/assets/home/hero-film/poster-4x5-800.avif 800w, /assets/home/hero-film/poster-4x5-1200.avif 1200w, /assets/home/hero-film/poster-4x5-1600.avif 1600w" sizes="100vw">
+      <img src="/assets/home/hero-film/poster-4x5-1200.webp" srcset="/assets/home/hero-film/poster-4x5-800.webp 800w, /assets/home/hero-film/poster-4x5-1200.webp 1200w, /assets/home/hero-film/poster-4x5-1600.webp 1600w" sizes="100vw" width="1600" height="2000" loading="lazy" decoding="async" alt="A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went. Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting.">
+    </picture>
+    <video muted playsinline loop preload="none" disablepictureinpicture disableremoteplayback aria-hidden="true" tabindex="-1"></video>
+    <button class="playpause" type="button" aria-label="Pause the film" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/><path class="i-play" d="M8 5.5v13l11-6.5z"/></svg></button>
+  </figure>
+
+  <!-- S2 Find it (M06, M07): a two-screen sticky stage. Scan (the before frame, checkpoint ticks only) gives way to
+       Tag (every path drawn) as you scroll, and the frame tightens on the racks. The switch works with JavaScript off
+       (radio buttons). Stand-in pair: hero film frames 3.8 s (before) and 0.0 s (after), camera A, until render job R5. -->
+  <section class="find" id="find" aria-labelledby="find-title">
+    <div class="sh">
+      <h2 id="find-title"><span>A scan tells you where it last passed.</span> <span>A tag tells you where it stopped.</span></h2>
+      <p class="lead">Between scans at each checkpoint, work moves and waits out of sight.</p>
+    </div>
+    <div class="find-run" data-stage data-find>
+      <input type="radio" name="find-state" id="find-scan" class="vh">
+      <input type="radio" name="find-state" id="find-tag" class="vh" checked>
+      <div class="find-pin">
+        <figure class="find-frame">
+          <picture class="f-tag">
+            <source type="image/avif" srcset="/assets/home/hero-film/poster-4x5-800.avif 800w, /assets/home/hero-film/poster-4x5-1200.avif 1200w, /assets/home/hero-film/poster-4x5-1600.avif 1600w" sizes="(max-width:1023px) 100vw, 46vw">
+            <img src="/assets/home/hero-film/poster-4x5-1200.webp" srcset="/assets/home/hero-film/poster-4x5-800.webp 800w, /assets/home/hero-film/poster-4x5-1200.webp 1200w, /assets/home/hero-film/poster-4x5-1600.webp 1600w" sizes="(max-width:1023px) 100vw, 46vw" width="1600" height="2000" loading="lazy" decoding="async" alt="A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went. Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting.">
+          </picture>
+          <picture class="f-scan">
+            <source type="image/avif" srcset="/assets/home/find/scan-4x5-800.avif 800w, /assets/home/find/scan-4x5-1200.avif 1200w, /assets/home/find/scan-4x5-1600.avif 1600w" sizes="(max-width:1023px) 100vw, 46vw">
+            <img src="/assets/home/find/scan-4x5-1200.webp" srcset="/assets/home/find/scan-4x5-800.webp 800w, /assets/home/find/scan-4x5-1200.webp 1200w, /assets/home/find/scan-4x5-1600.webp 1600w" sizes="(max-width:1023px) 100vw, 46vw" width="1600" height="2000" loading="lazy" decoding="async" alt="The same model factory floor with all colour gone. Only short blue ticks at the checkpoint desks show where things last passed.">
+          </picture>
+        </figure>
+        <div class="switch" role="group" aria-label="Scan or tag">
+          <label for="find-scan">Scan</label><label for="find-tag">Tag</label>
+        </div>
+        <div class="find-copy">
+          <p style="--at:.18">Think of the last time someone went looking for a trolley. The walk. The calls to stores. The second walk.</p>
+          <p style="--at:.42">Look it up on AmIHub's live map instead. You see where it was last seen, and when. The tag sends a signal as it moves, so nobody scans it along the way. It goes on the trolley, not on the person pushing it.</p>
+          <p class="more" style="--at:.62"><a class="go" href="/use-cases/find-the-asset/">Where is that trolley?</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- S2b How it finds a tag (M04): one pinned stage in four steps. Captions are the homepage's own lines. With JavaScript
+     off or reduced motion it is a four-panel strip. Inline SVG, drawn in the design tokens; no numbers, no UI. -->
+<section class="how" aria-label="How it locates a tag" data-stage>
+  <div class="how-pin">
+    <ol class="how-steps">
+      <li class="s1">
+        <svg viewBox="0 0 400 300" aria-hidden="true"><rect class="d-floor" x="1" y="1" width="398" height="298" rx="6"/><g class="d-anc"><rect x="48" y="44" width="22" height="16" rx="2"/><rect x="328" y="56" width="22" height="16" rx="2"/><rect x="188" y="252" width="22" height="16" rx="2"/></g><rect class="d-tag" x="226" y="134" width="18" height="14" rx="3"/><circle class="d-pulse" cx="235" cy="141" r="4"/></svg>
+        <p>Sends a short UWB radio pulse when it moves and sleeps when it stops.</p>
+      </li>
+      <li class="s2">
+        <svg viewBox="0 0 400 300" aria-hidden="true"><rect class="d-floor" x="1" y="1" width="398" height="298" rx="6"/><g class="d-sig"><path d="M235 141L59 52M235 141L339 64M235 141L199 260"/></g><g class="d-anc"><rect x="48" y="44" width="22" height="16" rx="2"/><rect x="328" y="56" width="22" height="16" rx="2"/><rect x="188" y="252" width="22" height="16" rx="2"/></g><g class="d-bar"><rect x="48" y="66" width="98" height="6" rx="3"/><rect x="292" y="78" width="58" height="6" rx="3"/><rect x="216" y="257" width="60" height="6" rx="3"/></g><rect class="d-tag" x="226" y="134" width="18" height="14" rx="3"/></svg>
+        <p>Records when each pulse arrives and the angle it came from.</p>
+      </li>
+      <li class="s3">
+        <svg viewBox="0 0 400 300" aria-hidden="true"><rect class="d-floor" x="1" y="1" width="398" height="298" rx="6"/><g class="d-solve"><path d="M59 52L235 141M339 64L235 141M199 260L235 141"/></g><g class="d-anc"><rect x="48" y="44" width="22" height="16" rx="2"/><rect x="328" y="56" width="22" height="16" rx="2"/><rect x="188" y="252" width="22" height="16" rx="2"/></g><g class="d-bar"><rect x="48" y="66" width="98" height="6" rx="3"/><rect x="292" y="78" width="58" height="6" rx="3"/><rect x="216" y="257" width="60" height="6" rx="3"/></g><rect class="d-tag" x="226" y="134" width="18" height="14" rx="3"/></svg>
+        <p>Works out where each tag is from those times and angles.</p>
+      </li>
+      <li class="s4">
+        <svg viewBox="0 0 400 300" aria-hidden="true"><rect class="d-floor" x="1" y="1" width="398" height="298" rx="6"/><path class="d-trail" d="M40 236C110 236 150 226 176 196S214 141 235 141"/><g class="d-anc"><rect x="48" y="44" width="22" height="16" rx="2"/><rect x="328" y="56" width="22" height="16" rx="2"/><rect x="188" y="252" width="22" height="16" rx="2"/></g><rect class="d-tag" x="226" y="134" width="18" height="14" rx="3"/><circle class="d-dot" cx="235" cy="141" r="9"/></svg>
+        <p>One live map shows where it went and how long it has waited.</p>
+      </li>
+    </ol>
+    <p class="more"><a class="go" href="/technology/">How it locates a tag</a></p>
+  </div>
+</section>
+
+<!-- S3 See where work waits (M05, M11, M16): the queue full bleed, the headline built word by word over the pale floor with
+     the amber queue set inline; then the copy slides over it on surface. Stand-in for render job R6: hall-waits (camera A). -->
+<section class="waits" id="waits" aria-labelledby="waits-title" data-view>
+  <div class="waits-panel">
+    <picture>
+      <source type="image/avif" srcset="/assets/hall/hall-waits-800.avif 800w, /assets/hall/hall-waits-1600.avif 1600w, /assets/hall/hall-waits-2400.avif 2400w, /assets/hall/hall-waits-3840.avif 3840w" sizes="100vw">
+      <img src="/assets/hall/hall-waits-1600.webp" srcset="/assets/hall/hall-waits-800.webp 800w, /assets/hall/hall-waits-1600.webp 1600w, /assets/hall/hall-waits-2400.webp 2400w, /assets/hall/hall-waits-3840.webp 3840w" sizes="100vw" width="3840" height="2160" loading="lazy" decoding="async" alt="A model inspection station. One trolley is being worked on. Three trolleys in the queue in front of it and one pallet in a staging lane are marked amber because they are waiting.">
+    </picture>
+    <h2 id="waits-title"><span style="--i:0">See</span> <span style="--i:1">where</span> <span style="--i:2">work</span> <img class="q" style="--i:3" src="/assets/home/queue-chip-240.webp" srcset="/assets/home/queue-chip-240.webp 240w, /assets/home/queue-chip-480.webp 480w" sizes="2.4em" width="480" height="240" alt="" loading="lazy" decoding="async"> <span style="--i:4">waits.</span></h2>
+  </div>
+  <div class="waits-copy">
     <p class="lead">The map notes when each trolley or pallet enters a zone and when it leaves. You name the zones. You see how long each one has waited, while it is still waiting.</p>
-    <p>Supervisors see each wait live, during the shift, not at the next morning's review. You set who sees what, by role. AmIHub also sends each entry and exit to any system you name, as it happens.</p>
-    <p>Link each trolley to the job it carries, in AmIHub or from your own system. Nobody scans it along the way. Its wait then counts as that job's wait.</p>
-    <p>Why it waited is for your team to say.</p>
-    <p class="more"><a href="/learn/dwell-time/">How waits are timed</a><span class="sep" aria-hidden="true">·</span><a href="/learn/association/">Which job is on the trolley?</a></p>
+    <div class="rest">
+      <p>Supervisors see each wait live, during the shift, not at the next morning's review. You set who sees what, by role. AmIHub also sends each entry and exit to any system you name, as it happens.</p>
+      <p>Link each trolley to the job it carries, in AmIHub or from your own system. Nobody scans it along the way. Its wait then counts as that job's wait.</p>
+      <p>Why it waited is for your team to say.</p>
+      <p class="more"><a class="go" href="/learn/dwell-time/">How waits are timed</a> <a class="go" href="/learn/association/">Which job is on the trolley?</a></p>
+    </div>
   </div>
-  <figure class="shot">
-    <!-- ASSET: camera A still, cropped (screen 3). Left: the inspection station, one trolley inside its zone on a blue tint; in front, the pale
-         grey queue outline with three trolleys on amber and a short blue trail into the queue. Right: the staging lane, one pallet on amber.
-         Final aspect 4:3. Alt: "A model inspection station. One trolley is being worked on. Three trolleys in the queue in front of it and
-         one pallet in a staging lane are marked amber because they are waiting." Owner: Realism lab (model hall). -->
-    <picture><source type="image/avif" srcset="/assets/hall/hall-waits-43-800.avif 800w, /assets/hall/hall-waits-43-1600.avif 1600w, /assets/hall/hall-waits-43-2400.avif 2400w" sizes="(max-width:1023px) 100vw, 58vw"><source type="image/webp" srcset="/assets/hall/hall-waits-43-800.webp 800w, /assets/hall/hall-waits-43-1600.webp 1600w, /assets/hall/hall-waits-43-2400.webp 2400w" sizes="(max-width:1023px) 100vw, 58vw"><img src="/assets/hall/hall-waits-43-1600.webp" width="2880" height="2160" loading="lazy" decoding="async" alt="A model inspection station. One trolley is being worked on. Three trolleys in the queue in front of it and one pallet in a staging lane are marked amber because they are waiting."></picture>
-  </figure>
 </section>
 
-<section class="screen" id="ask" aria-labelledby="ask-title">
-  <h2 id="ask-title">Ask your floor a question.</h2>
-  <div class="copy">
-    <p class="ask">Which trolleys have waited at inspection for more than an hour?</p>
-    <p>Ask in plain words. An AI assistant answers from AmIHub's live map. Asking changes nothing. Any change, such as raising a work order in AmIHub, needs a person's approval. You can require it from a supervisor.</p>
-    <p class="more"><a href="/use-cases/ask-your-plant/">Ask your floor</a><span class="sep" aria-hidden="true">·</span><a href="/trust/">Trust and data</a></p>
+<!-- S4 Ask your floor (M08, M10): the page's one ink band. Each question lights its zone of the hall (a zoom on the
+     still until render job R4's zone masks land). Radio buttons, so it works with JavaScript off; no answer card, no data. -->
+<section class="ask" id="ask" aria-labelledby="ask-title">
+  <input type="radio" name="ask-q" id="ask-1" class="vh" checked>
+  <input type="radio" name="ask-q" id="ask-2" class="vh">
+  <input type="radio" name="ask-q" id="ask-3" class="vh">
+  <div class="sh">
+    <h2 id="ask-title">Ask your floor a question.</h2>
   </div>
-  <div class="it">
-    <p>AmIHub has an MCP server built in. MCP is an open standard that lets AI assistants use other software. Any assistant that supports MCP can connect. We show it live on a call. The server is part of AmIHub, so it can run on a PC inside your plant. If the assistant runs inside your network too, nothing has to leave it. Each assistant gets its own access: read-only, or only the actions you allow. Every request it makes is logged.</p>
+  <div class="ask-qs" aria-live="polite">
+    <p class="q1">Which trolleys have waited at inspection for more than an hour?</p>
+    <p class="q2">Where is that trolley?</p>
+    <p class="q3">Which job is on the trolley?</p>
   </div>
-  <figure class="wide">
-    <!-- ASSET: camera A, full frame, still (screen 4). Everything pale, no trails; only the same three trolleys in the inspection queue keep
-         their amber. No answer card, no data. Final aspect 16:9 (the 8K hall frame). Alt: "The same model factory floor with everything pale
-         except three trolleys at inspection, marked amber: the ones that have waited." Owner: Realism lab (model hall). -->
-    <picture><source type="image/avif" srcset="/assets/hall/hall-ask-800.avif 800w, /assets/hall/hall-ask-1600.avif 1600w, /assets/hall/hall-ask-2400.avif 2400w, /assets/hall/hall-ask-3840.avif 3840w" sizes="(max-width:1023px) 100vw, calc(100vw - 2 * var(--margin))"><source type="image/webp" srcset="/assets/hall/hall-ask-800.webp 800w, /assets/hall/hall-ask-1600.webp 1600w, /assets/hall/hall-ask-2400.webp 2400w, /assets/hall/hall-ask-3840.webp 3840w" sizes="(max-width:1023px) 100vw, calc(100vw - 2 * var(--margin))"><img src="/assets/hall/hall-ask-1600.webp" width="3840" height="2160" loading="lazy" decoding="async" alt="The same model factory floor with everything pale except three trolleys at inspection, marked amber: the ones that have waited."></picture>
+  <div class="chips" role="group" aria-label="Questions">
+    <label for="ask-1">Which trolleys have waited at inspection for more than an hour?</label>
+    <label for="ask-2">Where is that trolley?</label>
+    <label for="ask-3">Which job is on the trolley?</label>
+  </div>
+  <figure class="ask-hall">
+    <picture>
+      <source type="image/avif" srcset="/assets/hall/hall-all-3840.avif 3840w" sizes="100vw">
+      <img src="/assets/hall/hall-all-2400.webp" srcset="/assets/hall/hall-all-2400.webp 2400w, /assets/hall/hall-all-3840.webp 3840w" sizes="100vw" width="3840" height="2160" loading="lazy" decoding="async" alt="A model factory floor from above. Blue lines show where tagged trolleys and vehicles went. Three trolleys at inspection and one pallet in a staging lane are amber because they are waiting.">
+    </picture>
   </figure>
+  <div class="ask-copy">
+    <div>
+      <p>Ask in plain words. An AI assistant answers from AmIHub's live map. Asking changes nothing. Any change, such as raising a work order in AmIHub, needs a person's approval. You can require it from a supervisor.</p>
+      <p class="more"><a class="go" href="/use-cases/ask-your-plant/">Ask your floor</a> <a class="go" href="/trust/">Trust and data</a></p>
+    </div>
+    <p class="it">AmIHub has an MCP server built in. MCP is an open standard that lets AI assistants use other software. Any assistant that supports MCP can connect. We show it live on a call. The server is part of AmIHub, so it can run on a PC inside your plant. If the assistant runs inside your network too, nothing has to leave it. Each assistant gets its own access: read-only, or only the actions you allow. Every request it makes is logged.</p>
+  </div>
 </section>
 
-<section class="screen" id="system" aria-labelledby="system-title">
-  <h2 id="system-title">Three parts work as one system.</h2>
-  <ul class="parts">
-    <li>
-      <!-- Interim: the founders' CAD studio still of AmIGo, page-graded. Final brief (screen 5, picture 1): AmIGo screwed to the top rail of a
-           mesh trolley, 85 mm look, about 1 m off the floor. Its locked alt adds "screwed to the rail of a trolley"; that clause returns with that picture. -->
-      <picture>
-        <source type="image/avif" srcset="/assets/home/amigo-side-640.avif 640w, /assets/home/amigo-side-1200.avif 1200w, /assets/home/amigo-side-1500.avif 1500w" sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw">
-        <source type="image/webp" srcset="/assets/home/amigo-side-640.webp 640w, /assets/home/amigo-side-1200.webp 1200w, /assets/home/amigo-side-1500.webp 1500w" sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw">
-        <img src="/assets/home/amigo-side-1200.webp" width="1500" height="1000" loading="lazy" decoding="async" alt="The AmIGo tag, a small dark grey tag with amimotion on its cover.">
-      </picture>
-      <h3>AmIGo tag.</h3>
-      <p>Screws or sticks onto the trolley. Sends a short UWB radio pulse when it moves and sleeps when it stops. While it sleeps, the map shows where it was last seen. If it comes off the trolley, the map still shows its last-seen spot. One battery lasts 1 to 3 years, depending on use. AmIHub tracks each tag's health and battery level.</p>
-    </li>
-    <li>
-      <!-- Interim: the founders' CAD studio still of AmIMo, page-graded. Final brief (screen 5, picture 2): AmIMo fixed to a steel column by its
-           own tab, RJ45 port down, one plain power cable, 70 mm from below. Its locked alt adds "fixed to a steel column"; that clause returns with that picture. -->
-      <picture>
-        <source type="image/avif" srcset="/assets/home/amimo-page-640.avif 640w, /assets/home/amimo-page-1200.avif 1200w, /assets/home/amimo-page-1800.avif 1800w" sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw">
-        <source type="image/webp" srcset="/assets/home/amimo-page-640.webp 640w, /assets/home/amimo-page-1200.webp 1200w, /assets/home/amimo-page-1800.webp 1800w" sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw">
-        <img src="/assets/home/amimo-page-1200.webp" width="1800" height="1200" loading="lazy" decoding="async" alt="The AmIMo anchor, a dark grey box with a network port.">
-      </picture>
-      <h3>AmIMo anchor.</h3>
-      <p>Fixed to a column or wall 3 to 8 m up. Records when each pulse arrives and the angle it came from. Needs only power, from DC or PoE. It syncs over the air, with no sync cable. It sends its data to AmIHub over Wi-Fi, so it needs no separate data cable. Ethernet is also an option. Each reaches about 50 m around it in clear line of sight. Racking and steel change that, so we survey your floor and set the count. With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor. You set anchors up from a phone app. AmIHub finds each one on its own and raises an alert if one goes dark.</p>
-    </li>
-    <li>
-      <!-- ASSET: AmIHub (screen 5, picture 3). A real capture of the live map from the demo floor, unedited, no customer detail, once the founders
-           clear it. Until then the hero film poster crop of the inspection bay (alt: "A model factory floor with paths in blue and waits in amber.";
-           the fallback never calls itself AmIHub). Neither exists yet. Final aspect 3:2, to sit level with the two stills. Owner: Realism lab, founders. -->
-      <picture><source type="image/avif" srcset="/assets/hall/hall-waits-32-800.avif 800w, /assets/hall/hall-waits-32-1600.avif 1600w, /assets/hall/hall-waits-32-2400.avif 2400w" sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw"><source type="image/webp" srcset="/assets/hall/hall-waits-32-800.webp 800w, /assets/hall/hall-waits-32-1600.webp 1600w, /assets/hall/hall-waits-32-2400.webp 2400w" sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw"><img src="/assets/hall/hall-waits-32-1600.webp" width="3240" height="2160" loading="lazy" decoding="async" alt="A model factory floor with paths in blue and waits in amber."></picture>
-      <h3>AmIHub.</h3>
-      <p>Works out where each tag is from those times and angles. Runs on an industrial PC inside your plant, with no internet needed. Your MES, ERP and WMS connect to it through open REST, MQTT, WebSocket and omlox hub interfaces. Your team, your systems and AI assistants read the same live map. Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited.</p>
-    </li>
-  </ul>
-  <div class="spec-line">
+<!-- S5 One system (M03, M09, M02): the family on one sweep with the giant names behind, the 7/5 mosaic, chip tabs and the
+     four-number strip. Stand-ins: the CAD pair still (render job R3), the CAD studio stills (R13), the hall crop for AmIHub. -->
+<section class="system" id="system" aria-labelledby="system-title">
+  <div class="sh">
+    <h2 id="system-title">Three parts work as one system.</h2>
+  </div>
+  <div class="fam" data-view>
+    <p class="names" aria-hidden="true"><span>AmIGo</span><span>AmIMo</span></p>
+    <picture>
+      <source type="image/avif" srcset="/assets/home/pair-800.avif 800w, /assets/home/pair-1600.avif 1600w, /assets/home/pair-2400.avif 2400w" sizes="(max-width:1023px) 100vw, 70vw">
+      <img src="/assets/home/pair-1600.webp" srcset="/assets/home/pair-800.webp 800w, /assets/home/pair-1600.webp 1600w, /assets/home/pair-2400.webp 2400w" sizes="(max-width:1023px) 100vw, 70vw" width="2400" height="1600" loading="lazy" decoding="async" alt="The AmIGo tag and the AmIMo anchor side by side, both dark grey with amimotion on the cover.">
+    </picture>
+  </div>
+  <div class="parts-run">
+    <input type="radio" name="part" id="part-hub" class="vh" checked>
+    <input type="radio" name="part" id="part-go" class="vh">
+    <input type="radio" name="part" id="part-mo" class="vh">
+    <div class="mosaic">
+      <label class="tile t-hub" for="part-hub">
+        <picture><source type="image/avif" srcset="/assets/hall/hall-waits-32-800.avif 800w, /assets/hall/hall-waits-32-1600.avif 1600w, /assets/hall/hall-waits-32-2400.avif 2400w" sizes="(max-width:1023px) 100vw, 56vw"><img src="/assets/hall/hall-waits-32-1600.webp" srcset="/assets/hall/hall-waits-32-800.webp 800w, /assets/hall/hall-waits-32-1600.webp 1600w, /assets/hall/hall-waits-32-2400.webp 2400w" sizes="(max-width:1023px) 100vw, 56vw" width="3240" height="2160" loading="lazy" decoding="async" alt="A model factory floor with paths in blue and waits in amber."></picture>
+      </label>
+      <label class="tile t-go" for="part-go">
+        <picture><source type="image/avif" srcset="/assets/home/amigo-side-640.avif 640w, /assets/home/amigo-side-1200.avif 1200w, /assets/home/amigo-side-1500.avif 1500w" sizes="(max-width:1023px) 50vw, 38vw"><img src="/assets/home/amigo-side-1200.webp" srcset="/assets/home/amigo-side-640.webp 640w, /assets/home/amigo-side-1200.webp 1200w, /assets/home/amigo-side-1500.webp 1500w" sizes="(max-width:1023px) 50vw, 38vw" width="1500" height="1000" loading="lazy" decoding="async" alt="The AmIGo tag, a small dark grey tag with amimotion on its cover."></picture>
+      </label>
+      <label class="tile t-mo" for="part-mo">
+        <picture><source type="image/avif" srcset="/assets/home/amimo-page-640.avif 640w, /assets/home/amimo-page-1200.avif 1200w, /assets/home/amimo-page-1800.avif 1800w" sizes="(max-width:1023px) 50vw, 38vw"><img src="/assets/home/amimo-page-1200.webp" srcset="/assets/home/amimo-page-640.webp 640w, /assets/home/amimo-page-1200.webp 1200w, /assets/home/amimo-page-1800.webp 1800w" sizes="(max-width:1023px) 50vw, 38vw" width="1800" height="1200" loading="lazy" decoding="async" alt="The AmIMo anchor, a dark grey box with a network port."></picture>
+      </label>
+    </div>
+    <div class="tabs" role="group" aria-label="Three parts">
+      <label for="part-go">AmIGo tag</label><label for="part-mo">AmIMo anchor</label><label for="part-hub">AmIHub</label>
+    </div>
+    <ul class="parts">
+      <li class="p-go">
+        <h3>AmIGo tag.</h3>
+        <p>Screws or sticks onto the trolley. Sends a short UWB radio pulse when it moves and sleeps when it stops. While it sleeps, the map shows where it was last seen. If it comes off the trolley, the map still shows its last-seen spot. One battery lasts 1 to 3 years, depending on use. AmIHub tracks each tag's health and battery level.</p>
+      </li>
+      <li class="p-mo">
+        <h3>AmIMo anchor.</h3>
+        <p>Fixed to a column or wall 3 to 8 m up. Records when each pulse arrives and the angle it came from. Needs only power, from DC or PoE. It syncs over the air, with no sync cable. It sends its data to AmIHub over Wi-Fi, so it needs no separate data cable. Ethernet is also an option. Each reaches about 50 m around it in clear line of sight. Racking and steel change that, so we survey your floor and set the count. With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor. You set anchors up from a phone app. AmIHub finds each one on its own and raises an alert if one goes dark.</p>
+      </li>
+      <li class="p-hub">
+        <h3>AmIHub.</h3>
+        <p>Works out where each tag is from those times and angles. Runs on an industrial PC inside your plant, with no internet needed. Your MES, ERP and WMS connect to it through open REST, MQTT, WebSocket and omlox hub interfaces. Your team, your systems and AI assistants read the same live map. Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited.</p>
+      </li>
+    </ul>
+  </div>
+  <!-- Four-number strip: each figure from the claims register (build.py REGISTER), each with its condition from /specs/. -->
+  <dl class="stats">
+    <div><dt>Accuracy</dt><dd><data value="0.1">±10 cm</data><span>How close depends on your floor.</span></dd></div>
+    <div><dt>Update rate</dt><dd><data value="0.1-10">0.1 to 10 Hz</data><span>Set per tag group; tags send when they move.</span></dd></div>
+    <div><dt>Battery</dt><dd><data value="1-3">1 to 3 years</data><span>Typical, depending on use.</span></dd></div>
+    <div><dt>Coverage</dt><dd><data value="50">about 50 m</data><span>Line-of-sight radius, indicative and site-dependent.</span></dd></div>
+  </dl>
+  <div class="spec-foot">
     <p>Built on the FiRa and omlox specifications.</p>
-    <p class="more"><a href="/technology/">How it locates a tag</a><span class="sep" aria-hidden="true">·</span><a href="/specs/">Specifications</a><span class="sep" aria-hidden="true">·</span><a href="/developers/">For developers</a></p>
+    <p class="more"><a class="go" href="/technology/">How it locates a tag</a> <a class="go" href="/specs/">Specifications</a> <a class="go" href="/developers/">For developers</a></p>
   </div>
 </section>
 
-<section class="screen" id="start" aria-labelledby="start-title">
-  <h2 id="start-title">Start with one bay.</h2>
-  <div class="copy">
+<!-- S6 Start with one bay (M20): the offer as the headline beside the bay, then the first diagnostic question inline.
+     Stand-in for render job R7 (one bay, everything else pale): hall-waits-43, the inspection bay and its queue. -->
+<section class="start" id="start" aria-labelledby="start-title">
+  <figure class="bay">
+    <picture><source type="image/avif" srcset="/assets/hall/hall-waits-43-800.avif 800w, /assets/hall/hall-waits-43-1600.avif 1600w, /assets/hall/hall-waits-43-2400.avif 2400w" sizes="(max-width:1023px) 100vw, 58vw"><img src="/assets/hall/hall-waits-43-1600.webp" srcset="/assets/hall/hall-waits-43-800.webp 800w, /assets/hall/hall-waits-43-1600.webp 1600w, /assets/hall/hall-waits-43-2400.webp 2400w" sizes="(max-width:1023px) 100vw, 58vw" width="2880" height="2160" loading="lazy" decoding="async" alt="A model inspection station. One trolley is being worked on. Three trolleys in the queue in front of it and one pallet in a staging lane are marked amber because they are waiting."></picture>
+  </figure>
+  <div class="start-copy">
+    <h2 id="start-title">Start with one bay.</h2>
     <p class="lead">A pilot follows one flow in one bay or line. You choose the flow. The pilot times today's waits first, over a window you choose. That is your baseline. Before it starts, we agree how to count a wait that runs past shift end. We also agree who on your team acts when work waits too long.</p>
     <p>The pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project. It would need its own policy. You also set how long the map keeps its history.</p>
     <p>You see your own waits in one bay, and prove the numbers, before you decide on more. Then grow plant-wide on the same AmIHub, without re-fitting the first bay. A second plant gets its own survey, and AmIHub can run both from one console.</p>
-    <p class="more"><a href="/trust/people/">People and privacy</a><span class="sep" aria-hidden="true">·</span><a href="/learn/pilot-baseline/">Measure before you claim</a></p>
-  </div>
-  <div class="buy">
-    <p><b>What you buy.</b> AmIGo tags, AmIMo anchors and AmIHub, plus our survey and an anchor plan for your floor. Designed and built in India, with local stock and local engineers on your site. One contract and one support line cover every layer. Your team or your integrator can build on it at any layer, through open interfaces. After the first call, we share datasheets, architecture, prices and pilot options under NDA. AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO.</p>
-  </div>
-  <figure class="wide">
-    <!-- ASSET: camera A, full frame, still (screen 6). The whole hall pale; one bay, the inspection station and its queue, in full colour: its
-         trails, its waits, the two AmIMo anchors on its columns. Final aspect 16:9. Alt: "The model factory floor, all pale except one inspection
-         bay shown in colour with its paths, its waits and its two anchors." "Plan your first bay" is to open the diagnostic in place over this
-         frame, loading its code only then; until that is built it is a plain link to /diagnostic/. Owner: Realism lab; Growth with Engine room. -->
-    <picture><source type="image/avif" srcset="/assets/hall/hall-bay-800.avif 800w, /assets/hall/hall-bay-1600.avif 1600w, /assets/hall/hall-bay-2400.avif 2400w, /assets/hall/hall-bay-3840.avif 3840w" sizes="(max-width:1023px) 100vw, calc(100vw - 2 * var(--margin))"><source type="image/webp" srcset="/assets/hall/hall-bay-800.webp 800w, /assets/hall/hall-bay-1600.webp 1600w, /assets/hall/hall-bay-2400.webp 2400w, /assets/hall/hall-bay-3840.webp 3840w" sizes="(max-width:1023px) 100vw, calc(100vw - 2 * var(--margin))"><img src="/assets/hall/hall-bay-1600.webp" width="3840" height="2160" loading="lazy" decoding="async" alt="The model factory floor, all pale except one inspection bay shown in colour with its paths, its waits and its two anchors."></picture>
-  </figure>
-  <div class="next">
-    <div>
+    <p class="more"><a class="go" href="/trust/people/">People and privacy</a> <a class="go" href="/learn/pilot-baseline/">Measure before you claim</a></p>
+    <p class="buy"><b>What you buy.</b> AmIGo tags, AmIMo anchors and AmIHub, plus our survey and an anchor plan for your floor. Designed and built in India, with local stock and local engineers on your site. One contract and one support line cover every layer. Your team or your integrator can build on it at any layer, through open interfaces. After the first call, we share datasheets, architecture, prices and pilot options under NDA. AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO.</p>
+    <!-- The diagnostic's first question, inline (M20). A tap opens /diagnostic/ with that answer chosen; plain links with JavaScript off. -->
+    <div class="first">
       <h3>Plan your first bay.</h3>
       <p>Six questions about how work moves in your plant. You get a plan for where to start, before anyone calls you.</p>
+      <p class="q" id="first-q">What does your team look for?</p>
+      <ul class="answers" aria-labelledby="first-q" data-diag-start>
+        <li><a href="/diagnostic/" data-v="carriers">WIP carriers &amp; bins</a></li>
+        <li><a href="/diagnostic/" data-v="tools">Tools &amp; fixtures</a></li>
+        <li><a href="/diagnostic/" data-v="vehicles">Forklifts &amp; tuggers</a></li>
+        <li><a href="/diagnostic/" data-v="robots">AGVs &amp; AMRs</a></li>
+        <li><a href="/diagnostic/" data-v="goods">Pallets &amp; finished goods</a></li>
+      </ul>
       <a class="cta alt" href="/diagnostic/">Plan your first bay</a>
     </div>
-    <div>
-      <h3>See it on real data.</h3>
-      <p>The call is a live demo on real AmIHub data, not slides.</p>
-      <a class="cta" href="/contact/">Book a call</a>
-    </div>
   </div>
+</section>
+
+<!-- S7 Closing band (M10): the page's one action-colour band, then the footer (start from your job). -->
+<section class="close" aria-labelledby="close-title">
+  <h2 id="close-title">See it on real data.</h2>
+  <p>The call is a live demo on real AmIHub data, not slides.</p>
+  <a class="cta white" href="/contact/">Book a call</a>
 </section>
