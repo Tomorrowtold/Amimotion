@@ -23,7 +23,7 @@
 .look-serif .head h1 span+span,.look-serif .sec>h2 span+span,.look-serif .close p>span:first-child{font-family:var(--font-serif);font-style:italic;font-weight:400;letter-spacing:-.012em;font-size:1.1em;line-height:.95}
 .look-serif-all .head h1,.look-serif-all .sec>h2{font-family:var(--font-serif);font-weight:400;letter-spacing:-.02em;line-height:.98}
 .look-serif-all .head h1 span+span,.look-serif-all .sec>h2 span+span{font-style:italic}
-.look-soft .head h1 span+span,.look-soft .sec>h2 span+span{color:color-mix(in srgb,var(--ink) 48%,var(--w-ground))}
+.look-soft .head h1 span+span,.look-soft .sec>h2 span+span{color:color-mix(in srgb,var(--ink) 60%,var(--w-ground))}
 .look-accent .head h1 span+span,.look-accent .sec>h2 span+span{color:var(--w-accent)}
 .look-inline .head h1 span,.look-inline .sec>h2 span{display:inline}
 .look-giant .head h1{font-size:clamp(3.4rem,1.2rem + 9vw,11.5rem);line-height:.86;letter-spacing:-.05em}
