@@ -41,8 +41,9 @@ void main(){
   col=mix(col,vec3(.12,.42,1.),tagOn*(1.-smoothstep(0.,2.,abs(dd-(12.+pulse*60.))))*(1.-pulse)*.6);
   // cooler, quieter grade for "before"
   float g=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(g),col,.2)*vec3(.97,.985,1.02),grey*(1.-k)*(1.-inBay)*.6);
-  vec2 pu=(uv-vr.xy)/vr.zw;col*=mix(1.,.93,smoothstep(.45,1.15,length((pu-.5)*vec2(1.2,1.))));
-  col+=(h(uv*res+time)-.5)*.016;
+  col=mix(col,col*col*(3.-2.*col),.14);
+  vec2 pu=(uv-vr.xy)/vr.zw;float vg=smoothstep(.5,1.2,length((pu-.5)*vec2(1.2,1.)));col*=mix(vec3(1.),vec3(.955,.965,.995),vg);col+=vec3(.014,.016,.02)*(1.-smoothstep(0.,.9,length((pu-vec2(.18,.08))*vec2(1.,1.2))));
+  col+=(h(floor(uv*res))-.5)*.012;
   gl_FragColor=vec4(col,1.);}`;
 
 // ---------- the floor: everything found in the render itself ----------
@@ -68,7 +69,7 @@ const LOOK1 = [[.8, .67, 3], [.71, .44, 5]], LOOK2 = [[.33, .37, 2], [.12, .5, 4
 const S0 = { cam: WIDE, draw: 1.03, dash: 0, amber: 1, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 0 };
 const st = (o) => Object.assign({ draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 }, o);
 export const BEATS = [
-  st({ ch: 0, cam: [.52, .55, 1.06] }),                                   // Think of the last time someone went looking for a trolley.
+  st({ ch: 0, cam: [.52, .55, 1.06], hide: 1 }),                                   // Think of the last time someone went looking for a trolley.
   st({ ch: 0, cam: [.62, .6, 1.12] }),                                    // The walk.
   st({ ch: 0, cam: [.58, .42, 1.12] }),                                   // The calls to stores.
   st({ ch: 0, cam: [.42, .5, 1.12] }),                                    // The second walk.
@@ -94,15 +95,15 @@ export const BEATS = [
 ];
 export const NB = BEATS.length;
 const SNAP = /[?&]still\b/.test(location.search); // screenshots: no easing lag
-const PLAY = .62; // each beat plays in its first 62% of scroll, then holds while it is read
+const PLAY = .7; // each beat plays in its first 62% of scroll, then holds while it is read
 export const REST = BEATS.map((_, i) => (i + .78) / NB);
 export const CH_FIRST = [0, 1, 2, 3, 4, 5, 6].map((c) => BEATS.findIndex((b) => b.ch === c));
 
 function sample(bf) {
-  const b = Math.min(NB - 1, Math.floor(bf)), u = clamp(bf - b), a = b ? BEATS[b - 1] : S0, z = BEATS[b], k = ease(clamp(u / PLAY));
+  const b = Math.min(NB - 1, Math.floor(bf)), u = clamp(bf - b), a = b ? BEATS[b - 1] : S0, z = BEATS[b], k = sm(0, 1, u / PLAY);
   const o = {}; for (const key of ['cam', 'draw', 'dash', 'amber', 'onlyQ', 'hide', 'bay', 'dot', 'grey']) o[key] = Array.isArray(a[key]) ? a[key].map((x, j) => lerp(x, z[key][j], k)) : lerp(a[key], z[key], k);
   if (b === 12) o.draw = clamp(u / PLAY) * 1.03;    // the paths draw on a steady clock so their fronts read
-  if (b === 0) o.draw = 1.03 * (1 - clamp(u / (PLAY * .7)));
+  if (b === 0) { o.draw = 1.03; o.hide = sm(0, PLAY * .7, u); }
   return o;
 }
 
@@ -163,7 +164,7 @@ export function story(section, canvas) {
     if (hctx) drawHUD(hctx, bf, t * .001, cx, cy, z, span);
     // the question's threads, from the words to the answers
     const ta = clamp((bf - 18.05) / .15) * clamp((19 - bf) / .1);
-    if (ta <= 0 || !qEl) thread.style.opacity = 0; else {
+    if (ta <= 0 || !qEl || innerWidth <= 900) thread.style.opacity = 0; else {
       const k = eo((bf - 18.1) / .4), cr = canvas.getBoundingClientRect(), sr = sticky.getBoundingClientRect(), sc = cr.width / canvas.width, desk = innerWidth > 900;
       const Pc = (u, v) => [((u - cx) * z / span[0] + .5) * canvas.width * sc + cr.left - sr.left, ((v - cy) * z / span[1] + .5) * canvas.height * sc + cr.top - sr.top];
       const q = qEl.getBoundingClientRect(), sx = desk ? q.right - sr.left + 18 : q.left - sr.left + Math.min(q.width * .5, 160), sy = desk ? q.top - sr.top + q.height * .45 : q.top - sr.top - 14;
@@ -178,7 +179,7 @@ export function story(section, canvas) {
 }
 
 /* ---------- shared with the landing: every tag located, and the lock on the trolley ---------- */
-const RED = '255,59,78', INDIGO = '75,61,240', INK = '11,18,56', BLUE = '31,107,255', AMB = '255,176,32';
+const RED = '31,107,255', INDIGO = '75,61,240', INK = '11,18,56', BLUE = '31,107,255', AMB = '255,176,32';
 // x: 2D context; P: plate -> device px; d: device pixels per CSS pixel; seen(i): 0..1 since the wave reached mover i; lockA: lock alpha
 export function drawLanding(x, P, d, seen, lockA, lockGrow = 0) {
   x.save(); x.lineCap = 'round';
@@ -365,7 +366,7 @@ function drawHUD(x, bf, t, cx, cy, z, span) {
     x.save(); x.globalAlpha = a * clamp(k * 3);
     x.fillStyle = `rgba(${RED},${.22 * (1 - drop)})`; floorRing(x, X, Y, 10 - drop * 4, s); x.fill();
     if (land > 0) for (let j = 0; j < 2; j++) { const ph = ((t * .45 + j / 2) % 1); x.strokeStyle = `rgba(${RED},${.5 * (1 - ph) * land * (1 - lp(12) * .7)})`; x.lineWidth = 1.6 * s; floorRing(x, X, Y, 10 + ph * 46, s); x.stroke(); }
-    const py = Y - drop * 60 * s - 4 * s; x.fillStyle = `rgb(${RED})`; x.shadowColor = `rgba(${RED},.45)`; x.shadowBlur = 16 * s;
+    const py = Y - drop * 60 * s - 4 * s; x.fillStyle = `rgb(${RED})`; x.shadowColor = `rgba(${RED},.32)`; x.shadowBlur = 12 * s;
     x.beginPath(); x.moveTo(X, py); x.bezierCurveTo(X - 13 * s, py - 15 * s, X - 13 * s, py - 34 * s, X, py - 34 * s); x.bezierCurveTo(X + 13 * s, py - 34 * s, X + 13 * s, py - 15 * s, X, py); x.fill();
     x.shadowColor = 'transparent'; x.fillStyle = '#fff'; x.beginPath(); x.arc(X, py - 23 * s, 4.2 * s, 0, 7); x.fill();
     x.restore();
@@ -375,7 +376,7 @@ function drawHUD(x, bf, t, cx, cy, z, span) {
   // ---- Ask: the floor dims; only the answers stay lit ----
   a = win(17, 19.05, .3);
   if (a > 0) {
-    x.save(); x.globalAlpha = a; x.fillStyle = 'rgba(232,238,248,.72)'; x.fillRect(0, 0, W, H);
+    x.save(); x.globalAlpha = a; x.fillStyle = 'rgba(238,243,252,.6)'; x.fillRect(0, 0, W, H);
     x.globalCompositeOperation = 'destination-out';
     WAITS.slice(0, 3).forEach(([u, v]) => { const [X, Y] = P(u, v), R = 110 * s; const g = x.createRadialGradient(X, Y - 10 * s, 0, X, Y - 10 * s, R); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(.55, 'rgba(0,0,0,.9)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(X - R, Y - R - 10 * s, R * 2, R * 2); });
     x.restore();
@@ -391,8 +392,8 @@ function drawHUD(x, bf, t, cx, cy, z, span) {
   // the answer draws itself around the three that match
   a = win(18, 19.05, .3);
   if (a > 0) WAITS.slice(0, 3).forEach(([u, v], i) => { const [X, Y] = P(u, v), k = eo((lp(18) - .2 - i * .1) / .4); if (k <= 0) return; x.save(); x.globalAlpha = a;
-    x.strokeStyle = `rgba(${AMB},.28)`; x.lineWidth = 9 * s; x.beginPath(); x.ellipse(X, Y, 58 * s, 36 * s, -.5, -2.2, -2.2 + 6.283 * k); x.stroke();
-    x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1.8 * s; x.beginPath(); x.ellipse(X, Y, 58 * s, 36 * s, -.5, -2.2, -2.2 + 6.283 * k); x.stroke(); x.restore(); });
+    x.strokeStyle = `rgba(${AMB},.22)`; x.lineWidth = 6 * s; x.beginPath(); x.ellipse(X, Y, 58 * s, 36 * s, -.5, -2.2, -2.2 + 6.283 * k); x.stroke();
+    x.strokeStyle = `rgb(${AMB})`; x.lineWidth = 1.6 * s; x.beginPath(); x.ellipse(X, Y, 58 * s, 36 * s, -.5, -2.2, -2.2 + 6.283 * k); x.stroke(); x.restore(); });
 
   // ---- One bay: corner marks settle around it; its waits; the numbers proved; more bays, later ----
   a = win(19, 24);

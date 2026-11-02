@@ -32,6 +32,7 @@ if (fine && !reduce) {
 }
 
 /* ---------- the film settles on a chapter when the visitor stops scrolling ---------- */
+let lastDir = 1, prevY = scrollY; const FINE = matchMedia('(pointer:fine)').matches;
 let settleT = 0; const STILL = /[?&]still\b/.test(location.search); // screenshots: no settling
 const settle = () => {
   if (reduce || !storySec || wheeling || STILL) return;
@@ -39,12 +40,16 @@ const settle = () => {
   if (drawBridge && y < top - 2) return; // the landing is driven by the hand alone: no auto-scroll
   if (p < -.12 || p > .985) return;
   const nb = +storySec.dataset.beats || 7; const rests = [0, ...Array.from({ length: nb }, (_, i) => (i + .78) / nb)];
-  let best = rests[0]; for (const r of rests) if (Math.abs(r - p) < Math.abs(best - p)) best = r;
+  // settle only forward in the direction the visitor was going, and only when the next rest is close: never pull back
+  if (!FINE) return;
+  const ahead = rests.filter((r) => lastDir > 0 ? r >= p - .002 : r <= p + .002); if (!ahead.length) return;
+  const best = lastDir > 0 ? Math.min(...ahead) : Math.max(...ahead);
+  if (Math.abs(best - p) * nb > .55) return;
   const to = top + best * len; if (Math.abs(to - y) < 6) return;
   target = to; cur = y; wheeling = true;
 };
 addEventListener('touchstart', () => { wheeling = false; clearTimeout(settleT); }, { passive: true });
-addEventListener('scroll', () => { clearTimeout(settleT); if (!wheeling) settleT = setTimeout(settle, 240); }, { passive: true });
+addEventListener('scroll', () => { const dy = scrollY - prevY; if (dy && !wheeling) lastDir = Math.sign(dy); prevY = scrollY; clearTimeout(settleT); if (!wheeling) settleT = setTimeout(settle, 240); }, { passive: true });
 
 /* ---------- cursor ---------- */
 const cursor = $('#cursor');
