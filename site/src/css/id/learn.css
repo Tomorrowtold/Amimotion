@@ -7,3 +7,8 @@
 @media (max-width:1023px){.related.tiles ul{grid-template-columns:1fr 1fr!important}}
 /* the cover tiles' one-line captions sit under the cover, on the paper: ink-soft, not the cover's white */
 .ds[data-world] .related.tiles li[style*="--cv"] span{display:block;margin-top:var(--s-3);color:var(--ink-soft)!important;font-size:max(var(--size-small),1rem);line-height:1.4}
+/* the paper close: the subline in ink-soft (the action band's white was left on cream), the pill filled with action */
+.look-close-paper .close .sub{color:var(--ink-soft)}
+.look-close-paper main .close a{background:var(--action);color:var(--on-action)!important}
+.look-close-paper main .close a:hover{background:color-mix(in srgb,var(--action) 86%,var(--ink))}
+.look-close-paper .close :focus-visible{outline-color:var(--action)}
