@@ -1,12 +1,36 @@
-/* /how-to-buy/: a path. The four steps run as one horizontal track with a marker that moves along as you scroll. */
+/* /how-to-buy/: a path. The four steps run as one track with a stop at each step; the track fills as you scroll.
+   On a phone the track turns and runs down the left edge. */
 .head h1{font-size:clamp(3rem,1.4rem + 5.2vw,7.6rem)}
 .head h1 span+span{color:var(--w-accent)}
 .head .words{display:block;grid-column:1 / span 7}
-.parts.c4,.points.c4{counter-reset:bs;gap:0!important;position:relative;padding-top:var(--s-6)}
-.points.c4::before{content:"";position:absolute;left:0;right:0;top:9px;height:4px;border-radius:2px;background:color-mix(in srgb,var(--w-accent) 20%,transparent)}
-.points.c4::after{content:"";position:absolute;left:0;top:0;width:22px;height:22px;border-radius:50%;background:var(--w-accent);box-shadow:0 0 0 6px var(--w-ground)}
+
+.steps.pillars{position:relative;padding-top:var(--s-6)}
+.steps.pillars::before,.steps.pillars::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:2px;background:color-mix(in srgb,var(--w-accent) 18%,transparent)}
+.steps.pillars::after{background:var(--w-accent);transform-origin:0 50%}
+.steps.pillars>li{position:relative;border-top:0!important;padding-top:var(--s-5)}
+.steps.pillars>li::after{content:"";position:absolute;left:0;top:calc(-1 * var(--s-6) - 6px);width:15px;height:15px;border-radius:50%;background:var(--w-accent);box-shadow:0 0 0 6px var(--w-ground)}
+.steps.pillars>li::before{color:var(--w-accent)}
 @supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
-  .points.c4::after{animation:bs-run linear both;animation-timeline:view();animation-range:entry 60% cover 70%}
-  @keyframes bs-run{to{left:calc(100% - 22px)}}
+  .steps.pillars{view-timeline:--bs block}
+  .steps.pillars::after{animation:bs-fill linear both;animation-timeline:--bs;animation-range:entry 60% contain 40%}
+  @keyframes bs-fill{from{transform:scaleX(.04)}to{transform:scaleX(1)}}
 }}
-.points.c4>li{background:none!important;padding:var(--s-5) var(--s-5) 0 0!important}
+@media (max-width:1023px){
+  .steps.pillars{grid-template-columns:minmax(0,1fr)!important;padding-top:0;padding-left:36px}
+  .steps.pillars::before,.steps.pillars::after{left:6px;right:auto;top:8px;bottom:8px;width:3px;height:auto}
+  .steps.pillars::after{transform-origin:50% 0}
+  .steps.pillars>li{padding-top:0}
+  .steps.pillars>li::after{left:-36px;top:.5em}
+  @supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
+    .steps.pillars::after{animation-name:bs-fill-y}
+    @keyframes bs-fill-y{from{transform:scaleY(.04)}to{transform:scaleY(1)}}
+  }}
+}
+
+/* What you buy: four tiles of one size, each part on its own card. The survey has no photograph, so its words
+   sit at the foot of the card, level with the others. */
+.parts.c4{gap:var(--s-3)!important}
+.parts.c4>li{background:var(--surface);border-radius:20px;padding:var(--s-4) var(--s-4) var(--s-5);display:flex;flex-direction:column;box-shadow:0 1px 0 var(--hairline)}
+.parts.c4>li .pic{margin:0 0 var(--s-4)!important;border-radius:12px;overflow:hidden;aspect-ratio:4/3}
+.parts.c4>li .pic img{width:100%;height:100%;object-fit:cover}
+.parts.c4>li:not(:has(.pic)){justify-content:flex-end;background:var(--w-plate,var(--surface))}

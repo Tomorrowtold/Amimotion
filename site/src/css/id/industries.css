@@ -11,3 +11,8 @@
 .parts.c3 h3 a::after{content:"";position:absolute;inset:0;z-index:3}
 .parts.c3 p{color:rgba(255,255,255,.8)!important}
 .parts.c3>li:hover .pic img{transform:scale(1.05)}
+/* The photograph fills the whole card: the shared lineup rule gives .pic a 4:3 box, which left a white strip above
+   each photo and a grey wash below it. */
+.parts.c3>li .pic{aspect-ratio:auto;display:block;background:none}
+.parts.c3>li .pic picture{display:block;height:100%}
+.parts.c3>li::before{inset:35% 0 0;background:linear-gradient(to top,rgba(14,19,38,.88),rgba(14,19,38,.45) 55%,transparent)}
