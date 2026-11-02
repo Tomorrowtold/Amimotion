@@ -36,3 +36,6 @@
 @media (max-width:1023px){.steps li{border-radius:0!important}.steps li:not(:last-child)::after{display:none}.pf-stack{aspect-ratio:1/1}.pf-plane{left:12%;width:76%}}
 .pf-plane .lbl2{font:600 54px var(--font-display);fill:var(--w-accent)}
 .pf-plane .flab{position:absolute;left:3%;bottom:4%;font:600 1.1rem/1 var(--font-display);color:var(--ink);background:#fff;padding:6px 10px;border-radius:6px}
+/* the stack is a picture: it never takes a click, and the hero words paint above the planes as they lift apart. */
+.pf-stack{pointer-events:none}
+.head .words,.head h1{position:relative;z-index:2}
