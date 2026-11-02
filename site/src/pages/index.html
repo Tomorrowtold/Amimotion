@@ -45,15 +45,11 @@ og: /assets/home/og-home.jpg
 <!-- S1c Hall film, full bleed (M05, M24), then S2 slides over it. Plays only in view, muted, with a pause control.
      The poster stays with JavaScript off or reduced motion (a play control is offered). -->
 <div class="stack">
-  <figure class="film" data-film data-src="/assets/home/hero-film/hall">
+  <figure class="film plant" data-plant>
     <picture>
-      <source media="(max-aspect-ratio:1/1)" type="image/avif" srcset="/assets/home/hero-film/poster-1x1-600.avif 600w, /assets/home/hero-film/poster-1x1-1080.avif 1080w, /assets/home/hero-film/poster-1x1-1600.avif 1600w, /assets/home/hero-film/poster-1x1-2400.avif 2400w" sizes="100vw">
-      <source media="(max-aspect-ratio:1/1)" type="image/webp" srcset="/assets/home/hero-film/poster-1x1-600.webp 600w, /assets/home/hero-film/poster-1x1-1080.webp 1080w, /assets/home/hero-film/poster-1x1-1600.webp 1600w, /assets/home/hero-film/poster-1x1-2400.webp 2400w" sizes="100vw">
-      <source type="image/avif" srcset="/assets/home/hero-film/poster-4x5-800.avif 800w, /assets/home/hero-film/poster-4x5-1200.avif 1200w, /assets/home/hero-film/poster-4x5-1600.avif 1600w, /assets/home/hero-film/poster-4x5-2400.avif 2400w, /assets/home/hero-film/poster-4x5-3200.avif 3200w" sizes="100vw">
-      <img src="/assets/home/hero-film/poster-4x5-1200.webp" srcset="/assets/home/hero-film/poster-4x5-800.webp 800w, /assets/home/hero-film/poster-4x5-1200.webp 1200w, /assets/home/hero-film/poster-4x5-1600.webp 1600w, /assets/home/hero-film/poster-4x5-2400.webp 2400w, /assets/home/hero-film/poster-4x5-3200.webp 3200w" sizes="100vw" width="1600" height="2000" loading="lazy" decoding="async" alt="A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went. Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting.">
+      <source type="image/avif" srcset="/assets/home/plant/floor-169-800.avif 800w, /assets/home/plant/floor-169-1600.avif 1600w, /assets/home/plant/floor-169-2752.avif 2752w" sizes="100vw">
+      <img src="/assets/home/plant/floor-169-1600.webp" srcset="/assets/home/plant/floor-169-800.webp 800w, /assets/home/plant/floor-169-1600.webp 1600w, /assets/home/plant/floor-169-2752.webp 2752w" sizes="100vw" width="2752" height="1536" loading="lazy" decoding="async" alt="A production supervisor walks down a rack aisle on a busy Indian factory floor, past shelves of machined aluminium housings and loaded trolleys.">
     </picture>
-    <video muted playsinline loop preload="none" disablepictureinpicture disableremoteplayback aria-hidden="true" tabindex="-1"></video>
-    <button class="playpause" type="button" aria-label="Pause the film" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/><path class="i-play" d="M8 5.5v13l11-6.5z"/></svg></button>
   </figure>
 
   <!-- S2 Find it (M06, M07): a two-screen sticky stage. Scan (the before frame, checkpoint ticks only) gives way to
@@ -100,25 +96,42 @@ og: /assets/home/og-home.jpg
   </section>
 </div>
 
-<!-- S2b How it finds a tag (M04): one pinned stage in four steps. Captions are the homepage's own lines. With JavaScript
-     off or reduced motion it is a four-panel strip. Inline SVG, drawn in the design tokens; no numbers, no UI. -->
-<section class="how" aria-label="How it locates a tag" data-stage>
+<!-- S2b How it finds a tag (M04, round 19): one pinned, scroll-driven three.js stage in four steps over a slice of plant
+     floor, with the real AmIGo and AmIMo CAD. Captions are the homepage's own lines. js/locate.js starts it near the viewport
+     (locate-scene.js, three.js); with JavaScript off, reduced motion or no WebGL it is a strip of four stills rendered
+     from the same scene. Timing figures in the scene are illustrative, computed from the drawn distances. -->
+<section class="how" aria-label="How it locates a tag" data-stage data-locate>
   <div class="how-pin">
+    <div class="how-scene" hidden>
+      <p class="vh" id="how-scene-desc">A slice of a plant floor: a grey epoxy aisle with worn yellow lines, two steel columns and a rack end. A steel trolley of machined aluminium housings rolls in and stops. The AmIGo tag on its rail sends a pulse; three AmIMo anchors, high on the columns and the rack, each note when it arrived and the angle it came from. AmIHub turns those into one position on the floor, and the view becomes the live map, which keeps the last seen mark and how long the trolley has waited. Use the left and right arrow keys to move the trolley along the aisle; the timings and the position follow it.</p>
+    </div>
     <ol class="how-steps">
       <li class="s1">
-        <svg viewBox="0 0 400 300" aria-hidden="true"><rect class="d-floor" x="1" y="1" width="398" height="298" rx="6"/><g class="d-anc"><rect x="48" y="44" width="22" height="16" rx="2"/><rect x="328" y="56" width="22" height="16" rx="2"/><rect x="188" y="252" width="22" height="16" rx="2"/></g><rect class="d-tag" x="226" y="134" width="18" height="14" rx="3"/><circle class="d-pulse" cx="235" cy="141" r="4"/></svg>
+        <picture>
+          <source type="image/avif" srcset="/assets/locate/step-1-800.avif 800w, /assets/locate/step-1-1600.avif 1600w" sizes="(min-width:1024px) 25vw, (min-width:561px) 50vw, 100vw">
+          <img src="/assets/locate/step-1-800.webp" srcset="/assets/locate/step-1-800.webp 800w, /assets/locate/step-1-1600.webp 1600w" sizes="(min-width:1024px) 25vw, (min-width:561px) 50vw, 100vw" width="1600" height="900" loading="lazy" decoding="async" alt="A steel WIP trolley of machined aluminium housings stops on a grey epoxy aisle. The AmIGo tag sits on its side rail; AmIMo anchors are mounted high on two columns and a rack end.">
+        </picture>
         <p>Sends a short UWB radio pulse when it moves and sleeps when it stops.</p>
       </li>
       <li class="s2">
-        <svg viewBox="0 0 400 300" aria-hidden="true"><rect class="d-floor" x="1" y="1" width="398" height="298" rx="6"/><g class="d-sig"><path d="M235 141L59 52M235 141L339 64M235 141L199 260"/></g><g class="d-anc"><rect x="48" y="44" width="22" height="16" rx="2"/><rect x="328" y="56" width="22" height="16" rx="2"/><rect x="188" y="252" width="22" height="16" rx="2"/></g><g class="d-bar"><rect x="48" y="66" width="98" height="6" rx="3"/><rect x="292" y="78" width="58" height="6" rx="3"/><rect x="216" y="257" width="60" height="6" rx="3"/></g><rect class="d-tag" x="226" y="134" width="18" height="14" rx="3"/></svg>
+        <picture>
+          <source type="image/avif" srcset="/assets/locate/step-2-800.avif 800w, /assets/locate/step-2-1600.avif 1600w" sizes="(min-width:1024px) 25vw, (min-width:561px) 50vw, 100vw">
+          <img src="/assets/locate/step-2-800.webp" srcset="/assets/locate/step-2-800.webp 800w, /assets/locate/step-2-1600.webp 1600w" sizes="(min-width:1024px) 25vw, (min-width:561px) 50vw, 100vw" width="1600" height="900" loading="lazy" decoding="async" alt="Three thin timing lines run from the tag on the trolley to the three anchors, each with the time its pulse arrived and the angle it came from.">
+        </picture>
         <p>Records when each pulse arrives and the angle it came from.</p>
       </li>
       <li class="s3">
-        <svg viewBox="0 0 400 300" aria-hidden="true"><rect class="d-floor" x="1" y="1" width="398" height="298" rx="6"/><g class="d-solve"><path d="M59 52L235 141M339 64L235 141M199 260L235 141"/></g><g class="d-anc"><rect x="48" y="44" width="22" height="16" rx="2"/><rect x="328" y="56" width="22" height="16" rx="2"/><rect x="188" y="252" width="22" height="16" rx="2"/></g><g class="d-bar"><rect x="48" y="66" width="98" height="6" rx="3"/><rect x="292" y="78" width="58" height="6" rx="3"/><rect x="216" y="257" width="60" height="6" rx="3"/></g><rect class="d-tag" x="226" y="134" width="18" height="14" rx="3"/></svg>
+        <picture>
+          <source type="image/avif" srcset="/assets/locate/step-3-800.avif 800w, /assets/locate/step-3-1600.avif 1600w" sizes="(min-width:1024px) 25vw, (min-width:561px) 50vw, 100vw">
+          <img src="/assets/locate/step-3-800.webp" srcset="/assets/locate/step-3-800.webp 800w, /assets/locate/step-3-1600.webp 1600w" sizes="(min-width:1024px) 25vw, (min-width:561px) 50vw, 100vw" width="1600" height="900" loading="lazy" decoding="async" alt="The view turns top-down into the live map. The three lines resolve into one position mark on the floor beside the trolley.">
+        </picture>
         <p>Works out where each tag is from those times and angles.</p>
       </li>
       <li class="s4">
-        <svg viewBox="0 0 400 300" aria-hidden="true"><rect class="d-floor" x="1" y="1" width="398" height="298" rx="6"/><path class="d-trail" d="M40 236C110 236 150 226 176 196S214 141 235 141"/><g class="d-anc"><rect x="48" y="44" width="22" height="16" rx="2"/><rect x="328" y="56" width="22" height="16" rx="2"/><rect x="188" y="252" width="22" height="16" rx="2"/></g><rect class="d-tag" x="226" y="134" width="18" height="14" rx="3"/><circle class="d-dot" cx="235" cy="141" r="9"/></svg>
+        <picture>
+          <source type="image/avif" srcset="/assets/locate/step-4-800.avif 800w, /assets/locate/step-4-1600.avif 1600w" sizes="(min-width:1024px) 25vw, (min-width:561px) 50vw, 100vw">
+          <img src="/assets/locate/step-4-800.webp" srcset="/assets/locate/step-4-800.webp 800w, /assets/locate/step-4-1600.webp 1600w" sizes="(min-width:1024px) 25vw, (min-width:561px) 50vw, 100vw" width="1600" height="900" loading="lazy" decoding="async" alt="The live map keeps the trolley's last seen mark and the path it took, with an amber timer for how long it has waited.">
+        </picture>
         <p>One live map shows where it went and how long it has waited.</p>
       </li>
     </ol>

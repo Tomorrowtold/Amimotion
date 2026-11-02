@@ -137,17 +137,9 @@ main a:hover{text-decoration-thickness:2px}
 .how{background:var(--surface);padding:var(--rhythm-l) var(--margin);border-top:1px solid var(--hairline)}
 .how-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--gutter);row-gap:var(--s-7)}
 .how-steps li{min-width:0}
-.how-steps svg{display:block;width:100%;height:auto;margin-bottom:var(--s-5)}
+.how-steps picture{display:block;margin-bottom:var(--s-5)}
+.how-steps img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:6px;background:var(--ground)}
 .how-steps p{margin:0;font-size:var(--size-body);max-width:22em}
-.d-floor{fill:var(--ground);stroke:var(--hairline)}
-.d-anc rect{fill:var(--hardware)}
-.d-tag{fill:var(--hardware)}
-.d-pulse{fill:var(--located)}
-.d-sig path{fill:none;stroke:var(--located);stroke-width:1.5;stroke-dasharray:3 5;opacity:.7}
-.d-bar rect{fill:var(--located)}
-.d-solve path{fill:none;stroke:var(--ink);stroke-width:1.25}
-.d-trail{fill:none;stroke:var(--located);stroke-width:4;stroke-linecap:round}
-.d-dot{fill:var(--located)}
 .how .more{margin-top:var(--s-7)}
 @media (max-width:1023px){.how-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.how-steps{grid-template-columns:minmax(0,1fr)}}
@@ -158,12 +150,44 @@ main a:hover{text-decoration-thickness:2px}
 .motion .how-steps .s1{--n:0}.motion .how-steps .s2{--n:1}.motion .how-steps .s3{--n:2}
 .motion .how-steps .s4{--n:3;opacity:clamp(0,var(--k) * 40,1)}
 .motion .how-steps .s1{opacity:clamp(0,(1 - var(--k)) * 40,1)}
-.motion .how-steps svg{height:100%;width:auto;max-width:100%;max-height:64svh;margin:0 0 var(--s-6)}
+.motion .how-steps picture{height:100%;min-height:0;display:flex;align-items:center;margin:0 0 var(--s-6)}
+.motion .how-steps img{height:auto;max-height:64svh;width:auto;max-width:100%}
 .motion .how-steps p{font:600 var(--size-h3)/1.2 var(--font-display);letter-spacing:-.015em;text-align:center;max-width:24em;text-wrap:balance}
 .motion .how .more{justify-content:center;margin-top:var(--s-5)}
-.motion .d-pulse{animation:pulse 1.2s var(--ease-ds) infinite}
-@keyframes pulse{50%{opacity:.15}}
-@media (max-width:1023px){.motion .how{height:320svh}.motion .how-pin{padding-block:var(--s-6)}.motion .how-steps svg{max-height:46svh}}
+@media (max-width:1023px){.motion .how{height:320svh}.motion .how-pin{padding-block:var(--s-6)}.motion .how-steps img{max-height:46svh}}
+/* round 19: the live stage (js/locate-scene.js). The canvas fills the pin above the caption band; lines and figures are
+   an SVG and HTML layer over it, so they stay crisp at any pixel ratio. */
+.how.is-3d .how-pin{padding:0;grid-template-rows:minmax(0,1fr) auto auto;align-items:stretch}
+.how.is-3d .how-scene{display:block;grid-row:1;position:relative;min-height:0;overflow:hidden;background:var(--ground);touch-action:pan-y;outline:none}
+.how.is-3d .how-scene:focus-visible{box-shadow:inset 0 0 0 2px var(--focus)}
+.how.is-3d .how-steps{grid-row:2;height:auto;padding:var(--s-6) var(--margin) 0}
+.how.is-3d .how-steps li{grid-template-rows:auto}
+.how.is-3d .how-steps picture{display:none}
+.how.is-3d .more{grid-row:3;margin:var(--s-3) 0 var(--s-6);padding:0 var(--margin)}
+.how-scene canvas,.how-scene .lz-ov{position:absolute;inset:0;width:100%;height:100%;display:block}
+.how-scene canvas{cursor:grab}.how-scene.is-drag canvas{cursor:grabbing}
+.how-scene .lz-ov{pointer-events:none;overflow:visible}
+.lz-ov line{stroke:var(--located);stroke-width:1.5;stroke-linecap:round;fill:none}
+.lz-ov .lz-lead{stroke:var(--ink);stroke-width:1;opacity:0}
+.lz-ov .lz-trail{stroke:var(--located);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.lz-ov circle{fill:var(--located)}
+.lz-cross path{stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;fill:none}
+.lz-ruler line,.lz-ruler path{stroke:var(--ink);stroke-width:1;fill:none}
+.lz-ruler g line{stroke:var(--located);stroke-width:2}
+.lz-ruler .lz-minor{stroke:var(--ink);opacity:.35}
+.lz-ruler text{font:500 11px/1 var(--font-text);fill:var(--ink);font-variant-numeric:tabular-nums}
+.lz-ruler .lz-unit{fill:var(--ink-soft)}
+.lz-ruler .lz-n{fill:var(--located)}
+.lz-l{position:absolute;left:0;top:0;pointer-events:none;font:500 12px/1.35 var(--font-text);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;background:var(--surface);border:1px solid var(--hairline);border-radius:4px;padding:5px 8px;opacity:0}
+.lz-l b{display:block;font-weight:500;font-size:11px;color:var(--ink-soft)}
+.lz-l i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--located);margin-right:6px;vertical-align:1px}
+.lz-l.is-sleep i{background:var(--ink-soft);opacity:.45}
+.lz-l.lz-mid{padding:2px 6px;font-size:11px;color:var(--located);border-color:rgba(31,107,255,.25)}
+.lz-l .lz-t{color:var(--ink-soft)}
+.lz-l.lz-wait b span{color:var(--ink);font-weight:500}
+.lz-l.lz-wait em{display:block;margin-top:4px;font-style:normal;background:var(--waiting);color:var(--ink);border-radius:3px;padding:2px 6px}
+.lz-hint{position:absolute;left:var(--margin);bottom:var(--s-4);margin:0;font:500 12px/1.3 var(--font-text);color:var(--ink-soft);pointer-events:none;transition:opacity .4s}
+.lz-hint.is-used{opacity:0}
 
 /* ================= S3 See where work waits: the queue full bleed, the copy slides over it ================= */
 .waits{position:relative}
@@ -310,3 +334,10 @@ main a:hover{text-decoration-thickness:2px}
   .close p{margin:var(--s-5) 0 var(--s-6)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* S1c real plant still (Higgsfield F1-G keyframe) until the F1 film lands: a slow push as you scroll through it */
+.film.plant img{object-position:50% 45%;transform-origin:50% 45%;transition:none}
+.motion .film.plant img{animation:plant-push linear both;animation-timeline:view();animation-range:entry 0% exit 100%}
+@keyframes plant-push{from{transform:scale(1.02)}to{transform:scale(1.14)}}
+@media (max-aspect-ratio:1/1){.film.plant img{object-position:52% 50%}}
+@media (prefers-reduced-motion:reduce){.motion .film.plant img{animation:none}}
