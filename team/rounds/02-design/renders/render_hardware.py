@@ -782,6 +782,95 @@ def shot_closer():
     _still_or_plate(f'closer_{prod}_az{int(az)}_el{int(el)}', W, H, [p])
 
 
+def _seq_static(name, W, H, steps, movable, pose_fn):
+    """A sequence with a locked camera and studio: one plate (the movable CAD parts hidden), then each frame."""
+    if '--plate' in args:
+        p = os.path.join(OUT, name + '_plate.png')
+        if not os.path.exists(p): _hide(movable); _render_seq(p, max(64, W // 4), max(64, H // 4))
+        return
+    for f in _frames(f'0-{steps - 1}'):
+        p = os.path.join(OUT, '%s_f%04d.png' % (name, f))
+        if os.path.exists(p): continue
+        pose_fn(f / (steps - 1)); bpy.context.view_layer.update()
+        t0 = __import__('time').time(); _render_seq(p, W, H); print('FRAME', name, f, '%.1fs' % (__import__('time').time() - t0), flush=True)
+
+
+def shot_lower():
+    """R10: AmIGo lowering onto a trolley rail, tag z 120 mm -> 0 over 12 frames (ease-out, as a hand sets it down).
+    The rail is a plain 30 x 30 mm square steel tube (an environment prop, not hardware: the trolley's rail) lying
+    across the sweep; the tag lands on its top face. Nothing is added to the tag: no screw is drawn."""
+    W, H = (int(v) for v in opt('--res', '1600x1000').split('x'))
+    sc = reset(); _seq_settings(sc, SAMPLES); world(0.30, rot=0.6); sweep(-62)
+    bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0)
+    me = bpy.data.meshes.new('rail'); bm.to_mesh(me); bm.free()
+    rail = link(bpy.data.objects.new('rail', me)); rail.scale = (0.24, 0.030, 0.030); rail.location = (0, 0, 0.015); rail.rotation_euler = (0, 0, math.radians(-62 + 90 + 20))
+    bv = rail.modifiers.new('bv', 'BEVEL'); bv.width = 0.0015; bv.segments = 3
+    m = bpy.data.materials.new('steel'); m.use_nodes = True; b = m.node_tree.nodes['Principled BSDF']
+    b.inputs['Base Color'].default_value = (*srgb('#b9bcc0'), 1); b.inputs['Metallic'].default_value = 1.0
+    b.inputs['Roughness'].default_value = 0.42; rail.data.materials.append(m)
+    t = _tag(-62 + 90 + 20 + 90, (0, 0, 0.030)); base = t.matrix_world.copy()
+    _seq_settings(sc, SAMPLES)
+    rig((0, 0, 0.05), cam_az=-62, fill=1.2, rake=6.0, rake_az=-62 + 100, rake_el=16)
+    camera(look_from((0, 0, 0.078), -62, 16, 0.80), (0, 0, 0.078), lens=85, fstop=11.0, focus=(0, 0, 0.045))
+    def pose(u):
+        z = 0.120 * (1 - u) ** 2   # ease out: fast at first, settling onto the rail
+        t.matrix_world = Matrix.Translation((0, 0, z)) @ base
+    _seq_static('lower', W, H, opt('--steps', 12), [t], pose)
+
+
+def shot_covers():
+    """R11: the two AmIGo covers part: the top cover (the logo face) lifts 18 mm straight off the bottom cover over
+    24 frames, camera el 25. CAD parts only; the CAD holds no electronics, so none are shown."""
+    W, H = (int(v) for v in opt('--res', '1200x1200').split('x'))
+    sc = reset(); _seq_settings(sc, SAMPLES); world(0.30, rot=0.6); sweep(-30)
+    root, top, bot = amigo()
+    top.data.materials.append(plastic('tag_top', PLASTIC, 0.0)); bot.data.materials.append(plastic('tag_bot', PLASTIC, 5.0))
+    place(root, rz=math.radians(TAG_RZ + 50)); tb = top.matrix_world.copy()
+    _seq_settings(sc, SAMPLES)
+    rig((0, 0, 0.02), cam_az=-30, fill=1.4, rake=6.0, rake_az=-30 + 100, rake_el=16)
+    camera(look_from((0, 0, 0.020), -30, 25, 0.36), (0, 0, 0.020), lens=85, fstop=11.0, focus=(0, 0, 0.022))
+    def pose(u):
+        e = u * u * (3 - 2 * u)
+        top.matrix_world = Matrix.Translation((0, 0, 0.018 * e)) @ tb
+    _seq_static('covers', W, H, opt('--steps', 24), [top, bot], pose)
+
+
+def shot_amimo_column():
+    """R13: AmIMo on a column, from below. The anchor as the CAD gives it: the flanged plate flat on the column
+    face, the RJ45 opening facing down. 70 mm, camera ~0.33 m out and below; key from above at el 60, fill 1:6.
+    The column is a plain painted steel face (environment). No cable: the CAD has no DC jack, and a cable or plug
+    would be a part that is not in the CAD (homepage-final.md asks for one; see the manifest)."""
+    W, H = (int(v) for v in opt('--res', '2400x1600').split('x'))
+    sc = reset(); _seq_settings(sc, SAMPLES); world(0.35, rot=0.6)
+    body = import_part('PCB_ENCLOUSER_main_body'); cap = import_part('PCB_ENCLOUSER_cap')
+    root = link(bpy.data.objects.new('amimo', None))
+    for o in (body, cap): o.parent = root
+    body.data.materials.append(plastic('anchor', PLASTIC, 2.0)); cap.data.materials.append(plastic('anchor_cap', PLASTIC, 7.0))
+    bpy.context.view_layer.update()
+    vs = [p.matrix_world @ v.co for p in (body, cap) for v in p.data.vertices]
+    mx = Vector([max(v[i] for v in vs) for i in range(3)]); mn = Vector([min(v[i] for v in vs) for i in range(3)])
+    root.location = (-(mn.x + mx.x) / 2, -mx.y, -(mn.z + mx.z) / 2)   # plate (CAD +Y) on the face y = 0, centred
+    bpy.context.view_layer.update()
+    # the column: a 0.30 m painted steel box behind the face y = 0, standing tall
+    bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0); me = bpy.data.meshes.new('col'); bm.to_mesh(me); bm.free()
+    col = link(bpy.data.objects.new('column', me)); col.scale = (0.40, 0.30, 3.0); col.location = (-0.07, 0.15, 0)
+    bv = col.modifiers.new('bv', 'BEVEL'); bv.width = 0.004; bv.segments = 3
+    m = bpy.data.materials.new('paint'); m.use_nodes = True; b = m.node_tree.nodes['Principled BSDF']
+    b.inputs['Base Color'].default_value = (*srgb('#d9dde3'), 1); b.inputs['Roughness'].default_value = 0.55
+    tc = m.node_tree.nodes.new('ShaderNodeTexCoord'); n = m.node_tree.nodes.new('ShaderNodeTexNoise')
+    n.inputs['Scale'].default_value = 400; bp = m.node_tree.nodes.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = 0.05
+    m.node_tree.links.new(tc.outputs['Object'], n.inputs['Vector']); m.node_tree.links.new(n.outputs['Fac'], bp.inputs['Height'])
+    m.node_tree.links.new(bp.outputs['Normal'], b.inputs['Normal']); col.data.materials.append(m)
+    _seq_settings(sc, SAMPLES)
+    area('key', (0.10, -0.30, 0.55), (0, 0, 0), 0.5, 140, 5900, size_y=0.4)            # el ~60 from the front-right
+    area('fill', (-0.45, -0.55, -0.15), (0, 0, 0), 1.0, 40, 5900, size_y=0.7)         # 1:6 from the left, low
+    area('rim', (-0.25, -0.05, 0.35), (0, 0, 0), 0.08, 30, 5900, size_y=0.5)
+    camera((0.20, -0.38, -0.15), (0.0, -0.012, -0.002), lens=70, fstop=8.0, focus=(0.0, -0.02, -0.03))
+    os.makedirs(OUT, exist_ok=True)
+    t0 = __import__('time').time(); _render_seq(os.path.join(OUT, 'amimo_column.png'), W, H)
+    print('STILL amimo_column', '%.1fs' % (__import__('time').time() - t0), flush=True)
+
+
 TAG_RZ = 90.0     # long axis across frame
 PAGE_EL = opt('--el', 30.0)
 PAGE_DIST = opt('--dist', 0.35)
@@ -793,6 +882,7 @@ ANC_RZ = 0.0
 if __name__ == '__main__':
     shots = {'amigo_hero': shot_amigo_hero, 'amigo_logo': shot_amigo_logo,
              'amimo_rj45': shot_amimo_rj45, 'pair_scale': shot_pair_scale, 'amigo_page': shot_amigo_page,
-             'turntable': shot_turntable, 'family': shot_family, 'macro': shot_macro, 'closer': shot_closer}
+             'turntable': shot_turntable, 'family': shot_family, 'macro': shot_macro, 'closer': shot_closer,
+             'lower': shot_lower, 'covers': shot_covers, 'amimo_column': shot_amimo_column}
     for s in (shots if SHOT == 'all' else [SHOT]):
         shots[s]()

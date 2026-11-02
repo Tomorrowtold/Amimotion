@@ -40,7 +40,12 @@ def grade(frame, plate_lin, ground='#f0f6ff', grain=False, seed=11, edge=0.04):
     G = 0.015 * float((plate_lin @ Y3).mean())
     f = f * 0.95 ** 2.2 + G; p = plate_lin * 0.95 ** 2.2 + G
     g0 = L(hexc('#f5f5f2'))
-    out = f / np.maximum(p, 1e-4) * g0
+    # per-channel flat-field on the paper; on the dark plastic the luminance of the plate only, so the paper's
+    # slight warmth behind the tag cannot tint the tag cool when it is divided out
+    k = g0 / np.maximum(p, 1e-4)
+    kn = (float(g0 @ Y3) / np.maximum(p @ Y3, 1e-4))[..., None]
+    tn = np.clip(((f * k) @ Y3 - 0.12) / 0.38, 0, 1); tn = (tn * tn * (3 - 2 * tn))[..., None]
+    out = f * (kn + (k - kn) * tn)
     out[unr] = g0
     out = np.minimum(out, g0)
     # where the picture is the page: weight from the blurred difference to the ground (exact ground elsewhere)
@@ -77,11 +82,12 @@ if __name__ == '__main__':
     a = sys.argv[1:]
     ground = a[a.index('--ground') + 1] if '--ground' in a else '#f0f6ff'
     grain = '--grain' in a
-    a = [x for i, x in enumerate(a) if not x.startswith('--') and (i == 0 or a[i - 1] != '--ground')]
+    edge = float(a[a.index('--edge') + 1]) if '--edge' in a else 0.04   # 0: the picture may run off the frame's edges
+    a = [x for i, x in enumerate(a) if not x.startswith('--') and (i == 0 or a[i - 1] not in ('--ground', '--edge'))]
     plate, outdir, frames = a[0], a[1], a[2:]
     pl = L(load(plate)); os.makedirs(outdir, exist_ok=True)
     for fr in frames:
         dst = os.path.join(outdir, os.path.basename(fr))
         if os.path.exists(dst) and os.path.getmtime(dst) > os.path.getmtime(fr): continue
-        grade(fr, pl, ground, grain).save(dst, compress_level=2)
+        grade(fr, pl, ground, grain, edge=edge).save(dst, compress_level=2)
         print('graded', dst, flush=True)

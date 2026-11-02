@@ -19,7 +19,7 @@ Formats:
 | Job | Screen | Status |
 |---|---|---|
 | R1 AmIGo turntable | Home S1 | rendering (96 frames, 1440 px) |
-| R2 AmIGo macro | Home S1b | rendering |
+| R2 AmIGo macro | Home S1b | **landed** |
 | R3 family stage still | Home S5, /products/ | queued |
 | R3b family dolly | Home S5 | queued |
 | R4 hall wide, pale and after, plus 4 zone masks | Home S4, /diagnostic/ | queued |
@@ -33,6 +33,22 @@ Formats:
 | R12 hall line drawing | /technology/ header | **landed** |
 | R13 AmIMo on column | AmIMo hero, S5 tab | see notes |
 
+## R2 AmIGo macro (Home S1b): landed
+
+A new macro of the tag's top cover (the `macro` shot): 100 mm, f/8, el 58°, focus on the logo plane. The debossed "amimotion" and the left screw ear sit on paper at the top and left. The tag's right end and its right ear run off the frame's right edge, so the page can bleed the picture off the viewport's right edge, as the plan asks. The bottom of the tag reaches the bottom edge.
+
+| File | Size | Ratio | Bytes (AVIF / WebP) |
+|---|---|---|---|
+| `home/amigo-macro-r2-800.{avif,webp}` | 800 x 533 | 3:2 | 7.2 / 12.8 KB |
+| `home/amigo-macro-r2-1600.{avif,webp}` | 1600 x 1067 | 3:2 | 15.1 / 36.9 KB |
+| `home/amigo-macro-r2-2400.{avif,webp}` | 2400 x 1600 | 3:2 | 21.6 / 56.9 KB |
+
+- Format: RGBA. It is transparent wherever it is the page, so it sits on #f0f6ff with no box. The right and bottom edges are the picture itself, not the page.
+- The tag's plastic measures 83/84/85 (median). That is the render's own studio light, as cool as the #3a3d42 token or less. The paper retint does not touch it.
+- Swap: `<figure class="macro">` srcset, from the stand-in `amigo-macro-1200/2000/3200` (a crop of the old 7680 still) to `amigo-macro-r2-800/1600/2400`. Intrinsic size 2400 x 1600.
+- Not 3840: the frame holds the logo at about 1,150 px wide at 2400, which is more than S1b shows at 2x. A 3840 render would take about an hour of the shared CPU.
+- Alt (when it is not decorative): "Close up of the AmIGo tag's dark grey cover, with amimotion pressed into it and a screw ear at its side." Next to the "±10 cm" text it is decorative: use `alt=""`.
+
 ## R6 queue full-bleed (Home S3): landed
 
 The desktop and tablet full-bleed is the existing `hall/hall-waits` ladder: 16:9, widths 800, 1600, 2400 and 3840, intrinsic size 3840 x 2160. It is the plan's shot: camera A on the inspection queue and the staging lane, after state. Round 11 adds the phone crop and the inline chip, both cut from the same graded master (`08-pictures/raw/a-waits-graded.png`), so all three match pixel for pixel.
@@ -42,8 +58,8 @@ The desktop and tablet full-bleed is the existing `hall/hall-waits` ladder: 16:9
 | `home/queue-1x1-800.{avif,webp}` | 800 x 800 | 1:1 | 20.1 / 26.2 KB | S3 phone, `<source media="(max-width: 700px)">` |
 | `home/queue-1x1-1600.{avif,webp}` | 1600 x 1600 | 1:1 | 42.6 / 56.8 KB | S3 phone at 2x and 3x |
 | `home/queue-1x1-2160.{avif,webp}` | 2160 x 2160 | 1:1 | 59.1 / 79.5 KB | master |
-| `home/queue-chip-240.{avif,webp}` | 240 x 150 | 8:5 | 2.3 / 2.2 KB | the inline 1.2 em queue between "work" and "waits" |
-| `home/queue-chip-480.{avif,webp}` | 480 x 301 | 8:5 | 4.9 / 5.3 KB | the same at 2x |
+| `home/queue-chip-240.{avif,webp}` | 240 x 150 | 8:5 | 3.2 / 3.6 KB | the inline 1.2 em queue between "work" and "waits" |
+| `home/queue-chip-480.{avif,webp}` | 480 x 301 | 8:5 | 6.8 / 8.1 KB | the same at 2x |
 
 The chip files replace the stand-in chip under the same names, so no markup change is needed. The chip is now cut from the same master as the full-bleed.
 
