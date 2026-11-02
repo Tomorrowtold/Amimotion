@@ -9,3 +9,8 @@ team/rounds/03-hero-film/frames/
 team/rounds/03-hero-film/frames_raw/
 team/rounds/03-hero-film/master/
 __pycache__/
+
+# 06-colour: research captures and shots stay out of git
+team/rounds/06-colour/research/refs/
+team/rounds/06-colour/research/refs-board.png
+team/rounds/06-colour/research/review/

@@ -30,7 +30,7 @@
 .diag-back{background:none;border:0;font:500 var(--size-small)/1 var(--font-text);color:var(--ink-soft);cursor:pointer;padding:var(--s-3)}
 .diag-nav .cta{margin-left:auto}
 .diag-nav .cta:disabled{background:var(--pressed);color:var(--ink-soft)!important;cursor:default}
-.diag-shell .btn{display:inline-flex;align-items:center;height:48px;padding-inline:24px;background:var(--ink);color:var(--on-ink);border:0;border-radius:var(--radius-control);font:500 var(--size-small)/1 var(--font-text);cursor:pointer}
+.diag-shell .btn{display:inline-flex;align-items:center;height:48px;padding-inline:24px;background:var(--action);color:var(--on-action);border:0;border-radius:var(--radius-control);font:500 var(--size-small)/1 var(--font-text);cursor:pointer}
 .m-grid{stroke:var(--pressed)}
 .m-aisle{stroke:var(--ground);stroke-width:10;fill:none}
 .m-zone rect{fill:var(--ground)}

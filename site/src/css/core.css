@@ -10,10 +10,11 @@
 @font-face{font-family:"AmI Text Fallback";src:local("Arial"),local("ArialMT"),local("Liberation Sans"),local("Arimo");font-weight:400 500;size-adjust:103.4%;ascent-override:105.4%;descent-override:30.9%;line-gap-override:0%}
 
 .ds{
-  --ground:#f5f5f2; --surface:#ebebe7; --pressed:#e1e1dc;
-  --ink:#16181b; --ink-soft:#4a4e55; --ink-hover:#2b2e33; --on-ink:#f5f5f2;
-  --hardware:#3a3d42; --link:#1a56a8; --focus:#1a56a8;
-  --located:#66a5fa; --waiting:#f0a43a;
+  --ground:#f0f6ff; --surface:#ffffff; --pressed:#e3eeff;
+  --ink:#0b1238; --ink-soft:#3d4870; --ink-hover:#1c2350; --on-ink:#ffffff;
+  --action:#4b3df0; --action-hover:#3a2cd6; --on-action:#ffffff; --brand:#66a5fa; --waiting-edge:#a86d00;
+  --hardware:#3a3d42; --link:#4b3df0; --focus:#4b3df0;
+  --located:#1f6bff; --waiting:#ffb020;
   --font-display:"AmI Display","AmI Display Fallback",Arial,sans-serif;
   --font-text:"AmI Text","AmI Text Fallback",Arial,sans-serif;
   --size-display:clamp(3rem,1.6rem + 3.6vw,8rem);
@@ -37,7 +38,7 @@
 .top a{color:var(--ink);text-decoration:none}
 .top ul{list-style:none;margin:0;padding:0}
 .logo{grid-column:1 / span 3;display:inline-flex;align-items:center;gap:clamp(8px,.6vw,14px);justify-self:start;padding-block:var(--s-2)}
-.logo .mark path{fill:var(--located)}
+.logo .mark path{fill:var(--brand)}
 .logo .mark{height:clamp(22px,1.05vw + 10px,40px);width:auto}
 .logo .word{height:clamp(15px,.7vw + 7px,27px);width:auto}
 .top .main{grid-column:6 / span 5}
@@ -46,8 +47,8 @@
 .top summary::-webkit-details-marker{display:none}
 .top summary:hover{color:var(--ink-soft)}
 .top details[open] > summary{background:var(--surface)}
-.cta{display:inline-flex;align-items:center;justify-content:center;height:clamp(40px,1.1vw + 28px,56px);padding-inline:clamp(16px,1.1vw,26px);background:var(--ink);color:var(--on-ink)!important;border-radius:var(--radius-control);font:500 var(--size-small)/1 var(--font-text);text-decoration:none;white-space:nowrap;transition:background-color var(--t-fast) var(--ease-ds),transform var(--t-fast) var(--ease-ds)}
-.cta:hover{background:var(--ink-hover)}
+.cta{display:inline-flex;align-items:center;justify-content:center;height:clamp(40px,1.1vw + 28px,56px);padding-inline:clamp(16px,1.1vw,26px);background:var(--action);color:var(--on-action)!important;border-radius:var(--radius-control);font:500 var(--size-small)/1 var(--font-text);text-decoration:none;white-space:nowrap;transition:background-color var(--t-fast) var(--ease-ds),transform var(--t-fast) var(--ease-ds)}
+.cta:hover{background:var(--action-hover)}
 .cta:active{transform:scale(var(--press-scale))}
 .cta.alt{background:var(--surface);color:var(--ink)!important}
 .cta.alt:hover{background:var(--pressed)}
