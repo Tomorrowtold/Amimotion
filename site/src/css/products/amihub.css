@@ -172,7 +172,9 @@
 .c-zone{grid-column:span 5}.c-hist{grid-column:span 7}
 .c-dev{grid-column:span 6}.c-grow{grid-column:span 6}
 @media (max-width:980px){.c-pos,.c-dial,.c-zone,.c-hist,.c-dev,.c-grow{grid-column:span 12}}
-.hb-vortex{position:absolute;width:min(560px,92%);height:auto;left:50%;top:44%;transform:translate(-50%,-50%);mix-blend-mode:screen;opacity:.95}
+.hb-vortex{position:absolute;width:min(560px,92%);height:auto;left:50%;top:44%;transform:translate(-50%,-50%);mix-blend-mode:screen;opacity:.95;
+  /* round mask: the card's reveal transform isolates the blend, so the square's dark corners showed as it turned */
+  -webkit-mask-image:radial-gradient(closest-side,#000 70%,transparent 100%);mask-image:radial-gradient(closest-side,#000 70%,transparent 100%)}
 .hb-vortex.sm{width:min(440px,90%);left:74%;top:46%;opacity:.8}
 @media (prefers-reduced-motion:no-preference){.hb-vortex{animation:hb-spin 60s linear infinite}@keyframes hb-spin{to{transform:translate(-50%,-50%) rotate(360deg)}}}
 .hb-solve{position:relative;width:min(420px,84%);height:auto;overflow:visible}
