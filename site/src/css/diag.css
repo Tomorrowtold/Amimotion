@@ -105,8 +105,10 @@
 .ds .diag-stage h3[tabindex="-1"]:focus-visible{outline:none}
 /* lead fields: an edge at 3:1 on the ground, a firmer edge on hover, an amber edge and mark while a field is wrong */
 .diag-lead input{box-shadow:inset 0 0 0 1px rgba(11,18,56,.5);transition:box-shadow var(--t-fast) var(--ease-ds)}
-.diag-lead input:hover{box-shadow:inset 0 0 0 1px var(--ink)}
+@media (hover:hover){.diag-lead input:hover{box-shadow:inset 0 0 0 1px var(--ink)}}
 .diag-lead input[aria-invalid="true"]{box-shadow:inset 0 0 0 2px var(--waiting-edge)}
 .diag-lead .error:not(:empty){display:flex;align-items:center;gap:var(--s-2)}
 .diag-lead .error:not(:empty)::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--waiting)}
 .diag-lead .hint:empty,.diag-lead .error:empty{display:none}
+/* on a wide screen the sketch stays beside the questions and the profile while they scroll */
+@media (min-width:1024px){.diag-visual{position:sticky;top:88px}}
