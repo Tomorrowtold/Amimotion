@@ -217,6 +217,8 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
    call) and grows upward into the menu: the five doors, then a door's own page with its stills */
 @media (max-width:1023px){
   .plogo{display:flex;align-items:center;gap:8px;height:100%;padding-inline:var(--margin);width:max-content}
+  /* a page whose photograph runs up under the bar (build.py over_photo): the wordmark turns white, like the crumbs */
+  .top.over .plogo{color:#fff;filter:drop-shadow(0 1px 8px rgba(11,18,56,.5))}
   .cap{top:auto;bottom:calc(10px + env(safe-area-inset-bottom));width:min(440px,calc(100% - 20px));height:56px;padding:0 6px;gap:6px}
   .top.compact .cap{top:auto;height:56px}
   .top.away .cap{transform:translateX(-50%) translateY(calc(100% + 24px))}

@@ -65,7 +65,10 @@
 .look-close-ink .close a{background:#fff;color:var(--w-band)!important}
 .look-close-paper .close{background:transparent;color:var(--ink);padding-top:var(--rhythm-m)}
 .look-close-paper .close p{font-family:var(--font-serif);font-weight:400;letter-spacing:-.025em;font-size:clamp(2.6rem,1.2rem + 4.4vw,6rem)}
-.look-close-paper .close .sub{font-family:var(--font-text)}
+.look-close-paper .close .sub{font-family:var(--font-text);color:var(--ink-soft)}
+/* on paper there is no band behind the close, so its link is the filled action pill (the white pill vanished) */
+.look-close-paper .close a{background:var(--action);color:var(--on-action)!important}
+.look-close-paper .close a:hover{background:var(--action-hover)}
 .look-close-world .close{background:var(--w-accent)}
 
 /* ---------- the connector: related pages wear the colour of the page they lead to ---------- */

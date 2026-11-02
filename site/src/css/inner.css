@@ -249,7 +249,8 @@ main .local a{text-decoration:none}
 .local ul{display:flex;gap:clamp(16px,1.6vw,32px);list-style:none;margin:0;padding:0;min-width:0;overflow-x:auto;scrollbar-width:none}
 .local ul::-webkit-scrollbar{display:none}
 .local li{margin:0;white-space:nowrap}
-.local ul a{display:block;padding-block:14px;font:400 15px/1.2 var(--font-text);color:var(--ink-soft)!important}
+/* set on the link too: kit.css text-wrap:pretty on main li resets the li's nowrap, and a phone wrapped each to 3 lines */
+.local ul a{white-space:nowrap;display:block;padding-block:14px;font:400 15px/1.2 var(--font-text);color:var(--ink-soft)!important}
 .local ul a:hover,.local ul a[aria-current]{color:var(--ink)!important}
 .local ul a[aria-current]{box-shadow:inset 0 -2px 0 var(--ink)}
 main .cta.pill,.local .cta{flex:none;height:36px;padding-inline:16px;border-radius:999px;font:500 15px/1 var(--font-text)}

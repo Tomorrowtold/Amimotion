@@ -358,7 +358,16 @@ def panel_group(name, kind, items, cur, where):
     return f'<div class="grp g-{kind}"><p class="grp-name">{html.escape(name)}</p><ul class="{kind}">{body}</ul></div>'
 
 
-def header_html(url="/", world=None):
+def over_photo(meta, body):
+    """True when the page's first screen is a photograph or dark stage pulled up under the bar (a poster head, or a
+    page stylesheet with margin-top: calc(-1 * var(--bar))): on phones the logo then sits on the picture, not on ground."""
+    if 'class="head w-poster' in body: return True
+    if not meta.get("id"): return False
+    own = [SRC / "css" / "id" / f"{meta['id']}.css", SRC / "css" / "products" / f"{meta['id']}.css"]
+    return any(f.exists() and "calc(-1 * var(--bar)" in f.read_text() for f in own)
+
+
+def header_html(url="/", world=None, over=False):
     """The capsule (round 3 nav, /mnt/project-files/nav/concepts/). One floating piece of glass; four materials, four
     jobs: glass to move around, a lens bead that rests on the door you are in, a pressed well for Ask, one clay button.
     Five doors, each one world of the inner pages; a door's panel wears that world's ground and shows the stills its
@@ -382,7 +391,7 @@ def header_html(url="/", world=None):
     ask = (f'<details class="nask" data-panel><summary data-nav-id="header.ask" aria-label="Ask a question">{LOOK}<span class="t">Ask</span><kbd aria-hidden="true">/</kbd></summary>'
            f'<div class="drop nask-drop"><div class="nask-main">{ask_form("d")}</div><div class="nask-roles"><p>I\'m here as</p><ul>{roles}</ul></div></div></details>')
     menu = ''.join(f'<li><button type="button" data-pane="{i}">{s["label"]}{CHEV}</button></li>' for i, s in enumerate(NAV["sections"]))
-    return ('<a class="skip-link" href="#main">Skip to content</a>\n<header class="top ds">\n'
+    return (f'<a class="skip-link" href="#main">Skip to content</a>\n<header class="top ds{" over" if over else ""}">\n'
             f'<a class="logo plogo" href="/" aria-label="AmIMotion home">{part("logo.html")}</a>\n<div class="cap">'
             f'<a class="logo" href="/" aria-label="AmIMotion home" data-nav-id="header.home">{part("logo.html")}</a>\n'
             f'<nav class="main" aria-label="Main"><div class="doors">{"".join(doors)}<span class="lens" aria-hidden="true"></span></div></nav>\n'
@@ -551,7 +560,7 @@ def build():
 
     public = []
     for url, (meta, body) in pages.items():
-        header = header_html(url, meta.get("world"))
+        header = header_html(url, meta.get("world"), over_photo(meta, body))
         page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
