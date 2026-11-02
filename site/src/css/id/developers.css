@@ -28,3 +28,6 @@ main p a:not(.btn):not(.cta){color:var(--link)}
 /* the close band is located blue here: the call is a white pill in ink, not the dark surface of this page. */
 main .close a{background:#fff;color:#0b1238!important}
 main .close a:hover{background:#e3eeff}
+/* phones: the logo sits on this page's dark ground above the capsule, so its wordmark is drawn in the page's ink
+   (it was the site's navy on near-black, about 1.1:1) */
+@media (max-width:1023px){.top .plogo{color:#e9eef8}}

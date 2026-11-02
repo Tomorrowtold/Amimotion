@@ -12,3 +12,10 @@
 .look-close-paper main .close a{background:var(--action);color:var(--on-action)!important}
 .look-close-paper main .close a:hover{background:var(--action-hover)}
 .look-close-paper .close :focus-visible{outline-color:var(--action)}
+/* the covers made like books (Stripe Press shelf): a blind-stamped hairline frame inside the cover, a fold where the
+   spine meets the board, a short rule under the title, and a contact shadow so each cover stands on the paper */
+.ds[data-world] .related.tiles li[style*="--cv"]>a{box-shadow:0 1px 1px rgba(11,18,56,.1),0 22px 30px -22px rgba(11,18,56,.55)}
+.ds[data-world] .related.tiles li[style*="--cv"]>a::before{box-shadow:inset -1px 0 rgba(255,255,255,.16),1px 0 rgba(0,0,0,.08)}
+.ds[data-world] .related.tiles li[style*="--cv"]>a::after{content:"";position:absolute;inset:10px 10px 10px 22px;border:1px solid rgba(255,255,255,.22);border-radius:2px 11px 11px 2px;pointer-events:none}
+.ds[data-world] .related.tiles li[style*="--cv"] b::after{content:"";display:block;width:32px;height:1px;margin-top:var(--s-4);background:rgba(255,255,255,.55)}
+.ds[data-world] .related.tiles li[style*="--cv"]>a:hover{box-shadow:0 1px 1px rgba(11,18,56,.1),0 30px 36px -24px rgba(11,18,56,.6)}

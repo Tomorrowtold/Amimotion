@@ -8,3 +8,5 @@ main .crumbs,main .crumbs a{color:#8d859a}
 .head-pic{grid-column:1 / -1}
 .head-pic img{border-radius:18px}
 .band{background:#120f19!important}
+/* phones: the logo sits on the screening room's dark ground, so its wordmark takes the page's ink, not navy */
+@media (max-width:1023px){.top .plogo{color:#efeaf2}}

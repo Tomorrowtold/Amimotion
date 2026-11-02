@@ -31,3 +31,6 @@
 main .close a{background:var(--action);color:var(--on-action)!important}
 main .close a:hover{background:var(--action-hover)}
 .close :focus-visible{outline-color:var(--focus)}
+/* the hall drawing under the title: graded up so its lines read as a drawing at a glance, not a watermark
+   (the render is ink at about 18% on a clear ground; a zero-offset ink shadow doubles the line weight to about 33%) */
+.head-pic .hall-lines-pic img{filter:drop-shadow(0 0 0 #0b1238)}
