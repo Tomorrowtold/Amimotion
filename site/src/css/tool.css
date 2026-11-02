@@ -17,7 +17,7 @@ input[type=range]{width:100%;height:28px;margin:0;accent-color:var(--ink)}
 .seg label{position:relative;cursor:pointer}
 .seg input{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0}
 .seg span{display:block;padding:var(--s-3) var(--s-4);min-height:44px;background:var(--surface);border-radius:var(--radius-control);transition:background-color var(--t-fast) var(--ease-ds)}
-.seg label:hover span{background:var(--pressed)}
+@media (hover:hover){.seg label:hover span{background:var(--pressed)}}
 .seg input:checked+span{background:var(--ink);color:var(--on-ink)}
 .seg input:focus-visible+span{outline:2px solid var(--focus);outline-offset:3px}
 .seg i{display:block;font-style:normal;font-size:var(--size-small);color:var(--ink-soft)}
@@ -25,7 +25,7 @@ input[type=range]{width:100%;height:28px;margin:0;accent-color:var(--ink)}
 .out-name{font-weight:500;color:var(--ink-soft);margin-bottom:var(--s-2)}
 .big{font:600 var(--size-h2)/1.05 var(--font-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-bottom:var(--s-6)}
 .lines p{display:flex;justify-content:space-between;gap:var(--s-4);margin:0;padding:var(--s-2) 0}
-.lines b{font-weight:500;font-variant-numeric:tabular-nums;text-align:right}
+.lines b{font-weight:500;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 .brief{white-space:pre-wrap;margin-bottom:var(--s-5)}
 .tool-out .note{margin-top:var(--s-6)}
 .contact-grid{grid-column:1 / -1;row-gap:var(--s-8)}
@@ -44,8 +44,9 @@ input[type=range]{width:100%;height:28px;margin:0;accent-color:var(--ink)}
    drawing sheet; hairlines only, figures in tabular type. On a phone it sticks to the top while the form scrolls
    beneath it, and the answer then slides up over it. */
 .tool-draw{grid-column:6 / -1;grid-row:1;margin:0;background:var(--surface);padding:var(--s-6) var(--s-6) 0;position:relative}
-.tool-draw canvas{display:block;width:100%;aspect-ratio:16 / 10}
-.tool-draw[data-draw="search"] canvas{aspect-ratio:16 / 9}
+.tool-draw canvas,.tool-draw:empty::before{display:block;width:100%;aspect-ratio:16 / 10}
+.tool-draw:empty::before,.tool-cards .mini span:empty::before{content:""}
+.tool-draw[data-draw="search"] canvas,.tool-draw[data-draw="search"]:empty::before{aspect-ratio:16 / 9}
 .tool-draw+.tool-out{grid-row:2;padding-top:var(--s-6);border-top:0}
 .tool-draw+.tool-out::before{content:"";display:block;height:1px;background:var(--hairline);margin:0 0 var(--s-6)}
 .big{transition:color var(--t-fast) var(--ease-ds)}
@@ -83,7 +84,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:inset 0 0 0 2px
 .tool-cards li:hover .mini{background:#fbfdff}
 .tool-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;row-gap:var(--s-8)}
 .tool-cards>li{grid-column:auto!important;border-top:0!important;padding-top:0!important}
-.tool-cards .mini canvas{aspect-ratio:2.3 / 1}
+.tool-cards .mini canvas,.tool-cards .mini span:empty::before{display:block;width:100%;aspect-ratio:2.3 / 1}
 .tool-cards .mini span{padding:var(--s-3) var(--s-3) var(--s-2)}
 @media (max-width:1023px){
   .tool-shell{display:flex;flex-direction:column;align-items:stretch}
@@ -94,5 +95,11 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:inset 0 0 0 2px
   .tool-out:has(.bsheet){margin-top:var(--s-6)}
 }
 .tool-cards .mini{position:relative}
-@media (max-width:639px){.tool-cards{grid-template-columns:minmax(0,1fr)!important;row-gap:var(--s-7)}.tool-draw canvas,.tool-draw[data-draw="search"] canvas{aspect-ratio:4 / 3}.tool-cards .mini{margin-bottom:var(--s-4)}}
+@media (max-width:639px){.tool-cards{grid-template-columns:minmax(0,1fr)!important;row-gap:var(--s-7)}.tool-draw canvas,.tool-draw[data-draw="search"] canvas,.tool-draw:empty::before,.tool-draw[data-draw="search"]:empty::before{aspect-ratio:4 / 3}.tool-cards .mini{margin-bottom:var(--s-4)}}
 @media (prefers-reduced-motion:reduce){.bsheet-list li.new,.typing::after{animation:none}}
+/* the typed field reads as a field on any shell: ground fill, an edge at 3:1, a focus ring, and an amber edge when
+   the value cannot be used (a negative cost) */
+.tool-form .field input[type=number]{background:var(--ground);box-shadow:inset 0 0 0 1px rgba(11,18,56,.5);font-variant-numeric:tabular-nums;transition:box-shadow var(--t-fast) var(--ease-ds),background-color var(--t-fast) var(--ease-ds)}
+@media (hover:hover){.tool-form .field input[type=number]:hover{box-shadow:inset 0 0 0 1px var(--ink)}}
+.tool-form .field input[type=number]:focus-visible{outline:2px solid var(--focus);outline-offset:2px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--ink)}
+.tool-form .field input[type=number]:invalid{box-shadow:inset 0 0 0 2px var(--waiting-edge)}

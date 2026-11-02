@@ -65,13 +65,16 @@
   }
   const label = (c, text, x, y, o = {}) => { c.font = FONT(o.size || 10, o.w || 500); c.fillStyle = o.color || C.soft; c.textAlign = o.align || 'left'; c.textBaseline = o.base || 'alphabetic'; if (o.alpha != null) c.globalAlpha = o.alpha; c.fillText(text, x, y); c.globalAlpha = 1; };
   // a number that counts to its new value
+  // while it counts, its live region is busy, so a screen reader hears the final figure, not the frames between
   function counter(el, render) {
     let cur = null, from = null, to = null, t0 = 0, raf = 0;
+    const region = el.closest('[aria-live]');
+    const busy = (on) => { if (region) on ? region.setAttribute('aria-busy', 'true') : region.removeAttribute('aria-busy'); };
     const step = (t) => {
       const k = outQ((t - t0) / 520); cur = from.map((f, i) => f + (to[i] - f) * k);
-      el.innerHTML = render(cur.map(Math.round)); raf = k < 1 ? requestAnimationFrame(step) : 0;
+      el.innerHTML = render(cur.map(Math.round)); raf = k < 1 ? requestAnimationFrame(step) : 0; if (!raf) busy(false);
     };
-    return (...v) => { if (cur === null || RM.matches) { cur = v; el.innerHTML = render(v); return; } from = cur.slice(); to = v; t0 = performance.now(); if (!raf) raf = requestAnimationFrame(step); };
+    return (...v) => { if (cur === null || RM.matches) { cur = v; el.innerHTML = render(v); return; } from = cur.slice(); to = v; t0 = performance.now(); if (!raf) { busy(true); raf = requestAnimationFrame(step); } };
   }
 
   // ------------------------------------------------------------ anchor estimator
@@ -229,8 +232,12 @@
       if (!mini) {
         const xl = padL + 11 * (bw + gap) + bw;
         label(c, `${fmt(tgt.year)} h a year`, xl, ys(S.b11) - 9, { size: 13, align: 'right', color: C.ink });
-        c.fillStyle = C.pressed; c.fillRect(padL, padT - 27, 14, 9); c.strokeStyle = C.ink; c.globalAlpha = .55; c.strokeRect(px(padL), px(padT - 27), 14, 9); c.globalAlpha = 1;
-        label(c, unit === week ? `one block = one week of searching, ${fmt1(week)} h` : `one block = one month of searching, ${fmt1(unit)} h`, padL + 22, padT - 18, { size: 11 });
+        // the legend never clips: on a narrow sheet it starts at the sheet's edge and steps its type down to fit
+        const key = unit === week ? `one block = one week of searching, ${fmt1(week)} h` : `one block = one month of searching, ${fmt1(unit)} h`;
+        let ks = 11; c.font = FONT(ks); const kx = padL + 22 + c.measureText(key).width > w - padR ? 0 : padL;
+        while (ks > 8 && kx + 22 + (c.font = FONT(ks), c.measureText(key).width) > w - padR) ks -= .5;
+        c.fillStyle = C.pressed; c.fillRect(kx, padT - 27, 14, 9); c.strokeStyle = C.ink; c.globalAlpha = .55; c.strokeRect(px(kx), px(padT - 27), 14, 9); c.globalAlpha = 1;
+        label(c, key, kx + 22, padT - 18, { size: ks });
       } else {
         label(c, 'hours searched, Jan to Dec', 12, 18, { size: 12 });
         label(c, `${fmt(tgt.year)} h a year`, w - 12, 18, { size: 12, align: 'right', color: C.ink });
@@ -299,7 +306,8 @@
       return brief;
     };
     live(pilot, make);
-    $('[data-copy]', pilot.parentNode)?.addEventListener('click', async (e) => { try { await navigator.clipboard.writeText(make()); e.target.textContent = 'Copied'; buzz(); } catch (_) {} });
+    // "Copied" shows for two seconds, then the button reads as it did, ready to copy again
+    $('[data-copy]', pilot.parentNode)?.addEventListener('click', async (e) => { const btn = e.currentTarget, was = btn.dataset.was || (btn.dataset.was = btn.textContent); try { await navigator.clipboard.writeText(make()); btn.textContent = 'Copied'; buzz(); clearTimeout(btn._t); btn._t = setTimeout(() => { btn.textContent = was; }, 2000); } catch (_) {} });
     $('[data-download]', pilot.parentNode)?.addEventListener('click', () => {
       const a = d.createElement('a'); a.href = URL.createObjectURL(new Blob([make()], { type: 'text/plain' })); a.download = 'AmIMotion-pilot-brief.txt'; a.click(); buzz();
     });
@@ -321,7 +329,9 @@
         c.globalAlpha = .4; c.strokeRect(px(X), px(Y), Math.round(ZW), Math.round(ZH)); c.globalAlpha = 1;
         if (ZW > 54) label(c, n, X + 6, Y + 13, { size: 9, color: i === hot ? C.ink : C.soft });
       });
-      dots.forEach(([x, y], i) => { const k = outQ(RM.matches ? 1 : (now - t0 - 200 - i * 70) / 320); c.globalAlpha = Math.max(0, k); c.fillStyle = C.loc; c.fillRect(ox + x * sx - 5, oy + y * sy - 3 - (1 - k) * 8, 10, 6); });
+      // a dot never sits on its zone's label: on a short sheet it drops below the label, inside the zone
+      const dotY = (x, y) => { const z = DIAGZ.find(([zx, zy, zw, zh]) => x >= zx && x <= zx + zw && y >= zy && y <= zy + zh); if (!z || z[2] * sx <= 54) return oy + y * sy; const top = oy + z[1] * sy + 22, bot = oy + (z[1] + z[3]) * sy - 6; return Math.min(bot, Math.max(top, oy + y * sy)); };
+      dots.forEach(([x, y], i) => { const k = outQ(RM.matches ? 1 : (now - t0 - 200 - i * 70) / 320); c.globalAlpha = Math.max(0, k); c.fillStyle = C.loc; c.fillRect(ox + x * sx - 5, dotY(x, y) - 3 - (1 - k) * 8, 10, 6); });
       const [x, y, zw, zh] = DIAGZ[hot], k = outQ(age - .8);
       if (k > 0) { c.globalAlpha = k; c.strokeStyle = C.act; c.setLineDash([5, 3]); c.lineWidth = 1.25; c.strokeRect(ox + x * sx - 4, oy + y * sy - 4, zw * sx + 8, zh * sy + 8); c.setLineDash([]); c.globalAlpha = 1; }
       label(c, 'your floor, as you answer', 12, 18, { size: 12 });

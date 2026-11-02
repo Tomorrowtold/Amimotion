@@ -19,7 +19,7 @@
 .diag-sub,.diag-stage .sub{color:var(--ink-soft);margin-top:var(--s-3)}
 .diag-options{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-2);margin-top:var(--s-6)}
 .diag-opt{display:flex;gap:var(--s-3);text-align:left;padding:var(--s-4);border:0;border-radius:var(--radius-control);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;transition:background-color var(--t-fast) var(--ease-ds)}
-.diag-opt:hover{background:var(--pressed)}
+@media (hover:hover){.diag-opt:hover{background:var(--pressed)}}
 .diag-opt[aria-pressed="true"]{background:var(--ink);color:var(--on-ink)}
 .diag-opt .key{display:none}
 .diag-opt b{display:block;font-weight:500}
@@ -84,3 +84,33 @@
 .actions{display:flex;flex-wrap:wrap;gap:var(--s-4)}
 @media (max-width:1023px){.diag-main,.diag-visual{grid-column:1 / -1}.diag-visual{order:-1;margin-inline:calc(-1 * var(--margin))}.diag-main{min-height:0}}
 @media (max-width:639px){.diag-options{grid-template-columns:1fr}}
+/* question to question: the JS already marks the old question is-leaving (170 ms) and the stage with the direction;
+   the old one steps aside, the new one arrives from the side it was going, the result rises in. A chosen option
+   gives one small press. */
+.diag-q{transition:opacity .17s var(--ease-ds),transform .17s var(--ease-ds)}
+.diag-q.is-leaving{opacity:0;transform:translateX(calc(var(--dir,1) * -14px))}
+.diag-stage[data-dir="1"]{--from:14px}
+.diag-stage[data-dir="-1"]{--from:-14px}
+.diag-stage[data-dir] .diag-q:not(.is-leaving){animation:q-in .3s var(--ease-ds) both}
+.diag-result{animation:q-up .4s var(--ease-ds) both}
+.diag-opt.is-hit{animation:q-hit .22s var(--ease-ds)}
+.diag-opt:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.diag-back:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:var(--radius-control)}
+.diag-back:hover{color:var(--ink)}
+@keyframes q-in{from{opacity:0;transform:translateX(var(--from,0))}}
+@keyframes q-up{from{opacity:0;transform:translateY(10px)}}
+@keyframes q-hit{50%{transform:scale(.98)}}
+@media (prefers-reduced-motion:reduce){.diag-q,.diag-result,.diag-opt.is-hit{transition:none;animation:none!important}}
+/* the question heading takes focus only so a screen reader hears it; it is not a control, so it draws no ring */
+.ds .diag-stage h3[tabindex="-1"]:focus-visible{outline:none}
+/* lead fields: an edge at 3:1 on the ground, a firmer edge on hover, an amber edge and mark while a field is wrong */
+.diag-lead input{box-shadow:inset 0 0 0 1px rgba(11,18,56,.5);transition:box-shadow var(--t-fast) var(--ease-ds)}
+@media (hover:hover){.diag-lead input:hover{box-shadow:inset 0 0 0 1px var(--ink)}}
+.diag-lead input[aria-invalid="true"]{box-shadow:inset 0 0 0 2px var(--waiting-edge)}
+.diag-lead .error:not(:empty){display:flex;align-items:center;gap:var(--s-2)}
+.diag-lead .error:not(:empty)::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--waiting)}
+.diag-lead .hint:empty,.diag-lead .error:empty{display:none}
+/* on a wide screen the sketch stays beside the questions and the profile while they scroll */
+@media (min-width:1024px){.diag-visual{position:sticky;top:88px}}
+/* progress: the six segments read as a track on the ground; each fills as its question is reached */
+.diag-bar.is-seg i{background:rgba(11,18,56,.12);transition:background-color .3s var(--ease-ds)}
