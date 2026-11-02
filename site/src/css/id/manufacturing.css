@@ -3,8 +3,9 @@
 .head-pic{grid-column:1 / -1;grid-row:1;margin:0 0 0!important;background:var(--surface);padding:clamp(16px,2.4vw,40px);border-radius:6px}
 .head-pic img{width:100%;aspect-ratio:2.39/1;object-fit:cover}
 @media (min-width:1024px){
-  .head .crumbs{grid-row:2;margin-top:var(--s-5)}
-  .head h1{grid-row:3;grid-column:1 / span 8;background:var(--w-ground);padding:var(--s-5) var(--s-6) 0 0;margin-top:calc(-1 * var(--s-9,96px));position:relative;z-index:2}
+  /* The breadcrumb rides on the same plate as the headline, so the plate no longer covers it. */
+  .head .crumbs{grid-row:2;grid-column:1 / span 8;background:var(--w-ground);padding:var(--s-5) var(--s-6) var(--s-4) 0;margin-top:calc(-1 * var(--s-9,96px));position:relative;z-index:2}
+  .head h1{grid-row:3;grid-column:1 / span 8;background:var(--w-ground);padding:0 var(--s-6) 0 0;margin-top:0;position:relative;z-index:2}
   .head .words{grid-row:4;display:block;grid-column:1 / span 7}
 }
 .figures dt{color:var(--w-accent)}
