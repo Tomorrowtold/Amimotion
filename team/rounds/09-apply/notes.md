@@ -26,7 +26,7 @@ Site-wide:
 Pictures:
 - `lib.py` gains `STILLS["pair"]` (the ladder is in `/assets/home/`) and `hall()` / `hallslot()`: a slot names its round 08 base and becomes the AVIF/WebP ladder as soon as `site/src/assets/hall/<base>-1600.webp` exists. `build.py` now ships `assets/hall`. Every base in the stills index is wired (solutions P-codes, product heads and sections, buying heads and sections, learn L02, L04 to L07; the /use-cases/ cards use the nearest 4:3 cuts: hall-find-43, hall-path-43, hall-dropoff-43, hall-ask-43). Alts follow the index, including the new "find" alt (note 1) and the P-SOL-03 bins.
 - Shipping now: `pair` on /specs/, /company/ and /learn/rtls/ (L01); the plain CAD stills on the AmIGo and AmIMo 4:3 sections (index note 2).
-- At the time of writing `site/src/assets/hall/` is empty, so every hall picture is still its reserved slot. Re-run `python3 tools/pagegen/run.py && python3 build.py` once the ladders land; no code change is needed.
+- At the time of writing only `hall-waits`, `hall-waits-32` and `hall-waits-43` are in `site/src/assets/hall/` (untracked, owned by the pictures agent). They are wired on /products/amihub/, /platform/ (AmIHub card), /company/, /how-to-buy/, /solutions/wip/ and /industries/manufacturing/; every other hall picture is still its reserved slot. Re-run `python3 tools/pagegen/run.py && python3 build.py` once the ladders land; no code change is needed.
 
 ## Not applied, or applied differently, and why
 
