@@ -29,3 +29,5 @@
 @media (prefers-reduced-motion:reduce){.parts.c2>li,.parts.c2 .pic img{transition:none}}
 /* the moment of decision: the way into the diagnostic is the one filled button in the head; any second link stays a quiet text link beside it */
 .head .more:has(>.cta){display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3) var(--s-6)}.head .more:has(>.cta) .sep{display:none}
+/* desktop: the button follows the lede and the short answer reads beneath it, so the next step sits in the first screen (DOM order is unchanged and the short answer holds no links) */
+@media (min-width:1024px){.head .words{display:flex;flex-direction:column}.head .words>.lede{order:1}.head .words>.more{order:2;margin:0 0 var(--s-6)}.head .words>.short-answer{order:3}}
