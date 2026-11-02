@@ -28,3 +28,8 @@
 .js .explain.is-live .ex-steps li.on::before{background:var(--located)}
 .js .explain.is-live .ex-steps li h3,.js .explain.is-live .ex-steps li p{transition:color 300ms var(--ease-ds)}
 .js .explain.is-live .ex-steps li:not(.on) h3,.js .explain.is-live .ex-steps li:not(.on) p{color:#646a87}
+/* the paper close: the sub line in ink-soft and the call as the one action pill (the shared paper close leaves both white). */
+.look-close-paper .close .sub{color:var(--ink-soft)}
+main .close a{background:var(--action);color:var(--on-action)!important}
+main .close a:hover{background:var(--action-hover)}
+.close :focus-visible{outline-color:var(--focus)}
