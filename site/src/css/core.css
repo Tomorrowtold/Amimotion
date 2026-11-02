@@ -277,6 +277,17 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
   .top.on-ink:not(:has(details[open])) .nask > summary{color:#eef1ff;background:rgba(255,255,255,.08);box-shadow:inset 0 1px 2px rgba(0,0,0,.35),inset 0 -1px 0 rgba(255,255,255,.08)}
   .cap{transition:transform .5s var(--n-ease),height .35s var(--n-ease),top .35s var(--n-ease),background .35s,box-shadow .35s}
 }
+/* round 2: over the night footer (nav.js on-ink) the desktop capsule is the same glass, tinted for the ground under it */
+@media (min-width:1024px){
+  .top.on-ink:not(:has(details[open])) .cap{background:linear-gradient(180deg,rgba(30,38,96,.66),rgba(14,19,60,.58));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1px rgba(190,204,255,.16),0 14px 34px -18px rgba(0,0,0,.6)}
+  .top.on-ink:not(:has(details[open])) .cap .logo,.top.on-ink:not(:has(details[open])) .door > summary,.top.on-ink:not(:has(details[open])) .w-sec{color:#eef1ff}
+  .top.on-ink:not(:has(details[open])) .w-crumb{color:rgba(208,216,255,.72)}
+  .top.on-ink:not(:has(details[open])) .lens,.top.on-ink:not(:has(details[open])) .w-sec{background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px rgba(190,204,255,.12)}
+  .top.on-ink:not(:has(details[open])) .nask > summary{color:rgba(238,241,255,.8);background:rgba(255,255,255,.08);box-shadow:inset 0 1px 2px rgba(0,0,0,.35),inset 0 -1px 0 rgba(255,255,255,.08)}
+  .top.on-ink:not(:has(details[open])) kbd{color:#eef1ff;background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+  .cap .logo,.door > summary{transition:color .35s}
+}
 @media (max-width:359px){.phone > summary{padding-inline:12px}.cap .cta{padding-inline:12px}.plogo .word{height:13px}}
 @media (prefers-reduced-motion:reduce){.cap,.lens,.drop,.drop-grid,.sheet,.sheet-track,.spine,.plinth{transition:none!important;animation:none!important}}
 /* ---------- the footer (thread "Redesign the site footer"): one night-indigo card that closes every page.

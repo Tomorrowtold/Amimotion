@@ -94,8 +94,9 @@
   const onScroll = () => {
     const y = scrollY, dy = y - lastY; lastY = y;
     top.classList.toggle('compact', y > 8);
-    // phones: over the night footer the dock's glass turns dark, so it reads as glass there too, not a grey smear
-    if (ft) top.classList.toggle('on-ink', narrow() && ft.getBoundingClientRect().top < innerHeight - 40);
+    // over the night footer the capsule's glass turns dark (the dock at the foot of a phone, the bar at the top of a
+    // desktop), so it reads as glass there too, not a grey smear
+    if (ft) top.classList.toggle('on-ink', ft.getBoundingClientRect().top < (narrow() ? innerHeight - 40 : 60));
     if (P.some(p => p.open) || top.contains(d.activeElement) && d.activeElement !== d.body) return;
     const past = head ? head.getBoundingClientRect().bottom < 80 : y > innerHeight * .8;
     if (H.length >= 3 && past && !narrow()) {
