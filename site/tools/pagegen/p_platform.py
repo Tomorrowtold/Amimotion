@@ -7,6 +7,7 @@ from lib import *
 
 ENTITY = json.loads((Path(__file__).resolve().parents[2] / "src" / "data" / "entity.json").read_text())
 HOW = ("How it works", "/platform/")
+PRODUCTS = ("Products", "/products/")
 ABOUT = ("About us", "/company/")
 HALL = "Model-hall still, build_hall.py camera A (11 m up, 45° down, 35 mm, yaw 34°), t = 0.0."
 SHORT = lambda h, text: vp(h) + f'<p class="lead short-answer">{text}</p>'
@@ -72,13 +73,14 @@ write("/platform/", "AmIMotion platform: AmIGo tags, AmIMo anchors and AmIHub",
 write("/products/amigo/", "AmIGo UWB tag for trolleys, bins, tools and vehicles",
       "AmIGo is AmIMotion's UWB tag. It sends a pulse when it moves and sleeps when it stops, so one battery lasts 1 to 3 years, typical, depending on use.",
       [
+          localnav("AmIGo tag", (("Overview", "#page-title"), ("Fitted", "#fitted"), ("Specs", "#specs"))),
           head("AmIGo tag.", "It rides on what moves.", "A small UWB tag that screws or sticks onto a trolley, bin, tool or vehicle. It sends a short pulse when it moves and sleeps when it stops.",
-               trail=[HOW, ("AmIGo tag", None)], actions=(("Specifications", "#specs"), ("AmIMo anchor", "/products/amimo/")),
-               media=still("amigo", eager=True)),
+               trail=[HOW, PRODUCTS, ("AmIGo tag", None)], actions=(("Specifications", "#specs"), ("AmIMo anchor", "/products/amimo/")),
+               media=still("amigo", "(max-width:1023px) 92vw, 76vw", eager=True), stage="AmIGo"),
           section(SHORT("AmIGo, in short.", "AmIGo is AmIMotion's UWB tag for trolleys, bins, tools, fixtures and vehicles. A motion sensor wakes it to send a short ultra-wideband pulse. "
                         "When it stops, it sleeps, so one battery lasts 1 to 3 years, typical and depending on use. With AmIMo anchors, AmIHub places an AmIGo tag down to ±10 cm in 3D. How close depends on your floor."),
                   figures([("±10 cm", "Down to, in 3D", "With AmIMo anchors, depending on your floor"), ("0.1 to 10 Hz", "Update rate", "Set per tag group. Sent when it moves"),
-                           ("1 to 3 years", "Battery", "Typical, depending on use"), ("−20 to +60 °C", "Operating range", "Typical")])),
+                           ("1 to 3 years", "Battery", "Typical, depending on use"), ("−20 to +60 °C", "Operating range", "Typical")], giant=True)),
           section(vp("Speaks when it moves.", "Sleeps when it stops."),
                   split("Where the battery life comes from.",
                         ["A 3-axis accelerometer wakes AmIGo when the trolley moves. When it stops, the tag goes into deep sleep. While it sleeps, the map shows where it was last seen, and when.",
@@ -90,12 +92,15 @@ write("/products/amigo/", "AmIGo UWB tag for trolleys, bins, tools and vehicles"
                       "1 to 3 years on one battery is typical. Busy tags at high rates use more.",
                       "Forklift and tugger tags can run off the vehicle instead."], "/learn/location-data-quality/")),
           section(vp("One tag.", "Fitted three ways."),
-                  tiles([("On a carrier", "For trolleys, bins, racks and WIP carriers. AmIGo screws on through its two moulded ears, or sticks on."),
-                         ("On a vehicle", "For forklifts, tuggers and AGVs. It sits in a vehicle cradle and can run off the vehicle's power."),
-                         ("On a tool", "For fixtures, gauges and hand tools. Find the tool from a screen, and see which cell had it last.")], 3),
+                  closer([("On a carrier", "For trolleys, bins, racks and WIP carriers. AmIGo screws on through its two moulded ears, or sticks on.",
+                           cad("amigo-top", "The AmIGo tag from above, with a screw ear at each end.")),
+                          ("On a vehicle", "For forklifts, tuggers and AGVs. It sits in a vehicle cradle and can run off the vehicle's power.",
+                           cad("amigo-card", "The AmIGo tag in dark grey, with amimotion debossed on its top cover.")),
+                          ("On a tool", "For fixtures, gauges and hand tools. Find the tool from a screen, and see which cell had it last.",
+                           cad("amigo-macro", "The AmIGo tag from the side: a low, compact housing on its two moulded ears."))]),
                   links([("/solutions/wip/", "Work in progress", "See where work waits"),
                          ("/solutions/assets/", "Tools and vehicles", "Fixtures, forklifts, AMRs"),
-                         ("/learn/association/", "Which job is on the trolley?", "Linking trolleys to jobs")])),
+                         ("/learn/association/", "Which job is on the trolley?", "Linking trolleys to jobs")]), id="fitted"),
           section(vp("The tag names the trolley.", "You name the job."),
                   prose("<p>An AmIGo tag tells AmIHub which trolley it is on, not which job the trolley carries. Link each trolley to the job it carries, in AmIHub or from your own system. "
                         "Its wait then counts as that job's wait. When the trolley takes new work, the old link ends before the new one starts.</p>"),
@@ -127,23 +132,23 @@ write("/products/amigo/", "AmIGo UWB tag for trolleys, bins, tools and vehicles"
 write("/products/amimo/", "AmIMo UWB anchor: power only, no sync cable, 3D angle",
       "AmIMo is AmIMotion's UWB anchor. It times each tag pulse and reads its angle, syncs over the air, sends data over Wi-Fi and needs only DC or PoE power.",
       [
+          localnav("AmIMo anchor", (("Overview", "#page-title"), ("Mounting", "#mounting"), ("Survey", "#survey"), ("Specs", "#specs"))),
           head("AmIMo anchor.", "It needs only power.", "Fixed to a column or wall 3 to 8 m up, AmIMo hears each tag's pulse and the angle it came from. It syncs over the air, so there is no sync cable to run.",
-               trail=[HOW, ("AmIMo anchor", None)], actions=(("Specifications", "#specs"), ("How many anchors you need", "/tools/anchors/")),
-               media=still("amimo", eager=True)),
+               trail=[HOW, PRODUCTS, ("AmIMo anchor", None)], actions=(("Specifications", "#specs"), ("How many anchors you need", "/tools/anchors/")),
+               media=still("amimo", "(max-width:1023px) 92vw, 76vw", eager=True), stage="AmIMo"),
           section(SHORT("AmIMo, in short.", "AmIMo is AmIMotion's UWB anchor. It records when each AmIGo pulse arrives and reads the angle it came from, in 3D, so fewer anchors fix a position. "
                         "AmIMo keeps time with the other anchors over the air, sends its data to AmIHub over Wi-Fi, with an Ethernet option, and needs only power, from DC or PoE. "
                         "Each AmIMo anchor reaches about 50 m in clear line of sight. A site survey sets how many your floor needs."),
                   figures([("3D", "Angle of arrival", "Direction as well as time"), ("About 50 m", "Reach in line of sight", "Site-dependent. The survey sets the count"),
                            ("DC or PoE", "Power", "With Wi-Fi backhaul, no data or sync cable"), ("3 to 8 m", "Mounting height", "Recommended. Wall, column, ceiling or pole")])),
           section(vp("What you run to it.", "Power, and nothing else."),
-                  split(None, ["AmIMo needs only power, from a DC adapter or PoE. It keeps time with the other anchors over the air, with no sync cable. It sends its data to AmIHub over Wi-Fi, so it needs no separate data cable. Ethernet is also an option.",
-                               "You set each AmIMo up from a phone app. AmIHub finds each anchor on its own and raises an alert if one goes dark."],
-                        media=still("amimo", alt="The AmIMo anchor, a dark grey box with a network port."), flip=True),
-                  km("amimo-mount", "Anchors need only power", "Where and how anchors mount.", [
-                      "On a column, wall or ceiling, or on a pole, 3 to 8 m up.",
-                      "Set up from a phone app. AmIHub finds each anchor itself.",
-                      "Each anchor reaches about 50 m in line of sight. Steel and racking set the final count.",
-                      "Prefer a wired network? Ethernet is also an option."], "/technology/")),
+                  prose("<p>AmIMo needs only power, from a DC adapter or PoE. It keeps time with the other anchors over the air, with no sync cable. It sends its data to AmIHub over Wi-Fi, so it needs no separate data cable. Ethernet is also an option.</p>"
+                        "<p>You set each AmIMo up from a phone app. AmIHub finds each anchor on its own and raises an alert if one goes dark.</p>"),
+                  closer([("On a column, wall or ceiling, or on a pole, 3 to 8 m up.", "", cad("amimo-3q", "The AmIMo anchor, a dark grey box with amimotion on its side and a mounting tab.")),
+                          ("Set up from a phone app. AmIHub finds each anchor itself.", "", cad("amimo-side", "The AmIMo anchor from the side, amimotion on its long face.")),
+                          ("Each anchor reaches about 50 m in line of sight. Steel and racking set the final count.", "", cad("amimo-a", "The AmIMo anchor from the end, with its network port and a mounting tab.")),
+                          ("Prefer a wired network? Ethernet is also an option.", "", still("amimo", alt="The AmIMo anchor, a dark grey box with a network port."))], h3="Where and how anchors mount."),
+                  more([("How it locates a tag", "/technology/")]), id="mounting"),
           section(vp("Three radios.", "One anchor."),
                   tiles([("UWB", "AmIGo tags on carriers, tools and vehicles, down to ±10 cm in 3D with AmIMo anchors, depending on your floor."),
                          ("BLE ranging", "Zone-level presence for BLE devices and beacons that carry no UWB tag."),
@@ -159,7 +164,7 @@ write("/products/amimo/", "AmIMo UWB anchor: power only, no sync cable, 3D angle
                              "The model factory floor, all pale except one inspection bay shown in colour with its paths, its waits and its two anchors.")),
                   links([("/tools/anchors/", "How many anchors you need", "A first estimate, before the survey"),
                          ("/learn/anchor-planning/", "Anchor planning", "What sets the count on a real floor"),
-                         ("/technology/", "How it locates a tag", "Steel, racking, signal and outages")])),
+                         ("/technology/", "How it locates a tag", "Steel, racking, signal and outages")]), id="survey"),
           section(vp("AmIMo, in detail."),
                   spec([("UWB radio", "IEEE 802.15.4z HRP, with a 3D angle-of-arrival antenna array"),
                         ("Positioning modes", "UL-TDoA, DL-TDoA, two-way ranging and 3D AoA, chosen per zone in AmIHub"),
@@ -189,8 +194,9 @@ write("/products/amimo/", "AmIMo UWB anchor: power only, no sync cable, 3D angle
 write("/products/amihub/", "AmIHub software: live map, zone events and open APIs",
       "AmIHub is AmIMotion's software. It works out where each tag is, times every zone entry and exit, and runs inside your plant with no internet needed.",
       [
+          localnav("AmIHub", (("Overview", "#page-title"), ("Interfaces", "#interfaces"))),
           head("AmIHub.", "One live map of your floor.", "AmIHub turns each tag's pulse into a place and a time. Your team, your systems and AI assistants read the same map.",
-               trail=[HOW, ("AmIHub", None)], actions=(("Interfaces", "#interfaces"), ("For developers", "/developers/")),
+               trail=[HOW, PRODUCTS, ("AmIHub", None)], actions=(("Interfaces", "#interfaces"), ("For developers", "/developers/")),
                media=hallslot("hall-waits", "Fallback until a real AmIHub capture is cleared (O5): the hero poster crop of the inspection bay, the trail of one trolley into the queue, three trolleys and one pallet on amber, everything else pale. "
                           + HALL + " 16:9 crop of the poster master. Never called AmIHub.", "cine",
                           "A model factory floor with paths in blue and waits in amber.")),
@@ -249,10 +255,56 @@ write("/products/amihub/", "AmIHub software: live map, zone events and open APIs
           close("See your floor on AmIHub.", "On the call: the live map and an AI query, on real AmIHub data."),
       ], type="software", product="AmIHub")
 
+# ---------------- /products/ (round 13: the lineup page; it was a directory listing) ----------------
+# Every sentence here is the platform's or the specs' own, reused word for word: the lineup row (Apple iPhone), the
+# compare table as text (Apple compare), Product data per part without prices.
+LINE = "(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw"
+write("/products/", "AmIMotion products: AmIGo tag, AmIMo anchor, AmIHub",
+      "The three AmIMotion products side by side: AmIGo tags on what moves, AmIMo anchors on your columns, and AmIHub, the live map of where work waits.",
+      [
+          head("Products.", "Three parts. One live map.", "A tag rides on what moves. Anchors on your columns hear it. AmIHub shows where it is and how long it has waited.",
+               short="AmIMotion is spatial intelligence for factories and warehouses, built from three parts. AmIGo tags ride on trolleys, bins, tools and vehicles. "
+                     "AmIMo anchors, fixed high on columns and walls, record when each tag's UWB pulse arrives and the angle it came from. "
+                     "AmIHub software works out each position and keeps one live map that your team, your systems and AI assistants all read. "
+                     "With AmIMo anchors, AmIHub places a tag down to ±10 cm in 3D. How close depends on your floor.",
+               trail=[HOW, ("Products", None)]),
+          section(cards([
+                      ("/products/amigo/", still("amigo", LINE), "AmIGo tag", "Screws or sticks onto the trolley. Sends a short pulse when it moves and sleeps when it stops."),
+                      ("/products/amimo/", still("amimo", LINE), "AmIMo anchor", "Fixed to a column 3 to 8 m up. Needs only power, from DC or PoE."),
+                      ("/products/amihub/", hallslot("hall-waits-32", "The inspection bay, cropped close. " + HALL + " Never called AmIHub (O5).", "still",
+                                                 "A model inspection station. Three trolleys in the queue in front of it are marked amber because they are waiting."), "AmIHub", "Works out where each tag is and keeps the live map, on a PC inside your plant."),
+                  ], 3), label="The three parts"),
+          section(vp("Side by side."),
+                  compare(["", "AmIGo tag", "AmIMo anchor", "AmIHub"], [
+                      ("What it does", "Sends a short pulse when it moves and sleeps when it stops.", "Records when the pulse arrives and the angle it came from.", "Works out where each tag is and keeps the live map."),
+                      ("Where it goes", "Screws or sticks onto the trolley.", "Fixed to a column 3 to 8 m up.", "Industrial PC inside your plant, with no internet needed; or cloud"),
+                      ("Radio", "IEEE 802.15.4z HRP, channels 5 and 9", "IEEE 802.15.4z HRP, with a 3D angle-of-arrival antenna array", "—"),
+                      ("Accuracy", "Down to ±10 cm in 3D, typical, with AmIMo anchors. How close depends on your floor", "About 50 m line-of-sight radius, indicative and site-dependent", "—"),
+                      ("Power", "1 to 3 years, typical, depending on use; vehicle-powered option", "DC adapter or PoE", "—"),
+                      ("Interfaces", "—", "—", "REST, MQTT, WebSocket, omlox hub interface and a built-in MCP server"),
+                      ("Operating temperature", "−20 °C to +60 °C, typical", "−20 °C to +60 °C, typical; indoor and sheltered outdoor", "—"),
+                  ], "Indicative values. Full datasheets are shared under NDA.", cls="lineup"),
+                  more([("Specifications", "/specs/")]), band="surface"),
+          section(vp("How a position is made."),
+                  links([("/technology/", "How it locates a tag", "UWB timing, angle and steel"),
+                         ("/platform/", "How it works", "Three parts, one live map"),
+                         ("/tools/anchors/", "How many anchors you need", "A first estimate, before the survey")])),
+          jsonld({"@context": "https://schema.org", "@type": "ItemList", "name": "AmIMotion products", "itemListElement": [
+              {"@type": "ListItem", "position": i + 1, "item": {"@type": "Product", "name": n, "url": "https://www.amimotion.com" + u, "description": d,
+                                                                 "brand": {"@type": "Brand", "name": "AmIMotion"}, "category": c}}
+              for i, (n, u, d, c) in enumerate([
+                  ("AmIGo", "/products/amigo/", "AmIGo is AmIMotion's UWB tag. It sends a pulse when it moves and sleeps when it stops, so one battery lasts 1 to 3 years, typical, depending on use.", "UWB tag"),
+                  ("AmIMo", "/products/amimo/", "AmIMo is AmIMotion's UWB anchor. It times each tag pulse and reads its angle, syncs over the air, sends data over Wi-Fi and needs only DC or PoE power.", "UWB anchor"),
+                  ("AmIHub", "/products/amihub/", "AmIHub is AmIMotion's software. It works out where each tag is, times every zone entry and exit, and runs inside your plant with no internet needed.", "Location software")])]}),
+          close(),
+      ], page="CollectionPage")
+
 # ---------------- technology ----------------
 write("/technology/", "How AmIMotion locates a tag: UWB timing, angle and steel",
       "An AmIGo tag sends a UWB pulse. AmIMo anchors time it and read its angle. AmIHub works out a 3D position. How it works, and what steel does to it.",
       [
+          localnav("How it locates a tag", (("Time and angle", "#light-travels-about-30-cm"), ("Steel and racking", "#steel-and-racking"), ("When something goes quiet", "#when-something-goes-quiet"),
+                                            ("Positioning modes", "#modes"), ("Open standards", "#open-standards")), sections=True),
           head("How AmIMotion locates a tag.", None, "A tag sends a pulse a few nanoseconds long. Anchors note when it arrives and where it came from. AmIHub works out the spot.",
                short="AmIMotion locates tags with ultra-wideband (UWB) radio, to IEEE 802.15.4z. An AmIGo tag sends a pulse a few nanoseconds long. "
                      "Each AmIMo anchor in range records its time of arrival and its angle of arrival. AmIHub compares the times between anchors (time difference of arrival, TDoA) and the angles, and works out a 3D position. "
@@ -262,9 +314,10 @@ write("/technology/", "How AmIMotion locates a tag: UWB timing, angle and steel"
                           + HALL + " 16:9 crop centred on the racks (the homepage Find it frame, wider).", "cine",
                           "A model factory floor. One trolley stopped between the racks is marked blue. A blue line shows its path and ends where it stopped.")),
           section(vp("Light travels about 30 cm", "in a nanosecond.", "So the time a pulse takes to reach each anchor says how far it went. Small timing differences between anchors become a position."),
-                  tiles([("Time", "Each AmIMo anchor records when the pulse arrives. The differences between anchors place the tag. This is time difference of arrival, TDoA."),
-                         ("Angle", "An antenna array in each AmIMo reads the direction the pulse came from, side to side and up and down. So fewer anchors fix a position, and height counts."),
-                         ("The map", "AmIHub combines the times, the angles and your floor map into one 3D position, stamped with the time it was seen.")], 3),
+                  explain([("Time", "Each AmIMo anchor records when the pulse arrives. The differences between anchors place the tag. This is time difference of arrival, TDoA."),
+                           ("Angle", "An antenna array in each AmIMo reads the direction the pulse came from, side to side and up and down. So fewer anchors fix a position, and height counts."),
+                           ("The map", "AmIHub combines the times, the angles and your floor map into one 3D position, stamped with the time it was seen.")],
+                          "A drawing of one bay from above: three anchors and one tagged trolley. Bars show when the pulse reaches each anchor; lines show the angle each one reads."),
                   hallslot("hall-plan", "A plan of one bay seen from straight above: two AmIMo anchors on columns and one AmIGo tag on a trolley; nothing else. No arcs, no rings, no glow. The only marks are the anchors, the tag and one thin unlabelled line from the tag to each anchor. "
                        "Model-hall still, new camera P in build_hall.py: orthographic, straight down (pitch 90°), over the inspection bay, ortho scale 14 m, t = 0.0, blue trails off, one 30 mm #3a3d42 floor line from the tagged trolley to the foot of each anchor column. Not drawn in code.", "wide",
                        "A model inspection bay seen from above: one tagged trolley and the two anchors on the columns that hear it.", "Explainer diagram designer with the Realism lab")),

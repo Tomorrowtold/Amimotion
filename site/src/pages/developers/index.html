@@ -25,7 +25,7 @@ type: article
 <div class="prose"><p>When a tagged trolley enters a zone, AmIHub records an event. It names the tag, the zone, the kind of event (entered, left, idle or dwell) and the time. When the trolley leaves, a second event closes the visit, so the wait is the time between them. You can take these events as they happen over MQTT or WebSocket, or ask AmIHub for them by time window over REST.</p><p>Link each trolley to the job it carries, in AmIHub or from your own system. AmIHub then reports the wait against that job. Your MES stays in charge of the job itself.</p></div>
 </section>
 
-<section class="sec" aria-labelledby="ai-assistants-with-limits">
+<section class="sec has-lead" aria-labelledby="ai-assistants-with-limits">
 <h2 id="ai-assistants-with-limits"><span>AI assistants, with limits.</span></h2><p class="lead">AmIHub has an MCP server built in. MCP is an open standard that lets AI assistants use other software.</p>
 <ul class="points c3"><li><h3>Scoped</h3><p>Each assistant gets its own access: read-only, or only the actions you allow.</p></li><li><h3>Logged</h3><p>Every request is logged: who asked, what was called and what changed.</p></li><li><h3>Approved</h3><p>Any change, such as raising a work order, needs a person's approval. You can require it from a supervisor.</p></li></ul>
 <div class="prose"><p>AmIHub's MCP tools cover live positions, history by time window, zones and fences, and the tags assigned to things. The same tools are there over REST and MQTT. Any assistant that supports MCP can connect. We show it live on a call.</p></div>
@@ -43,7 +43,7 @@ type: article
 <div class="prose"><p>Your team or your integrator can build on AmIMotion at any layer, through open interfaces: the tags and anchors, AmIHub's records, or the MCP tools. One contract and one support line cover every layer.</p></div>
 </section>
 
-<section class="sec" aria-labelledby="questions-developers-ask">
+<section class="sec band surface" aria-labelledby="questions-developers-ask">
 <h2 id="questions-developers-ask"><span>Questions developers ask.</span></h2><div class="faq"><details><summary>Does AmIHub have an API?</summary><p>Yes. AmIHub has REST for queries, MQTT and WebSocket for live events and positions, an omlox hub interface, and an MCP server built in for AI assistants.</p></details><details><summary>Can AmIHub send zone events to our MES?</summary><p>Yes, over MQTT as they happen, or over REST when your MES asks. Which fields and topics your MES receives is agreed for your site.</p></details><details><summary>Where is the AmIHub API reference?</summary><p>Ask on the first call. AmIMotion shares the architecture for your site with the datasheets, under NDA.</p></details><details><summary>Does AmIHub work without internet?</summary><p>Yes. On-premise, AmIHub runs on an industrial PC inside your plant, and every interface stays on your network.</p></details><details><summary>Can an integrator build on AmIMotion?</summary><p>Yes. Your team or your integrator can build on AmIMotion at any layer, through open interfaces.</p></details></div>
 </section>
 

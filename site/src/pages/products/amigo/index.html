@@ -6,17 +6,20 @@ type: product
 product: AmIGo
 category: UWB tag
 og: /assets/home/amigo-page-1600.webp
+scripts: inner
 -->
-<div class="head has-still">
-<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true"> / </span><a href="/platform/">How it works</a><span aria-hidden="true"> / </span><span aria-current="page">AmIGo tag</span></nav>
+<nav class="local" aria-label="AmIGo tag"><a class="local-name" href="#page-title">AmIGo tag</a><ul><li><a href="#page-title">Overview</a></li><li><a href="#fitted">Fitted</a></li><li><a href="#specs">Specs</a></li></ul><a class="cta pill" href="/contact/">Book a call</a></nav>
+
+<div class="head prod">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true"> / </span><a href="/platform/">How it works</a><span aria-hidden="true"> / </span><a href="/products/">Products</a><span aria-hidden="true"> / </span><span aria-current="page">AmIGo tag</span></nav>
+<div class="prod-stage"><span class="prod-name" aria-hidden="true">AmIGo</span><figure class="pic still"><picture><source type="image/avif" srcset="/assets/home/amigo-page-800.avif 800w, /assets/home/amigo-page-1600.avif 1600w, /assets/home/amigo-page-2400.avif 2400w, /assets/home/amigo-page-3840.avif 3840w" sizes="(max-width:1023px) 92vw, 76vw"><source type="image/webp" srcset="/assets/home/amigo-page-800.webp 800w, /assets/home/amigo-page-1600.webp 1600w, /assets/home/amigo-page-2400.webp 2400w, /assets/home/amigo-page-3840.webp 3840w" sizes="(max-width:1023px) 92vw, 76vw"><img src="/assets/home/amigo-page-1600.webp" width="7680" height="4198" fetchpriority="high" decoding="async" alt="The AmIGo tag in dark grey, with amimotion debossed on its top cover and a screw ear at each end."></picture></figure></div>
 <h1 id="page-title"><span>AmIGo tag.</span> <span>It rides on what moves.</span></h1>
 <div class="words"><p class="lede">A small UWB tag that screws or sticks onto a trolley, bin, tool or vehicle. It sends a short pulse when it moves and sleeps when it stops.</p><p class="more"><a href="#specs">Specifications</a><span class="sep" aria-hidden="true">·</span><a href="/products/amimo/">AmIMo anchor</a></p></div>
-<div class="head-pic"><figure class="pic still"><picture><source type="image/avif" srcset="/assets/home/amigo-page-800.avif 800w, /assets/home/amigo-page-1600.avif 1600w, /assets/home/amigo-page-2400.avif 2400w, /assets/home/amigo-page-3840.avif 3840w" sizes="(max-width:1023px) 100vw, 58vw"><source type="image/webp" srcset="/assets/home/amigo-page-800.webp 800w, /assets/home/amigo-page-1600.webp 1600w, /assets/home/amigo-page-2400.webp 2400w, /assets/home/amigo-page-3840.webp 3840w" sizes="(max-width:1023px) 100vw, 58vw"><img src="/assets/home/amigo-page-1600.webp" width="7680" height="4198" fetchpriority="high" decoding="async" alt="The AmIGo tag in dark grey, with amimotion debossed on its top cover and a screw ear at each end."></picture></figure></div>
 </div>
 
-<section class="sec" aria-labelledby="amigo-in-short">
+<section class="sec has-lead" aria-labelledby="amigo-in-short">
 <h2 id="amigo-in-short"><span>AmIGo, in short.</span></h2><p class="lead short-answer">AmIGo is AmIMotion's UWB tag for trolleys, bins, tools, fixtures and vehicles. A motion sensor wakes it to send a short ultra-wideband pulse. When it stops, it sleeps, so one battery lasts 1 to 3 years, typical and depending on use. With AmIMo anchors, AmIHub places an AmIGo tag down to ±10 cm in 3D. How close depends on your floor.</p>
-<dl class="figures"><div><dt>±10 cm</dt><dd>Down to, in 3D<small>With AmIMo anchors, depending on your floor</small></dd></div><div><dt>0.1 to 10 Hz</dt><dd>Update rate<small>Set per tag group. Sent when it moves</small></dd></div><div><dt>1 to 3 years</dt><dd>Battery<small>Typical, depending on use</small></dd></div><div><dt>−20 to +60 °C</dt><dd>Operating range<small>Typical</small></dd></div></dl>
+<div class="giant"><p class="giant-num"><data value="±10 cm">±10 cm</data></p><p class="giant-cond"><b>Down to, in 3D.</b> With AmIMo anchors, depending on your floor</p></div><dl class="figures"><div><dt>0.1 to 10 Hz</dt><dd>Update rate<small>Set per tag group. Sent when it moves</small></dd></div><div><dt>1 to 3 years</dt><dd>Battery<small>Typical, depending on use</small></dd></div><div><dt>−20 to +60 °C</dt><dd>Operating range<small>Typical</small></dd></div></dl>
 </section>
 
 <section class="sec" aria-labelledby="speaks-when-it-moves">
@@ -25,9 +28,9 @@ og: /assets/home/amigo-page-1600.webp
 <details class="know"><summary>Fewer pulses. Longer life.</summary><ul><li>AmIGo sends only when its accelerometer says it is moving.</li><li>You set the update rate per tag group, from 0.1 to 10 times a second.</li><li>1 to 3 years on one battery is typical. Busy tags at high rates use more.</li><li>Forklift and tugger tags can run off the vehicle instead.</li></ul><p class="more"><a href="/learn/location-data-quality/">When a tag goes quiet</a></p></details>
 </section>
 
-<section class="sec" aria-labelledby="one-tag">
+<section class="sec band surface" id="fitted" aria-labelledby="one-tag">
 <h2 id="one-tag"><span>One tag.</span> <span>Fitted three ways.</span></h2>
-<ul class="points c3"><li><h3>On a carrier</h3><p>For trolleys, bins, racks and WIP carriers. AmIGo screws on through its two moulded ears, or sticks on.</p></li><li><h3>On a vehicle</h3><p>For forklifts, tuggers and AGVs. It sits in a vehicle cradle and can run off the vehicle's power.</p></li><li><h3>On a tool</h3><p>For fixtures, gauges and hand tools. Find the tool from a screen, and see which cell had it last.</p></li></ul>
+<div class="closer" data-closer><ol><li><h3>On a carrier</h3><p>For trolleys, bins, racks and WIP carriers. AmIGo screws on through its two moulded ears, or sticks on.</p><figure class="pic still"><img src="/assets/img/amigo-top-1600.webp" srcset="/assets/img/amigo-top-900.webp 900w, /assets/img/amigo-top-1600.webp 1600w" sizes="(max-width:1023px) 100vw, 58vw" width="1600" height="1065" loading="lazy" decoding="async" alt="The AmIGo tag from above, with a screw ear at each end."></figure></li><li><h3>On a vehicle</h3><p>For forklifts, tuggers and AGVs. It sits in a vehicle cradle and can run off the vehicle's power.</p><figure class="pic still"><img src="/assets/img/amigo-card-1600.webp" srcset="/assets/img/amigo-card-900.webp 900w, /assets/img/amigo-card-1600.webp 1600w" sizes="(max-width:1023px) 100vw, 58vw" width="1600" height="1079" loading="lazy" decoding="async" alt="The AmIGo tag in dark grey, with amimotion debossed on its top cover."></figure></li><li><h3>On a tool</h3><p>For fixtures, gauges and hand tools. Find the tool from a screen, and see which cell had it last.</p><figure class="pic still"><img src="/assets/img/amigo-macro-2000.webp" srcset="/assets/img/amigo-macro-1000.webp 1000w, /assets/img/amigo-macro-2000.webp 2000w" sizes="(max-width:1023px) 100vw, 58vw" width="2000" height="954" loading="lazy" decoding="async" alt="The AmIGo tag from the side: a low, compact housing on its two moulded ears."></figure></li></ol></div>
 <nav class="related" aria-label="Related pages"><ul><li><a href="/solutions/wip/">Work in progress</a> <span>See where work waits</span></li><li><a href="/solutions/assets/">Tools and vehicles</a> <span>Fixtures, forklifts, AMRs</span></li><li><a href="/learn/association/">Which job is on the trolley?</a> <span>Linking trolleys to jobs</span></li></ul></nav>
 </section>
 
@@ -37,13 +40,13 @@ og: /assets/home/amigo-page-1600.webp
 <p class="more"><a href="/learn/association/">Which job is on the trolley?</a></p>
 </section>
 
-<section class="sec" id="specs" aria-labelledby="amigo-in-detail">
+<section class="sec band surface" id="specs" aria-labelledby="amigo-in-detail">
 <h2 id="amigo-in-detail"><span>AmIGo, in detail.</span></h2>
 <table class="spec"><tbody><tr><th scope="row">UWB radio</th><td>IEEE 802.15.4z HRP, channels 5 and 9</td></tr><tr><th scope="row">Positioning modes</th><td>Several UWB modes. The modes for your hardware revision are in the datasheet</td></tr><tr><th scope="row">Accuracy</th><td>Down to ±10 cm in 3D, typical, with AmIMo anchors. How close depends on your floor</td></tr><tr><th scope="row">Update rate</th><td>0.1 to 10 Hz, set per tag group; sent on motion</td></tr><tr><th scope="row">Battery</th><td>1 to 3 years, typical, depending on use; vehicle-powered option</td></tr><tr><th scope="row">Sensor</th><td>3-axis accelerometer: motion wake, tilt and impact events</td></tr><tr><th scope="row">Operating temperature</th><td>−20 °C to +60 °C, typical</td></tr><tr><th scope="row">Mounting</th><td>Adhesive, screw, lanyard or helmet, vehicle cradle</td></tr><tr><th scope="row">Forms</th><td>Asset tag, vehicle tag, personnel badge</td></tr><tr><th scope="row">Housing</th><td>Compact and low profile. Size, weight and ingress rating are in the datasheet</td></tr></tbody></table><p class="note">Indicative values from AmIMotion's published figures. The final datasheet is shared under NDA after the first call.</p>
 <p class="more"><a href="/specs/">Specifications</a></p>
 </section>
 
-<section class="sec" aria-labelledby="questions-about-amigo">
+<section class="sec band surface" aria-labelledby="questions-about-amigo">
 <h2 id="questions-about-amigo"><span>Questions about AmIGo.</span></h2><div class="faq"><details><summary>What is an AmIGo tag?</summary><p>AmIGo is AmIMotion's UWB tag for trolleys, bins, tools, fixtures and vehicles. With AmIMo anchors, AmIHub places it down to ±10 cm in 3D, depending on your floor. Its battery lasts 1 to 3 years, typical.</p></details><details><summary>What battery life does a UWB asset tag have?</summary><p>An AmIGo UWB tag lasts 1 to 3 years on one battery, typical. It depends on how often the tag moves and the update rate you set, because AmIGo sleeps when it stops.</p></details><details><summary>Is AmIGo small enough for totes and hand tools?</summary><p>AmIGo is a compact, low-profile tag that screws or sticks on. It is made for bins, totes, tools and fixtures as well as trolleys. Its exact size is in the datasheet, shared under NDA.</p></details><details><summary>Does every AmIGo tag report at the same rate?</summary><p>No. You set the rate per tag group, from 0.1 to 10 times a second. Each tag reports only while it moves.</p></details><details><summary>Can AmIGo tag people?</summary><p>AmIGo also comes as a lanyard or helmet badge. A pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project. It would need its own policy.</p></details></div>
 </section>
 

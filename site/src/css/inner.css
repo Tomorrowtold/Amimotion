@@ -188,3 +188,247 @@ th,td{text-align:left;vertical-align:top;padding:var(--s-4)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .close .sub{display:block;margin-top:var(--s-4);font:400 var(--size-lede)/1.45 var(--font-text);letter-spacing:0;color:var(--ink-soft);max-width:34em}
+
+/* ======================================================================================================
+   Round 13 (team/rounds/10-harvest/plan.md, section 4): the inner pages after the harvest. Bigger type, bands,
+   full-bleed hall moments, the product stage, the closer look, the sticky explainer, the action-band close.
+   Additive: everything above still holds unless a rule here says otherwise. Hairlines are 1 px of ink at 10%.
+   One move per screen at most (the push-in on a full-bleed still); it settles to the still with reduced motion.
+   ====================================================================================================== */
+.ds{--hair:color-mix(in srgb,var(--ink) 12%,transparent);--inner-display:clamp(2.75rem,1.3rem + 5.1vw,8.5rem);
+  --inner-h2:clamp(2rem,1.05rem + 3.2vw,6rem);--inner-lede:clamp(1.1875rem,.8rem + 1.35vw,1.875rem);
+  --inner-stat:clamp(2.5rem,1.35rem + 2.5vw,4.5rem);--inner-giant:clamp(5rem,1.5rem + 15vw,20rem);--local:52px}
+@media (min-width:1024px){main{font-size:max(var(--size-body),1.125rem)}}
+main [id]{scroll-margin-top:calc(var(--local) + var(--s-5))}
+
+/* ---------- head: giant H1, lede left and the short answer right (M11, M16) ---------- */
+.head h1{font-size:var(--inner-display);line-height:.97;letter-spacing:-.035em;max-width:none;margin-bottom:var(--s-7);text-wrap:balance}
+.head .words{grid-column:1 / -1;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:start}
+.head .lede{grid-column:1 / span 5;font-size:var(--inner-lede);line-height:1.35;color:var(--ink);max-width:none}
+.head .short-answer{grid-column:7 / -1;max-width:36em}
+.head .words>.more{grid-column:7 / -1;margin-top:0}
+.head .words:not(:has(.lede))>.short-answer,.head .words:not(:has(.lede))>.more{grid-column:1 / span 7}
+.head .words:not(:has(.short-answer))>.more{grid-column:1 / span 5}
+.has-still .words{display:block}
+.has-still .lede{margin-bottom:var(--s-5)}
+.has-still h1{font-size:min(var(--inner-display),7rem)}
+/* a hall still under the head runs full bleed, pushed in a little as it scrolls (M05, Figure) */
+.has-bleed .head-pic,.sec>.r169-pic{grid-column:1 / -1;margin:var(--rhythm-s) calc(-1 * var(--margin)) 0;overflow:hidden}
+.has-bleed .head-pic img,.sec>.r169-pic img{width:100%;height:auto;aspect-ratio:16 / 9;max-height:92svh;object-fit:cover}
+.sec>.r169-pic{margin-bottom:var(--s-7)}
+@keyframes push{from{transform:scale(1)}to{transform:scale(1.06)}}
+@supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
+  .has-bleed .head-pic img,.sec>.r169-pic img{animation:push linear both;animation-timeline:view();animation-range:cover 0% cover 100%}}}
+/* pictures cropped from a still of another ratio (stand-ins): the box keeps the slot's ratio */
+.pic img.crop{object-fit:cover;width:100%}
+.pic{overflow:hidden}
+
+/* ---------- the offer head (/pilot/, Formlabs): the headline beside a large still ---------- */
+.offer h1{grid-column:1 / span 6;grid-row:2}
+.offer .words{grid-column:1 / span 6;grid-row:3;display:block}
+.offer .lede{margin-bottom:var(--s-5)}
+.offer .head-pic{grid-column:7 / -1;grid-row:2 / span 2;margin:0 calc(-1 * var(--margin)) 0 0;align-self:start}
+.offer .head-pic img{aspect-ratio:4 / 5;max-height:88svh;object-fit:cover;width:100%;height:auto}
+.offer h1{font-size:min(var(--inner-display),7.5rem)}
+
+/* ---------- the product stage (Rivian): the name set giant behind the render on the sweep ---------- */
+.prod .prod-stage{grid-column:1 / -1;position:relative;display:grid;place-items:center;margin:calc(-1 * var(--s-5)) calc(-1 * var(--margin)) var(--s-6);min-height:min(60svh,42vw);overflow:hidden}
+.prod-name{position:absolute;left:0;right:0;top:50%;transform:translateY(-56%);text-align:center;font:600 26vw/.8 var(--font-display);letter-spacing:-.06em;color:color-mix(in srgb,var(--ink) 9%,var(--ground));white-space:nowrap;-webkit-user-select:none;user-select:none;pointer-events:none}
+.prod-stage .pic{position:relative;width:min(56vw,1500px);overflow:visible}
+.prod-stage .pic img{width:100%;height:auto;mix-blend-mode:multiply}
+.prod h1{font-size:min(var(--inner-display),7rem)}
+
+/* ---------- the local bar (Apple product nav, NVIDIA section bar): sticky, 52 px ---------- */
+.local{position:sticky;top:0;z-index:15;display:flex;align-items:center;gap:var(--s-5);height:var(--local);margin:0 calc(-1 * var(--margin));padding:0 var(--margin);background:var(--ground);border-bottom:1px solid var(--hair)}
+main .local a{text-decoration:none}
+.local-name{font:600 clamp(1.0625rem,.9rem + .35vw,1.375rem)/1 var(--font-display);letter-spacing:-.01em;color:var(--ink)!important;margin-right:auto;white-space:nowrap}
+.local ul{display:flex;gap:clamp(16px,1.6vw,32px);list-style:none;margin:0;padding:0;min-width:0;overflow-x:auto;scrollbar-width:none}
+.local ul::-webkit-scrollbar{display:none}
+.local li{margin:0;white-space:nowrap}
+.local ul a{display:block;padding-block:14px;font:400 15px/1.2 var(--font-text);color:var(--ink-soft)!important}
+.local ul a:hover,.local ul a[aria-current]{color:var(--ink)!important}
+.local ul a[aria-current]{box-shadow:inset 0 -2px 0 var(--ink)}
+main .cta.pill,.local .cta{flex:none;height:36px;padding-inline:16px;border-radius:999px;font:500 15px/1 var(--font-text)}
+
+/* ---------- buttons and section-end links (M14): pill, chevron that moves 3 px, press ---------- */
+main .cta{border-radius:999px;transition:background-color 150ms var(--ease-ds),transform 150ms var(--ease-ds)}
+main .cta:not(.pill){height:48px;padding-inline:22px;font-size:max(var(--size-small),1rem)}
+.more{font-size:clamp(1.0625rem,.95rem + .3vw,1.1875rem)}
+main .more a,main .close a{text-decoration:none}
+main .more a:hover{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
+main .more a::after,main .close a::after,main .cta:not(.pill)::after,.qstart a::after{content:"";display:inline-block;width:.42em;height:.42em;margin-left:.45em;border-top:2px solid currentColor;border-right:2px solid currentColor;transform:translateY(-.08em) rotate(45deg);transition:transform 150ms var(--ease-ds)}
+main .more a:hover::after,main .close a:hover::after,main .cta:hover::after,.qstart a:hover::after{transform:translate(3px,-.08em) rotate(45deg)}
+
+/* ---------- section heading row: bigger H2; with a lead, the two-column header (M16) ---------- */
+.sec>h2{font-size:var(--inner-h2);line-height:1;letter-spacing:-.03em;max-width:none;grid-column:1 / span 10}
+.sec.has-lead>h2{grid-column:1 / span 6;grid-row:1}
+.sec.has-lead>.lead{grid-column:8 / -1;grid-row:1;align-self:end;margin:0 0 var(--s-7);font-size:var(--inner-lede);line-height:1.35}
+
+/* ---------- bands (M10): a full-bleed surface band where the reading changes ---------- */
+.sec.band{margin:var(--rhythm-m) calc(-1 * var(--margin)) 0;padding:var(--rhythm-m) var(--margin);background:var(--surface)}
+.sec.band+.sec.band{margin-top:0;padding-top:0}
+.band .faq details{background:var(--ground)}
+.band .compare tbody tr:nth-child(odd){background:var(--ground)}
+.sec.band:has(+.close){padding-bottom:var(--rhythm-m)}
+
+/* ---------- the close: the action band (Waymo), white words and a white pill ---------- */
+main:has(>.close:last-child){padding-bottom:0}
+.close{margin:var(--rhythm-m) calc(-1 * var(--margin)) 0;padding:var(--rhythm-l) var(--margin);background:var(--action);color:var(--on-action)}
+.sec.band+.close{margin-top:0}
+.close p{grid-column:1 / span 9;font-size:clamp(2.25rem,1.1rem + 3.6vw,5rem);line-height:1;letter-spacing:-.03em}
+.close .sub{color:var(--on-action);max-width:30em}
+main .close a{display:inline-flex;align-items:center;height:48px;margin-top:var(--s-7);padding-inline:22px;border-radius:999px;background:var(--surface);color:var(--action)!important;font:500 max(var(--size-small),1rem)/1 var(--font-text);transition:background-color 150ms var(--ease-ds),transform 150ms var(--ease-ds)}
+main .close a:hover{background:var(--pressed)}
+main .close a:active,main .cta:active,.qstart a:active{transform:scale(var(--press-scale))}
+.close :focus-visible{outline-color:var(--on-action)}
+
+/* ---------- figures: the stat strip (Lumafield), tabular, a hairline over each ---------- */
+.figures{row-gap:var(--s-7)}
+.figures>div{border-top:1px solid var(--hair);padding-top:var(--s-5);min-width:0}
+.figures dt{font:600 min(var(--inner-stat),9.5vw)/1 var(--font-display);letter-spacing:-.035em;margin-bottom:var(--s-4)}
+.figures dd{font-size:max(var(--size-body),1rem)}
+.figures:has(>div:nth-child(3):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}
+.copy .figures dt{font-size:var(--size-h3)}
+/* the giant figure (Waymo "10X"): the number as text inside data, its condition beside it */
+.giant{grid-column:1 / -1;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:end;margin:var(--s-6) 0 var(--rhythm-s)}
+.giant-num{grid-column:1 / span 8;margin:0;font:600 var(--inner-giant)/.82 var(--font-display);letter-spacing:-.055em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.giant-cond{grid-column:9 / -1;margin:0 0 .35em;font-size:var(--inner-lede);line-height:1.35}
+.giant-cond b{font-weight:500}
+
+/* ---------- points, steps, pillars: a hairline over each, larger heads ---------- */
+.points:not(.c1)>li,.steps>li{border-top:1px solid var(--hair);padding-top:var(--s-5)}
+.sec .points h3,.sec .steps h3{font-size:clamp(1.1875rem,.95rem + .7vw,1.625rem);line-height:1.25}
+.points.pillars{row-gap:var(--s-8)}
+.sec .points.pillars h3{font:600 clamp(1.75rem,1.1rem + 1.9vw,3.25rem)/1.05 var(--font-display);letter-spacing:-.025em;margin-bottom:var(--s-4)}
+.points.pillars p{font-size:var(--inner-lede);line-height:1.4;color:var(--ink-soft)}
+.steps li::before{font-size:var(--inner-stat);margin-bottom:var(--s-5)}
+
+/* ---------- tables: hairline frames, tabular numerals (Oxide) ---------- */
+.spec,.compare{border-top:1px solid var(--hair);font-variant-numeric:tabular-nums}
+.spec tr,.compare tbody tr{border-bottom:1px solid var(--hair)}
+.spec tr:nth-child(odd),.compare tbody tr:nth-child(odd){background:none}
+.band .compare tbody tr:nth-child(odd){background:none}
+.spec th{color:var(--ink-soft);font-weight:400}
+.spec td{font-weight:500}
+th,td{padding:var(--s-5) var(--s-4) var(--s-5) 0}
+.compare thead th{padding-bottom:var(--s-4)}
+.compare.lineup thead th{font:600 var(--size-h3)/1.15 var(--font-display);color:var(--ink);letter-spacing:-.01em}
+
+/* ---------- parts and related: larger names; illustrated tiles (The Pudding) ---------- */
+.parts h3{font-size:clamp(1.375rem,1rem + 1vw,1.875rem)!important}
+.related.tiles ul{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s-8)}
+.related.tiles li>a{display:block;color:var(--ink);text-decoration:none}
+.related.tiles .pic{margin-bottom:var(--s-4);background:var(--surface)}
+.related.tiles .pic img{aspect-ratio:4 / 3;object-fit:cover;width:100%;transition:transform 400ms var(--ease-ds)}
+.related.tiles .pic.still img{object-fit:contain;padding:8%}
+.related.tiles li>a:hover img{transform:scale(1.03)}
+.related.tiles b{display:block;font:600 clamp(1.375rem,1.05rem + .8vw,1.75rem)/1.15 var(--font-display);letter-spacing:-.015em}
+.related.tiles li>a:hover b{color:var(--link)}
+.related.tiles span{font-size:max(var(--size-small),1rem);margin-top:var(--s-2)}
+
+/* ---------- the closer look (AirPods): features left, the product turns to the one chosen ---------- */
+.closer{grid-column:1 / -1}
+.closer ol{list-style:none;margin:0;padding:0}
+.closer li{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:center;margin:0;padding:var(--s-6) 0;border-top:1px solid var(--hair)}
+.closer li>h3,.closer li>p{grid-column:1 / span 5}
+.closer li>p{color:var(--ink-soft);margin:0}
+.closer li>.pic{grid-column:7 / -1;grid-row:1 / span 2}
+.closer-h{font:500 var(--size-body)/1.4 var(--font-text);color:var(--ink-soft);margin-bottom:var(--s-5)}
+.closer.is-live{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:center}
+.closer.is-live>.closer-h{grid-column:1 / span 5}
+.closer.is-live ol{grid-column:1 / span 5;grid-row:2}
+.closer.is-live li{display:block;padding:0;border:0;margin-bottom:var(--s-2)}
+.closer.is-live li>h3{margin:0}
+.closer.is-live li>p{padding:var(--s-2) var(--s-5) var(--s-5)}
+.closer.is-live li:not(.on)>p{display:none}
+.closer h3 button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:var(--s-3);width:100%;min-height:52px;padding:var(--s-3) var(--s-5);border-radius:28px;background:var(--ground);cursor:pointer;font:500 var(--size-body)/1.3 var(--font-text);color:var(--ink);transition:background-color 150ms var(--ease-ds)}
+.closer h3 button::before{content:"+";flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1.5px solid currentColor;font:500 16px/1 var(--font-text)}
+.closer li.on h3 button{background:var(--pressed)}
+.closer li.on h3 button::before{content:"\2212"}
+.closer h3 button:hover{background:var(--pressed)}
+.closer h3 button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.closer-stage{grid-column:6 / -1;grid-row:1 / span 2;display:grid;min-height:min(62svh,40vw)}
+.closer-stage>.pic{grid-area:1 / 1;align-self:center;opacity:0;transform:scale(.96) rotate(-2deg);transition:opacity 450ms var(--ease-ds),transform 700ms var(--ease-ds)}
+.closer-stage>.pic.on{opacity:1;transform:none}
+.closer-stage img{width:100%;height:auto;max-height:62svh;object-fit:contain}
+
+/* ---------- the sticky explainer (Helion, ciechanowski) ---------- */
+.explain{grid-column:1 / -1;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);margin-bottom:var(--s-7)}
+.ex-stage{grid-column:6 / -1;grid-row:1;position:sticky;top:calc(var(--local) + var(--s-6));align-self:start;background:var(--ground)}
+.ex-steps{grid-column:1 / span 4;grid-row:1;list-style:none;margin:0;padding:0}
+.ex-steps li{margin:0;padding:var(--s-6) 0;border-top:1px solid var(--hair)}
+.ex-steps h3{font-size:var(--size-h3)!important}
+.ex-steps p{color:var(--ink-soft);margin:0}
+.js .explain.is-live .ex-steps li{min-height:72svh;display:flex;flex-direction:column;justify-content:center;border:0;opacity:.32;transition:opacity 300ms var(--ease-ds)}
+.js .explain.is-live .ex-steps li.on{opacity:1}
+.ex-svg{display:block;width:100%;height:auto;color:color-mix(in srgb,var(--ink) 28%,transparent);touch-action:none}
+.ex-anchors rect{fill:var(--hardware)}
+.ex-rays line{stroke:var(--ink-soft);stroke-dasharray:3 4}
+.ex-trolley{fill:var(--surface);stroke:var(--ink-soft);stroke-width:1}
+.ex-dot{fill:var(--located)}
+.ex-pulse{fill:none}
+.ex-base{fill:var(--hair)}
+.ex-key{fill:var(--hardware)}
+.ex-bar{fill:var(--located)}
+.ex-svg g{transition:opacity 400ms var(--ease-ds)}
+.explain.is-live[data-at="0"] .ex-bars,.explain.is-live[data-at="0"] .ex-rays,.explain.is-live[data-at="1"] .ex-rays{opacity:.12}
+.explain.is-live[data-at="0"] .ex-dot,.explain.is-live[data-at="1"] .ex-dot,.explain.is-live[data-at="2"] .ex-dot{fill:var(--surface);stroke:var(--located);stroke-width:2}
+.explain.is-live[data-at="3"] .ex-tag{cursor:grab}
+.ex-tag{cursor:grab;outline:none}
+.ex-tag:focus-visible .ex-trolley{stroke:var(--focus);stroke-width:2}
+
+/* ---------- the diagnostic's first question, inline (Mercury) ---------- */
+.qstart{grid-column:1 / -1;margin-top:var(--s-7)}
+.qstart-q{font:600 var(--size-h3)/1.2 var(--font-display);letter-spacing:-.01em;margin-bottom:var(--s-5)}
+.qstart ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:var(--s-3)}
+.qstart li{margin:0}
+main .qstart a{display:inline-flex;align-items:center;min-height:48px;padding:0 22px;border-radius:999px;background:var(--surface);color:var(--ink);text-decoration:none;font-weight:500;transition:background-color 150ms var(--ease-ds),transform 150ms var(--ease-ds)}
+main .qstart a:hover{background:var(--pressed)}
+.band .qstart a{background:var(--ground)}
+
+@media (max-width:1023px){
+  .head .lede,.head .short-answer,.head .words>.more,.head .words:not(:has(.lede))>.short-answer,.head .words:not(:has(.short-answer))>.more{grid-column:1 / -1}
+  .head .lede{margin-bottom:var(--s-5)}
+  .head h1,.has-still h1,.prod h1,.offer h1{font-size:min(var(--inner-display),calc((100vw - 2 * var(--margin)) / 7.2))}
+  .sec>h2,.sec.has-lead>h2{grid-column:1 / -1}
+  .sec.has-lead>.lead{grid-column:1 / -1;grid-row:auto;margin-top:calc(-1 * var(--s-4))}
+  .offer h1,.offer .words{grid-column:1 / -1;grid-row:auto}
+  .offer .head-pic{grid-column:1 / -1;grid-row:auto;margin:var(--s-6) calc(-1 * var(--margin)) 0}
+  .offer .head-pic img{aspect-ratio:4 / 3}
+  .prod .prod-stage{min-height:0;padding-block:var(--s-7) var(--s-5)}
+  .prod-stage .pic{width:84vw}
+  .prod-name{font-size:31vw}
+  .local{gap:var(--s-4)}
+  .local .cta{display:none}
+  .local ul{gap:var(--s-4)}
+  .local.sections .local-name{display:none}
+  .local.sections ul{margin-right:auto}
+  .giant-num,.giant-cond{grid-column:1 / -1}
+  .giant-cond{margin-top:var(--s-5)}
+  .closer li>h3,.closer li>p,.closer li>.pic{grid-column:1 / -1;grid-row:auto}
+  .closer li>.pic{margin-top:var(--s-5)}
+  .closer.is-live>.closer-h,.closer.is-live ol,.closer-stage{grid-column:1 / -1;grid-row:auto}
+  .closer-stage{min-height:0;margin-bottom:var(--s-5)}
+  .closer.is-live .closer-stage{grid-row:2}
+  .closer.is-live ol{grid-row:3}
+  .ex-stage{grid-column:1 / -1;top:var(--local);z-index:2;padding-block:var(--s-3)}
+  .ex-steps{grid-column:1 / -1;grid-row:2}
+  .js .explain.is-live .ex-steps li{min-height:46svh}
+  .related.tiles ul{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .figures:has(>div:nth-child(3):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:639px){
+  .related.tiles ul,.figures:has(>div:nth-child(3):last-child){grid-template-columns:minmax(0,1fr)}
+  .local.sections ul a{font-size:14px}
+  .spec th,.spec td{padding:var(--s-1) 0}
+  .compare th,.compare td{padding:var(--s-1) 0}
+}
+@media (prefers-reduced-motion:reduce){.closer-stage>.pic{transform:none}}
+/* the lineup row (Verkada, iPhone): every part on the same white square, the product contained, a hall still filling it */
+.parts .pic{aspect-ratio:4 / 3;background:var(--surface);display:grid;place-items:center}
+.parts .pic picture{display:contents}
+.parts .pic img{width:100%;height:100%;object-fit:cover}
+.parts .pic.still img{object-fit:contain;padding:6%;mix-blend-mode:multiply}
+.parts li>a:hover .pic img,.parts li:hover .pic img{transform:scale(1.03)}
+.parts .pic img{transition:transform 400ms var(--ease-ds)}
+.figures dt{text-wrap:balance}
