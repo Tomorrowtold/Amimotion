@@ -30,7 +30,9 @@ ap.add_argument("--indexable", action="store_true")
 ap.add_argument("--no-brief", action="store_true", help="hide the picture briefs on placeholders")
 ap.add_argument("--base-url", default="https://www.amimotion.com")
 ap.add_argument("--indexnow-key", default="")
+ap.add_argument("--out", default="", help="build somewhere other than dist/ (parallel builds, review shots)")
 args = ap.parse_args()
+if args.out: DIST = Path(args.out).resolve()
 SITE, SHARE, BRIEF, TODAY = args.base_url.rstrip("/"), args.share, not args.no_brief, date.today().isoformat()
 ENTITY = json.loads((SRC / "data" / "entity.json").read_text())
 NAV = json.loads((SRC / "data" / "nav.json").read_text())
@@ -189,7 +191,7 @@ def head(meta, url, body, titles):
 <link rel="icon" href="/assets/img/AmIMotion_Icon.svg" type="image/svg+xml">
 <link rel="alternate" type="text/plain" title="AmIMotion for AI assistants" href="/llms.txt">
 {styles(meta)}
-<script>document.documentElement.classList.replace('no-js','js')</script>
+<script>(()=>{{const h=document.documentElement;h.classList.replace('no-js','js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/[?&]still\\b/.test(location.search))h.classList.add('motion')}})()</script>
 <script type="application/ld+json">{page_schema(meta, url, body, titles)}</script>
 </head>
 <body class="ds">"""
@@ -232,43 +234,54 @@ def header_html():
             f'<nav class="main" aria-label="Main"><ul class="links">{"".join(panels)}</ul></nav>\n'
             f'<a class="cta" href="/contact/">Book a call</a>\n'
             f'<details class="phone" data-panel><summary>Menu</summary><nav class="sheet" aria-label="Menu">'
-            f'{A(nx[2], nx[1], " class=\"sheet-first\"")}{groups}</nav></details>\n</header>')
+            f'{A(nx[2], nx[1], " class=\"sheet-first\"")}{groups}</nav></details>\n</header>\n'
+            # the phone dock (M13): Book a call, always one thumb away once the first screen is behind you
+            '<div class="dock" data-dock><a class="cta" href="/contact/" tabindex="-1">Book a call</a></div>')
+
+
+# Footer jobs grid (M15, M19): the twelve role lines of homepage-final.md screen 7, in four columns, each column under
+# one camera A crop of the model hall (stand-ins cut from hall-all until render job R8 lands). The crops are decorative.
+JOB_GROUPS = [
+    ("inspection", ("Shift supervisors", "Lean and IE leads", "Safety and EHS")),
+    ("staging", ("Production and planning", "MES and ERP owners", "Group operations and digital")),
+    ("press", ("Plant heads", "Owners and MDs", "Procurement and finance")),
+    ("racks", ("Maintenance and OT", "IT and security", "Developers and integrators")),
+]
 
 
 def footer_html():
     """Screen 7 of homepage-final.md: start from your job, four columns with the nav labels, the entity paragraph."""
-    roles = "".join(f"<div><dt>{html.escape(r)}</dt><dd>" + ' <span aria-hidden="true">·</span> '.join(A(u, l) for l, u in ls) + "</dd></div>" for r, ls in NAV["roles"])
+    roles = dict(NAV["roles"])
+    assert sorted(r for _, g in JOB_GROUPS for r in g) == sorted(roles), "every role line sits in one job column"
+    def role(r):
+        return f"<div><dt>{html.escape(r)}</dt><dd>" + ' <span aria-hidden="true">·</span> '.join(A(u, l) for l, u in roles[r]) + "</dd></div>"
+    jobs = "".join(f'<li><picture><source type="image/avif" srcset="/assets/home/jobs/{c}-600.avif 600w, /assets/home/jobs/{c}-1200.avif 1200w" sizes="(max-width:560px) 100vw, (max-width:1023px) 50vw, 25vw">'
+                   f'<img src="/assets/home/jobs/{c}-600.webp" srcset="/assets/home/jobs/{c}-600.webp 600w, /assets/home/jobs/{c}-1200.webp 1200w" sizes="(max-width:560px) 100vw, (max-width:1023px) 50vw, 25vw" width="1200" height="900" loading="lazy" decoding="async" alt=""></picture>'
+                   f'<dl class="roles">{"".join(role(r) for r in g)}</dl></li>' for c, g in JOB_GROUPS)
     cols = "".join(f'<div>{A(s["url"], s["label"], " class=\"hub\"")}<ul>' + "".join(f"<li>{A(u, l)}</li>" for l, u, _ in s["items"]) + "</ul></div>" for s in NAV["sections"])
-    return (f'<footer class="foot ds">\n<h2>Start from your job.</h2>\n<dl class="roles">{roles}</dl>\n'
-            f'<nav class="foot-cols" aria-label="All pages">{cols}</nav>\n'
+    return (f'<footer class="foot ds">\n<h2>Start from your job.</h2>\n<ul class="jobs">{jobs}</ul>\n'
+            f'<nav class="foot-cols" aria-label="All pages">{cols}</nav>\n<div class="foot-base">'
+            f'<a class="logo" href="/" aria-label="AmIMotion home">{part("logo.html")}</a>\n'
             f'<p class="entity">{html.escape(ENTITY["long"])}</p>\n'
             f'<p class="contact"><a href="mailto:sales@amimotion.com">sales@amimotion.com</a> <span aria-hidden="true">·</span> <a href="/privacy/">Privacy</a></p>\n'
             '<p class="legal">NXP and Trimension are trademarks of NXP B.V. FiRa and omlox are trademarks of their owners. Specifications are indicative. Final datasheets are shared under NDA.</p>\n'
-            "</footer>")
+            "</div></footer>")
 
 
 # panels: one open at a time, Escape and a click outside close them. Without this script they still open and close.
 NAV_JS = ("<script>(()=>{const d=document,P=[...d.querySelectorAll('details[data-panel]')];"
           "P.forEach(p=>p.addEventListener('toggle',()=>{if(p.open)P.forEach(q=>{if(q!==p)q.open=false})}));"
           "d.addEventListener('click',e=>{P.forEach(p=>{if(p.open&&!p.contains(e.target))p.open=false})});"
-          "d.addEventListener('keydown',e=>{if(e.key==='Escape')P.forEach(p=>{if(p.open){p.open=false;p.querySelector('summary').focus()}})})})()</script>")
-# the hero film hook: plays a [data-hero-film] video only while it is in view; never with reduced motion. No film yet: does nothing.
-FILM_JS = ("<script>(()=>{const f=document.querySelector('[data-hero-film]'),v=f&&f.querySelector('video');"
-           "if(!v||!('IntersectionObserver'in window))return;const q=matchMedia('(prefers-reduced-motion: reduce)');if(q.matches)return;"
-           "const b=v.dataset.src+(matchMedia('(max-width:1023px), (max-aspect-ratio:4/5)').matches?'-1x1':'-4x5');let r=0;"
-           "const load=()=>{if(r)return;r=1;[['-av1.mp4','video/mp4; codecs=\"av01.0.08M.08\"'],['-h264.mp4','video/mp4; codecs=\"avc1.640028\"']]"
-           ".forEach(([x,t])=>{const s=document.createElement('source');s.src=b+x;s.type=t;v.appendChild(s)});v.load()};"
-           "v.addEventListener('playing',()=>f.classList.add('is-playing'));"
-           "const go=()=>new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){load();v.play().catch(()=>{})}else v.pause()}),{threshold:.25}).observe(f);"
-           "document.readyState==='complete'?go():addEventListener('load',go);"
-           "q.addEventListener&&q.addEventListener('change',()=>{if(q.matches){v.pause();f.classList.remove('is-playing')}})})()</script>")
-
-
+          "d.addEventListener('keydown',e=>{if(e.key==='Escape')P.forEach(p=>{if(p.open){p.open=false;p.querySelector('summary').focus()}})});"
+          # the phone dock slides in once the first screen (or the homepage hero runway) is behind the reader
+          "const k=d.querySelector('[data-dock]');if(k){const a=d.querySelector('[data-dock-after]'),h=d.documentElement,b=k.querySelector('a');let on;"
+          "const f=()=>{const y=a?a.getBoundingClientRect().bottom<innerHeight*.5:scrollY>innerHeight*.8;if(y!==on){on=y;h.classList.toggle('dock-on',y);b.tabIndex=y?0:-1}};"
+          "addEventListener('scroll',f,{passive:true});f()}})()</script>")
 def scripts(meta):
     """Inner pages load no shared script: the panels script (inline), plus a tool's own file where it has one.
     The diagnostic's 3D floor (three.js, about 690 KB) is no longer loaded: it drew a plant in code and broke the
     first-screen budget. Its 2D sketch stays."""
-    if meta.get("layout") == "home": return NAV_JS + FILM_JS
+    if meta.get("layout") == "home": return NAV_JS + '\n<script src="/assets/js/stage.js" defer></script>'
     s = meta.get("scripts", "").split()
     out = [NAV_JS]
     if "diag" in s: out.append('<script src="/assets/js/config.js" defer></script><script src="/assets/js/diagnostic.js" defer></script>')
@@ -300,6 +313,21 @@ def crumb_labels(body, url=None):
     return re.sub(r'<nav class="crumbs".*?</nav>', fix, body, flags=re.S)
 
 
+# The claims register (homepage-final.md, K03, /specs/): the only figures a page may set as a <data> element or a stat.
+# A number shown big must be one of these, word for word, with its condition beside it.
+REGISTER = {"±10 cm", "0.1 to 10 Hz", "1 to 3 years", "about 50 m", "3 to 8 m"}
+
+
+def check_home(body):
+    """Fail the build when the homepage shows a figure that is not in the register, or points at a picture that does
+    not exist (an empty slot collapses to nothing; a missing src is a broken page)."""
+    bad = [text_of(x) for x in re.findall(r"<data\b[^>]*>(.*?)</data>", body, re.S) if text_of(x) not in REGISTER]
+    if bad: raise SystemExit(f"build: homepage figures not in the claims register: {bad}")
+    refs = re.findall(r'(?<![\w-])(?:src|poster)="(/assets/[^"]+)"', body) + [u.split()[0] for ss in re.findall(r'srcset="([^"]+)"', body) for u in ss.split(",") if u.strip()]
+    missing = sorted({u for u in refs if u.startswith("/assets/") and not (SRC / "assets" / u[len("/assets/"):]).exists() and not (SRC / u.lstrip("/").replace("assets/js/", "js/")).exists()})
+    if missing: raise SystemExit("build: homepage pictures missing:\n  " + "\n  ".join(missing))
+
+
 def build():
     if DIST.exists(): shutil.rmtree(DIST)
     (DIST / "assets").mkdir(parents=True)
@@ -315,6 +343,7 @@ def build():
         meta, body = front(f.read_text()); body = crumb_labels(body, url_for(rel))
         pages[url_for(rel) if rel.name != "404.html" else "/404.html"] = (meta, body)
     titles = {u: m.get("crumb") or m.get("title", "").split(" | ")[0] for u, (m, _) in pages.items()}
+    check_home(pages["/"][1])
 
     public = []
     for url, (meta, body) in pages.items():
