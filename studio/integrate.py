@@ -66,7 +66,7 @@ def scope(css):
     return block(re.sub(r"/\*.*?\*/", "", css, flags=re.S))
 
 css = scope((STUDIO / "css" / "studio.css").read_text())
-css = css.replace("url(../assets/fonts/", "url(../fonts/")
+css = css.replace("url(../assets/fonts/", "url(../../fonts/")   # AmI fonts: the site's own copies (assets/fonts), so the preloads are reused
 css += """
 .studio{background:var(--ground);color:var(--ink);font-family:var(--text)}
 .studio .hero{padding-top:0}

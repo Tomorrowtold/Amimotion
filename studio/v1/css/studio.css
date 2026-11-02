@@ -1084,3 +1084,5 @@ html.tag-live .tag-fallback{opacity:0!important;transition:none}
 .cap .q-big:not(.lit){color:rgba(11,18,56,.3)}
 /* chapter bar: legible at rest (WCAG AA) */
 @media (min-width:901px){.rail a{opacity:1;color:#5a6280}.rail a.on{color:var(--ink)}}
+/* the hero's lede is the page's largest text: shown at once, it only slides, so it paints with the first frame */
+.hero .lede.k-fade{opacity:1;transition:transform 1.2s var(--ease-out)}
