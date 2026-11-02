@@ -10,5 +10,5 @@
 /* the paper close: the subline in ink-soft (the action band's white was left on cream), the pill filled with action */
 .look-close-paper .close .sub{color:var(--ink-soft)}
 .look-close-paper main .close a{background:var(--action);color:var(--on-action)!important}
-.look-close-paper main .close a:hover{background:color-mix(in srgb,var(--action) 86%,var(--ink))}
+.look-close-paper main .close a:hover{background:var(--action-hover)}
 .look-close-paper .close :focus-visible{outline-color:var(--action)}
