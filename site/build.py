@@ -286,7 +286,7 @@ def header_html(url="/"):
         sgroups = "".join(f'<p class="grp-name">{html.escape(n)}</p><ul class="sheet-list{" pics" if all(u in PIC for _, u, _ in its) else ""}">'
                           + "".join(row(*it, "sheet", all(u in PIC for _, u, _ in its)) for it in its) + "</ul>" for n, its in gs)
         secs.append(f'<details class="fold"{" open" if s is here else ""}><summary>{s["label"]}</summary><div class="fold-body">'
-                    f'<a class="fold-hub" href="{s["url"]}"{cur(s["url"])} >{s["label"]}</a>{sgroups}</div></details>')
+                    f'<a class="fold-hub" href="{s["url"]}"{cur(s["url"])} aria-label="{s["label"]} overview">Overview</a>{sgroups}</div></details>')
     secs.append(f'<details class="fold"><summary>Start from your job</summary><div class="fold-body"><ul class="jobs-list">{roles_html("sheet")}</ul></div></details>')
     return ('<a class="skip-link" href="#main">Skip to content</a>\n<header class="top ds">\n'
             f'<a class="logo" href="/" aria-label="AmIMotion home" data-nav-id="header.home">{part("logo.html")}</a>\n'

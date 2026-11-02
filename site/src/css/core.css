@@ -148,12 +148,12 @@
   .act > .cta{padding:0 14px}
   .phone{display:block}
   .phone > summary{padding-inline:12px}
-  .m-close,[open] > summary > .m-open,.sheet-on .dock .m-open{display:none}
-  [open] > summary > .m-close,.sheet-on .dock .m-close{display:inline}
+  .m-close,[open] > summary > .m-open{display:none}
+  [open] > summary > .m-close{display:inline}
   html:has(.phone[open]){overflow:hidden}
   html:has(.phone[open]) body{padding-top:var(--bar)}
   html:has(.phone[open]) .top{position:fixed;top:0;left:0;right:0}
-  .sheet{position:fixed;left:0;right:0;top:var(--bar);bottom:0;overflow-y:auto;overscroll-behavior:contain;background:var(--ground);padding:var(--s-3) var(--margin) calc(var(--s-8) + 64px);animation:nav-fade 180ms var(--ease-ds) both}
+  .sheet{position:fixed;left:0;right:0;top:var(--bar);bottom:0;overflow-y:auto;overscroll-behavior:contain;background:var(--ground);padding:var(--s-3) var(--margin) var(--s-8);animation:nav-fade 180ms var(--ease-ds) both}
   .sheet-ask{margin-bottom:var(--s-4)}
   .sheet-ask input{font-size:clamp(1.25rem,1rem + 1.2vw,1.75rem);height:52px}
   .asking .sheet-secs{display:none}
@@ -182,7 +182,8 @@
 /* the phone dock (M13): Menu, Ask and Book a call under the thumb, slid in once the first screen is behind you (JS on) */
 @media (max-width:1023px){
   .js .dock{display:flex;gap:var(--s-2);position:fixed;z-index:40;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom));padding:8px var(--margin) calc(8px + env(safe-area-inset-bottom));align-items:center;background:var(--surface);border-top:1px solid var(--hairline);transform:translateY(105%);transition:transform 200ms var(--ease-ds);visibility:hidden}
-  .js.dock-on .dock,.js.sheet-on .dock{transform:none;visibility:visible}
+  .js.dock-on .dock{transform:none;visibility:visible}
+  .js.sheet-on .dock{transform:translateY(105%);visibility:hidden}
   .dock-b{flex:none;height:48px;padding:0 18px;border:0;border-radius:var(--radius-pill);background:var(--ground);color:var(--ink);font:500 var(--size-small)/1 var(--font-text);cursor:pointer}
   .dock-b:active,.dock .cta:active{transform:scale(var(--press-scale))}
   .dock .cta{flex:1;min-width:0}

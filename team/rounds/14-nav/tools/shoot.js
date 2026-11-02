@@ -51,7 +51,7 @@ const shot = (pg, n, o = {}) => pg.screenshot({ path: path.join(out, n + '.png')
   await pg.tap('.phone > summary'); await pg.waitForTimeout(200);
   await pg.evaluate(() => scrollTo(0, innerHeight * 1.5)); await pg.waitForTimeout(500); await shot(pg, 'p390-dock');
   await pg.tap('[data-ask-open]'); await pg.waitForTimeout(400); await pg.keyboard.type('battery life', { delay: 10 }); await pg.waitForTimeout(500); await shot(pg, 'p390-ask');
-  await pg.tap('[data-menu]'); await pg.waitForTimeout(300);
+  await pg.tap('.phone > summary'); await pg.waitForTimeout(300);
   await pg.evaluate(() => scrollTo(0, 0)); await pg.waitForTimeout(300);
   await pg.evaluate(() => document.querySelector('.phone > summary').click()); await pg.evaluate(() => document.getAnimations().filter(a => a.timeline === document.timeline).forEach(a => a.pause()));
   for (const [f, t] of [0, 45, 90, 135, 180].entries()) { await pg.evaluate(t => document.getAnimations().filter(a => a.timeline === document.timeline).forEach(a => a.currentTime = t), t); await shot(pg, `motion-p-open-${f}-${t}ms`); }

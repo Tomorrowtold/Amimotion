@@ -127,12 +127,12 @@ with picture rows and unfolding sections, and a thumb dock. A and B were folded 
 - **Bar, 52 px:** logo · Book a call · Menu.
 - **Sheet:** full height, fixed. The bar stays on top (it switches to fixed with matching body padding, so nothing
   shifts), the page behind is `inert` and does not scroll. Order: an Ask field, the four sections as folds in display
-  type (+ turns to ×), with your current section already unfolded, each holding its hub link, the group names and
+  type (+ turns to ×), with your current section already unfolded, each opening on an "Overview" link to its hub (accessible name "<section> overview"; the one place a hub link does not carry the section label, because the fold heading already says it), the group names and
   rows, a fifth fold "Start from your job", and the closing line. Groups whose every row has a still (The system, By
   problem, By industry, Your first steps) show 72 px picture rows. Pictures in closed folds are never fetched. While
   you type in Ask, the folds give way to the answers.
 - **Dock:** once the first screen (or the homepage hero runway) is behind you, a 64 px bottom bar slides in: Menu ·
-  Ask · Book a call, all in thumb reach. Menu turns to Close while the sheet is open. Ask opens the sheet with the field
+  Ask · Book a call, all in thumb reach. The dock hides while the sheet is open, so Close and Book a call appear once (top bar). Ask opens the sheet with the field
   focused. Without JS the dock does not appear and the top Menu works on its own.
 - Phone motion: the sheet fades up 6 px in 180 ms, and a fold's body in 160 ms (`shots/motion-p-open-*`).
 
