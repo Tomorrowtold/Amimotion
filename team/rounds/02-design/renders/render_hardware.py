@@ -815,7 +815,7 @@ def shot_lower():
     def pose(u):
         z = 0.120 * (1 - u) ** 2   # ease out: fast at first, settling onto the rail
         t.matrix_world = Matrix.Translation((0, 0, z)) @ base
-    _seq_static('lower', W, H, opt('--steps', 12), [t], pose)
+    _seq_static('lower', W, H, opt('--steps', 12), [t, rail], pose)   # the plate is the bare sweep: the rail must stay in the picture
 
 
 def shot_covers():

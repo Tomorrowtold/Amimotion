@@ -28,10 +28,10 @@ Formats:
 | R7 one bay | Home S6, /pilot/ | **landed** |
 | R8 job crops | Home S7 | **landed** |
 | R9 closer-look angles | Product pages | queued |
-| R10 AmIGo lowers onto trolley | AmIGo page | see notes |
+| R10 AmIGo lowers onto trolley | AmIGo page | **landed** |
 | R11 AmIGo covers part | AmIGo page | see notes |
 | R12 hall line drawing | /technology/ header | **landed** |
-| R13 AmIMo on column | AmIMo hero, S5 tab | see notes |
+| R13 AmIMo on column | AmIMo hero, S5 tab | **landed** (no cable, see below) |
 
 ## R2 AmIGo macro (Home S1b): landed
 
@@ -182,6 +182,35 @@ Four 4:3 crops cut at native pixels from the graded camera A after-state master 
 | `home/jobs/racks-{600,1200}` | same | 17.7 / 23.3 KB | 1450,0 to 2650,900 | "Model rack rows and a forklift at the end of an aisle, with blue lines where things went." |
 
 In the racks crop, the master's top edge cuts the rack rows (camera A is framed on the floor in front of them).
+
+## R10 AmIGo lowers onto a trolley rail (AmIGo page): landed
+
+- 12 frames. The tag comes down from 120 mm and settles flat on the top face of a trolley rail (ease-out, frame spacing in the files).
+- The rail is a plain 30 x 30 mm square steel tube on the sweep. It is an environment prop, not hardware. The tag's long axis lies along the rail, with the screw ears on the rail.
+- Nothing is added to the tag: no screws are drawn. Same rig and plastic as R1.
+- Flat-fielded with the bare sweep as the plate, so the rail and its shadow stay true.
+
+| Files | Size | Frames | Mean / total |
+|---|---|---|---|
+| `products/amigo-lower/amigo-lower-1600-000.avif` to `-011` | 1600 x 1000 (16:10) | 12 | 17.3 KB / 208 KB |
+| `products/amigo-lower/amigo-lower-800-000.avif` to `-011` | 800 x 500 | 12 | 7.4 KB / 89 KB |
+
+- Opaque, on #f0f6ff. With reduced motion, show the last frame (`-011`): the tag on the rail.
+- Alt (last frame): "The AmIGo tag set flat on the rail of a trolley."
+
+## R13 AmIMo on a column (AmIMo hero, S5 tab): landed
+
+- The anchor as the CAD gives it: the flanged plate flat on a painted steel column face, the RJ45 opening facing down, and the mounting tab with its hole at the bottom.
+- 70 mm, f/8, from below and to the right. Key from the front above at about 60°, fill about 1:6 from the low left, plus a thin rim.
+- A framed photograph, not on the page ground: the column fills the frame. Finished with the round-02 `grade()` (levels, veiling glare, lens falloff, sub-pixel CA, grain).
+
+| File | Size | Ratio | Bytes (AVIF / WebP) |
+|---|---|---|---|
+| `home/amimo-column-32-{800,1600,2400}.{avif,webp}` | 800 x 533 to 2400 x 1600 | 3:2 | 13.3 / 20.7 KB at 2400 |
+| `home/amimo-column-11-{800,1600}.{avif,webp}` | 800 x 800, 1600 x 1600 | 1:1 (master x 380 to 1980) | 12.2 / 16.1 KB at 1600 |
+
+- **No cable.** homepage-final.md asks for "one plain power cable (a DC install)". The CAD has no DC jack, so a DC cable has nowhere true to go. A plug in the RJ45 port (the PoE case) would be a part that is not in the CAD. Both break the CAD-only rule, so neither was drawn. If the founders share the DC connector's position or a cable CAD, it is one more render.
+- Alt: "The AmIMo anchor, a dark grey box with a network port facing down, fixed to a steel column."
 
 ## R12 hall line drawing (/technology/ header): landed
 
