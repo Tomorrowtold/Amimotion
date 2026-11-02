@@ -201,8 +201,8 @@
       <div class="diag-block"><h4 class="diag-h">On a floor walk, we’d ask</h4><ul class="ask">${p.ask.map((x) => `<li>${x}</li>`).join('')}</ul></div>
       <form class="diag-lead" data-lead novalidate>
         <div class="diag-lead-head"><h4>Send me this profile and a pilot outline.</h4><p class="small">The AmIMotion team replies by email. No newsletter.</p></div>
-        <div class="field"><label for="d-name">Name</label><input id="d-name" name="name" autocomplete="name" required><span class="error" data-err="name"></span></div>
-        <div class="field"><label for="d-email">Work email</label><input id="d-email" name="email" type="email" autocomplete="email" required><span class="hint" data-domain></span><span class="error" data-err="email"></span></div>
+        <div class="field"><label for="d-name">Name</label><input id="d-name" name="name" autocomplete="name" required aria-describedby="d-name-err"><span class="error" id="d-name-err" data-err="name"></span></div>
+        <div class="field"><label for="d-email">Work email</label><input id="d-email" name="email" type="email" autocomplete="email" required aria-describedby="d-email-err d-email-hint"><span class="hint" id="d-email-hint" data-domain></span><span class="error" id="d-email-err" data-err="email"></span></div>
         <div class="field"><label for="d-company">Company</label><input id="d-company" name="company" autocomplete="organization"></div>
         <div class="field"><label for="d-phone">Phone or WhatsApp <span class="dim">(optional)</span></label><input id="d-phone" name="phone" type="tel" autocomplete="tel"></div>
         <div class="diag-lead-foot"><button class="btn btn-white" type="submit">Send my floor profile</button><span class="small">Used only to reply about your floor. <a class="link-arrow" href="${(document.documentElement.dataset.root ?? '/') + 'privacy/' + (document.documentElement.dataset.index || '')}">Privacy</a></span></div>
