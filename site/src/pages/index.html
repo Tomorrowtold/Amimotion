@@ -48,11 +48,35 @@ og: /assets/home/og-home.jpg
   <figure class="film plant" data-film data-src="/assets/home/hero-film/plant">
     <picture>
       <source type="image/avif" srcset="/assets/home/plant/floor-169-800.avif 800w, /assets/home/plant/floor-169-1600.avif 1600w, /assets/home/plant/floor-169-2752.avif 2752w" sizes="100vw">
-      <img src="/assets/home/plant/floor-169-1600.webp" srcset="/assets/home/plant/floor-169-800.webp 800w, /assets/home/plant/floor-169-1600.webp 1600w, /assets/home/plant/floor-169-2752.webp 2752w" sizes="100vw" width="2752" height="1536" loading="lazy" decoding="async" alt="A production supervisor walks down a rack aisle on a busy Indian factory floor, past shelves of machined aluminium housings and loaded trolleys. The view then cuts to the bay from directly above, where one trolley stands parked out of sight.">
+      <img src="/assets/home/plant/floor-169-1600.webp" srcset="/assets/home/plant/floor-169-800.webp 800w, /assets/home/plant/floor-169-1600.webp 1600w, /assets/home/plant/floor-169-2752.webp 2752w" sizes="100vw" width="2752" height="1536" loading="lazy" decoding="async" alt="A production supervisor walks down a rack aisle on a busy Indian factory floor, past shelves of machined aluminium housings and loaded trolleys. The view then cuts to the bay from directly above, where one trolley stands parked out of sight. As you scroll on, the view becomes the live map: the racks in outline, the path she walked, and the parked trolley as one located mark with how long it has waited.">
     </picture>
     <video muted playsinline loop preload="none" disablepictureinpicture disableremoteplayback aria-hidden="true" tabindex="-1"></video>
+    <!-- S1c handover (round 23): the film holds on its top-down frame and the live map grows out of it in place. The plate
+         is the frame's exact cover crop (same object-position as the video), so the SVG, drawn in the master's 1920x1072
+         pixels, lands on the real racks at every viewport; the phone cut only moves the viewBox. -->
+    <div class="hand" aria-hidden="true" data-hand>
+      <picture class="h-hold"><source type="image/avif" data-av="/assets/home/hero-film/plant-topdown-{cut}.avif"><img data-wb="/assets/home/hero-film/plant-topdown-{cut}.webp" alt="" decoding="async"></picture>
+      <picture class="h-clean"><source type="image/avif" data-av="/assets/home/hero-film/plant-topdown-clean-{cut}.avif"><img data-wb="/assets/home/hero-film/plant-topdown-clean-{cut}.webp" alt="" decoding="async"></picture>
+      <i class="h-sat"></i><i class="h-tint"></i>
+      <picture class="h-lift"><source type="image/avif" data-av="/assets/home/hero-film/plant-topdown-clean-{cut}.avif"><img data-wb="/assets/home/hero-film/plant-topdown-clean-{cut}.webp" alt="" decoding="async"></picture>
+      <svg class="h-map" viewBox="0 0 1920 1072" preserveAspectRatio="none" focusable="false">
+        <path class="h-aisle" vector-effect="non-scaling-stroke" d="M146 557H1784M146 757H1784M1784 0V557M1784 757V1072"/>
+        <g class="h-racks">
+          <rect class="h-fill" x="60" y="408" width="1802" height="137"/><rect class="h-fill" x="60" y="772" width="1802" height="153"/>
+          <path class="h-bays" vector-effect="non-scaling-stroke" d="M295 408V545M520 408V545M742 408V545M962 408V545M1182 408V545M1400 408V545M1620 408V545M295 772V925M512 772V925M734 772V925M960 772V925M1178 772V925M1400 772V925M1612 772V925"/>
+          <path class="h-slots" vector-effect="non-scaling-stroke" d="M192 408V545M408 408V545M631 408V545M852 408V545M1072 408V545M1290 408V545M1510 408V545M1730 408V545M192 772V925M404 772V925M623 772V925M847 772V925M1069 772V925M1289 772V925M1506 772V925M1735 772V925"/>
+          <path class="h-edge" vector-effect="non-scaling-stroke" pathLength="1" d="M961 408H60V545H961"/><path class="h-edge" vector-effect="non-scaling-stroke" pathLength="1" d="M961 408H1862V545H961"/>
+          <path class="h-edge" vector-effect="non-scaling-stroke" pathLength="1" d="M961 772H60V925H961"/><path class="h-edge" vector-effect="non-scaling-stroke" pathLength="1" d="M961 772H1862V925H961"/>
+        </g>
+        <mask id="hand-walk" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1072"><path class="h-reveal" pathLength="1" d="M150 657C520 657 800 666 1000 666S1420 648 1740 648"/></mask>
+        <path class="h-walk" vector-effect="non-scaling-stroke" mask="url(#hand-walk)" d="M150 657C520 657 800 666 1000 666S1420 648 1740 648"/>
+        <rect class="h-trol" vector-effect="non-scaling-stroke" x="812" y="124" width="258" height="150" rx="8"/>
+      </svg>
+      <div class="h-card" style="--x:958;--y:198"><b>Trolley</b><em>Waiting <span>4:12</span></em></div>
+    </div>
     <button class="playpause" type="button" aria-label="Pause the film" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/><path class="i-play" d="M8 5.5v13l11-6.5z"/></svg></button>
   </figure>
+  <div class="film-run" data-film-run aria-hidden="true"></div>
 
   <!-- S2 Find it (M06, M07): a two-screen sticky stage. Scan (the before frame, checkpoint ticks only) gives way to
        Tag (every path drawn) as you scroll, and the frame tightens on the racks. The switch works with JavaScript off

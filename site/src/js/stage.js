@@ -99,11 +99,12 @@
   // ---- S1c the hall film: sources attach after load, it plays at 50% or more in view and uncovered, a visible pause ----
   const film = d.querySelector('[data-film]');
   if (film) {
-    const v = film.querySelector('video'), btn = film.querySelector('.playpause'), next = film.nextElementSibling;
-    let attached = false, user = motion ? null : 'paused', failed = false;
+    const v = film.querySelector('video'), btn = film.querySelector('.playpause'), run = film.parentElement.querySelector('[data-film-run]');
+    const next = (run || film).nextElementSibling, cut = matchMedia('(max-aspect-ratio:1/1)').matches ? '1x1' : '4x5';
+    let attached = false, user = motion ? null : 'paused', failed = false, held = false;
     const attach = () => {
       if (attached || lean) return; attached = true;
-      const b = film.dataset.src + (matchMedia('(max-aspect-ratio:1/1)').matches ? '-1x1' : '-4x5');
+      const b = film.dataset.src + '-' + cut;
       [['-av1.mp4', 'video/mp4; codecs="av01.0.08M.08"'], ['-h264.mp4', 'video/mp4; codecs="avc1.640028"']].forEach(([x, t]) => {
         const s = d.createElement('source'); s.src = ROOT + b.replace(/^\//, '') + x; s.type = t; v.appendChild(s);
       });
@@ -126,10 +127,67 @@
       if (failed) return;
       const s = seen();
       if (s > 0.05) attach();
-      if (s >= 0.5 && !user && motion) { if (v.paused) v.play().catch(() => {}); } else if (!v.paused) v.pause();
+      if (s >= 0.5 && !user && motion && !held) { if (v.paused) v.play().catch(() => {}); } else if (!v.paused) v.pause();
     };
     const start = () => { hooks.push(check); check(); };
     d.readyState === 'complete' ? start() : addEventListener('load', start);
+
+    // ---- S1c handover (round 23): film becomes the live map. The runway after the figure scrubs --h; the film holds
+    // on its top-down frame (a still of that exact frame, the same cover crop), the floor cleans to the map ground, the
+    // racks draw in ink over the real racks, the trolley closes to its located dot, and its wait counts in amber.
+    // Scrolling back reverses it to the footage. Reduced motion: the finished map, no tween, once the runway is entered.
+    const hand = film.querySelector('[data-hand]');
+    if (hand && run) {
+      film.dataset.cut = cut;
+      const svg = hand.querySelector('svg'), trol = hand.querySelector('.h-trol'), wt = hand.querySelector('.h-card span');
+      if (cut === '1x1') svg.setAttribute('viewBox', '531.2 0 857.6 1072');
+      const url = (u) => { u = u.replace('{cut}', cut); return u[0] === '/' ? ROOT + u.slice(1) : u; };
+      let loaded = false, tgt = 0, cur = -1, hr = 0, last = 0, waitFrom = 0, timer = 0;
+      const load = () => {
+        if (loaded) return; loaded = true;
+        hand.querySelectorAll('source[data-av]').forEach((s) => { s.type = 'image/avif'; s.srcset = url(s.dataset.av); });
+        hand.querySelectorAll('img[data-wb]').forEach((i) => { i.src = url(i.dataset.wb); });
+      };
+      // the trolley's footprint (master px) closes to the dot at its centre
+      const T = [812, 124, 258, 150], C = [958, 198], R = 10;
+      const ease = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+      const count = () => { wt.textContent = mmss((performance.now() - waitFrom) / 1000); };
+      const apply = (h) => {
+        hand.style.setProperty('--h', h.toFixed(4));
+        const on = h > 0.0005;
+        if (on !== held) { held = on; film.classList.toggle('is-held', on); if (on) v.pause(); else check(); }
+        const a = clamp((h - .44) / .12), b = ease(clamp((h - .58) / .18));
+        const w = T[2] + (2 * R - T[2]) * b, ht = T[3] + (2 * R - T[3]) * b;
+        const x = T[0] + (C[0] - R - T[0]) * b, y = T[1] + (C[1] - R - T[1]) * b;
+        trol.setAttribute('x', x.toFixed(1)); trol.setAttribute('y', y.toFixed(1));
+        trol.setAttribute('width', w.toFixed(1)); trol.setAttribute('height', ht.toFixed(1));
+        trol.setAttribute('rx', (8 + (R - 8) * b).toFixed(1));
+        trol.style.opacity = a.toFixed(3);
+        trol.style.fill = '#1f6bff'; trol.style.fillOpacity = clamp((b - .78) / .22).toFixed(3);
+        trol.style.stroke = b > .5 ? '#1f6bff' : ''; trol.style.strokeOpacity = (1 - clamp((b - .8) / .2)).toFixed(3);
+        const show = h > .78;
+        if (show && !timer) { if (!waitFrom) waitFrom = performance.now() - 252000; count(); timer = setInterval(count, 1000); }
+        if (!show && timer) { clearInterval(timer); timer = 0; }
+        if (h < .5) waitFrom = 0;
+      };
+      const step = (now) => {
+        hr = 0;
+        const dt = last ? Math.min(64, now - last) : 16.7; last = now;
+        cur = cur < 0 || !motion ? tgt : cur + (tgt - cur) * (1 - Math.pow(1 - .14, dt / 16.7));
+        if (Math.abs(tgt - cur) < .0005) cur = tgt;
+        apply(cur);
+        if (cur !== tgt) hr = requestAnimationFrame(step); else last = 0;
+      };
+      const watch = () => {
+        const r = run.getBoundingClientRect(), vh = innerHeight;
+        if (r.top < vh * 2) load();
+        const p = clamp((vh - r.top) / Math.max(1, r.height));
+        const h = motion ? clamp((p - .08) / .64) : (p > .12 ? 1 : 0);
+        if (h !== tgt || cur < 0) { tgt = h; if (!hr) hr = requestAnimationFrame(step); }
+      };
+      hooks.push(watch); watch();
+    }
   }
 
   // ---- S6 the first diagnostic question: a tap carries the answer into /diagnostic/ (its own session store) ----

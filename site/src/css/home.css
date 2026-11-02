@@ -341,3 +341,48 @@ main a:hover{text-decoration-thickness:2px}
 @keyframes plant-push{from{transform:scale(1.02)}to{transform:scale(1.14)}}
 @media (max-aspect-ratio:1/1){.film.plant img{object-position:52% 50%}}
 @media (prefers-reduced-motion:reduce){.motion .film.plant img{animation:none}}
+
+/* S1c handover (round 23): the film holds on its top-down frame and the live map grows out of it in place, scrubbed by
+   the runway after the figure (--h, 0 to 1, written by stage.js). The plate is the top-down frame's own cover crop, the
+   same math as the video's object-fit:cover at 50% 62%, so the SVG (master pixels, 1920x1072) sits on the real racks at
+   every viewport. Phone: the 4:5 cut (864x1080) is x 531.2 to 1388.8 of the master, so only the viewBox moves. */
+.film-run{display:none}
+.js .film-run{display:block;height:170svh}
+.js .film.plant{container-type:size}
+.film .hand{--h:0;--vx:0;--vw:1920;position:absolute;z-index:1;pointer-events:none;
+  width:max(100cqw,100cqh * 1920 / 1072);height:max(100cqh,100cqw * 1072 / 1920);
+  left:calc((100cqw - max(100cqw,100cqh * 1920 / 1072)) * .5);top:calc((100cqh - max(100cqh,100cqw * 1072 / 1920)) * .62);
+  opacity:0;visibility:hidden;transition:opacity .6s var(--ease-ds),visibility 0s linear .6s}
+.film[data-cut="1x1"] .hand{--vx:531.2;--vw:857.6;
+  width:max(100cqw,100cqh * .8);height:max(100cqh,100cqw * 1.25);
+  left:calc((100cqw - max(100cqw,100cqh * .8)) * .5);top:calc((100cqh - max(100cqh,100cqw * 1.25)) * .62)}
+.film.is-held .hand{opacity:1;visibility:visible;transition:opacity .6s var(--ease-ds)}
+.film.is-held .playpause{opacity:0;pointer-events:none}
+.film .hand picture,.film .hand img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:fill}
+.motion .film.plant .hand img{animation:none;transform:none}
+/* the floor cleans (the people go), loses its colour, and settles into the map ground */
+.hand .h-clean{opacity:clamp(0,calc((var(--h) - .02) / .2),1)}
+.hand i{position:absolute;inset:0}
+.hand .h-sat{background:#808080;mix-blend-mode:saturation;opacity:clamp(0,calc((var(--h) - .04) / .36),1)}
+.hand .h-tint{background:var(--ground);opacity:clamp(0,calc((var(--h) - .08) / .5),1)}
+/* the trolley stays lifted above the cleaning floor while it is picked out, then goes as its outline closes to the dot */
+.hand .h-lift{filter:grayscale(1) brightness(1.4) contrast(1.5);mix-blend-mode:multiply;opacity:calc(.8 * clamp(0,calc((var(--h) - .16) / .14),1) * (1 - clamp(0,calc((var(--h) - .6) / .12),1)));
+  clip-path:inset(calc(124 / 1072 * 100%) calc((var(--vx) + var(--vw) - 1070) / var(--vw) * 100%) calc(798 / 1072 * 100%) calc((812 - var(--vx)) / var(--vw) * 100%) round 8px)}
+/* the map: ink outlines drawn over the real racks, the floor lines as hairlines, the walk, the trolley to its dot */
+.h-map{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.h-map path,.h-map rect{fill:none;stroke:var(--ink);stroke-width:1.5}
+.h-map .h-aisle{stroke-width:1;stroke-opacity:calc(.2 * clamp(0,calc((var(--h) - .36) / .2),1))}
+.h-map .h-fill{stroke:none;fill:var(--surface);fill-opacity:calc(.94 * clamp(0,calc((var(--h) - .4) / .26),1))}
+.h-map .h-bays{stroke-width:1;stroke-opacity:calc(.3 * clamp(0,calc((var(--h) - .46) / .2),1))}
+.h-map .h-slots{stroke-width:1;stroke-dasharray:3 4;stroke-opacity:calc(.16 * clamp(0,calc((var(--h) - .52) / .2),1))}
+.h-map .h-edge{stroke-dasharray:1 1;stroke-dashoffset:calc(1 - clamp(0,calc((var(--h) - .22) / .3),1));stroke-opacity:clamp(0,calc((var(--h) - .22) * 60),1)}
+.h-map .h-walk{stroke:var(--ink-soft);stroke-linecap:round;stroke-dasharray:5 6}
+.h-map .h-reveal{stroke:#fff;stroke-width:16;stroke-dasharray:1 1;stroke-dashoffset:calc(1 - clamp(0,calc((var(--h) - .6) / .3),1))}
+.h-map .h-trol{opacity:0}
+.h-card{position:absolute;left:calc((var(--x) - var(--vx)) / var(--vw) * 100%);top:calc(var(--y) / 1072 * 100%);
+  --k:clamp(0,calc((var(--h) - .78) / .1),1);opacity:var(--k);transform:translate(22px,calc(-50% + 6px * (1 - var(--k))));
+  background:var(--surface);border:1px solid var(--hairline);border-radius:6px;padding:8px 10px 9px;
+  font:500 clamp(13px,.75rem + .2vw,15px)/1.3 var(--font-text);color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+.h-card b{display:block;font-weight:500;font-size:.9em;color:var(--ink-soft);margin-bottom:5px}
+.h-card em{display:block;font-style:normal;background:var(--waiting);color:var(--ink);border-radius:3px;padding:2px 7px}
+@media (max-width:767px){.js .film-run{height:150svh}}
