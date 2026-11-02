@@ -118,3 +118,10 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:inset 0 0 0 2px
 @media (hover:hover){.tool-form .field input[type=number]:hover{box-shadow:inset 0 0 0 1px var(--ink)}}
 .tool-form .field input[type=number]:focus-visible{outline:2px solid var(--focus);outline-offset:2px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--ink)}
 .tool-form .field input[type=number]:invalid{box-shadow:inset 0 0 0 2px var(--waiting-edge)}
+/* round 2: the drawing and the answer are one sheet with the corners of the shells they sit in (no square card inside
+   a rounded frame); on phones both run full bleed, so they stay square there */
+@media (min-width:1024px){
+  .tool-out{border-radius:16px}
+  .tool-draw{border-radius:16px 16px 0 0}
+  .tool-draw+.tool-out{border-radius:0 0 16px 16px}
+}
