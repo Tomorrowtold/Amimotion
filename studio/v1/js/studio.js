@@ -96,14 +96,14 @@ const knSet = (st) => {
 };
 const knFrame = () => {
   if (!kn || reduce) return;
-  const sc = innerWidth > 860 && $('#trio') ? $('#trio') : kn;
+  const sc = kn;
   const r = sc.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
   const p = clamp(-r.top / (r.height - innerHeight));
   knSet(p < KN_AT[0] ? -1 : p < KN_AT[1] ? 0 : p < KN_AT[2] ? 1 : 2);
   kn.style.setProperty('--f', sm(.84, .94, p).toFixed(3));
 };
 if (kn) kn.querySelectorAll('.kn-go').forEach((b) => b.addEventListener('click', () => {
-  const sc = innerWidth > 860 && $('#trio') ? $('#trio') : kn, i = +b.dataset.i, top = sc.getBoundingClientRect().top + scrollY, span = sc.offsetHeight - innerHeight;
+  const sc = kn, i = +b.dataset.i, top = sc.getBoundingClientRect().top + scrollY, span = sc.offsetHeight - innerHeight;
   scrollTo({ top: top + span * ([.22, .5, .8][i]), behavior: reduce ? 'auto' : 'smooth' });
 }));
 
