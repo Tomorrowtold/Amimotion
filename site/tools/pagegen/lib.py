@@ -321,9 +321,10 @@ def compare(headers, rows, note=None, cls=""):
     return s + "</tbody></table>" + (f'<p class="note">{note}</p>' if note else "")
 
 
-def steps(items):
-    """Numbered steps, in order, 4 across (2 on tablets, 1 on phones). The number is plain type, never a chip."""
-    return '<ol class="steps">' + "".join(f"<li><h3>{b}</h3><p>{p}</p></li>" for b, p in items) + "</ol>"
+def steps(items, big=False):
+    """Numbered steps, in order, 4 across (2 on tablets, 1 on phones). The number is plain type, never a chip.
+    big=True: flat columns set large (round 13, iPhone 'Why buy here')."""
+    return f'<ol class="steps{" pillars" if big else ""}">' + "".join(f"<li><h3>{b}</h3><p>{p}</p></li>" for b, p in items) + "</ol>"
 
 
 def prose(html_):

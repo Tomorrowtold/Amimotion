@@ -224,12 +224,13 @@ main [id]{scroll-margin-top:calc(var(--local) + var(--s-5))}
 .pic{overflow:hidden}
 
 /* ---------- the offer head (/pilot/, Formlabs): the headline beside a large still ---------- */
-.offer h1{grid-column:1 / span 6;grid-row:2}
+.offer h1{grid-column:1 / span 7;grid-row:2}
 .offer .words{grid-column:1 / span 6;grid-row:3;display:block}
+.offer .lede{font-size:var(--size-lede)}
 .offer .lede{margin-bottom:var(--s-5)}
-.offer .head-pic{grid-column:7 / -1;grid-row:2 / span 2;margin:0 calc(-1 * var(--margin)) 0 0;align-self:start}
+.offer .head-pic{grid-column:8 / -1;grid-row:2 / span 2;margin:0 calc(-1 * var(--margin)) 0 0;align-self:start}
 .offer .head-pic img{aspect-ratio:4 / 5;max-height:88svh;object-fit:cover;width:100%;height:auto}
-.offer h1{font-size:min(var(--inner-display),7.5rem)}
+.offer h1{font-size:min(var(--inner-display),5.25rem)}
 
 /* ---------- the product stage (Rivian): the name set giant behind the render on the sweep ---------- */
 .prod .prod-stage{grid-column:1 / -1;position:relative;display:grid;place-items:center;margin:calc(-1 * var(--s-5)) calc(-1 * var(--margin)) var(--s-6);min-height:min(60svh,42vw);overflow:hidden}
@@ -432,3 +433,7 @@ main .qstart a:hover{background:var(--pressed)}
 .parts li>a:hover .pic img,.parts li:hover .pic img{transform:scale(1.03)}
 .parts .pic img{transition:transform 400ms var(--ease-ds)}
 .figures dt{text-wrap:balance}
+.steps.pillars li::before{font-size:var(--inner-giant);font-size:clamp(4rem,2rem + 6vw,9rem);line-height:.85;letter-spacing:-.05em}
+.sec .steps.pillars h3{font:600 clamp(1.5rem,1.05rem + 1.3vw,2.5rem)/1.1 var(--font-display);letter-spacing:-.02em}
+.steps.pillars p{font-size:max(var(--size-body),1.0625rem)}
+.offer{grid-template-rows:auto auto 1fr}

@@ -31,6 +31,11 @@
   const A = { assets: [] };
   let i = 0, interacted = false;
   try { Object.assign(A, JSON.parse(sessionStorage.getItem('amimotion.diag') || '{}')); } catch (e) {}
+  // round 13: an answer chosen on another page (/pilot/, the inline first question) arrives as ?assets=<value>
+  try {
+    const pre = new URLSearchParams(location.search).get('assets');
+    if (pre && Q[0].options.some((o) => o[0] === pre) && !A.assets.includes(pre)) A.assets = [...A.assets, pre];
+  } catch (e) {}
   const save = () => { try { sessionStorage.setItem('amimotion.diag', JSON.stringify(A)); } catch (e) {} };
 
   // ------------------------------------------------------------ question view

@@ -26,7 +26,7 @@ const name = p => (p === '/' ? 'home' : p.replace(/^\/|\/$/g, '').replace(/\//g,
       await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
       await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
     } else await pg.goto(base + p, { waitUntil: 'load' });
-    await snap(pg, { path: path.join(out, `${name(p)}-${w}${NOJS ? '-nojs' : ''}${RM ? '-rm' : ''}-top.png`) });
+    await pg.waitForTimeout(1200); await snap(pg, { path: path.join(out, `${name(p)}-${w}${NOJS ? '-nojs' : ''}${RM ? '-rm' : ''}-top.png`) });
     await pg.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 500) { scrollTo(0, y); await new Promise(r => setTimeout(r, 90)); } scrollTo(0, 0); });
     await pg.waitForTimeout(900);
     const st = await pg.evaluate(() => ({ scrollW: document.documentElement.scrollWidth, vw: innerWidth, H: document.body.scrollHeight,
