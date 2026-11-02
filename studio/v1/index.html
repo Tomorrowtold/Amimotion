@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AmIMotion Studio v1</title>
+<meta name="description" content="AmIMotion is spatial intelligence for factories and warehouses. A small tag rides on each trolley, bin and tool.">
+<meta name="theme-color" content="#f0f6ff">
+<link rel="preload" href="assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/AmISansText-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/studio.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"AmIMotion","legalName":"Locatepro Technologies Pvt Ltd","address":{"@type":"PostalAddress","addressLocality":"Bengaluru","addressCountry":"IN"},"email":"sales@amimotion.com","description":"AmIMotion builds industrial spatial intelligence. It gives a time-stamped location to every trolley, bin, tool and vehicle you tag in a plant."}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar" id="bar">
+  <a class="logo" href="/" aria-label="AmIMotion home"><span class="logo-dot" aria-hidden="true"></span>AmIMotion</a>
+  <nav class="nav" aria-label="Main">
+    <a href="/platform/">How it works</a>
+    <a href="/solutions/">Where it helps</a>
+    <a href="/start/">Start small</a>
+    <a href="/company/">About us</a>
+  </nav>
+  <a class="btn btn-primary btn-sm magnet" href="/contact/"><span>Book a call</span></a>
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false" id="menuBtn"><i></i><i></i></button>
+</header>
+<div class="sheet" id="sheet" hidden>
+  <a href="/diagnostic/">Plan your first bay</a>
+  <a href="/platform/">How it works</a>
+  <a href="/solutions/">Where it helps</a>
+  <a href="/start/">Start small</a>
+  <a href="/company/">About us</a>
+  <a href="/contact/">Book a call</a>
+</div>
+
+<div class="cursor" id="cursor" aria-hidden="true"><i class="c-ring"></i><i class="c-dot"></i><i class="c-h"></i><i class="c-v"></i></div>
+
+<main id="main">
+
+<!-- 1. HERO -->
+<section class="hero" id="hero">
+  <div class="hero-stage" aria-hidden="true">
+    <picture class="tag-fallback" id="tagFallback">
+      <img src="assets/home/amigo-side-1500.webp" alt="" width="1500" height="1000" fetchpriority="low">
+    </picture>
+    <canvas id="tagGL"></canvas>
+    <div class="tag-shadow"></div>
+  </div>
+  <div class="hero-copy">
+    <h1 class="display k-lines" id="h1">
+      <span class="ln"><span>Where work is.</span></span>
+      <span class="ln"><span>Where it <em>waits.</em></span></span>
+    </h1>
+    <p class="lede k-fade">AmIMotion is spatial intelligence for factories and warehouses. A small tag rides on each trolley, bin and tool. Anchors on your columns hear its signal. One live map shows where it went and how long it has waited. You find out from a screen, not a walk.</p>
+  </div>
+  <div class="hero-foot k-fade">
+    <span class="scroll-cue" aria-hidden="true"><i></i></span>
+    <span class="hero-part">AmIGo tag, from the founders' CAD</span>
+  </div>
+</section>
+
+<!-- 1b. THE FLOOR: before / after, scroll-driven -->
+<section class="floor" id="floor" aria-label="A scan versus a tag">
+  <div class="floor-sticky">
+    <div class="floor-media">
+      <img class="floor-poster" src="assets/scene/hall-before-1600.webp" alt="A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went. Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting." width="1600" height="2000" loading="lazy">
+      <canvas class="floor-gl" id="floorGL" data-before="assets/scene/hall-before" data-after="assets/scene/hall-after"></canvas>
+    </div>
+    <div class="floor-copy">
+      <h2 class="h2">
+        <span class="swap" data-step="0">A scan tells you where it last passed.</span>
+        <span class="swap" data-step="1">A tag tells you where it stopped.</span>
+      </h2>
+      <div class="meter" aria-hidden="true"><i id="meter"></i></div>
+      <p class="hint">Move across the floor to look through it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2. FIND IT -->
+<section class="screen find" id="find">
+  <div class="wrap two">
+    <div class="copy">
+      <h2 class="h2 k-lines"><span class="ln"><span>A scan tells you where it last passed.</span></span> <span class="ln"><span>A tag tells you where it stopped.</span></span></h2>
+      <p class="big k-fade">Between scans at each checkpoint, work moves and waits out of sight.</p>
+      <p class="k-fade">Think of the last time someone went looking for a trolley. The walk. The calls to stores. The second walk.</p>
+      <p class="k-fade">Look it up on AmIHub's live map instead. You see where it was last seen, and when. The tag sends a signal as it moves, so nobody scans it along the way. It goes on the trolley, not on the person pushing it.</p>
+      <a class="arrow-link k-fade" href="/use-cases/find-the-asset/">Where is that trolley?</a>
+    </div>
+    <figure class="pic pic-find k-pic">
+      <div class="pic-inner"><img src="assets/scene/hall-after-1600.webp" alt="A model factory floor. One trolley marked by a blue line from the press to where it stopped." width="1600" height="2000" loading="lazy"></div>
+    </figure>
+  </div>
+</section>
+
+<!-- 3. SEE WHERE WORK WAITS -->
+<section class="screen waits" id="waits">
+  <div class="wrap">
+    <h2 class="mega k-lines"><span class="ln"><span>See where</span></span><span class="ln"><span>work <em>waits.</em></span></span></h2>
+    <div class="two flip">
+      <figure class="pic pic-queue k-pic">
+        <div class="pic-inner"><img src="assets/scene/hall-after-1600.webp" alt="A model inspection station. Three trolleys in the queue in front of it and one pallet in a staging lane are marked amber because they are waiting." width="1600" height="2000" loading="lazy"></div>
+      </figure>
+      <div class="copy">
+        <p class="big k-fade">The map notes when each trolley or pallet enters a zone and when it leaves. You name the zones. You see how long each one has waited, while it is still waiting.</p>
+        <p class="k-fade">Supervisors see each wait live, during the shift, not at the next morning's review. You set who sees what, by role. AmIHub also sends each entry and exit to any system you name, as it happens.</p>
+        <p class="k-fade">Link each trolley to the job it carries, in AmIHub or from your own system. Nobody scans it along the way. Its wait then counts as that job's wait.</p>
+        <p class="k-fade strong">Why it waited is for your team to say.</p>
+        <p class="links k-fade"><a class="arrow-link" href="/learn/dwell-time/">How waits are timed</a><a class="arrow-link" href="/learn/association/">Which job is on the trolley?</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. ASK YOUR FLOOR -->
+<section class="screen ask" id="ask">
+  <div class="ask-bg"><img src="assets/scene/hall-waits-1600.webp" alt="The same model factory floor with everything pale except three trolleys at inspection, marked amber: the ones that have waited." width="1600" height="2000" loading="lazy"></div>
+  <div class="wrap ask-inner">
+    <h2 class="h2 k-lines"><span class="ln"><span>Ask your floor a question.</span></span></h2>
+    <p class="question" id="question" aria-label="Which trolleys have waited at inspection for more than an hour?"><span class="q-text" aria-hidden="true">Which trolleys have waited at inspection for more than an hour?</span><i class="caret" aria-hidden="true"></i></p>
+    <div class="two ask-cols">
+      <p class="big k-fade">Ask in plain words. An AI assistant answers from AmIHub's live map. Asking changes nothing. Any change, such as raising a work order in AmIHub, needs a person's approval. You can require it from a supervisor.</p>
+      <p class="small k-fade">AmIHub has an MCP server built in. MCP is an open standard that lets AI assistants use other software. Any assistant that supports MCP can connect. We show it live on a call. The server is part of AmIHub, so it can run on a PC inside your plant. If the assistant runs inside your network too, nothing has to leave it. Each assistant gets its own access: read-only, or only the actions you allow. Every request it makes is logged.</p>
+    </div>
+    <p class="links k-fade"><a class="arrow-link" href="/use-cases/ask-your-plant/">Ask your floor</a><a class="arrow-link" href="/trust/">Trust and data</a></p>
+  </div>
+</section>
+
+<!-- 5. ONE SYSTEM -->
+<section class="screen system" id="system">
+  <div class="wrap">
+    <h2 class="mega k-lines"><span class="ln"><span>Three parts work</span></span><span class="ln"><span>as one system.</span></span></h2>
+    <div class="parts">
+      <article class="part">
+        <figure class="part-pic tilt"><img src="assets/home/amigo-side-1500.webp" alt="The AmIGo tag, a small dark grey tag with amimotion on its cover." width="1500" height="1000" loading="lazy"></figure>
+        <h3>AmIGo tag</h3>
+        <p>Screws or sticks onto the trolley. Sends a short UWB radio pulse when it moves and sleeps when it stops. While it sleeps, the map shows where it was last seen. If it comes off the trolley, the map still shows its last-seen spot. One battery lasts 1 to 3 years, depending on use. AmIHub tracks each tag's health and battery level.</p>
+      </article>
+      <article class="part">
+        <figure class="part-pic tilt"><img src="assets/home/amimo-page-1200.webp" alt="The AmIMo anchor, a dark grey box with a network port." width="1200" height="800" loading="lazy"></figure>
+        <h3>AmIMo anchor</h3>
+        <p>Fixed to a column or wall 3 to 8 m up. Records when each pulse arrives and the angle it came from. Needs only power, from DC or PoE. It syncs over the air, with no sync cable. It sends its data to AmIHub over Wi-Fi, so it needs no separate data cable. Ethernet is also an option. Each reaches about 50 m around it in clear line of sight. Racking and steel change that, so we survey your floor and set the count. With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor. You set anchors up from a phone app. AmIHub finds each one on its own and raises an alert if one goes dark.</p>
+      </article>
+      <article class="part">
+        <figure class="part-pic part-hub tilt"><img src="assets/scene/hall-after-800.webp" alt="A model factory floor with paths in blue and waits in amber." width="800" height="1000" loading="lazy"></figure>
+        <h3>AmIHub</h3>
+        <p>Works out where each tag is from those times and angles. Runs on an industrial PC inside your plant, with no internet needed. Your MES, ERP and WMS connect to it through open REST, MQTT, WebSocket and omlox hub interfaces. Your team, your systems and AI assistants read the same live map. Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited.</p>
+      </article>
+    </div>
+    <p class="spec-line k-fade">Built on the FiRa and omlox specifications.</p>
+    <p class="links k-fade"><a class="arrow-link" href="/technology/">How it locates a tag</a><a class="arrow-link" href="/specs/">Specifications</a><a class="arrow-link" href="/developers/">For developers</a></p>
+  </div>
+</section>
+
+<!-- 6. START WITH ONE BAY -->
+<section class="bay" id="bay" aria-label="Start with one bay">
+  <div class="bay-sticky">
+    <div class="floor-media">
+      <img class="floor-poster" src="assets/scene/hall-before-1600.webp" alt="The model factory floor, all pale except one inspection bay shown in colour with its paths and its waits." width="1600" height="2000" loading="lazy">
+      <canvas class="floor-gl" id="bayGL" data-before="assets/scene/hall-before" data-after="assets/scene/hall-after" data-mode="bay"></canvas>
+    </div>
+    <h2 class="mega bay-title k-lines"><span class="ln"><span>Start with</span></span><span class="ln"><span>one bay.</span></span></h2>
+  </div>
+</section>
+
+<section class="screen start" id="start">
+  <div class="wrap two">
+    <div class="copy">
+      <p class="big k-fade">A pilot follows one flow in one bay or line. You choose the flow. The pilot times today's waits first, over a window you choose. That is your baseline. Before it starts, we agree how to count a wait that runs past shift end. We also agree who on your team acts when work waits too long.</p>
+      <p class="k-fade">The pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project. It would need its own policy. You also set how long the map keeps its history.</p>
+      <p class="k-fade">You see your own waits in one bay, and prove the numbers, before you decide on more. Then grow plant-wide on the same AmIHub, without re-fitting the first bay. A second plant gets its own survey, and AmIHub can run both from one console.</p>
+      <p class="links k-fade"><a class="arrow-link" href="/trust/people/">People and privacy</a><a class="arrow-link" href="/learn/pilot-baseline/">Measure before you claim</a></p>
+    </div>
+    <div class="copy buy k-fade">
+      <h3>What you buy.</h3>
+      <p>AmIGo tags, AmIMo anchors and AmIHub, plus our survey and an anchor plan for your floor. Designed and built in India, with local stock and local engineers on your site. One contract and one support line cover every layer. Your team or your integrator can build on it at any layer, through open interfaces. After the first call, we share datasheets, architecture, prices and pilot options under NDA. AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO.</p>
+    </div>
+  </div>
+  <div class="wrap ctas">
+    <a class="cta cta-plan magnet" href="/diagnostic/">
+      <span class="cta-h">Plan your first bay.</span>
+      <span class="cta-p">Six questions about how work moves in your plant. You get a plan for where to start, before anyone calls you.</span>
+      <span class="btn btn-secondary"><span>Plan your first bay</span></span>
+    </a>
+    <a class="cta cta-call magnet" href="/contact/">
+      <span class="cta-h">See it on real data.</span>
+      <span class="cta-p">The call is a live demo on real AmIHub data, not slides.</span>
+      <span class="btn btn-primary"><span>Book a call</span></span>
+    </a>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <h2 class="h2 k-lines"><span class="ln"><span>Start from your job.</span></span></h2>
+    <ul class="roles">
+      <li><span>Plant heads</span><a href="/pilot/">How a pilot runs</a></li>
+      <li><span>Production and planning</span><a href="/solutions/wip/">Work in progress</a> <a href="/learn/association/">Which job is on the trolley?</a></li>
+      <li><span>Shift supervisors</span><a href="/use-cases/find-the-asset/">Where is that trolley?</a></li>
+      <li><span>Lean and IE leads</span><a href="/learn/dwell-time/">How waits are timed</a></li>
+      <li><span>Maintenance and OT</span><a href="/technology/">How it locates a tag</a></li>
+      <li><span>MES and ERP owners</span><a href="/learn/association/">Which job is on the trolley?</a></li>
+      <li><span>IT and security</span><a href="/trust/">Trust and data</a></li>
+      <li><span>Group operations and digital</span><a href="/how-to-buy/">How to buy</a></li>
+      <li><span>Procurement and finance</span><a href="/how-to-buy/">How to buy</a></li>
+      <li><span>Owners and MDs</span><a href="/company/">About us</a></li>
+      <li><span>Safety and EHS</span><a href="/trust/people/">People and privacy</a></li>
+      <li><span>Developers and integrators</span><a href="/developers/">For developers</a></li>
+    </ul>
+    <div class="cols">
+      <div><h4><a href="/platform/">How it works</a></h4><a href="/products/amigo/">AmIGo tag</a><a href="/products/amimo/">AmIMo anchor</a><a href="/products/amihub/">AmIHub</a><a href="/use-cases/ask-your-plant/">Ask your floor</a><a href="/technology/">How it locates a tag</a><a href="/learn/location-data-quality/">When a tag goes quiet</a><a href="/specs/">Specifications</a><a href="/trust/">Trust and data</a><a href="/developers/">For developers</a></div>
+      <div><h4><a href="/solutions/">Where it helps</a></h4><a href="/solutions/wip/">Work in progress</a><a href="/use-cases/find-the-asset/">Where is that trolley?</a><a href="/learn/dwell-time/">How waits are timed</a><a href="/learn/association/">Which job is on the trolley?</a><a href="/solutions/assets/">Tools and vehicles</a><a href="/industries/manufacturing/">Manufacturing</a><a href="/industries/warehousing/">Warehousing</a><a href="/industries/robotics/">Robotics and AMRs</a></div>
+      <div><h4><a href="/start/">Start small</a></h4><a href="/pilot/">How a pilot runs</a><a href="/how-to-buy/">How to buy</a><a href="/diagnostic/">Plan your first bay</a><a href="/tools/anchors/">How many anchors you need</a><a href="/tools/search-time/">Time spent searching</a><a href="/tools/pilot/">Your pilot on one page</a><a href="/learn/pilot-baseline/">Measure before you claim</a><a href="/learn/">Field guides</a><a href="/films/">Films</a></div>
+      <div><h4><a href="/company/">About us</a></h4><a href="/what-is-amimotion/">What is AmIMotion?</a><a href="/industrial-spatial-intelligence/">What is spatial intelligence?</a><a href="/trust/people/">People and privacy</a><a href="/faq/">Questions</a><a href="/glossary/">Glossary</a><a href="/contact/">Book a call</a></div>
+    </div>
+    <p class="entity">AmIMotion is a brand of Locatepro Technologies Pvt Ltd, Bengaluru, India. It makes AmIGo tags, AmIMo anchors and AmIHub software. AmIMotion builds industrial spatial intelligence. It gives a time-stamped location to every trolley, bin, tool and vehicle you tag in a plant. It joins that location with your zones and with the jobs you link to each carrier. Your team, your systems and AI assistants can then answer where work is and where it waits. It is the first layer of Physical AI for factories and warehouses. Designed and built in India on NXP Trimension UWB silicon. Built on the FiRa and omlox specifications.</p>
+    <p class="contact"><a href="mailto:sales@amimotion.com">sales@amimotion.com</a> · <a href="/privacy/">Privacy</a></p>
+    <p class="legal">NXP and Trimension are trademarks of NXP B.V. FiRa and omlox are trademarks of their owners. Specifications are indicative. Final datasheets are shared under NDA.</p>
+  </div>
+  <div class="wordmark" aria-hidden="true"><span>amimotion</span></div>
+</footer>
+
+<script type="module" src="js/studio.js"></script>
+</body>
+</html>
