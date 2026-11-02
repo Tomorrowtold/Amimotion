@@ -835,6 +835,44 @@ def shot_covers():
     _seq_static('covers', W, H, opt('--steps', 24), [top, bot], pose)
 
 
+def shot_cutout():
+    """Studio site: transparent cut-outs. --product amigo|amimo|pair --view 34|side|top --res 2400x1600.
+    The studio, rig and plastic are R1's; the sweep stays in the scene for its bounce light and reflections but is
+    invisible to the camera, so the PNG's alpha is the product alone (film transparent, straight alpha).
+    --shadow renders the contact shadow instead: the sweep becomes a shadow catcher (the PNG holds product plus
+    shadow; tools/cutout.py subtracts the product to leave the shadow alone)."""
+    W, H = (int(v) for v in opt('--res', '2400x1600').split('x'))
+    prod = opt('--product', 'amigo'); view = opt('--view', '34')
+    CAZ = {'34': -62.0, 'side': -90.0, 'top': -62.0}[view]
+    if prod == 'amimo' and view != 'side': CAZ = -128.0     # round 02's amimo_rj45 angle: the RJ45 end and the logo wall
+    EL = {'34': 28.0, 'side': 6.0, 'top': 62.0}[view]
+    sc = reset(); _seq_settings(sc, SAMPLES); world(0.30, rot=0.6); sw = sweep(CAZ)
+    objs = []
+    if prod == 'amigo':
+        objs.append(_tag(TAG_RZ if view != 'side' else TAG_RZ + 90)); tgt = (0, 0, 0.011); dist = 0.36
+    elif prod == 'amimo':
+        objs.append(_anchor(ANC_RZ + (0 if view != 'side' else 90))); tgt = (0, 0, 0.015); dist = 0.44
+    else:
+        objs.append(_tag(TAG_RZ - 14 + (0 if view != 'side' else 0), (-0.055, -0.018, 0)))
+        objs.append(_anchor(ANC_RZ - 8, (0.062, 0.022, 0))); tgt = (0.004, 0.002, 0.016); dist = 0.66
+    if view == 'side': dist *= 0.95
+    if view == 'top': dist *= 1.05
+    _seq_settings(sc, SAMPLES)
+    rig((0, 0, 0.012), cam_az=CAZ, fill=1.4 if prod == 'amigo' else 1.8, rake=6.0, rake_az=CAZ + 100, rake_el=16)
+    camera(look_from(tgt, CAZ, EL, dist), tgt, lens=90, fstop=11.0, focus=tgt)
+    sc.render.film_transparent = True
+    sc.render.image_settings.color_mode = 'RGBA'
+    os.makedirs(OUT, exist_ok=True)
+    name = f'{prod}-{view}'
+    if '--shadow' in args:
+        sw.is_shadow_catcher = True
+        _render_seq(os.path.join(OUT, name + '_shadowcatch.png'), W // 2, H // 2)
+    else:
+        sw.visible_camera = False
+        t0 = __import__('time').time(); _render_seq(os.path.join(OUT, name + '.png'), W, H)
+        print('STILL', name, '%.1fs' % (__import__('time').time() - t0), flush=True)
+
+
 def shot_amimo_column():
     """R13: AmIMo on a column, from below. The anchor as the CAD gives it: the flanged plate flat on the column
     face, the RJ45 opening facing down. 70 mm, camera ~0.33 m out and below; key from above at el 60, fill 1:6.
@@ -883,6 +921,6 @@ if __name__ == '__main__':
     shots = {'amigo_hero': shot_amigo_hero, 'amigo_logo': shot_amigo_logo,
              'amimo_rj45': shot_amimo_rj45, 'pair_scale': shot_pair_scale, 'amigo_page': shot_amigo_page,
              'turntable': shot_turntable, 'family': shot_family, 'macro': shot_macro, 'closer': shot_closer,
-             'lower': shot_lower, 'covers': shot_covers, 'amimo_column': shot_amimo_column}
+             'lower': shot_lower, 'covers': shot_covers, 'amimo_column': shot_amimo_column, 'cutout': shot_cutout}
     for s in (shots if SHOT == 'all' else [SHOT]):
         shots[s]()

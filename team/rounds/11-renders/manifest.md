@@ -27,7 +27,7 @@ Formats:
 | R6 queue full-bleed | Home S3 | **landed** (see below) |
 | R7 one bay | Home S6, /pilot/ | **landed** |
 | R8 job crops | Home S7 | **landed** |
-| R9 closer-look angles | Product pages | **AmIGo landed**; AmIMo rendering |
+| R9 closer-look angles | Product pages | **landed** |
 | R10 AmIGo lowers onto trolley | AmIGo page | **landed** |
 | R11 AmIGo covers part | AmIGo page | **landed** (founders to check, see below) |
 | R12 hall line drawing | /technology/ header | **landed** |
@@ -53,7 +53,7 @@ Formats:
 - The tag sits a little below the frame centre (its top face reads as the centre of mass). The square holds the tag's widest diagonal at every angle with about 15 % margin.
 - Alt for the poster or stage: "The AmIGo tag, a small dark grey tag with amimotion on its cover, turning slowly." The canvas frames are `aria-hidden`.
 
-## R9 closer-look angles (product pages): AmIGo landed
+## R9 closer-look angles (product pages): landed
 
 The R1 rig and lens. The product turns by `az` from the turntable's poster pose (az 0 = R1 frame 0), and the camera rises to `el`.
 
@@ -68,7 +68,7 @@ The R1 rig and lens. The product turns by `az` from the turntable's poster pose 
 
 - Each is 1:1, 800 and 1600, RGBA on the page (transparent where it is the page), flat-fielded with its own plate.
 - Six angles, not five: the plan lists el 10, 30 and 60, so el 10 is included. Pick the five you need.
-- AmIMo's six (`amimo-*`) are rendering and will be added here.
+- AmIMo: `products/closer/amimo-{az0-el30,az90-el30,az180-el30,az270-el30,az0-el60,az0-el10}-{800,1600}.{avif,webp}`. The anchor lies on its flanged plate, as in `pair`, and az 0 shows the RJ45 end and the logo wall three-quarter. Same format. Alt pattern: "The AmIMo anchor from <...>." 
 - Alt pattern: "The AmIGo tag from <the front / its end / behind / above / low at the side>."
 
 ## R2 AmIGo macro (Home S1b): landed
