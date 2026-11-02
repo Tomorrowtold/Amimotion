@@ -26,7 +26,4 @@ main>.sec.band:has(+.sec:not(.band)),main>.sec.band:has(+.close){border-radius:0
 .head-pic img{max-width:100%}
 .head-pic .pic{overflow:visible!important}.head.has-still .head-pic{padding-bottom:var(--s-7)}
 /* one label column for every sheet: values start on the same line from table to table, labels sit on the value's baseline */
-.spec{table-layout:fixed;width:100%}
-.spec th{width:28%}
-.spec th,.spec td{vertical-align:baseline}
-@media (max-width:639px){.spec th{width:38%}}
+@media (min-width:640px){.spec{table-layout:fixed;width:100%}.spec th{width:28%}.spec th,.spec td{vertical-align:baseline}}
