@@ -216,27 +216,93 @@ def styles(meta):
 A = lambda u, t, extra="": f'<a href="{u}"{extra}>{html.escape(t)}</a>'
 
 
-def header_html():
-    """The bar (homepage-final.md screen 0): logo, four sections as panels, one button. Panels are native <details>,
-    so they open on click or tap with JavaScript off; a closed panel is out of the tab order."""
+def slug(t):
+    return re.sub(r"[^a-z0-9]+", "-", t.lower()).strip("-")
+
+
+PIC = NAV["pictures"]
+
+
+def nav_pic(k, on=False):
+    """A nav still (assets/nav, cut from the CAD renders by team/rounds/14-nav/tools/thumbs.py; WebP only, the AVIF
+    saves nothing on the hall crops). Lazy: a closed panel is not rendered, so its pictures cost nothing until it opens."""
+    return f'<picture data-k="{k}"{" class=\"on\"" if on else ""}><img src="/assets/nav/{k}-640.webp" width="640" height="480" alt="" loading="lazy"></picture>'
+
+
+def section_of(url):
+    """The nav section a page belongs to: the one that lists it; else the one listing the longest URL that contains
+    it (/learn/x/ under Field guides); else the first sharing its first folder (/products/ with the AmIGo tag)."""
+    links = [(o, s) for s in NAV["sections"] for o in [s["url"]] + [u for _, u, _ in s["items"]]]
+    for o, s in links:
+        if o == url: return s
+    inside = [(len(o), s) for o, s in links if url.startswith(o) and o != "/"]
+    if inside: return max(inside, key=lambda x: x[0])[1]
+    return next((s for o, s in links if url != "/" and o.split("/")[1] == url.split("/")[1]), None)
+
+
+def grouped(s):
+    i = 0
+    for name, n in s["groups"]:
+        yield name, s["items"][i:i + n]; i += n
+
+
+def roles_html(where):
+    return "".join(f'<li><span>{html.escape(r)}</span> ' + ' <span aria-hidden="true">·</span> '.join(
+        A(u, l) for l, u in links) + "</li>" for r, links in NAV["roles"])
+
+
+def ask_form(i, hint="Ask about tags, anchors, pilots or data"):
+    return (f'<form class="nask-form" role="search" data-ask><label class="vh" for="ask-{i}">Ask a question about AmIMotion</label>'
+            f'<input id="ask-{i}" type="search" placeholder="{hint}" autocomplete="off" spellcheck="false" enterkeyhint="go">'
+            '</form><p class="vh" role="status" data-ask-status></p><div class="nask-out"></div>')
+
+
+def header_html(url="/"):
+    """The bar (round 14, team/rounds/14-nav/notes.md). Logo; the bar split in two: how it works and where it helps
+    (understand), then start small and about us (decide); Ask; one button. Every panel is a native <details>, so it
+    opens on click, tap and keyboard with JavaScript off and its links are in the HTML for crawlers. Inside, each
+    panel splits the floor side from the review side (nav.json groups) and previews the destination in a still.
+    The phone gets a full-height sheet with the same tree and a thumb dock. assets/js/nav.js adds the rest."""
+    here = section_of(url)
+    cur = lambda u: ' aria-current="page"' if u == url else ""
     nx = NAV["closing"]
     next_line = f'{nx[0]} {A(nx[2], nx[1])}'
-    panels = []
+    panels, secs = [], []
     for s in NAV["sections"]:
-        rows = "".join(f'<li><a href="{u}"><b>{html.escape(l)}</b><span>{html.escape(line)}</span></a></li>' for l, u, line in s["items"])
-        panels.append(f'<li><details data-panel><summary>{s["label"]}</summary><div class="drop">'
-                      f'<a class="drop-hub" href="{s["url"]}">{s["label"]}</a><ul class="drop-list">{rows}</ul>'
-                      f'<p class="drop-next">{next_line}</p></div></details></li>')
-    groups = "".join(f'<div class="sheet-group">{A(s["url"], s["label"])}<ul class="sheet-list">'
-                     + "".join(f"<li>{A(u, l)}</li>" for l, u, _ in s["items"] if u != nx[2]) + "</ul></div>" for s in NAV["sections"])
-    return (f'<a class="skip-link" href="#main">Skip to content</a>\n<header class="top ds">\n'
-            f'<a class="logo" href="/" aria-label="AmIMotion home">{part("logo.html")}</a>\n'
-            f'<nav class="main" aria-label="Main"><ul class="links">{"".join(panels)}</ul></nav>\n'
-            f'<a class="cta" href="/contact/">Book a call</a>\n'
-            f'<details class="phone" data-panel><summary>Menu</summary><nav class="sheet" aria-label="Menu">'
-            f'{A(nx[2], nx[1], " class=\"sheet-first\"")}{groups}</nav></details>\n</header>\n'
-            # the phone dock (M13): Book a call, always one thumb away once the first screen is behind you
-            '<div class="dock" data-dock><a class="cta" href="/contact/" tabindex="-1">Book a call</a></div>')
+        sl = slug(s["label"]); gs = list(grouped(s))
+        def row(l, u, line, where, thumb=False):
+            k = PIC.get(u)
+            nid = f' data-nav-id="{where}.{sl}.{slug(l)}"' if where == "header" else ""   # sheet clicks: the .sheet ancestor tells them apart
+            return (f'<li><a href="{u}"{cur(u)}{nid}{f" data-k={chr(34)}{k}{chr(34)}" if k else ""}>'
+                    f'{nav_pic(k) if thumb else ""}<b>{html.escape(l)}</b><span>{html.escape(line)}</span></a></li>')
+        groups = "".join(f'<div class="grp"><p class="grp-name">{html.escape(n)}</p><ul>' + "".join(row(*it, "header") for it in its) + "</ul></div>" for n, its in gs)
+        keys = list(dict.fromkeys(PIC[u] for _, u, _ in s["items"] if u in PIC))
+        f_l, _, f_line = next(it for it in s["items"] if it[1] in PIC)
+        stage = (f'<figure class="stage" aria-hidden="true"><div class="stage-pic">{"".join(nav_pic(k, i == 0) for i, k in enumerate(keys))}</div>'
+                 f'<figcaption><b>{html.escape(f_l)}</b><span>{html.escape(f_line)}</span></figcaption></figure>')
+        panels.append(f'<li{" class=\"here\"" if s is here else ""}><details data-panel><summary data-nav-id="header.{sl}"{" aria-current=\"true\"" if s is here else ""}>{s["label"]}</summary>'
+                      f'<div class="drop g{len(gs)}"><div class="drop-head"><a class="drop-hub" href="{s["url"]}"{cur(s["url"])} data-nav-id="header.{sl}.hub">{s["label"]}</a>'
+                      f'<p class="drop-next">{next_line}</p></div><div class="drop-groups">{groups}</div>{stage}</div></details></li>')
+        sgroups = "".join(f'<p class="grp-name">{html.escape(n)}</p><ul class="sheet-list{" pics" if all(u in PIC for _, u, _ in its) else ""}">'
+                          + "".join(row(*it, "sheet", all(u in PIC for _, u, _ in its)) for it in its) + "</ul>" for n, its in gs)
+        secs.append(f'<details class="fold"{" open" if s is here else ""}><summary>{s["label"]}</summary><div class="fold-body">'
+                    f'<a class="fold-hub" href="{s["url"]}"{cur(s["url"])} >{s["label"]}</a>{sgroups}</div></details>')
+    secs.append(f'<details class="fold"><summary>Start from your job</summary><div class="fold-body"><ul class="jobs-list">{roles_html("sheet")}</ul></div></details>')
+    return ('<a class="skip-link" href="#main">Skip to content</a>\n<header class="top ds">\n'
+            f'<a class="logo" href="/" aria-label="AmIMotion home" data-nav-id="header.home">{part("logo.html")}</a>\n'
+            f'<nav class="main" aria-label="Main"><ul class="links">{"".join(panels)}</ul></nav>\n<div class="act">'
+            '<details class="nask" data-panel><summary data-nav-id="header.ask">Ask<kbd aria-hidden="true">/</kbd></summary>'
+            f'<div class="drop nask-drop"><div class="nask-main">{ask_form("d")}</div>'
+            f'<div class="nask-jobs"><p class="grp-name">Start from your job</p><ul class="jobs-list">{roles_html("ask")}</ul></div></div></details>'
+            '<a class="cta" href="/contact/" data-nav-id="header.book-a-call">Book a call</a>\n'
+            '<details class="phone" data-panel><summary data-nav-id="sheet.menu"><span class="m-open">Menu</span><span class="m-close">Close</span></summary>'
+            f'<nav class="sheet" aria-label="Menu"><div class="sheet-ask">{ask_form("m", "Ask a question")}</div><div class="sheet-secs">{"".join(secs)}'
+            f'<p class="sheet-next">{next_line}</p></div></nav></details></div>\n</header>\n<div class="scrim" aria-hidden="true"></div>\n'
+            # the phone dock: Menu, Ask and Book a call under the thumb once the first screen is behind you
+            '<div class="dock" data-dock><button type="button" class="dock-b" data-menu tabindex="-1" aria-label="Menu">'
+            '<span class="m-open">Menu</span><span class="m-close">Close</span></button>'
+            '<button type="button" class="dock-b" data-ask-open tabindex="-1">Ask</button>'
+            '<a class="cta" href="/contact/" tabindex="-1" data-nav-id="dock.book-a-call">Book a call</a></div>')
 
 
 # Footer jobs grid (M15, M19): the twelve role lines of homepage-final.md screen 7, in four columns, each column under
@@ -268,17 +334,11 @@ def footer_html():
             "</div></footer>")
 
 
-# panels: one open at a time, Escape and a click outside close them. Without this script they still open and close.
-NAV_JS = ("<script>(()=>{const d=document,P=[...d.querySelectorAll('details[data-panel]')];"
-          "P.forEach(p=>p.addEventListener('toggle',()=>{if(p.open)P.forEach(q=>{if(q!==p)q.open=false})}));"
-          "d.addEventListener('click',e=>{P.forEach(p=>{if(p.open&&!p.contains(e.target))p.open=false})});"
-          "d.addEventListener('keydown',e=>{if(e.key==='Escape')P.forEach(p=>{if(p.open){p.open=false;p.querySelector('summary').focus()}})});"
-          # the phone dock slides in once the first screen (or the homepage hero runway) is behind the reader
-          "const k=d.querySelector('[data-dock]');if(k){const a=d.querySelector('[data-dock-after]'),h=d.documentElement,b=k.querySelector('a');let on;"
-          "const f=()=>{const y=a?a.getBoundingClientRect().bottom<innerHeight*.5:scrollY>innerHeight*.8;if(y!==on){on=y;h.classList.toggle('dock-on',y);b.tabIndex=y?0:-1}};"
-          "addEventListener('scroll',f,{passive:true});f()}})()</script>")
+NAV_JS = '<script src="/assets/js/nav.js" defer></script>'
+
+
 def scripts(meta):
-    """Inner pages load no shared script: the panels script (inline), plus a tool's own file where it has one.
+    """Every page loads nav.js (deferred, cached once: the nav works without it), plus a tool's own file where it has one.
     The diagnostic's 3D floor (three.js, about 690 KB) is no longer loaded: it drew a plant in code and broke the
     first-screen budget. Its 2D sketch stays."""
     if meta.get("layout") == "home": return NAV_JS + '\n<script src="/assets/js/stage.js" defer></script>'
@@ -346,9 +406,12 @@ def build():
     # assets/intro (the old AI-made hero turn) is no longer shipped: nothing may use it
     # shipped: fonts, CAD stills, film files. Not shipped: assets/intro (the old AI-made turn), assets/scene (the dark
     # glowing scene stills, replaced by reserved slots in round 05), vendor (three.js, no longer loaded)
-    for sub in ("fonts", "img", "home", "film", "photo", "hall"):
+    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav"):
         if (SRC / "assets" / sub).exists(): shutil.copytree(SRC / "assets" / sub, DIST / "assets" / sub)
     shutil.copytree(SRC / "js", DIST / "assets" / "js", dirs_exist_ok=True)
+    nav = (SRC / "js" / "nav.js").read_text()
+    nav = re.sub(r"(?m)^\s*//.*\n|\s+// [^'\n]*$", "\n", nav)
+    (DIST / "assets" / "js" / "nav.js").write_text(re.sub(r"\n\s*", "\n", nav).strip() + "\n")
     pages = {}
     for f in sorted((SRC / "pages").rglob("*.html")):
         rel = f.relative_to(SRC / "pages")
@@ -360,7 +423,7 @@ def build():
 
     public = []
     for url, (meta, body) in pages.items():
-        header = header_html()
+        header = header_html(url)
         page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main">\n{body}\n</main>\n' + footer_html() + "\n" + scripts(meta) + "\n</body>\n</html>\n"
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
@@ -397,6 +460,27 @@ def build():
         + "\n\n".join(f"## {k}\n\n" + "\n".join(v) for k, v in lines.items() if v) + f"\n\n## Home\n\n- [AmIMotion]({SITE}/): {pages['/'][0].get('description', '')}\n")
     (DIST / "llms-full.txt").write_text(f"# AmIMotion: the full site as text\n\n> {ENTITY['long']}\n\n## Key facts\n\n{facts}\n\n"
         + "\n\n".join(f"## {pages[u][0].get('title')}\nURL: {SITE}{u}\n\n{text_of(pages[u][1])}" for u in sorted(public)) + "\n")
+
+    # assets/ask.json: what the Ask field answers from, with no backend (round 14). Every public page by its nav label
+    # with its short answer (or its description), every question on the site with its answer, every glossary term.
+    def clip(t, n=260):
+        if len(t) <= n: return t
+        cut = t[:n]; dot = cut.rfind(". ")
+        return cut[:dot + 1] if dot > 80 else cut.rsplit(" ", 1)[0] + "…"
+    ask_pages, ask = [], []
+    for u in sorted(public, key=lambda u: (u not in LABEL, u)):
+        meta, body = pages[u]; i = len(ask_pages); ask_pages.append([u, LABEL.get(u) or titles[u]])
+        sa = re.search(r'<p class="short-answer"[^>]*>(.*?)</p>', body, re.S)
+        line = next((x for s in NAV["sections"] for _, v, x in s["items"] if v == u), "")
+        ask.append([i, LABEL.get(u) or titles[u], clip(text_of(sa.group(1)) if sa else meta.get("description", ""))] + (["", line] if line else []))
+        for q in faq_items(body):
+            ask.append([i, q["name"], clip(q["acceptedAnswer"]["text"]), "q"])
+        for t in glossary_of(body, u):
+            ask.append([i, t["name"], clip(t["description"]), "#" + t["@id"].split("#")[1]])
+    seen, rows = set(), []
+    for r in ask:
+        if (r[1].lower(), r[0]) not in seen: seen.add((r[1].lower(), r[0])); rows.append(r)
+    (DIST / "assets" / "ask.json").write_text(json.dumps({"p": ask_pages, "e": rows}, ensure_ascii=False, separators=(",", ":")))
 
     if args.indexnow_key: (DIST / f"{args.indexnow_key}.txt").write_text(args.indexnow_key)
     (DIST / "_headers").write_text("/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n"

@@ -58,57 +58,135 @@
 .go:hover{text-decoration:underline!important;text-decoration-thickness:1px!important;text-underline-offset:4px}
 .go::after{width:.38em;height:.38em}
 
-/* ---------- the bar (M13): 56 px, links at 15 px, one 36 px pill ---------- */
-.top{position:relative;z-index:30;height:var(--bar);padding-inline:var(--margin);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:center;background:var(--ground)}
+/* ---------- the nav (round 14, team/rounds/14-nav/notes.md). A 56 px bar split in two (understand | decide), Ask,
+   one button. Panels are <details>: no JS needed to open them. Opens in 180 ms by a clip from the bar down; moving
+   between panels morphs from the old panel's height (--from, set by nav.js); closing is instant. The located dot
+   (the blue a tag shows on the map) marks where you are and what you point at. No glass, glow or gradient. ---------- */
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.top{position:relative;z-index:30;height:var(--bar);padding-inline:var(--margin);display:flex;align-items:center;gap:var(--s-4);background:var(--ground)}
 .top a{color:var(--ink);text-decoration:none}
 .top ul{list-style:none;margin:0;padding:0}
-.logo{grid-column:1 / span 3;display:inline-flex;align-items:center;gap:10px;justify-self:start;padding-block:var(--s-2)}
+.top p{margin:0}
+.logo{flex:1 1 0;display:inline-flex;align-items:center;gap:10px;justify-self:start;padding-block:var(--s-2)}
 .logo .mark path{fill:var(--brand)}
 .logo .mark{height:24px;width:auto}
 .logo .word{height:16px;width:auto}
-.top .main{grid-column:4 / span 7;justify-self:center}
-.links{display:flex;gap:clamp(4px,1vw,24px)}
-.top summary{list-style:none;cursor:pointer;font:400 15px/1 var(--font-text);color:var(--ink);padding:10px 12px;border-radius:var(--radius-pill);white-space:nowrap;-webkit-user-select:none;user-select:none;transition:background-color var(--t-fast) var(--ease-ds)}
+.act{flex:1 1 0;display:flex;align-items:center;justify-content:flex-end;gap:var(--s-2)}
+.top .main,.links{display:flex;align-items:center;height:100%}
+.links{gap:clamp(0px,.5vw,12px)}
+.links > li:nth-child(3){margin-left:clamp(8px,1.2vw,24px);padding-left:clamp(8px,1.2vw,24px);box-shadow:inset 1px 0 0 var(--hairline)}
+.top summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;height:36px;font:400 15px/1 var(--font-text);color:var(--ink);padding:0 12px;border-radius:var(--radius-pill);white-space:nowrap;-webkit-user-select:none;user-select:none;transition:background-color var(--t-fast) var(--ease-ds)}
 .top summary::-webkit-details-marker{display:none}
-.top summary:hover{background:var(--pressed)}
-.top details[open] > summary{background:var(--surface)}
-.top > .cta{grid-column:11 / span 2;justify-self:end;height:36px;padding:0 16px;font-size:15px}
-/* a panel: one section, its hub and every page in it, plain links that work with JavaScript off */
-.drop{position:absolute;left:0;right:0;top:var(--bar);background:var(--surface);padding:var(--s-7) var(--margin) var(--s-8);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:var(--s-5);border-top:1px solid var(--hairline);box-shadow:0 1px 0 var(--hairline)}
-.drop-hub{grid-column:1 / span 4;font:600 var(--size-h3)/1.15 var(--font-display);letter-spacing:-.015em;align-self:start}
-.drop-list{grid-column:5 / -1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--gutter);row-gap:var(--s-4)}
-.drop-list a,.sheet-list a{display:block;padding-block:var(--s-1)}
-.drop-list b{display:block;font:500 17px/1.3 var(--font-text)}
-.drop-list span{display:block;font:400 15px/1.4 var(--font-text);color:var(--ink-soft)}
-.drop-list a:hover b{color:var(--link)}
-.drop-next{grid-column:1 / span 4;grid-row:2;align-self:end;margin:0;font:400 15px/1.4 var(--font-text);color:var(--ink-soft)}
+.top summary:hover,.top details[open] > summary{background:var(--surface)}
+.here > details > summary::before,.drop-groups a::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--located)}
+.glide{position:absolute;left:0;top:calc((var(--bar) - 36px) / 2);height:36px;border-radius:var(--radius-pill);background:var(--surface);opacity:0;pointer-events:none;z-index:-1}
+.glide-on .glide{opacity:1;transition:transform var(--t-fast) var(--ease-ds),width var(--t-fast) var(--ease-ds)}
+.glide-on summary:hover{background:none}
+.act > .cta{height:36px;padding:0 16px;font-size:15px}
+.nask > summary{box-shadow:inset 0 0 0 1px var(--hairline);padding-inline:14px 8px;gap:24px;color:var(--ink-soft)}
+.nask kbd{display:grid;place-items:center;width:20px;height:20px;border-radius:4px;background:var(--ground);font:500 12px/1 var(--font-text);color:var(--ink-soft)}
+.no-js .nask,.no-js .sheet-ask{display:none}
+/* a panel: hub and closing line, the item groups (floor side first), and a preview of where the pointer is */
+.drop{position:absolute;left:0;right:0;top:var(--bar);max-height:calc(100vh - var(--bar));overflow:auto;background:var(--surface);border-top:1px solid var(--hairline);box-shadow:0 1px 0 var(--hairline);padding:var(--s-7) var(--margin);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);animation:nav-in 180ms var(--ease-ds) both}
+@keyframes nav-in{from{clip-path:inset(0 0 calc(100% - var(--from,0px)) 0)}to{clip-path:inset(0 0 -2px 0)}}
+@keyframes nav-fade{from{opacity:0;transform:translateY(6px)}}
+.drop > *{animation:nav-fade 160ms var(--ease-ds) both}
+.drop > :nth-child(2){animation-delay:20ms}.drop > :nth-child(3){animation-delay:40ms}
+.drop-head{grid-column:1 / span 3;display:flex;flex-direction:column;justify-content:space-between;gap:var(--s-6)}
+.drop-hub{align-self:start;display:inline-flex;align-items:center;gap:.4em;font:600 var(--size-h3)/1.1 var(--font-display);letter-spacing:-.015em}
+.drop-hub::after{content:"";width:.32em;height:.32em;border:solid currentColor;border-width:2px 2px 0 0;transform:rotate(45deg);transition:transform var(--t-fast) var(--ease-ds)}
+.drop-hub:hover::after{transform:translateX(3px) rotate(45deg)}
+.drop-next,.sheet-next{font:400 15px/1.4 var(--font-text);color:var(--ink-soft)}
 .drop-next a,.sheet-next a{color:var(--link)!important;text-decoration:underline!important;text-underline-offset:4px}
-.phone{display:none}
+.drop-groups{grid-column:4 / span 5;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--gutter);align-content:start}
+.g3 .drop-groups{grid-column:4 / span 6;grid-template-columns:repeat(3,minmax(0,1fr))}
+.grp-name{font:500 15px/1.3 var(--font-text);color:var(--ink);padding-bottom:var(--s-3);margin-bottom:var(--s-2)!important;border-bottom:1px solid var(--hairline)}
+.drop-groups a{position:relative;display:block;padding:7px 0 7px 16px;margin-left:-16px}
+.drop-groups a::before{position:absolute;left:2px;top:15px;transform:scale(0);transition:transform 120ms var(--ease-ds)}
+.drop-groups a:hover::before,.drop-groups a:focus-visible::before,.drop-groups a[aria-current]::before{transform:none}
+.drop-groups b,.stage b{display:block;font:500 16px/1.3 var(--font-text)}
+.drop-groups span,.stage span,.sheet-list span{display:block;font:400 14px/1.4 var(--font-text);color:var(--ink-soft)}
+.drop-groups a:hover b{color:var(--link)}
+.stage{grid-column:9 / -1;margin:0}
+.g3 .stage{grid-column:10 / -1}
+.stage-pic{position:relative;aspect-ratio:4 / 3;border-radius:4px;overflow:hidden;background:var(--ground)}
+.stage picture,.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stage picture{opacity:0;transition:opacity 140ms var(--ease-ds)}
+.stage picture.on{opacity:1}
+.stage figcaption{padding-top:var(--s-3)}
+/* Ask: answers from the site's own pages (assets/ask.json), or start from your job */
+.nask-drop{row-gap:var(--s-5)}
+.nask-main{grid-column:1 / span 7}
+.nask-jobs{grid-column:9 / -1}
+.nask-form input{width:100%;height:56px;border:0;border-bottom:2px solid var(--ink);border-radius:0;background:none;padding:0;font:600 var(--size-h3)/1 var(--font-display);letter-spacing:-.01em;color:var(--ink);outline:0;-webkit-appearance:none;appearance:none}
+.nask-form input::placeholder{color:var(--ink-soft);opacity:.6}
+.ds .nask-form input:focus-visible{outline:0;border-bottom-color:var(--focus)}
+.nask-form input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.nask-out a{display:block;padding-block:var(--s-2)}
+.nask-out b{display:block;font:500 17px/1.35 var(--font-text)}
+.nask-out span,.nask-out i{display:block;font:400 15px/1.45 var(--font-text);color:var(--ink-soft);font-style:normal}
+.nask-out .ans{margin-block:var(--s-5) var(--s-3);padding:var(--s-5);border-radius:6px;background:var(--ground)}
+.nask-out .ans b{font:600 var(--size-lede)/1.2 var(--font-display);letter-spacing:-.01em;margin-bottom:var(--s-2)}
+.nask-out .ans span{color:var(--ink);font-size:var(--size-small)}
+.nask-out .ans i{margin-top:var(--s-3);color:var(--link)}
+.nask-out a:hover b,.nask-out a:focus-visible b{color:var(--link)}
+.nask-more{border-top:1px solid var(--hairline)}
+.jobs-list li{display:flex;flex-wrap:wrap;column-gap:.4em;padding-block:6px;border-bottom:1px solid var(--hairline);font:400 15px/1.35 var(--font-text)}
+.jobs-list li > span:first-child{flex:0 0 100%;color:var(--ink-soft);font-size:14px}
+.jobs-list a{color:var(--link)!important;font-weight:500}
+.jobs-list a:hover{text-decoration:underline!important;text-underline-offset:4px}
+.scrim{position:fixed;inset:0;z-index:29;background:var(--ink);opacity:0;visibility:hidden;pointer-events:none;transition:opacity var(--t-fast) var(--ease-ds),visibility 0s var(--t-fast)}
+@media (min-width:1024px){.top:has(.links [open],.nask[open]) + .scrim{opacity:.14;visibility:visible;transition:opacity var(--t-fast) var(--ease-ds)}}
+.phone,.dock{display:none}
+@media (min-width:1024px) and (max-width:1199px){.nask > summary{gap:10px}.links > li:nth-child(3){margin-left:4px;padding-left:4px}.top summary{padding-inline:10px}}
+/* phone and tablet: logo, button, Menu; a full-height sheet with Ask, the four sections as folds, start from your job */
 @media (max-width:1023px){
-  .top{display:flex;gap:var(--s-2)}
-  .logo{margin-right:auto}
-  .top .main{display:none}
-  .top > .cta{height:36px;padding:0 14px}
+  .top{gap:var(--s-2)}
+  .logo{flex:1 1 auto}
+  .act{flex:none}
+  .top .main,.nask{display:none}
+  .act > .cta{padding:0 14px}
   .phone{display:block}
-  .phone > summary{height:36px;display:flex;align-items:center;padding-inline:12px}
-  .sheet{position:absolute;left:0;right:0;top:var(--bar);min-height:calc(100svh - var(--bar));background:var(--ground);padding:var(--s-5) var(--margin) var(--s-8)}
-  .sheet-first{display:inline-block;font:600 var(--size-h3)/1.2 var(--font-display);padding-block:var(--s-3)}
-  .sheet-group{margin-top:var(--s-6)}
-  .sheet-group > a{display:inline-block;font:600 var(--size-h3)/1.2 var(--font-display);padding-block:var(--s-2)}
-  .sheet-list{columns:2 14em;column-gap:var(--gutter)}
-  .sheet-list li{break-inside:avoid}
-  .sheet-list a{font:400 var(--size-body)/1.3 var(--font-text);min-height:24px;padding-block:var(--s-2)}
+  .phone > summary{padding-inline:12px}
+  .m-close,[open] > summary > .m-open,.sheet-on .dock .m-open{display:none}
+  [open] > summary > .m-close,.sheet-on .dock .m-close{display:inline}
+  html:has(.phone[open]){overflow:hidden}
+  html:has(.phone[open]) body{padding-top:var(--bar)}
+  html:has(.phone[open]) .top{position:fixed;top:0;left:0;right:0}
+  .sheet{position:fixed;left:0;right:0;top:var(--bar);bottom:0;overflow-y:auto;overscroll-behavior:contain;background:var(--ground);padding:var(--s-3) var(--margin) calc(var(--s-8) + 64px);animation:nav-fade 180ms var(--ease-ds) both}
+  .sheet-ask{margin-bottom:var(--s-4)}
+  .sheet-ask input{font-size:clamp(1.25rem,1rem + 1.2vw,1.75rem);height:52px}
+  .asking .sheet-secs{display:none}
+  .fold{display:block;border-bottom:1px solid var(--hairline)}
+  .fold > summary{height:auto;padding:var(--s-4) 0;border-radius:0;justify-content:space-between;font:600 clamp(1.625rem,1.2rem + 1.6vw,2.25rem)/1.15 var(--font-display);letter-spacing:-.015em}
+  .fold > summary::after{content:"+";font:400 28px/1 var(--font-text);color:var(--ink-soft);transition:transform var(--t-fast) var(--ease-ds)}
+  .fold[open] > summary::after{transform:rotate(45deg)}
+  .top .fold > summary,.top .fold[open] > summary{background:none}
+  .fold-body{padding-bottom:var(--s-5);animation:nav-fade 160ms var(--ease-ds) both}
+  .fold-hub{display:inline-flex;align-items:center;gap:.4em;min-height:44px;font:500 var(--size-body)/1.2 var(--font-text);color:var(--link)!important}
+  .fold-hub::after{content:"";width:.38em;height:.38em;border:solid currentColor;border-width:2px 2px 0 0;transform:rotate(45deg)}
+  .fold-body .grp-name{margin-top:var(--s-4)!important}
+  .sheet-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(15em,1fr));column-gap:var(--gutter)}
+  .sheet-list a{display:block;min-height:44px;padding-block:var(--s-2)}
+  .sheet-list b{display:block;font:500 var(--size-body)/1.3 var(--font-text)}
+  .sheet-list.pics a{display:grid;grid-template-columns:72px 1fr;column-gap:var(--s-3);align-items:center}
+  .sheet-list.pics picture{grid-row:span 2;display:block;aspect-ratio:4 / 3;border-radius:3px;overflow:hidden;background:var(--surface)}
+  .sheet-list.pics img{display:block;width:100%;height:100%;object-fit:cover}
+  .sheet-list a[aria-current] b::before{content:"";display:inline-block;width:7px;height:7px;margin-right:8px;border-radius:50%;background:var(--located);vertical-align:.15em}
+  .sheet-next{margin-top:var(--s-6)!important}
+  .nask-out .ans{margin-top:var(--s-3)}
 }
 /* the narrowest phones (320 to 359 px): the bar keeps logo, button and Menu on one line */
-@media (max-width:359px){.top{gap:2px}.logo{gap:6px}.logo .mark{height:20px}.logo .word{height:13px}.top > .cta{padding-inline:10px}.top > .cta::after{display:none}.phone > summary{padding-inline:8px}}
+@media (max-width:359px){.top{gap:2px}.logo{gap:6px}.logo .mark{height:20px}.logo .word{height:13px}.act > .cta{padding-inline:10px}.act > .cta::after{display:none}.phone > summary{padding-inline:8px}}
 
-/* the phone dock (M13): a 48 px bar with Book a call, slid in once the first screen is behind you (JavaScript on) */
-.dock{display:none}
+/* the phone dock (M13): Menu, Ask and Book a call under the thumb, slid in once the first screen is behind you (JS on) */
 @media (max-width:1023px){
-  .js .dock{display:flex;position:fixed;z-index:40;left:0;right:0;bottom:0;height:calc(56px + env(safe-area-inset-bottom));padding:4px var(--margin) calc(4px + env(safe-area-inset-bottom));align-items:center;background:var(--surface);border-top:1px solid var(--hairline);transform:translateY(105%);transition:transform 240ms var(--ease-ds);visibility:hidden}
-  .js.dock-on .dock{transform:none;visibility:visible}
-  .dock .cta{width:100%}
-  .js .foot{padding-bottom:calc(var(--s-8) + 56px)}
+  .js .dock{display:flex;gap:var(--s-2);position:fixed;z-index:40;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom));padding:8px var(--margin) calc(8px + env(safe-area-inset-bottom));align-items:center;background:var(--surface);border-top:1px solid var(--hairline);transform:translateY(105%);transition:transform 200ms var(--ease-ds);visibility:hidden}
+  .js.dock-on .dock,.js.sheet-on .dock{transform:none;visibility:visible}
+  .dock-b{flex:none;height:48px;padding:0 18px;border:0;border-radius:var(--radius-pill);background:var(--ground);color:var(--ink);font:500 var(--size-small)/1 var(--font-text);cursor:pointer}
+  .dock-b:active,.dock .cta:active{transform:scale(var(--press-scale))}
+  .dock .cta{flex:1;min-width:0}
+  .js .foot{padding-bottom:calc(var(--s-8) + 64px)}
 }
 
 /* ---------- the footer (M15): start from your job, four link columns, the entity paragraph ---------- */
