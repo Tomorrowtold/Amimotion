@@ -194,7 +194,7 @@ def head(meta, url, body, titles):
 <script>(()=>{{const h=document.documentElement;h.classList.replace('no-js','js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/[?&]still\\b/.test(location.search))h.classList.add('motion')}})()</script>
 <script type="application/ld+json">{page_schema(meta, url, body, titles)}</script>{KIT_HEAD if meta.get("world") else ''}
 </head>
-<body class="{body_class(meta)}"{(' data-world="' + e(meta["world"]) + '"') if meta.get("world") else ''}{(' style="--cv:' + e(meta["cover"]) + '"') if meta.get("cover") else ''}>{'<div class="k-progress" aria-hidden="true"></div>' if 'progress' in meta.get('look','').split() else ''}"""
+<body class="{body_class(meta)}"{(' data-rail="' + e(meta["rail"]) + '"') if meta.get("rail") else ''}{(' data-world="' + e(meta["world"]) + '"') if meta.get("world") else ''}{(' style="--cv:' + e(meta["cover"]) + '"') if meta.get("cover") else ''}>{'<div class="k-progress" aria-hidden="true"></div>' if 'progress' in meta.get('look','').split() else ''}"""
 
 
 def css_min(css):
@@ -205,7 +205,7 @@ def css_min(css):
 
 def body_class(meta):
     """The shared class plus the page's looks (front matter look: serif sidehead cards ...): kit.css restyles by them."""
-    return " ".join(["ds"] + ["look-" + x for x in meta.get("look", "").split()])
+    return " ".join(["ds"] + (["pl", "site-" + meta["id"]] if meta.get("layout") == "product" else []) + ["look-" + x for x in meta.get("look", "").split()])
 
 
 # Inner pages: the next page is prerendered when a visitor's pointer rests on a link, and the headline of the page you
@@ -218,6 +218,12 @@ def styles(meta):
     """Every page carries its whole stylesheet in the first round trip: core.css (tokens, bar, footer) plus one
     template file (home.css, or inner.css with tool.css or diag.css where a page has a tool). No render-blocking
     request; the display face is preloaded."""
+    # the product sites (thread "Build AmIGo, AmIMo and AmIHub product sites"): each product page is its own small
+    # site under the AmIMotion nav, so it carries core.css plus its own two files, none of the inner-page kit
+    if meta.get("layout") == "product":
+        css = css_min("".join((SRC / "css" / f).read_text() for f in ["core.css", "products/base.css", f"products/{meta['id']}.css"]))
+        return ('<link rel="preload" href="/assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>\n'
+                f"<style>{css}</style>")
     files = ["core.css"] + (["home.css"] if meta.get("layout") == "home" else ["inner.css"] + [f"{x}.css" for x in meta.get("css", "").split()] + ["worlds.css", "kit.css"])
     if meta.get("layout") != "home" and meta.get("id") and (SRC / "css" / "id" / f"{meta['id']}.css").exists(): files.append(f"id/{meta['id']}.css")
     css = css_min("".join((SRC / "css" / f).read_text() for f in files))
@@ -384,6 +390,8 @@ def scripts(meta):
     if meta.get("layout") == "home": return NAV_JS + '\n<script src="/assets/js/stage.js" defer></script>\n<script type="module" src="/assets/js/locate.js"></script>'
     s = meta.get("scripts", "").split()
     out = [NAV_JS]
+    if meta.get("layout") == "product":
+        return "\n".join(out + ['<script src="/assets/js/products/site.js" defer></script>'] + [f'<script type="module" src="/assets/js/products/{x}.js"></script>' for x in s])
     if "diag" in s: out.append('<script src="/assets/js/config.js" defer></script><script src="/assets/js/diagnostic.js" defer></script>')
     out += [f'<script src="/assets/js/{x}.js" defer></script>' for x in s if x not in ("hero", "diag")]
     return "\n".join(out)
@@ -446,7 +454,7 @@ def build():
     # assets/intro (the old AI-made hero turn) is no longer shipped: nothing may use it
     # shipped: fonts, CAD stills, film files. Not shipped: assets/intro (the old AI-made turn), assets/scene (the dark
     # glowing scene stills, replaced by reserved slots in round 05), vendor (three.js, no longer loaded)
-    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech", "locate", "worlds"):
+    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech", "locate", "worlds", "products"):
         if (SRC / "assets" / sub).exists(): shutil.copytree(SRC / "assets" / sub, DIST / "assets" / sub)
     # three.js ships again for one use: the homepage locate stage (round 19), loaded lazily, never in the first screen
     (DIST / "assets" / "vendor").mkdir()

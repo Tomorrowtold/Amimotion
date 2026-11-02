@@ -1,0 +1,85 @@
+/* AmIGo: AmIMotion's own brand, a little better. Sky Ground deepened into a soft morning gradient, indigo action,
+   located blue as the one signal colour, clay plinths under the CAD, photographs graded cool steel with indigo shadows. */
+.site-amigo{--p-bg:#f3f7ff;--p-fg:#0b1238;--p-soft:#3d4870;--p-accent:#4b3df0;--p-card:#fff;--p-line:rgba(11,18,56,.1);--p-mute:rgba(11,18,56,.5)}
+.site-amigo .p-hero{padding-top:calc(var(--bar) + clamp(36px,5vw,72px));text-align:center;overflow:hidden;
+  background:radial-gradient(120% 70% at 50% 100%,#dfe9ff 0%,rgba(223,233,255,0) 60%),radial-gradient(60% 50% at 80% 0%,rgba(102,165,250,.18),transparent 70%),linear-gradient(#f7faff,#eef4ff)}
+.site-amigo .crumbs{justify-content:center}
+.ag-h1{margin-top:28px!important;font-size:clamp(3rem,1.4rem + 5.4vw,7.6rem)!important;line-height:.96!important;letter-spacing:-.055em}
+.ag-h1 span{display:block}
+.ag-h1 span+span{background:linear-gradient(92deg,#4b3df0 10%,#1f6bff 55%,#66a5fa 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ag-lede{margin:26px auto 0;max-width:30em;color:var(--p-soft)!important}
+.ag-more{justify-content:center;margin-top:22px}
+.ag-stage{position:relative;height:clamp(420px,58vw,760px);margin-top:clamp(-10px,-1vw,0px)}
+.ag-stage canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 1s ease}
+.ag-stage canvas.ready{opacity:1}
+.ag-fallback{position:absolute;left:50%;top:48%;width:min(46vw,620px);transform:translate(-50%,-50%);filter:drop-shadow(0 40px 40px rgba(11,18,56,.28));transition:opacity .8s}
+.ag-fallback.gone{opacity:0}
+/* in short: the one giant number */
+.ag-short{background:#fff}
+.ag-short-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--s-8);align-items:end;margin:clamp(32px,4vw,64px) 0 clamp(48px,6vw,96px)}
+.ag-giant{text-align:right}
+.ag-giant-num{white-space:nowrap;font:600 clamp(4.2rem,1.6rem + 8vw,10.5rem)/.86 var(--font-display);letter-spacing:-.07em;background:linear-gradient(180deg,#0b1238 30%,#4b3df0);-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+.ag-giant-cond{margin-top:18px!important;font:400 var(--size-small)/1.45 var(--font-text);color:var(--p-soft)}
+.ag-giant-cond b{color:var(--p-fg);font-weight:500}
+@media (max-width:900px){.ag-short-grid{grid-template-columns:1fr}.ag-giant{text-align:left}}
+/* the film: rides on what moves */
+.ag-move{padding-top:clamp(24px,3vw,48px)}
+.ag-film{position:relative;width:calc(100% - 2 * clamp(12px,2vw,32px));margin-inline:auto;border-radius:clamp(20px,2.4vw,40px);overflow:hidden;aspect-ratio:16/8.4;background:#c9d4ea}
+.ag-film video{width:100%;height:100%;object-fit:cover}
+.ag-film::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,18,56,.0) 35%,rgba(11,18,56,.62))}
+.ag-film-h{position:absolute;z-index:1;left:clamp(24px,4vw,72px);bottom:clamp(24px,4vw,64px);color:#fff!important;font-size:clamp(2.2rem,1rem + 3.6vw,5.4rem)!important}
+.ag-film-h span+span{color:rgba(255,255,255,.62)!important}
+@media (max-width:700px){.ag-film{aspect-ratio:4/5}}
+.ag-battery{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:var(--s-8);align-items:center;margin-top:clamp(64px,7vw,120px)!important}
+.ag-battery-copy h3{font-size:clamp(1.6rem,1.2rem + 1.2vw,2.4rem);letter-spacing:-.03em;margin-bottom:22px}
+.ag-plinth{border-radius:28px;padding:18px 18px 0;background:linear-gradient(180deg,#fff,#f2f6ff);box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 40px 60px -40px rgba(12,20,48,.35)}
+.ag-plinth img{width:100%;border-radius:18px;mix-blend-mode:multiply}
+.ag-pulse{margin-top:14px;background:#fff;border-radius:20px;padding:18px 20px 12px;box-shadow:0 0 0 1px rgba(11,18,56,.05)}
+.ag-pulse svg{display:block;width:100%;height:auto}
+.ag-pulse .tick{stroke:#1f6bff;stroke-width:2;stroke-linecap:round;transform-box:fill-box;transform-origin:50% 100%}
+.ag-pulse .mv{fill:rgba(31,107,255,.1)}
+.ag-pulse .base{stroke:#0b1238;stroke-width:1.2;opacity:.6}
+.ag-pulse .w-lbl{font:500 13px var(--font-text);fill:#3d4870}
+@media (prefers-reduced-motion:no-preference){.motion .ag-pulse .tick{animation:ag-beat 2.4s var(--p-ease) infinite}
+  .ag-pulse .tick:nth-of-type(3n){animation-delay:.2s}.ag-pulse .tick:nth-of-type(3n+1){animation-delay:.4s}
+  @keyframes ag-beat{0%,100%{transform:scaleY(.35);opacity:.5}30%{transform:none;opacity:1}}}
+@media (max-width:900px){.ag-battery{grid-template-columns:1fr}}
+.ag-know{margin-top:clamp(40px,5vw,72px);border-radius:24px;background:#fff;box-shadow:0 0 0 1px rgba(11,18,56,.06);padding:0 28px}
+.ag-know summary{list-style:none;cursor:pointer;padding:22px 0;font:500 var(--size-body)/1.3 var(--font-text);display:flex;justify-content:space-between;align-items:center}
+.ag-know summary::-webkit-details-marker{display:none}
+.ag-know summary::after{content:"+";font:400 24px/1 var(--font-text);color:var(--p-accent);transition:transform .3s}
+.ag-know[open] summary::after{transform:rotate(45deg)}
+.ag-know ul{display:grid;grid-template-columns:1fr 1fr;gap:10px 40px;padding-bottom:18px}
+.ag-know li{font:400 var(--size-small)/1.5 var(--font-text);color:var(--p-soft);padding-left:18px;position:relative}
+.ag-know li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;background:#1f6bff}
+.ag-know .more{padding-bottom:22px}
+@media (max-width:700px){.ag-know ul{grid-template-columns:1fr}}
+/* fitted three ways: a graded photo of the job, the CAD tag on its clay chip */
+.ag-fitted{background:linear-gradient(#f3f7ff,#e9f0ff)}
+.ag-ways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:clamp(40px,5vw,72px)}
+.ag-ways li{background:#fff;border-radius:28px;padding:10px 10px 28px;box-shadow:0 0 0 1px rgba(11,18,56,.05),0 30px 50px -40px rgba(12,20,48,.4);transition:transform .5s var(--p-ease),box-shadow .5s}
+.ag-ways li:hover{transform:translateY(-4px);box-shadow:0 0 0 1px rgba(11,18,56,.06),0 40px 60px -36px rgba(12,20,48,.45)}
+.ag-ways h3,.ag-ways p{padding-inline:18px}
+.ag-ways h3{margin-top:22px}
+.ag-ways p{margin-top:8px!important;font:400 var(--size-small)/1.5 var(--font-text);color:var(--p-soft)}
+.ag-way-pic{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:4/3.2}
+.ag-way-pic picture img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--p-ease)}
+.ag-ways li:hover .ag-way-pic picture img{transform:scale(1.04)}
+.ag-way-cad{position:absolute;right:14px;bottom:14px;width:40%;padding:10px;border-radius:16px;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 #fff,0 14px 30px -14px rgba(11,18,56,.5);mix-blend-mode:normal}
+@media (max-width:900px){.ag-ways{grid-template-columns:1fr}}
+/* the tag names the trolley */
+.ag-names{background:#fff}
+.ag-names-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s-8);align-items:center}
+.ag-names-pic{aspect-ratio:4/4.4}
+.ag-chip{position:absolute;left:42%;top:46%;display:inline-flex;align-items:center;gap:8px;padding:8px 12px 8px 10px;border-radius:999px;background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);font:500 13px/1 var(--font-text);color:#0b1238;box-shadow:0 12px 30px -12px rgba(11,18,56,.55)}
+.ag-chip i{width:8px;height:8px;border-radius:50%;background:#1f6bff;box-shadow:0 0 0 4px rgba(31,107,255,.2)}
+.ag-names-copy .p-body{margin:28px 0 22px}
+@media (max-width:900px){.ag-names-grid{grid-template-columns:1fr}}
+/* datasheet */
+.ag-specs{background:#f3f7ff}
+.ag-spec-pic{justify-self:end;width:min(320px,70%)}
+.ag-spec-pic img{width:100%;mix-blend-mode:multiply}
+.ag-specs .more{margin-top:20px}
+.ag-faq{background:#fff}
+.ag-close{background:radial-gradient(70% 90% at 50% 100%,#dfe7ff,#f3f7ff 70%)}
+.ag-close a{background:linear-gradient(180deg,#5d51f6,#4232e4)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 18px 30px -14px rgba(75,61,240,.7)}

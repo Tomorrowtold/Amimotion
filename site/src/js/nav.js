@@ -83,7 +83,7 @@
   // reading: the capsule tucks away going down and comes back going up; on long pages it becomes a locator instead,
   // naming where you are and the section you read, with a hairline for how far (the page's cover or world colour)
   const main = d.querySelector('main'), world = d.body.dataset.world;
-  const H = world && !d.querySelector('.local') ? [...main.querySelectorAll('h2')].filter(x => !x.closest('.head,.close,.related,details,footer')) : [];
+  const H = world && !d.querySelector('.local,[data-rail]') ? [...main.querySelectorAll('h2')].filter(x => !x.closest('.head,.close,.related,details,footer')) : [];
   const where = top.querySelector('.where'), wc = where && where.querySelector('.w-crumb'), ws = where && where.querySelector('.w-sec');
   const crumbs = main.querySelectorAll('.crumbs a'), here = d.querySelector('.door.here > summary');
   if (wc) wc.textContent = crumbs.length ? crumbs[crumbs.length - 1].textContent : here ? here.textContent : '';
