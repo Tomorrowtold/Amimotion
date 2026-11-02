@@ -23,6 +23,7 @@ if (fine && !reduce) {
   addEventListener('wheel', (e) => {
     if (e.ctrlKey) return;
     e.preventDefault();
+    if (document.documentElement.classList.contains('sim-lock')) return; // the planner is open: the page stays put
     if (!wheeling) { target = cur = scrollY; }
     wheeling = true;
     target = clamp(target + e.deltaY * (e.deltaMode === 1 ? 32 : 1), 0, document.documentElement.scrollHeight - innerHeight);
@@ -209,7 +210,7 @@ addEventListener('load', () => idle(() => {
 /* ---------- plan your first bay: the first answer opens the real planner in a glass window ---------- */
 const simSec = $('#sim');
 if (simSec) {
-  new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) simSec.classList.add('in'); }), { threshold: .3 }).observe(simSec);
+  new IntersectionObserver((es) => es.forEach((e) => { simSec.classList.toggle('live', e.isIntersecting); if (e.isIntersecting && e.intersectionRatio >= .3) simSec.classList.add('in'); }), { threshold: [0, .3] }).observe(simSec);
   const win = simSec.querySelector('.sim-window'), frame = simSec.querySelector('.sim-frame');
   const dress = (doc) => {
     const st = doc.createElement('style');
@@ -220,14 +221,14 @@ if (simSec) {
     if (!doc.querySelector('script[data-pl]')) { const sc = doc.createElement('script'); sc.src = '../assets/studio/js/planner.js'; sc.dataset.pl = '1'; doc.body.appendChild(sc); }
   };
   const open = (v) => {
-    simSec.classList.add('open'); win.hidden = false;
+    simSec.classList.add('open'); win.hidden = false; document.documentElement.classList.add('sim-lock'); wheeling = false;
     const go = () => { try { const d = frame.contentDocument; dress(d); const pick = () => { const b = d.querySelector(`.diag-opt[data-v="${v}"]`); if (b) { if (b.getAttribute('aria-pressed') !== 'true') b.click(); } else setTimeout(pick, 120); }; pick(); } catch (e) {} };
     if (!frame.src) { frame.addEventListener('load', go, { once: true }); frame.src = './diagnostic/index.html'; } else go();
     if (!simSec.closest('.trio')) setTimeout(() => win.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }), 250);
   };
   simSec.querySelectorAll('.sim-opt').forEach((b) => b.addEventListener('click', () => open(b.dataset.v)));
-  simSec.querySelector('.sim-close').addEventListener('click', () => { simSec.classList.remove('open'); win.hidden = true; });
-  const shut = () => { simSec.classList.remove('open'); win.hidden = true; };
+  const shut = () => { simSec.classList.remove('open'); win.hidden = true; document.documentElement.classList.remove('sim-lock'); };
+  simSec.querySelector('.sim-close').addEventListener('click', shut);
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !win.hidden) shut(); });
   document.addEventListener('pointerdown', (e) => { if (!win.hidden && !win.contains(e.target) && !e.target.closest('.sim-opt')) shut(); });
 }
