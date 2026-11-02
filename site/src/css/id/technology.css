@@ -21,3 +21,10 @@
 #light-travels-about-30-cm+.lead{margin-top:0!important}
 #light-travels-about-30-cm+.lead{grid-row:2!important}
 .sec.has-lead>.lead{grid-row:2!important}@media (min-width:1024px){.sec.has-lead>.lead{grid-column:3 / span 8!important}}#light-travels-about-30-cm+.lead{grid-column:3 / span 8!important}
+/* the explainer: the step in view stays in ink with a located rule beside it; the others step back in colour only,
+   never below 4.5:1, so every step can still be read while the drawing follows the one in focus. */
+.js .explain.is-live .ex-steps li{opacity:1;position:relative;padding-left:var(--s-5)}
+.js .explain.is-live .ex-steps li::before{content:"";position:absolute;left:0;top:50%;height:4.5em;width:2px;border-radius:2px;background:var(--hairline);transform:translateY(-50%);transition:background-color 300ms var(--ease-ds)}
+.js .explain.is-live .ex-steps li.on::before{background:var(--located)}
+.js .explain.is-live .ex-steps li h3,.js .explain.is-live .ex-steps li p{transition:color 300ms var(--ease-ds)}
+.js .explain.is-live .ex-steps li:not(.on) h3,.js .explain.is-live .ex-steps li:not(.on) p{color:#646a87}
