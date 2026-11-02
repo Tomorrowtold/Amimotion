@@ -21,12 +21,12 @@ body.ds[data-world] .band.surface{background:color-mix(in srgb,var(--surface) 70
   background:var(--surface);border-radius:4px;box-shadow:0 1px 0 var(--hairline),0 20px 40px -32px rgba(11,18,56,.35);
   font-size:var(--size-small);line-height:1.6;color:var(--ink)}
 .ds .head .short-answer::before{content:"The short answer";display:block;margin-bottom:var(--s-2);
-  font:500 .75rem/1 ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--w-accent)}
+  font:500 .75rem/1 var(--font-text);letter-spacing:.08em;text-transform:uppercase;color:var(--w-accent)}
 .ds .head .short-answer::after{content:"";position:absolute;left:0;top:var(--s-5);bottom:var(--s-5);width:3px;border-radius:2px;background:var(--w-accent)}
 
 /* shared: section heads carry a short world-coloured rule, figures carry a quiet mono caption */
 .ds[data-world] .sec>h2::before{content:"";display:block;width:40px;height:3px;border-radius:2px;background:var(--w-accent);margin-bottom:var(--s-5)}
-.ds .w-fig figcaption,.ds .w-cap{font:500 .78rem/1.5 ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:.02em;color:var(--ink-soft);margin-top:var(--s-3)}
+.ds .w-fig figcaption,.ds .w-cap{font:500 .78rem/1.5 var(--font-text);letter-spacing:.02em;color:var(--ink-soft);margin-top:var(--s-3)}
 .ds .w-fig figcaption b{color:var(--ink);font-weight:500}
 
 /* ---------- hero archetype 1: POSTER (full-bleed graded photo, H1 in its calm lower third) ---------- */
@@ -43,7 +43,7 @@ body.ds[data-world] .band.surface{background:color-mix(in srgb,var(--surface) 70
 .w-poster .words .lede{grid-column:1 / span 5;margin:0}
 .w-poster .words .short-answer{grid-column:7 / -1;margin-top:0}
 .w-poster .words .more{grid-column:7 / -1}
-.w-poster .w-credit{position:absolute;right:var(--margin);bottom:var(--s-5);z-index:2;font:500 .72rem/1 ui-monospace,Menlo,monospace;letter-spacing:.06em;color:rgba(255,255,255,.7);text-transform:uppercase}
+.w-poster .w-credit{position:absolute;right:var(--margin);bottom:var(--s-5);z-index:2;font:500 .72rem/1 var(--font-text);letter-spacing:.06em;color:rgba(255,255,255,.7);text-transform:uppercase}
 
 /* ---------- hero archetype 2: DOCUMENT (learn: text column + tall captioned plate) ---------- */
 .head.w-document{align-items:end}
@@ -59,19 +59,19 @@ body.ds[data-world] .band.surface{background:color-mix(in srgb,var(--surface) 70
 .w-console{grid-column:1 / -1;margin:var(--s-7) 0 0;background:var(--w-band);color:#e9eef8;border-radius:10px;overflow:hidden;
   box-shadow:0 40px 80px -50px rgba(5,10,30,.6)}
 .w-console .bar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.08);
-  font:500 .75rem/1 ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(233,238,248,.6)}
+  font:500 .75rem/1 var(--font-text);letter-spacing:.08em;text-transform:uppercase;color:rgba(233,238,248,.6)}
 .w-console .bar i{width:8px;height:8px;border-radius:50%;background:#2fd27a;box-shadow:0 0 0 4px rgba(47,210,122,.15)}
 .w-console .bar span:last-child{margin-left:auto}
 .w-console .q{display:flex;gap:14px;align-items:flex-start;padding:26px 24px 10px;font:600 clamp(1.15rem,.9rem + 1vw,1.75rem)/1.3 var(--font-display);letter-spacing:-.01em;color:#fff}
-.w-console .q::before{content:"Ask";flex:none;margin-top:.35em;font:500 .7rem/1 ui-monospace,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8fb4ff;border:1px solid rgba(143,180,255,.4);border-radius:4px;padding:5px 6px}
+.w-console .q::before{content:"Ask";flex:none;margin-top:.35em;font:500 .7rem/1 var(--font-text);letter-spacing:.1em;text-transform:uppercase;color:#8fb4ff;border:1px solid rgba(143,180,255,.4);border-radius:4px;padding:5px 6px}
 .w-console .q .caret{display:inline-block;width:.5ch;height:1em;margin-left:2px;vertical-align:-.12em;background:#8fb4ff;animation:wblink 1s steps(2) infinite}
 .w-console ol{list-style:none;margin:0;padding:6px 24px 8px}
 .w-console li{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:14px 0;border-top:1px solid rgba(255,255,255,.07);
   font:500 .95rem/1.3 var(--font-text);transition:opacity .4s,transform .5s cubic-bezier(.16,1,.3,1)}
-.w-console li b{font:500 .82rem/1 ui-monospace,Menlo,monospace;color:#cfdcff;background:rgba(31,107,255,.18);border-radius:4px;padding:6px 8px}
-.w-console li em{font-style:normal;font:500 .9rem/1 ui-monospace,Menlo,monospace;color:#ffc35a;font-variant-numeric:tabular-nums}
+.w-console li b{font:500 .82rem/1 var(--font-text);color:#cfdcff;background:rgba(31,107,255,.18);border-radius:4px;padding:6px 8px}
+.w-console li em{font-style:normal;font:500 .9rem/1 var(--font-text);color:#ffc35a;font-variant-numeric:tabular-nums}
 .w-console li.pending{opacity:0;transform:translateY(8px)}
-.w-console .src{padding:12px 24px 18px;font:500 .74rem/1.5 ui-monospace,Menlo,monospace;color:rgba(233,238,248,.5)}
+.w-console .src{padding:12px 24px 18px;font:500 .74rem/1.5 var(--font-text);color:rgba(233,238,248,.5)}
 .w-console .chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 24px 22px}
 .w-console .chips button{cursor:pointer;font:500 .82rem/1.2 var(--font-text);color:#e9eef8;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:9px 14px;text-align:left}
 .w-console .chips button[aria-pressed="true"]{background:#e9eef8;color:var(--w-band);border-color:#e9eef8}
@@ -83,7 +83,7 @@ body.ds[data-world] .band.surface{background:color-mix(in srgb,var(--surface) 70
 .w-gate .act{display:flex;gap:14px;align-items:center;font:600 var(--size-lede)/1.25 var(--font-display)}
 .w-gate .lock{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--waiting) 22%,#fff);color:var(--waiting-edge)}
 .w-gate[data-open] .lock{background:color-mix(in srgb,#2fd27a 22%,#fff);color:#13753f}
-.w-gate .state{display:block;font:500 .78rem/1.4 ui-monospace,Menlo,monospace;color:var(--ink-soft);margin-top:4px}
+.w-gate .state{display:block;font:500 .78rem/1.4 var(--font-text);color:var(--ink-soft);margin-top:4px}
 .w-gate button{cursor:pointer;height:48px;padding:0 22px;border-radius:999px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font:500 var(--size-small)/1 var(--font-text)}
 .w-gate[data-open] button{background:var(--ink);color:#fff}
 
@@ -93,7 +93,7 @@ body.ds[data-world] .band.surface{background:color-mix(in srgb,var(--surface) 70
 .w-ink{stroke:var(--ink);stroke-width:1.5;fill:none}
 .w-ink-soft{stroke:var(--ink-soft);stroke-width:1;fill:none;stroke-dasharray:4 5}
 .w-loc{fill:var(--located)} .w-wait{fill:var(--waiting)}
-.w-lbl{font:500 13px ui-monospace,Menlo,monospace;fill:var(--ink-soft);letter-spacing:.04em}
+.w-lbl{font:500 13px var(--font-text);fill:var(--ink-soft);letter-spacing:.04em}
 .w-lbl-ink{font:600 15px var(--font-text);fill:var(--ink)}
 
 /* ---------- signature: DWELL lab (learn/dwell-time) ---------- */
@@ -101,10 +101,10 @@ body.ds[data-world] .band.surface{background:color-mix(in srgb,var(--surface) 70
 .w-lab svg{width:100%;height:auto;display:block;touch-action:pan-y}
 .w-lab .read{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-4);margin:var(--s-4) 0 var(--s-3);padding:0}
 .w-lab .read div{border-top:1px solid var(--hairline);padding-top:var(--s-3)}
-.w-lab .read dt{font:500 .72rem/1 ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.w-lab .read dt{font:500 .72rem/1 var(--font-text);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
 .w-lab .read dd{margin:6px 0 0;font:600 clamp(1.3rem,1rem + 1vw,1.9rem)/1 var(--font-display);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .w-lab .read dd.wait{color:var(--waiting-edge)}
-.w-lab label{display:block;font:500 .78rem/1.4 ui-monospace,Menlo,monospace;color:var(--ink-soft);margin-top:var(--s-3)}
+.w-lab label{display:block;font:500 .78rem/1.4 var(--font-text);color:var(--ink-soft);margin-top:var(--s-3)}
 .w-lab input[type=range]{width:100%;accent-color:var(--w-accent);margin:6px 0 0}
 
 /* ---------- signature: ROUTE (industries/warehousing, dock to stock) ---------- */

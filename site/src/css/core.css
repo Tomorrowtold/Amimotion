@@ -13,7 +13,7 @@
 .ds{
   --ground:#f0f6ff; --surface:#ffffff; --pressed:#e3eeff;
   --ink:#0b1238; --ink-soft:#3d4870; --ink-hover:#1c2350; --on-ink:#ffffff;
-  --action:#4b3df0; --action-hover:#3a2cd6; --on-action:#ffffff; --brand:#66a5fa; --waiting-edge:#a86d00;
+  --action:#4b3df0; --action-hover:#3a2cd6; --on-action:#ffffff; --brand:#66a5fa; --waiting-edge:#8f5c00;
   --hardware:#3a3d42; --link:#4b3df0; --focus:#4b3df0;
   --located:#1f6bff; --waiting:#ffb020;
   --hairline:rgba(11,18,56,.10);

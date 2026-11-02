@@ -183,6 +183,11 @@ def page_schema(meta, url, body, titles):
     g.extend(videos_of(body, full))
     ht = howto_of(meta, url, body)
     if ht: g.append(ht)
+    if url == "/learn/":   # the field guides, in order, as the shelf's list (each by its nav label)
+        guides = sorted(u for u in titles if u.startswith("/learn/") and u != "/learn/")
+        g.append({"@type": "ItemList", "@id": full + "#guides", "name": "Field guides", "numberOfItems": len(guides),
+                  "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": LABEL.get(u, titles[u]), "url": SITE + u} for i, u in enumerate(guides)]})
+        wp["mainEntity"] = {"@id": full + "#guides"}
     trail = re.search(r'<nav class="crumbs"[^>]*>(.*?)</nav>', body, re.S)
     if trail:   # the visible breadcrumb trail, so the BreadcrumbList matches what people read (nav sections, not URL folders)
         crumbs = [(text_of(t), u) for u, t in re.findall(r'<a href="([^"]+)">(.*?)</a>', trail.group(1))] + [(LABEL.get(url, titles.get(url, "")), url)]
