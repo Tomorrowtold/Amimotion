@@ -111,6 +111,12 @@ if (pv) new IntersectionObserver((es) => es.forEach((e) => {
 /* ---------- bar ---------- */
 const bar = $('#bar') || document.createElement('i'); let lastY = 0;
 
+/* ---------- the wire ---------- */
+const wire = $('#wire'), wps = wire ? [...wire.querySelectorAll('path')] : [];
+let wx0 = '';
+const wireShape = () => { const ph = innerWidth < 900; const x0 = ph ? 50 : 81.5, x1 = ph ? 50 : 69; const d = `M ${x0} -4 C ${x0} 38, ${x1} 52, ${x1} 104`; wps.forEach((p) => p.setAttribute('d', d)); };
+if (wire) { wireShape(); addEventListener('resize', wireShape); }
+
 /* ---------- main loop ---------- */
 function frame(t) {
   if (wheeling) { cur = lerp(cur, target, .11); if (Math.abs(target - cur) < .5) { cur = target; wheeling = false; } scrollTo(0, cur); }
@@ -122,6 +128,8 @@ function frame(t) {
   cx = lerp(cx, mx, .2); cy = lerp(cy, my, .2);
   cursor && (cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`);
 
+  if (wire && $('#hero').dataset.wx !== wx0) { wx0 = $('#hero').dataset.wx; wireShape(); }
+  if (wire) { const r = wire.getBoundingClientRect(); const k = reduce ? 1 : clamp((innerHeight * .92 - r.top) / (r.height + innerHeight * .25)); wire.style.setProperty('--wc', `${(1 - k) * 100}%`); }
   if (drawStory && storyOn) drawStory(t);
   if (pf && !reduce) { const r = pro.getBoundingClientRect(); const k = clamp(-r.top / (r.height - innerHeight) * 1.25 + .15); const e = 1 - Math.pow(1 - k, 3);
     pf.style.setProperty('--pi', `${(1 - e) * 18}%`); pf.style.setProperty('--pj', `${(1 - e) * 22}%`); pf.style.setProperty('--pr', `${(1 - e) * 28}px`); pf.style.setProperty('--ps', `${1.18 - e * .18}`); }

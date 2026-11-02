@@ -78,9 +78,9 @@ function ribbon(pts, w) {
 }
 // three routes a trolley might take before it stops (floor units; the tag sits at 0,0)
 const ROUTES = [
+  [[220, 440], [170, 270], [50, 210], [20, 80], [0, 0]],
   [[380, 300], [240, 120], [80, 160], [30, 60], [0, 0]],
   [[440, -220], [260, -170], [170, -40], [60, -24], [0, 0]],
-  [[220, 440], [170, 270], [50, 210], [20, 80], [0, 0]],
 ];
 
 export async function init(canvas, fallback, hero) {
@@ -129,11 +129,11 @@ export async function init(canvas, fallback, hero) {
   };
   size(); addEventListener('resize', size);
 
-  let px = 0, py = 0, tx = 0, ty = 0, on = true, t0 = performance.now(), lift = 0;
+  let wxSet = false, px = 0, py = 0, tx = 0, ty = 0, on = true, t0 = performance.now(), lift = 0;
   addEventListener('pointermove', (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, { passive: true });
   new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on) requestAnimationFrame(loop); }).observe(hero);
 
-  const CYCLE = 13, START = 1.2;
+  const CYCLE = 13, START = .5, FIRST = 6.5; // the first visit opens with the story already 80% told
   function loop(now) {
     if (!on) return;
     const t = (now - t0) / 1000;
@@ -154,13 +154,13 @@ export async function init(canvas, fallback, hero) {
     scene.environmentRotation.y = t * .06 + px * .8;
 
     // the story under the tag, on a loop: a path arrives, it is heard, then it waits
-    const lt = Math.max(0, t - START), ci = Math.floor(lt / CYCLE), c = (lt % CYCLE);
+    const lt = Math.max(0, t - START) + FIRST, ci = Math.floor(lt / CYCLE), c = (lt % CYCLE);
     paths.forEach((m, i) => { m.visible = i === ci % ROUTES.length; }); glows.forEach((m, i) => { m.visible = i === ci % ROUTES.length; });
     pathMat.uniforms.draw.value = t < START ? 0 : clamp(c / 2.6) * 1.01;
     floorMat.uniforms.ring.value = c > 2.6 && c < 5.6 ? (c - 2.6) / 1.5 : 0;
     floorMat.uniforms.wait.value = c > 3.2 ? eo((c - 3.2) / 8) * .86 : 0;
     const fade = t < START ? 0 : clamp(c / .4) * clamp((CYCLE - c) / .8);
-    pathMat.uniforms.fadeAll.value = fade * (1 - sp); floorMat.uniforms.fadeAll.value = (t < START ? clamp(t / START) : clamp((CYCLE - c) / .8) * .6 + .4) * (1 - sp * .8);
+    pathMat.uniforms.fadeAll.value = phone() ? 0 : fade; floorMat.uniforms.fadeAll.value = (t < START ? clamp(t / START) : clamp((CYCLE - c) / .8) * .6 + .4) * (1 - sp * .8);
 
     shadow.material.opacity = clamp(1 - tag.position.y / 80) * (1 - sp * .5);
     const d = dist;
