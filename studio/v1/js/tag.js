@@ -38,12 +38,12 @@ uniform float t,ring,wait,fadeAll;
 const float PI=3.14159265;
 void main(){
   float r=length(vP);
-  vec2 g=fract(vP/9.)-.5; float dotm=1.-smoothstep(.06,.11,length(g));
-  float field=dotm*.16*smoothstep(330.,60.,r)*smoothstep(52.,80.,r);
+  vec2 g=fract(vP/10.)-.5; float dotm=1.-smoothstep(.045,.085,length(g));
+  float field=dotm*.11*smoothstep(330.,60.,r)*smoothstep(52.,84.,r);
   vec3 col=vec3(.043,.07,.22); float a=field;
   // located: rings leave the tag
   for(int i=0;i<3;i++){float ph=fract(ring-float(i)*.33);float rr=72.+ph*170.;
-    float w=exp(-pow((r-rr)/.9,2.))*pow(1.-ph,1.6)*.42*step(.001,ring)*step(ring-float(i)*.33,1.);
+    float w=exp(-pow((r-rr)/.9,2.))*pow(1.-ph,1.8)*.3*step(.001,ring)*step(ring-float(i)*.33,1.);
     col=mix(col,vec3(.12,.42,1.),w/(a+w+1e-4));a+=w;}
   // waiting: an amber dial fills around the tag
   float ang=atan(vP.x,vP.y); float u=fract(ang/(2.*PI)+.5);
@@ -51,7 +51,8 @@ void main(){
   float track=band*.12*step(.001,wait);
   float arc=band*step(u,wait)*.95;
   float head=exp(-pow((r-84.)/2.6,2.))*exp(-pow((u-wait)*600.,2.))*step(.001,wait);
-  float wa=max(track,max(arc,head));
+  float glow=exp(-pow((r-84.)/7.,2.))*step(u,wait)*.07;
+  float wa=max(max(track,glow),max(arc,head));
   col=mix(col,vec3(1.,.69,.13),wa/(a+wa+1e-4));a+=wa;
   gl_FragColor=vec4(col,a*fadeAll);}`;
 
@@ -77,9 +78,9 @@ function ribbon(pts, w) {
 }
 // three routes a trolley might take before it stops (floor units; the tag sits at 0,0)
 const ROUTES = [
-  [[-420, 260], [-250, 210], [-170, 60], [-60, 40], [0, 0]],
   [[380, 300], [240, 120], [80, 160], [30, 60], [0, 0]],
-  [[-380, -220], [-200, -120], [-150, 40], [-50, 30], [0, 0]],
+  [[440, -220], [260, -170], [170, -40], [60, -24], [0, 0]],
+  [[220, 440], [170, 270], [50, 210], [20, 80], [0, 0]],
 ];
 
 export async function init(canvas, fallback, hero) {
@@ -106,7 +107,9 @@ export async function init(canvas, fallback, hero) {
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), floorMat); floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_Y; scene.add(floor);
 
   const pathMat = new THREE.ShaderMaterial({ vertexShader: PATH_VS, fragmentShader: PATH_FS, transparent: true, depthWrite: false, uniforms: { draw: { value: 0 }, fadeAll: { value: 1 } } });
-  const paths = ROUTES.map((r) => { const m = new THREE.Mesh(ribbon(r, 2.1), pathMat); m.position.y = FLOOR_Y + .05; m.visible = false; scene.add(m); return m; });
+  const glowMat = new THREE.ShaderMaterial({ vertexShader: PATH_VS, fragmentShader: PATH_FS.replace('gl_FragColor=vec4(c,', 'gl_FragColor=vec4(c,.16*'), transparent: true, depthWrite: false, uniforms: pathMat.uniforms });
+  const glows = ROUTES.map((r) => { const m = new THREE.Mesh(ribbon(r, 7), glowMat); m.position.y = FLOOR_Y + .03; m.visible = false; scene.add(m); return m; });
+  const paths = ROUTES.map((r) => { const m = new THREE.Mesh(ribbon(r, 1.5), pathMat); m.position.y = FLOOR_Y + .05; m.visible = false; scene.add(m); return m; });
 
   // contact shadow
   const shadowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(11,18,56,.55)'); g.addColorStop(.45, 'rgba(11,18,56,.16)'); g.addColorStop(1, 'rgba(11,18,56,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); })();
@@ -152,7 +155,7 @@ export async function init(canvas, fallback, hero) {
 
     // the story under the tag, on a loop: a path arrives, it is heard, then it waits
     const lt = Math.max(0, t - START), ci = Math.floor(lt / CYCLE), c = (lt % CYCLE);
-    paths.forEach((m, i) => { m.visible = i === ci % ROUTES.length; });
+    paths.forEach((m, i) => { m.visible = i === ci % ROUTES.length; }); glows.forEach((m, i) => { m.visible = i === ci % ROUTES.length; });
     pathMat.uniforms.draw.value = t < START ? 0 : clamp(c / 2.6) * 1.01;
     floorMat.uniforms.ring.value = c > 2.6 && c < 5.6 ? (c - 2.6) / 1.5 : 0;
     floorMat.uniforms.wait.value = c > 3.2 ? eo((c - 3.2) / 8) * .86 : 0;
