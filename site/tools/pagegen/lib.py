@@ -73,7 +73,8 @@ def hall(base, ratio, alt, sizes=None, eager=False):
     _, w, h = _HALL_SIZE.get(r, _HALL_SIZE["r43"])
     if base == "hall-trolley-43": w, h = 2400, 1800
     widths = _rungs(base)
-    if not widths: return None
+    if 1600 not in widths: return None   # a ladder without its 1600 rung is still being cut: the first screen would fetch 3840
+
     sizes = sizes or ("100vw" if r == "r169" else "(max-width:1023px) 100vw, 58vw")
     return f'<figure class="pic {r}-pic">{_hall_src(base, widths, w, h, alt, sizes, eager=eager)}</figure>'
 
@@ -99,7 +100,7 @@ NATIVE = {"hall-all": "r169", "hall-waits": "r169", "hall-waits-43": "r43", "hal
 
 def standin(ratio, sizes=None, note="", eager=False):
     r = RATIO.get(ratio, "r43")
-    opts = [o for o in STANDIN.get(r, STANDIN["r43"]) if _rungs(o[0])]
+    opts = [o for o in STANDIN.get(r, STANDIN["r43"]) if 1600 in _rungs(o[0])]
     if not opts: return None
     base, w, h, alt, alt_crop = opts[_turn[0] % len(opts)]; _turn[0] += 1
     crop = None if NATIVE.get(base) == r else f"crop {r}"
