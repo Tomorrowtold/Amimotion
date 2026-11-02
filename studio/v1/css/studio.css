@@ -840,3 +840,14 @@ html.sim-lock{overflow:hidden}
 .trio .sim-close{border-radius:12px;background:#fff;box-shadow:0 0 0 1px rgba(11,18,56,.08),0 6px 14px -8px rgba(11,18,56,.35)}
 .trio .sim-close:focus-visible{outline:2px solid #4b3df0;outline-offset:3px}
 @media (prefers-reduced-motion:reduce){.sim-orb{animation:none}.sim-path{transition:none;stroke-dashoffset:0}.trio .sim-window{animation:none}.sim-opt{transition:none}}
+
+/* ===== team polish: a clean white card, natural portraits, quiet type ===== */
+.trio .team{background:linear-gradient(170deg,#ffffff 0,#f7f9fd 100%)!important;box-shadow:0 0 0 1px rgba(11,18,56,.05),0 1px 2px rgba(11,18,56,.04),0 24px 48px -36px rgba(24,32,96,.28)!important}
+.tm-pic img{filter:grayscale(.35) contrast(1.04) brightness(1.02) saturate(.9)}
+.tm-pic::before{background:linear-gradient(180deg,rgba(156,194,255,.0) 40%,rgba(75,61,240,.5) 100%);mix-blend-mode:soft-light;opacity:.5}
+.tm-pic::after{background:radial-gradient(100% 80% at 50% 18%,transparent 55%,rgba(11,18,56,.16))}
+.tm-pic:hover img,.tm-pic:focus-within img{filter:grayscale(0) contrast(1.02)}
+.trio .tm-pic{box-shadow:0 0 0 1px rgba(11,18,56,.06),0 18px 30px -24px rgba(24,32,96,.45)}
+.trio .tm-name{letter-spacing:-.02em}
+.trio .tm-role{color:#5a6488;letter-spacing:.005em}
+.trio .team-h{letter-spacing:-.045em;text-wrap:balance}
