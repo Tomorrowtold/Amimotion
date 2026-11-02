@@ -329,7 +329,9 @@
         c.globalAlpha = .4; c.strokeRect(px(X), px(Y), Math.round(ZW), Math.round(ZH)); c.globalAlpha = 1;
         if (ZW > 54) label(c, n, X + 6, Y + 13, { size: 9, color: i === hot ? C.ink : C.soft });
       });
-      dots.forEach(([x, y], i) => { const k = outQ(RM.matches ? 1 : (now - t0 - 200 - i * 70) / 320); c.globalAlpha = Math.max(0, k); c.fillStyle = C.loc; c.fillRect(ox + x * sx - 5, oy + y * sy - 3 - (1 - k) * 8, 10, 6); });
+      // a dot never sits on its zone's label: on a short sheet it drops below the label, inside the zone
+      const dotY = (x, y) => { const z = DIAGZ.find(([zx, zy, zw, zh]) => x >= zx && x <= zx + zw && y >= zy && y <= zy + zh); if (!z || z[2] * sx <= 54) return oy + y * sy; const top = oy + z[1] * sy + 22, bot = oy + (z[1] + z[3]) * sy - 6; return Math.min(bot, Math.max(top, oy + y * sy)); };
+      dots.forEach(([x, y], i) => { const k = outQ(RM.matches ? 1 : (now - t0 - 200 - i * 70) / 320); c.globalAlpha = Math.max(0, k); c.fillStyle = C.loc; c.fillRect(ox + x * sx - 5, dotY(x, y) - 3 - (1 - k) * 8, 10, 6); });
       const [x, y, zw, zh] = DIAGZ[hot], k = outQ(age - .8);
       if (k > 0) { c.globalAlpha = k; c.strokeStyle = C.act; c.setLineDash([5, 3]); c.lineWidth = 1.25; c.strokeRect(ox + x * sx - 4, oy + y * sy - 4, zw * sx + 8, zh * sy + 8); c.setLineDash([]); c.globalAlpha = 1; }
       label(c, 'your floor, as you answer', 12, 18, { size: 12 });
