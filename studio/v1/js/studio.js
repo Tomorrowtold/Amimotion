@@ -241,3 +241,60 @@ if (simSec) {
     v.addEventListener('playing', () => card.classList.add('lit'), { once: true });
   });
 })();
+
+/* ---------- notes: seven guides on a spiral; scroll turns the helix, one guide rests in front at a time ---------- */
+(() => {
+  const sec = $('.bs'); if (!sec) return;
+  const cards = $$('.bs-card', sec), posts = $$('.bs-post', sec), ticks = $$('.bs-rail i', sec), helix = $('.bs-helix', sec);
+  const N = cards.length, STEP = 50 * Math.PI / 180;
+  const lowData = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
+  const still = /[?&]still/.test(location.search), fm = location.search.match(/[?&]bs=([\d.]+)/), fixed = fm ? +fm[1] : null;
+  // rest at each guide: the middle half of every scroll segment turns, the rest holds
+  const hold = (t) => { const i = Math.floor(t), f = t - i, g = clamp((f - .22) / .56); return i + g * g * (3 - 2 * g); };
+  let cur = -1, target = 0, p = 0, active = -1, seen = false, cw = 0, ch = 0;
+  const measure = () => { const r = cards[0].getBoundingClientRect(); cw = cards[0].offsetWidth; ch = cards[0].offsetHeight; };
+  const progress = () => { const r = sec.getBoundingClientRect(), seg = (sec.offsetHeight - innerHeight) / Math.max(1, N - 1);
+    return clamp(-r.top / seg, 0, N - 1); };
+  const place = () => {
+    const phone = innerWidth <= 860, R = cw * (phone ? .62 : .82), DY = ch * (phone ? .5 : .46);
+    cards.forEach((c, i) => {
+      const d = i - p, a = d * STEP, ad = Math.abs(d), front = (Math.cos(a) + 1) / 2;
+      const x = R * Math.sin(a), z = R * (Math.cos(a) - 1) - ad * 30, y = d * DY;
+      c.style.setProperty('--x', x.toFixed(1) + 'px'); c.style.setProperty('--y', y.toFixed(1) + 'px'); c.style.setProperty('--z', z.toFixed(1) + 'px');
+      c.style.setProperty('--a', (a * .3 * 180 / Math.PI).toFixed(2) + 'deg');
+      c.style.setProperty('--o', (clamp(.34 + .66 * front) * clamp(1.9 - ad * .28)).toFixed(3));
+      c.style.setProperty('--d', clamp((1 - front) * .55 + Math.min(ad, 1) * .2, 0, .75).toFixed(3));
+      c.style.zIndex = String(Math.round(front * 100) + (ad < .5 ? 50 : 0));
+      c.style.pointerEvents = ad < .3 ? 'auto' : 'none';
+    });
+    const k = Math.round(p);
+    if (k !== active) {
+      active = k;
+      posts.forEach((el, i) => el.classList.toggle('on', i === k));
+      ticks.forEach((el, i) => el.classList.toggle('on', i === k));
+      cards.forEach((c, i) => {
+        const v = c.querySelector('video'), img = c.querySelector('img'), near = Math.abs(i - k);
+        if (img) c.style.setProperty('--kb', near === 0 ? '1.12' : '1.04');
+        if (!v || lowData || reduce) return;
+        if (near <= 1 && !v.src) { v.src = v.dataset.src; v.load(); }
+        if (near === 0 && seen) { const pr = v.play(); if (pr) pr.catch(() => {}); } else if (v.src) v.pause();
+      });
+    }
+  };
+  let last = 0;
+  const tick = (now) => {
+    const dt = Math.min(.1, last ? (now - last) / 1000 : .016); last = now;
+    target = fixed != null ? fixed : hold(progress());
+    p = (reduce || still) ? target : lerp(p, target, 1 - Math.exp(-dt * 7.5));
+    if (Math.abs(p - target) < .0005) p = target;
+    if (p !== cur) { cur = p; place(); }
+    if (seen) requestAnimationFrame(tick);
+  };
+  measure(); place();
+  addEventListener('resize', () => { measure(); cur = -1; active = -1; place(); });
+  new IntersectionObserver((es) => {
+    const was = seen; seen = es[0].isIntersecting;
+    if (seen && !was) { active = -1; last = 0; requestAnimationFrame(tick); }
+    if (!seen) cards.forEach((c) => { const v = c.querySelector('video'); if (v && v.src) v.pause(); });
+  }, { rootMargin: '100px' }).observe(sec);
+})();
