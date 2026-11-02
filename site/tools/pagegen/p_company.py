@@ -99,8 +99,8 @@ write("/tools/", "Free RTLS planning tools",
       ])
 
 # ---------------- diagnostic ----------------
-home = (Path(__file__).resolve().parents[2] / "src" / "pages" / "index.html").read_text()
-diag = home[home.index("<div class=\"diag-shell dark\" data-diag>"):home.index("<div class=\"tools\">")].rstrip()
+# the diagnostic markup, kept from the old homepage (the new homepage links here instead of embedding it)
+diag = (Path(__file__).resolve().parent / "diag_block.html").read_text().rstrip()
 write("/diagnostic/", "WIP visibility floor diagnostic",
       "Six questions about how work moves on your floor. Your plant builds itself as you answer, and you get a visibility profile and a pilot scope that fits.",
       [
@@ -354,7 +354,7 @@ write("/trust/", "Scope and evidence: what AmIMotion’s claims rest on",
           head("Clear claims.", "Clear boundaries.", "What each claim on this site rests on, and what your floor still has to show.", trail=[("Scope and evidence", None)], actions=(),
                short="AmIMotion’s product figures, such as down to ±10 cm in 3D (with AmIMo anchors) and 1 to 3 years of tag battery (typical), come from its published brochure and are indicative. A pilot measures them on your floor."),
           section(tiles([("Product facts", "From the brochure", "Figures are indicative, not independently measured. Confirm hardware revision, software version and setup in your evaluation."),
-                         ("Pictures and films", "Made to explain", "Renders, films and scenes on this site explain the product. Films carry a Simulation label. They are not customer sites or live data."),
+                         ("Pictures and films", "Made to explain", "Pictures, films and scenes on this site explain the product. They are not customer sites or live data."),
                          ("What location does not prove", "Its limits", "Which job is on a trolley, that work is done, why something waited, or that an action is allowed. Those need agreed links, rules and permissions."),
                          ("Standards", "Built on the specifications", "AmIMotion is built on the FiRa and omlox specifications. This site does not claim FiRa or omlox certification."),
                          ("Interfaces and hosting", "Confirmed per site", "REST, MQTT, WebSocket and an omlox hub interface, on-premise or cloud. Connectors and responsibilities are confirmed per site."),
@@ -394,3 +394,46 @@ write("/404.html", "Page not found",
       [
           head("This page", "has moved.", "We’d rather say so than guess. Try the homepage or the platform.", dark=True, actions=(("Return home", "/"), ("Platform", "/platform/"))),
       ], tone="dark", noindex="true")
+
+
+# ---------------- stubs for nav targets that homepage-final.md defines and the site lacked (round 04) ----------------
+# Minimal pages. Every line is a locked line from homepage-final.md (screens 3 and 6, nav lines), so no new claim is made.
+NAV = json.loads((Path(__file__).resolve().parents[2] / "src" / "data" / "nav.json").read_text())
+_start = next(s for s in NAV["sections"] if s["url"] == "/start/")
+write("/start/", "Start small: one bay first",
+      "Start with one bay. How a pilot runs, how to buy, and the tools and guides that help you plan your first bay with AmIMotion.",
+      [
+          head("Start with one bay.", None, "A pilot follows one flow in one bay or line. You choose the flow.",
+               short="AmIMotion pilots start in one bay or line. You see your own waits in one bay, and prove the numbers, before you decide on more. "
+                     "Then grow plant-wide on the same AmIHub, without re-fitting the first bay.",
+               trail=[("Start small", None)], actions=(("Book a call", "/contact/"), ("Plan your first bay", "/diagnostic/"))),
+          section(vp("Start small."), links([(u, l, line) for l, u, line in _start["items"]])),
+      ])
+
+write("/how-to-buy/", "How to buy AmIMotion: call, NDA pack, survey, pilot",
+      "What you buy from AmIMotion: AmIGo tags, AmIMo anchors and AmIHub, plus our survey and an anchor plan for your floor. One contract.",
+      [
+          head("How to buy.", None, "Call, NDA pack, survey, pilot.",
+               short="What you buy. AmIGo tags, AmIMo anchors and AmIHub, plus our survey and an anchor plan for your floor. Designed and built in India, with local stock and local engineers on your site. "
+                     "One contract and one support line cover every layer.",
+               trail=[("How to buy", None)], actions=(("Book a call", "/contact/"),)),
+          section(vp("Four steps."),
+                  steps([("Call", "The call is a live demo on real AmIHub data, not slides."),
+                         ("NDA pack", "After the first call, we share datasheets, architecture, prices and pilot options under NDA."),
+                         ("Survey", "We survey your floor and set the anchor count."),
+                         ("Pilot", "A pilot follows one flow in one bay or line. You see your own waits in one bay, and prove the numbers, before you decide on more.")]),
+                  prose("<p>Your team or your integrator can build on it at any layer, through open interfaces. AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO.</p>"),
+                  links([("/pilot/", "How a pilot runs", "One flow, one bay"), ("/diagnostic/", "Plan your first bay", "Six questions, a plan back"), ("/contact/", "Book a call", "Talk to the team")])),
+      ])
+
+write("/trust/people/", "People and privacy: what a pilot tags",
+      "An AmIMotion pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project, with its own policy.",
+      [
+          head("People and privacy.", None, "What a pilot tags, and why.",
+               short="The AmIMotion pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project. It would need its own policy. You also set how long the map keeps its history.",
+               trail=[("Trust and data", "/trust/"), ("People and privacy", None)], actions=(("Book a call", "/contact/"),)),
+          section(vp("On the trolley, not the person."),
+                  prose("<p>A small tag rides on each trolley, bin and tool. It goes on the trolley, not on the person pushing it.</p>"
+                        "<p>You set who sees what, by role. Why it waited is for your team to say.</p>"),
+                  links([("/trust/", "Trust and data", "Where your data lives"), ("/pilot/", "How a pilot runs", "One flow, one bay")])),
+      ])

@@ -154,7 +154,7 @@ def film(n, caption=True):
     name, desc, iso, mmss = FILMS[n]
     v = (f'<div class="film"><video controls muted playsinline preload="none" poster="/assets/film/v6/film0{n}-poster.jpg" '
          f'data-name="{e(name)}" data-description="{e(desc)}" data-duration="{iso}" data-date="2026-10-28" aria-label="{e(name)}">'
-         f'<source src="/assets/film/v6/film0{n}.mp4" type="video/mp4"></video><span class="film-label">Simulation</span></div>')
+         f'<source src="/assets/film/v6/film0{n}.mp4" type="video/mp4"></video></div>')
     if not caption: return v
     return f'<figure class="film-fig" data-reveal>{v}<figcaption><b>{e(name)}</b><span>{mmss}</span></figcaption></figure>'
 
