@@ -5,3 +5,5 @@
 .points.c2>li{background:var(--surface);border-radius:4px;padding:var(--s-6);box-shadow:0 1px 0 rgba(28,27,42,.06)}
 .points.c2 h3{font-family:var(--font-serif);font-weight:400;font-size:1.7rem!important;letter-spacing:-.01em!important}
 @media (max-width:1023px){.related.tiles ul{grid-template-columns:1fr 1fr!important}}
+/* the cover tiles' one-line captions sit under the cover, on the paper: ink-soft, not the cover's white */
+.ds[data-world] .related.tiles li[style*="--cv"] span{display:block;margin-top:var(--s-3);color:var(--ink-soft)!important;font-size:max(var(--size-small),1rem);line-height:1.4}
