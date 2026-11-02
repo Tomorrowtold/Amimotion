@@ -370,8 +370,6 @@
 .hb-close p>span:first-child{background:linear-gradient(180deg,#fff,rgba(255,255,255,.7));-webkit-background-clip:text;background-clip:text;color:transparent}
 .hb-close .hb-pill{margin-top:22px;background:linear-gradient(90deg,#c9cfdb 0%,#eef1f7 55%,#fff 100%)!important;height:54px!important;padding:0 28px!important;font-size:13px!important}
 .hb-light.low{position:absolute;left:50%;top:auto;bottom:-4%;width:max(1400px,120%);transform:translateX(-50%);z-index:0;-webkit-mask:linear-gradient(transparent 30%,#000 70%);mask:linear-gradient(transparent 30%,#000 70%)}
-/* the shared footer, in AmIHub's dark, so the page does not end on a white flash */
-.site-amihub .foot{--surface:#07080b;--ink:#eef1f8;--ink-soft:rgba(225,231,244,.6);--hairline:rgba(255,255,255,.08);--link:#9dbbff;background:#07080b;color:#eef1f8;border-top-color:rgba(255,255,255,.06);color-scheme:dark}
-.site-amihub .foot img{border-radius:14px;filter:brightness(.92) saturate(.9)}
-.site-amihub .foot dt{color:rgba(225,231,244,.5)}
-.site-amihub .foot dd a{color:#9dbbff}
+/* the shared footer on AmIHub: black clay with the hub's blue light coming down, so the page ends in its own dark */
+.site-amihub .ft-card{--ft-ground:linear-gradient(180deg,#0b0d14 0%,#07080b 60%,#050608 100%);--ft-beam:rgba(77,124,255,.30);--ft-beam2:rgba(120,160,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 0 0 1px rgba(255,255,255,.04)}
+.site-amihub .ft-bay::after{background:#0a0b10}

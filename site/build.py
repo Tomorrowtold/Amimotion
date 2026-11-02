@@ -341,41 +341,51 @@ def header_html(url="/", world=None):
             '<span class="prog" aria-hidden="true"><i></i></span></div>\n</header>\n<div class="scrim" aria-hidden="true"></div>')
 
 
-# Footer jobs grid (M15, M19): the twelve role lines of homepage-final.md screen 7, in four columns, each column under
-# one camera A crop of the model hall (stand-ins cut from hall-all until render job R8 lands). The crops are decorative.
-JOB_GROUPS = [
-    ("inspection", ("Shift supervisors", "Lean and IE leads", "Safety and EHS")),
-    ("staging", ("Production and planning", "MES and ERP owners", "Group operations and digital")),
-    ("press", ("Plant heads", "Owners and MDs", "Procurement and finance")),
-    ("racks", ("Maintenance and OT", "IT and security", "Developers and integrators")),
-]
-
-# round 11 R8 job crops: the manifest's alt for each (team/rounds/11-renders/manifest.md)
-JOB_ALT = {
-    "inspection": "A model inspection queue: three trolleys waiting on amber pads.",
-    "staging": "A model staging lane: one pallet waiting on an amber pad beside a blue path.",
-    "press": "A model press, with a trolley just out of it on a blue line.",
-    "racks": "Model rack rows and a forklift at the end of an aisle, with blue lines where things went.",
-}
+# The footer (thread "Redesign the site footer", 2 Nov 2026). One night-indigo card that closes every page the same way:
+# the line the site opens on, the one clay button, then the whole site drawn as a floor plan: five doors are five bays
+# with an anchor mark at each corner, a located-blue trail and a tag that rests on the bay of the page you are reading
+# and glides to the bay you point at (CSS :has, no script). "I'm here as" turns the twelve job lines into one row.
+# The entity paragraph stays word for word (GEO); the wordmark is the logo's own vector, cut by the card's edge.
+ROLE_ORDER = ("Plant heads", "Owners and MDs", "Production and planning", "Shift supervisors", "Lean and IE leads",
+              "Safety and EHS", "Maintenance and OT", "MES and ERP owners", "IT and security", "Group operations and digital",
+              "Procurement and finance", "Developers and integrators")
 
 
-def footer_html():
-    """Screen 7 of homepage-final.md: start from your job, four columns with the nav labels, the entity paragraph."""
+def door_index(url, world):
+    """Which bay the tag rests on: the page's world door, else the section that lists the URL, else none (home)."""
+    lab = WORLD_DOOR.get(world) if world else None
+    for i, s in enumerate(NAV["sections"]):
+        if s["label"] == lab or (lab is None and url != "/" and (url == s["url"] or any(u == url for _, u, _ in s["items"]))):
+            return i
+    return None
+
+
+def footer_html(url="/", world=None):
     roles = dict(NAV["roles"])
-    assert sorted(r for _, g in JOB_GROUPS for r in g) == sorted(roles), "every role line sits in one job column"
-    def role(r):
-        return f"<div><dt>{html.escape(r)}</dt><dd>" + ' <span aria-hidden="true">·</span> '.join(A(u, l) for l, u in roles[r]) + "</dd></div>"
-    jobs = "".join(f'<li><picture><source type="image/avif" srcset="/assets/home/jobs/{c}-600.avif 600w, /assets/home/jobs/{c}-1200.avif 1200w" sizes="(max-width:560px) 100vw, (max-width:1023px) 50vw, 25vw">'
-                   f'<img src="/assets/home/jobs/{c}-600.webp" srcset="/assets/home/jobs/{c}-600.webp 600w, /assets/home/jobs/{c}-1200.webp 1200w" sizes="(max-width:560px) 100vw, (max-width:1023px) 50vw, 25vw" width="1200" height="900" loading="lazy" decoding="async" alt="{JOB_ALT[c]}"></picture>'
-                   f'<dl class="roles">{"".join(role(r) for r in g)}</dl></li>' for c, g in JOB_GROUPS)
-    cols = "".join(f'<div>{A(s["url"], s["label"], " class=\"hub\"")}<ul>' + "".join(f"<li>{A(u, l)}</li>" for l, u, _ in s["items"]) + "</ul></div>" for s in NAV["sections"])
-    return (f'<footer class="foot ds">\n<h2>Start from your job.</h2>\n<ul class="jobs">{jobs}</ul>\n'
-            f'<nav class="foot-cols" aria-label="All pages">{cols}</nav>\n<div class="foot-base">'
-            f'<a class="logo" href="/" aria-label="AmIMotion home">{part("logo.html")}</a>\n'
-            f'<p class="entity">{html.escape(ENTITY["long"])}</p>\n'
-            f'<p class="contact"><a href="mailto:sales@amimotion.com">sales@amimotion.com</a> <span aria-hidden="true">·</span> <a href="/privacy/">Privacy</a></p>\n'
-            '<p class="legal">NXP and Trimension are trademarks of NXP B.V. FiRa and omlox are trademarks of their owners. Specifications are indicative. Final datasheets are shared under NDA.</p>\n'
-            "</div></footer>")
+    assert sorted(ROLE_ORDER) == sorted(roles), "every job line has a place in the footer row"
+    word = re.search(r'<svg class="word" viewBox="([^"]+)"[^>]*>(.*?)</svg>', part("logo.html"), re.S)
+    vb, paths = word.group(1), word.group(2).replace('fill="currentColor"', 'fill="url(#ft-wg)"')
+    at = door_index(url, world)
+    bays = "".join(
+        f'<div class="ft-bay"{" data-here" if i == at else ""}>{A(s["url"], s["label"], " class=\"ft-door\"")}<ul>'
+        + "".join(f"<li>{A(u, l)}</li>" for l, u, _ in s["items"]) + "</ul></div>" for i, s in enumerate(NAV["sections"]))
+    chips = "".join(f'<li>{A(roles[r][0][1], r)}</li>' for r in ROLE_ORDER)
+    style = f' style="--at:{at}"' if at is not None else ""
+    return (f'<footer class="ft ds"{style}>\n<div class="ft-card">\n<div class="ft-light" aria-hidden="true"></div>\n'
+            '<div class="ft-close"><h2 class="ft-line"><span>Where work is.</span> <em>Where it waits.</em></h2>\n'
+            '<div class="ft-act"><a class="ft-clay" href="/contact/">Book a call</a><a class="ft-glass" href="/diagnostic/">Plan your first bay</a></div></div>\n'
+            f'<nav class="ft-map" aria-label="All pages"><div class="ft-route" aria-hidden="true"><i class="ft-trail"></i><i class="ft-tag"></i></div>{bays}</nav>\n'
+            f'<nav class="ft-roles" aria-label="Start from your job"><p>I\'m here as</p><ul>{chips}</ul></nav>\n'
+            '<div class="ft-base">'
+            f'<p class="ft-entity">{html.escape(ENTITY["long"])}</p>\n'
+            '<address class="ft-reach"><a href="mailto:sales@amimotion.com">sales@amimotion.com</a><span>Locatepro Technologies Pvt Ltd</span><span>Bengaluru, India</span></address>\n'
+            '<ul class="ft-small">' + "".join(f"<li>{A(u, l)}</li>" for l, u in (("Privacy", "/privacy/"), ("Trust and data", "/trust/"), ("People and privacy", "/trust/people/"))) +
+            '<li><a href="https://www.youtube.com/@locateprotech" rel="me noopener">YouTube</a></li><li><a href="/llms.txt">For AI assistants</a></li></ul>\n'
+            f'<p class="ft-legal">© {TODAY[:4]} Locatepro Technologies Pvt Ltd. NXP and Trimension are trademarks of NXP B.V. FiRa and omlox are trademarks of their owners. Specifications are indicative. Final datasheets are shared under NDA.</p>'
+            '</div>\n'
+            f'<div class="ft-word" aria-hidden="true"><svg viewBox="{vb}" preserveAspectRatio="xMidYMin meet"><defs><linearGradient id="ft-wg" x1="0" y1="0" x2="0" y2="1">'
+            '<stop offset="0" stop-color="#e4e9ff" stop-opacity=".22"/><stop offset=".45" stop-color="#9aabff" stop-opacity=".08"/><stop offset=".9" stop-color="#6b7cff" stop-opacity="0"/></linearGradient></defs>'
+            f'{paths}</svg></div>\n</div></footer>')
 
 
 NAV_JS = '<script src="/assets/js/nav.js" defer></script>'
@@ -489,7 +499,7 @@ def build():
     public = []
     for url, (meta, body) in pages.items():
         header = header_html(url, meta.get("world"))
-        page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main">\n{body}\n</main>\n' + footer_html() + "\n" + scripts(meta) + "\n</body>\n</html>\n"
+        page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
         out.parent.mkdir(parents=True, exist_ok=True); out.write_text(page)
