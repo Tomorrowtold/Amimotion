@@ -1,9 +1,18 @@
-import json, re
+"""Start small and About us: the buying squad's round 07 copy (team/rounds/07-pages/buying/*.md), fifteen pages:
+/start/, /pilot/, /how-to-buy/, /diagnostic/, /tools/ and its three tools, /contact/, /company/, /trust/,
+/trust/people/, /privacy/, /films/ and /404. /what-is-amimotion/ and /industrial-spatial-intelligence/ are in
+p_platform.py (product squad); /resources/, /faq/ and /glossary/ are in p_learn.py (learn squad)."""
 from pathlib import Path
 from lib import *
 
-ENTITY = json.loads((Path(__file__).resolve().parents[2] / "src" / "data" / "entity.json").read_text())
-LONG = ENTITY["long"]
+START = ("Start small", "/start/")
+ABOUT = ("About us", "/company/")
+CAM = "Model-hall still, build_hall.py camera A, t = 0.0"
+BAY_ALT = "The model factory floor, all pale except one inspection bay shown in colour with its paths, its waits and its two anchors."
+HUB_SLOT = lambda: hallslot("hall-waits-32", f"{CAM}: the hero poster crop of the inspection bay, the queue on amber, everything else pale. Never called AmIHub's screen (O5).", "still",
+                        "A model factory floor with paths in blue and waits in amber.")
+TALK = ("Rather talk it through?", "The call is a live demo on real AmIHub data, not slides.", (("Book a call", "/contact/"),))
+CARD = "(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw"
 
 
 def seg(name, opts, stack=False):
@@ -23,36 +32,53 @@ def numf(name, label, val, small=None, step="1"):
             + (f"<small>{small}</small>" if small else "") + "</label>")
 
 
-# ---------------- tools ----------------
+P = lambda *xs: "".join(f"<p>{x}</p>" for x in xs)
+
+# ---------------- /tools/anchors/ ----------------
 write("/tools/anchors/", "UWB anchor estimator: a first range for your floor",
-      "Enter your floor size and racking to get a first range of UWB anchors before a site survey. Assumptions shown. AmIMo reaches ~50 m line of sight.",
+      "Enter your floor size and racking to get a first range of AmIMo anchors before a site survey. The tool's own assumptions are shown next to its answer.",
       [
-          head("How many anchors?", "A first range.", "Your floor in, a first anchor range out, before anyone visits. A site survey sets the real number.",
-               short="AmIMotion plans the final anchor count from a site survey. This estimator gives a first budget range from floor size and racking, using planning grids of about 25 m for an open hall, 18 m with some racking and 12 m with dense high racking. "
-                     "An AmIMo anchor reaches about 50 m in line of sight (indicative, site-dependent).",
-               trail=[("Tools", "/tools/"), ("Anchor estimator", None)], actions=()),
+          head("How many anchors?", "A first range, before the survey.", "Enter your floor and what stands on it. You get a range to plan a budget around. An AmIMotion site survey sets the real count.",
+               short="AmIMotion sets the final anchor count from a site survey, because racking and steel change how far each AmIMo anchor reaches. This estimator gives a first range from your floor size, ceiling height and racking. "
+                     "It lays a planning grid over the floor: about 25 m apart for an open hall, 18 m with some racking and 12 m with dense high racking. Each AmIMo anchor reaches about 50 m around it in clear line of sight.",
+               trail=[START, ("How many anchors you need", None)]),
           section(
-              '<div class="tool-shell"><form class="tool-form" data-tool="anchors" aria-label="Anchor estimator">'
+              '<div class="tool-shell"><form class="tool-form" data-tool="anchors" aria-label="How many anchors you need">'
               + rng("a-len", "flen", "Floor length", 10, 400, 5, 100, " m") + rng("a-wid", "fwid", "Floor width", 10, 300, 5, 50, " m")
               + rng("a-h", "height", "Ceiling height", 3, 20, 1, 9, " m")
               + '<fieldset class="field"><legend>What is on the floor?</legend>' + seg("env", [("mixed", "Some racking", None), ("open", "Open hall", None), ("dense", "Dense high racking", None)]) + "</fieldset>"
               + '<fieldset class="field"><legend>Position needed</legend>' + seg("dim", [("3d", "3D, with height", None), ("2d", "2D, floor only", None)]) + "</fieldset>"
-              + '</form><div class="tool-out" aria-live="polite"><p class="out-name">First budget range</p><p class="big" data-out="range">—</p>'
-              '<div class="lines"><p>Floor area <b data-out="area">—</b></p><p>Planning grid <b data-out="grid">—</b></p><p>Floor type <b data-out="env">—</b></p><p>Fewest in view for this mode <b data-out="min">—</b></p></div>'
-              '<p class="note">A planning estimate from this site’s rule-of-thumb grids, not a quote or an AmIMotion specification. Angle of arrival can need fewer anchors; aisles between high racks can need more. A site survey sets the count.</p>'
-              + btns((("Plan a site survey", "/contact/"), ("Anchor planning, explained", "/learn/anchor-planning/")), True) + "</div></div>"),
-          close(),
-      ], scripts="tools")
+              + '</form><div class="tool-out" aria-live="polite"><p class="out-name">First range</p><p class="big" data-out="range">—</p>'
+              '<div class="lines"><p>Floor area <b data-out="area">—</b></p><p>Planning grid <b data-out="grid">—</b></p><p>Floor type <b data-out="env">—</b></p><p>Lowest count this tool gives <b data-out="min">—</b></p></div>'
+              "<p class=\"note\">A planning estimate from this page's own grid. It is not a quote and not an AmIMotion specification. Angle of arrival can mean fewer anchors. Aisles between high racks can mean more. The survey sets the count.</p>"
+              + btns((("Book a call", "/contact/"), ("Anchor planning, explained", "/learn/anchor-planning/"))) + "</div></div>", label="How many anchors you need"),
+          section(vp("How the estimate works.", lede="Three assumptions, all of them this page's own."),
+                  tiles([("A grid over your floor", "The tool lays a square grid over the floor and counts its corners. The grid is about 25 m for an open hall, 18 m with some racking and 12 m with dense high racking. These spacings are planning assumptions, not a figure from an AmIMotion datasheet."),
+                         ("A range, not a number", "It shows a fifth under and a quarter over that count, so you can plan a budget around it. It never gives fewer than 4 anchors for 3D or 3 for 2D."),
+                         ("Tall halls", "Above 10 m, the grid closes by a tenth. AmIMo anchors are recommended at 3 to 8 m up, so a tall hall is where the survey matters most.")], 3)),
+          section(vp("What the survey adds."),
+                  split(None, ['Each <a href="/products/amimo/">AmIMo anchor</a> reaches about 50 m around it in clear line of sight. Racking and steel change that, so we survey your floor and set the count.',
+                               'An AmIMo anchor records when each pulse arrives and the angle it came from. <a href="/technology/">Time and angle</a> together can mean fewer anchors than timing alone.',
+                               "Each anchor needs only power, from DC or PoE. It syncs over the air and sends its data to AmIHub over Wi-Fi, so there is no data or sync cable to run. Ethernet is also an option.",
+                               "With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor."], (), still("amimo"))),
+          section(faq([
+              ("How many anchors does a UWB system need?", "It depends on the floor. Each AmIMo anchor reaches about 50 m in clear line of sight, but racking, steel and ceiling height change that. AmIMotion sets the final count from a site survey. This tool gives a first range to plan a budget around."),
+              ("Do AmIMo anchors need data cables?", "No data or sync cable. Anchors sync over the air and send their data to AmIHub over Wi-Fi. They need only power, from DC or PoE. Ethernet is also an option."),
+              ("How high do anchors go?", 'On a column or wall, 3 to 8 m up is recommended. <a href="/specs/">Specifications</a>.'),
+          ])),
+          close("Get the real count.", "An AmIMotion survey of your floor sets the anchor plan. It starts with a call."),
+      ], scripts="tools", app="How many anchors you need")
 
+# ---------------- /tools/search-time/ ----------------
 write("/tools/search-time/", "What searching costs: a search-time calculator",
       "Put a number on the hours your team spends looking for trolleys, bins and tools, from your own figures. Runs in your browser. No savings are assumed.",
       [
-          head("What searching", "costs you.", "Put a number on the time your team spends looking, from your own figures.",
-               short="Searching for trolleys, bins, tools and forklifts costs hours every shift. This calculator multiplies your own figures, people, searches and minutes, into hours a year. "
-                     "AmIMotion’s tags put each item on a live map, located down to ±10 cm in 3D, so a search starts on a screen. The calculator assumes no savings.",
-               trail=[("Tools", "/tools/"), ("Search-time calculator", None)], actions=()),
+          head("Time spent searching.", "Your own numbers.", "How many people look, how often and for how long. The calculator multiplies it out. It assumes nothing about savings.",
+               short="AmIMotion's search-time calculator multiplies five of your own figures: people who search each shift, searches per person, minutes per search, shifts a day and working days a year. "
+                     "It gives hours a year, hours a day and the same time as full-time people, at 8 hours a day. Add a loaded hourly cost to see it in rupees. It shows what searching costs you today. It does not forecast a saving.",
+               trail=[START, ("Time spent searching", None)]),
           section(
-              '<div class="tool-shell"><form class="tool-form" data-tool="search" aria-label="Search-time calculator">'
+              '<div class="tool-shell"><form class="tool-form" data-tool="search" aria-label="Time spent searching">'
               + rng("s-p", "people", "People who search, per shift", 1, 200, 1, 12)
               + rng("s-n", "per", "Searches per person, per shift", 1, 40, 1, 4)
               + rng("s-m", "mins", "Minutes per search", 1, 60, 1, 8, " min")
@@ -60,271 +86,212 @@ write("/tools/search-time/", "What searching costs: a search-time calculator",
               + rng("s-d", "days", "Working days a year", 200, 365, 1, 300)
               + numf("rate", "Loaded cost per hour, ₹ (optional)", "", "Leave empty to see hours only.")
               + '</form><div class="tool-out" aria-live="polite"><p class="out-name">Time spent searching</p><p class="big" data-out="hours">—</p>'
-              '<div class="lines"><p>Per day <b data-out="day">—</b></p><p>Full-time people, equivalent <b data-out="fte">—</b></p><p>Cost a year <b data-out="cost">—</b></p></div>'
-              '<p class="note">Your numbers, multiplied out. This is the cost of searching today, not a forecast of savings. A pilot measures the change on your floor.</p>'
-              + btns((("Book a call", "/contact/"), ("Measure a baseline", "/learn/pilot-baseline/")), True) + "</div></div>"),
-          close(),
-      ], scripts="tools")
+              '<div class="lines"><p>Per day <b data-out="day">—</b></p><p>Full-time people, at 8 h a day <b data-out="fte">—</b></p><p>Cost a year <b data-out="cost">—</b></p></div>'
+              '<p class="note">Your numbers, multiplied out. This is what searching costs today, not a forecast of what you would save. A pilot measures the change on your floor.</p>'
+              + btns((("Book a call", "/contact/"), ("Measure before you claim", "/learn/pilot-baseline/"))) + "</div></div>", label="Time spent searching"),
+          section(vp("Where the numbers come from."),
+                  tiles([("Your figures", "The sliders start at 12 people, 4 searches, 8 minutes, 2 shifts and 300 days. Those are only starting positions, not industry averages. Move them to match your floor."),
+                         ("The sum", "People, times searches, times minutes, times shifts, times days, divided by 60, gives hours a year. Full-time people divides that by 8 hours for each working day."),
+                         ("The cost", "If you add a loaded cost per hour, the tool multiplies the hours by it. Time freed is not the same as money saved, so read it as the cost of searching today.")], 3)),
+          section(vp("Count it for real."),
+                  split(None, ["Most plants estimate these numbers. A pilot counts them. Before it starts, time how long it takes to find the trolleys in one flow.",
+                               "Then AmIMotion tags them. An AmIGo tag rides on each trolley, and AmIHub's live map shows where it was last seen, and when. You find out from a screen, not a walk.",
+                               "Time the same searches again with the map open. That difference, on your floor, is the number you can defend."], (),
+                        hallslot("hall-find-43", f"{CAM}, cropped close (homepage screen 2 scene, 4:3): the press line on the left and the racks on the right, everything pale except one trolley stopped behind the racks on a blue floor tint, its one blue trail running from the press and ending where it stands.", "photo",
+                             "A model factory floor. One trolley stopped between the racks is marked blue. A blue line shows its path and ends where it stopped."),
+                        extra=more([("Measure before you claim", "/learn/pilot-baseline/"), ("Where is that trolley?", "/use-cases/find-the-asset/")]))),
+          section(faq([
+              ("How much time do teams spend searching for trolleys and tools?", "AmIMotion does not publish an average, because it varies too much from floor to floor. Enter your own figures here, then measure them in a pilot before you rely on them."),
+              ("Does the calculator include savings?", "No. It shows what searching costs today. Any change has to be measured on your own floor, against a baseline."),
+              ("Does my data leave the page?", "No. The calculator works in your browser and keeps nothing."),
+          ])),
+          close("Find it from a screen.", "On the call we look up tagged things on AmIHub's live map, on real data."),
+      ], scripts="tools", app="Time spent searching")
 
-write("/tools/pilot/", "Pilot planner: a one-page RTLS pilot brief",
-      "Three choices become a one-page brief for an AmIMotion pilot: the question, the starting area and how jobs are linked. Download it or email it.",
+# ---------------- /tools/pilot/ ----------------
+write("/tools/pilot/", "Your pilot on one page: a brief to share",
+      "Three answers become a one-page AmIMotion pilot brief: what you need to see, where you start and how jobs link to trolleys. Copy, download or email it.",
       [
-          head("Your pilot", "on one page.", "Three answers become a brief for the first call. Nothing leaves your browser.",
-               short="An AmIMotion pilot starts in one bay or one line with one question, a few zones and one owner. Choose what you need to understand, where to begin and how work is linked to trolleys today, "
-                     "and the planner writes the brief, with the points to settle before hardware arrives.",
-               trail=[("Tools", "/tools/"), ("Pilot planner", None)], actions=()),
+          head("Your pilot on one page.", None, "Three answers become a brief you can send to your plant head, IT and finance. It is written in your browser.",
+               short="AmIMotion's pilot planner turns three answers into a one-page brief. You choose what you need to understand, where you would begin and how work is linked to trolleys today. "
+                     "The brief lists what to settle before hardware arrives, such as the zones that matter and who acts when work waits too long. Copy it, download it as a text file or open it as an email. Nothing leaves your browser until you send it.",
+               trail=[START, ("Your pilot on one page", None)]),
           section(
-              '<div class="tool-shell"><form class="tool-form" data-tool="pilot" aria-label="Pilot planner">'
+              '<div class="tool-shell"><form class="tool-form" data-tool="pilot" aria-label="Your pilot on one page">'
               '<fieldset class="field"><legend>What do you need to understand?</legend>' + seg("q", [("find", "Find tagged trolleys", "Where a trolley was last seen."), ("link", "Link trolleys to jobs", "Which job is on which trolley, and where."), ("wait", "See where work waits", "Zones, visits and how long work sits.")], True) + "</fieldset>"
               '<fieldset class="field"><legend>Where would you begin?</legend>' + seg("area", [("bay", "One production bay", None), ("line", "One line-side flow", None), ("tools", "One tools or fixtures area", None), ("unsure", "Not sure yet", None)]) + "</fieldset>"
               '<fieldset class="field"><legend>How is work linked to trolleys today?</legend>' + seg("link", [("none", "Not defined yet", None), ("scan", "Manual or scanned", None), ("mes", "A record in our MES or ERP", None), ("na", "Not needed", None)]) + "</fieldset>"
               '</form><div class="tool-out" aria-live="polite"><p class="out-name">Your brief</p><p class="brief" data-out="brief"></p>'
               '<p class="acts"><button class="cta" type="button" data-download>Download</button> <button class="cta alt" type="button" data-copy>Copy</button> <a data-out="mail" href="mailto:sales@amimotion.com">Email it</a></p>'
-              '<p class="note">Made in this browser. Not a quote, a feasibility result or a commitment. Email opens your own mail app.</p></div></div>'),
-          close(),
-      ], scripts="tools")
+              '<p class="note">Written in this browser. It is not a quote, a feasibility result or a commitment. Email it opens your own mail app.</p></div></div>', label="Your pilot on one page"),
+          section(vp("Who the brief is for.", lede="A pilot needs more than one yes."),
+                  tiles([("Your plant head", "What the AmIMotion pilot asks, where it runs and what you decide at the end."),
+                         ("IT and OT", "Where the anchors go and what they need. Each AmIMo anchor needs only power, and AmIHub can run on an industrial PC inside your plant, with no internet needed."),
+                         ("Finance and procurement", "What is in scope, so the prices in the NDA pack can be read against it.")], 3)),
+          section(vp("What the brief asks you to settle."),
+                  prose("<ul><li>The zones that matter, named in your own words.</li><li>Who on your team acts when work waits too long.</li><li>How to count a wait that runs past shift end.</li>"
+                        "<li>A baseline, measured before you compare anything.</li><li>How a job is linked to its trolley, in AmIHub or from your own system, if you need job-level waits.</li></ul>"
+                        "<p>Until a job is linked to its trolley, AmIHub shows a trolley's wait, not a job's wait.</p>")),
+          section(vp("Read with the brief."),
+                  links([("/pilot/", "How a pilot runs", "The five steps the brief starts."),
+                         ("/learn/pilot-baseline/", "Measure before you claim", "How to set the baseline."),
+                         ("/learn/association/", "Which job is on the trolley?", "Linking trolleys to jobs.")])),
+          close("Bring the brief to the call.", "The AmIMotion call is a live demo on real AmIHub data, not slides."),
+      ], scripts="tools", app="Your pilot on one page")
 
+# ---------------- /tools/ ----------------
 write("/tools/", "Free RTLS planning tools",
-      "Three free tools from AmIMotion: a UWB anchor estimator, a search-time calculator and a one-page pilot planner. Plus the six-question floor diagnostic.",
+      "Four free AmIMotion planning tools: Plan your first bay, an anchor estimator, a search-time calculator and a one-page pilot brief. No sign-up.",
       [
-          head("Plan it", "before the call.", "Free tools that run in your browser. No sign-up.",
-               short="AmIMotion offers four free planning tools: a floor diagnostic, a UWB anchor estimator, a search-time calculator and a pilot planner. Each runs in the browser and nothing is stored.",
-               trail=[("Tools", None)], actions=()),
-          section(links([("/diagnostic/", "Diagnose your floor", "Six questions. A visibility profile and a pilot scope that fits."),
-                         ("/tools/anchors/", "How many anchors you need", "Your floor size in, a first anchor range out, before a site survey."),
-                         ("/tools/search-time/", "What searching costs you", "Put a number on the time your team spends looking."),
-                         ("/tools/pilot/", "Your pilot on one page", "Describe one bay. Get a pilot brief to bring to the call.")])),
-          close(),
-      ])
+          head("Plan it before the call.", None, "Four free tools. They run in your browser, ask for no sign-up and send nothing unless you choose to.",
+               short="AmIMotion offers four free planning tools. Plan your first bay asks six questions and gives back a plan for where to start. How many anchors you need gives a first range from your floor size, before a survey. "
+                     "Time spent searching turns your own figures into hours a year. Your pilot on one page writes a brief to share with your team. Each one runs in your browser.",
+               trail=[START, ("Tools", None)]),
+          # the four tools as linked points, not a related-pages nav: they are the page's content (and keep it over 250 words for crawlers)
+          section(vp("Pick the question you have."),
+                  tiles([(f'<a href="{h}">{label(h, t)}</a>', d) for h, t, d in [
+                      ("/diagnostic/", "Plan your first bay", "Where would location help first? Six questions, and a plan comes back."),
+                      ("/tools/anchors/", "How many anchors you need", "How much hardware might one bay take? A first range, before the survey."),
+                      ("/tools/search-time/", "Time spent searching", "What does looking for trolleys cost today? Your own numbers, multiplied out."),
+                      ("/tools/pilot/", "Your pilot on one page", "How do I explain it to my team? A brief to share.")]], 2)),
+          section(vp("What these tools are not."),
+                  prose(P("They are planning aids, built from your answers and a few stated assumptions. None of them is a quote, a survey or a forecast of savings. Each AmIMotion tool shows its assumptions next to its answer.",
+                          "The real anchor count comes from an AmIMotion survey of your floor. The real change in search time comes from a pilot that measures it, against a baseline set before it starts.",
+                          "Nothing you type is stored by this site. A brief you download is a file on your own device. If you email a result, it goes from your own mail app."))),
+          section(vp("Then measure it."),
+                  links([("/learn/pilot-baseline/", "Measure before you claim", "Set the baseline before the tags go on."),
+                         ("/pilot/", "How a pilot runs", "One flow, one bay, five steps.")])),
+          close(*TALK),
+      ], page="CollectionPage")
 
-# ---------------- diagnostic ----------------
-# the diagnostic markup, kept from the old homepage (the new homepage links here instead of embedding it)
+# ---------------- /diagnostic/ ----------------
 diag = (Path(__file__).resolve().parent / "diag_block.html").read_text().rstrip()
-write("/diagnostic/", "WIP visibility floor diagnostic",
-      "Six questions about how work moves on your floor. Your plant builds itself as you answer, and you get a visibility profile and a pilot scope that fits.",
+write("/diagnostic/", "Plan your first bay: six questions",
+      "Six questions about how work moves in your plant. AmIMotion sketches your floor as you answer and gives you a plan for where to start. Free.",
       [
-          head("Your floor,", "diagnosed.", "Six questions on how work moves. Your profile appears at once, before we ask for anything.",
-               short="AmIMotion’s floor diagnostic asks six questions about what your team looks for and where work waits. It sketches your floor as you answer and ends with a visibility profile and a pilot scope for one bay or line. Answers stay in your browser.",
-               trail=[("Diagnose your floor", None)], actions=()),
-          section(diag, flush=True),
-          section(vp("Useful on its own."),
-                  tiles([("A visibility profile", "Where work is likely hiding, and how your team finds it today."),
-                         ("A pilot that fits", "One flow, its zones, one rule and one owner."),
-                         ("The right questions", "What we would ask on a floor walk, so the first call starts in the right place.")])),
-          close(),
-      ], scripts="diag")
+          head("Plan your first bay.", None, "Six questions about how work moves in your plant. You get a plan for where to start, before anyone calls you.",
+               short="AmIMotion's floor plan asks six questions: what your team looks for, how they find it today, where work waits longest, how a job is linked to its trolley, where you would start, and your role. "
+                     "It sketches your floor as you answer. At the end you get a plan for one bay or line: what to tag first, which zones to name and who should see the live map. Your answers stay in this browser tab until you choose to send them.",
+               trail=[START, ("Plan your first bay", None)]),
+          section(diag, label="Plan your first bay"),
+          section(vp("What you get back."),
+                  tiles([("Where work hides", "What your answers say about how work is found today, and where it waits out of sight."),
+                         ("A first bay", "Which trolleys, bins or tools to tag first, the zones around them, and the team that should see AmIHub's live map."),
+                         ("Questions for a floor walk", "What AmIMotion would ask on your floor, so the first call starts in the right place.")], 3)),
+          section(vp("What the plan is, and is not."),
+                  prose(P("The plan is a starting point built from six answers. It is not a survey, a quote or a promise about your floor. Racking and steel change how far each AmIMo anchor reaches, so we survey your floor and set the count.",
+                          "You can print the plan or save it as a PDF. Start over clears your answers.",
+                          'If you choose to send it, the page opens a draft email to AmIMotion in your own mail app, with your plan, your name and your work email. Nothing reaches us until you press send. We use it only to reply about your floor. <a href="/privacy/">Privacy</a>'))),
+          section(vp("Then put a number on it."),
+                  links([("/tools/anchors/", "How many anchors you need", "A first range from your floor size, before the survey."),
+                         ("/tools/pilot/", "Your pilot on one page", "Turn the plan into a brief for your team."),
+                         ("/pilot/", "How a pilot runs", "The five steps, from the question to the decision.")])),
+          close(*TALK),
+      ], scripts="diag", app="Plan your first bay")
 
-# ---------------- pilot ----------------
-write("/pilot/", "What an RTLS pilot involves",
-      "An AmIMotion RTLS pilot runs in one bay or line: scope, baseline, survey and install, operational review, then a decision on evidence.",
+# ---------------- /pilot/ ----------------
+write("/pilot/", "How a pilot runs: one flow, one bay",
+      "An AmIMotion pilot follows one flow in one bay or line. It times today's waits first, surveys the hard places and ends in a decision on your numbers.",
       [
-          head("A pilot", "worth running.", "One flow, a few zones and one rule, measured on your floor.",
-               short="An RTLS pilot with AmIMotion covers one bay or one line. It runs through five steps: agree the question and area, measure a baseline, survey and install the anchors, review the results with the people who act, "
-                     "then decide on evidence whether to extend on the same AmIHub. Positions are accurate down to ±10 cm in 3D, measured on your floor.",
-               trail=[("Pilot", None)], actions=(("Book a call", "/contact/"), ("Build your brief", "/tools/pilot/")),
-               media=ph("A site survey walk: an engineer and a production lead looking up at a column, a tablet in hand, the line running behind them. Clear daylight. 21:9.", "dawn", "cine")),
-          section(vp("Five steps.", "Each one earns the next."),
-                  steps([("The question", "Agree the question, the area and the trolleys."),
-                         ("Today, measured", "How work is found and chased before tags go on."),
-                         ("Survey and install", "Anchors planned for your floor and tested in the hard places."),
-                         ("Used by people", "Reviewed with the people who act on it."),
-                         ("A decision", "Decide on evidence whether to extend.")])),
-          section(vp("What you get.", "What you bring. What your team does.", "So you know the effort before you say yes."),
-                  '<ul class="points c3">'
-                  '<li><h3>What you get</h3><ul><li>An anchor plan from a site survey</li><li>Tags and anchors for one bay or line</li><li>AmIHub on a PC in your plant, or in the cloud</li><li>A baseline before tags go on, and the same numbers after</li><li>A review of the results with your team</li></ul></li>'
-                  '<li><h3>What you bring</h3><ul><li>One flow you want to see, such as trolleys between two stations</li><li>An owner on the floor who acts on what the map shows</li><li>Power at the anchor points, DC or PoE</li><li>The zones that matter</li></ul></li>'
-                  '<li><h3>What your team does</h3><ul><li>Walks the site survey with our engineer</li><li>Fixes tags to the trolleys or tools in scope: adhesive, screw or cradle</li><li>Uses the live map and the wait times in the daily routine</li><li>Joins the review and decides on the numbers</li></ul></li>'
-                  '</ul>'
-                  '<p class="note">Duration and price depend on the area, the tag count and the anchor plan, so the quote follows the survey. Anchors mount on columns and walls and need only power, with no data or sync cables to run.</p>',
-                  tone="light", flush=True),
+          head("How a pilot runs.", "One flow, one bay.", "An AmIMotion pilot answers one question on one part of your floor. It measures today first, so the numbers at the end mean something.",
+               short="An AmIMotion pilot follows one flow in one bay or line. You choose the flow. The pilot times today's waits first, over a window you choose. That is your baseline. "
+                     "AmIMotion surveys your floor and sets the anchor count. AmIGo tags go on the trolleys, bins and pallets in that flow, not on people. Your team uses the live map during the shift. "
+                     "You see your own waits in one bay, and prove the numbers, before you decide on more.",
+               trail=[START, ("How a pilot runs", None)], actions=(("Your pilot on one page", "/tools/pilot/"), ("Plan your first bay", "/diagnostic/")),
+               media=hallslot("hall-bay", f"{CAM}, the homepage screen 6 scene, 16:9: the whole hall pale, the inspection bay in full colour: one trolley inside the station on blue, three trolleys in the queue on amber, the two AmIMo anchors on the bay's columns.", "wide", BAY_ALT)),
+          section(vp("Five steps, in order.", lede="Each step has to hold before the next one starts."),
+                  steps([("The question", "You choose one flow, such as trolleys from the press to inspection. We agree the bay, the zones that matter and the trolleys in scope."),
+                         ("Today, measured", 'The pilot times today\'s waits first, over a window you choose. That is your <a href="/learn/pilot-baseline/">baseline</a>. Before it starts, we agree how to count a wait that runs past shift end.'),
+                         ("Survey and install", "We survey your floor and set the anchor count. The survey looks at your columns, your power points, your racking and your steel, because each changes how far an AmIMo anchor reaches."),
+                         ("Used by people", "Your team finds trolleys and sees waits on AmIHub's live map during the shift. We also agree who on your team acts when work waits too long."),
+                         ("A decision", "You see your own waits in one bay, and prove the numbers, before you decide on more. If you go on, you grow plant-wide on the same AmIHub, without re-fitting the first bay.")])),
+          section(vp("Who does what.", lede="So you know the effort before you say yes."),
+                  tiles([("AmIMotion brings", "Our survey and an anchor plan for your floor. AmIGo tags and AmIMo anchors for one bay or line. AmIHub, running on an industrial PC inside your plant or in the cloud. Local engineers on your site."),
+                         ("You bring", "One flow you want to see. A person on the floor who owns it. Power at each anchor point, from DC or PoE. The zones that matter, named in your own words."),
+                         ("Your team does", "Walks the survey with us. Names the trolleys in scope. Uses the live map in the shift. Joins the review and decides on the numbers.")], 3)),
+          section(vp("What the pilot leaves out."),
+                  split(None, ['The pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project. It would need its own policy. <a href="/trust/people/">People and privacy</a>.',
+                               "A plant-wide rollout and a second plant are their own steps, planned after the bay. A second plant gets its own survey.",
+                               "Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited.",
+                               "Duration and price depend on the bay, the number of tags and the anchor plan. After the first call, AmIMotion shares datasheets, architecture, prices and pilot options under NDA."], (),
+                        still("amigo", alt="The AmIGo tag, a small dark grey tag with amimotion on its cover."))),
           section(faq([
-              ("What does an RTLS pilot involve?", "An AmIMotion pilot covers one bay or line, a few zones, one question and one owner. It has a baseline before tags go on, an anchor survey and install, a review with the people who use it, then a decision."),
-              ("How big should the first pilot be?", "One main problem in one bounded area. Tag count, anchor plan and duration follow your site."),
-              ("What if we can’t link jobs to carriers yet?", "Start with trolley location and wait times. Make the job link a pilot step before calling any result job-level."),
-              ("What should success mean?", "Agree it up front: the right tags, useful position quality, fresh data, correct zones, and the effort for a person to respond."),
-          ])),
-          close(),
+              ("What does an AmIMotion pilot involve?", "One flow in one bay or line, chosen by you. AmIMotion surveys the floor and sets the anchor count. AmIGo tags go on the trolleys, bins or pallets in that flow. The pilot times today's waits first, as a baseline. Your team uses the live map in the shift. You see your own waits, and prove the numbers, before you decide on more."),
+              ("How long does a pilot take, and what does it cost?", "It depends on the bay, the number of tags and the anchor plan, so AmIMotion does not publish a standard length or price. After the first call, we share datasheets, architecture, prices and pilot options under NDA."),
+              ("What if we can't link jobs to trolleys yet?", 'Start with where each trolley is and how long it waits. <a href="/learn/association/">Link each trolley to the job it carries</a> later, in AmIHub or from your own system. Until that link exists, AmIHub shows a trolley\'s wait, not a job\'s wait.'),
+              ("How is success judged?", "You agree it before the pilot starts: the baseline, how a wait is counted, and who acts when work waits too long. At the end you compare the bay's numbers with that baseline."),
+              ("Will the steel and racking in our bay be a problem?", 'Racking and steel change how far each AmIMo anchor reaches, so we survey your floor and set the count. With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor, and the pilot shows it on yours. <a href="/technology/">How it locates a tag</a>.'),
+          ], "Questions teams ask first.")),
+          close("Put your pilot on one page.", "Three answers become an AmIMotion pilot brief your plant head, IT and finance can read.", (("Your pilot on one page", "/tools/pilot/"),)),
       ])
 
-# ---------------- films ----------------
-write("/films/", "Films: AmIMotion use cases in motion",
-      "Four short AmIMotion films about one plant: finding a trolley, a robot hand-off, station-to-station timing and asking the plant a question.",
+# ---------------- /films/ ----------------
+# The hero film is not yet in src/assets (the homepage owner is rendering it), so the head keeps a slot naming it.
+write("/films/", "Films: one floor, in motion",
+      "Short AmIMotion films of one model factory floor from above: where tagged trolleys, tools and vehicles went, and where work waits. Muted, no autoplay.",
       [
-          head("Watch the floor", "change.", "Four short films about one plant: finding work, moving it, timing it and asking about it.",
-               short="These four AmIMotion films show one plant. A worker finds a trolley on the live map, a robot hand-off is recorded without a scan, a trolley is timed station to station, and a supervisor asks an AI assistant a question.",
-               trail=[("Films", None)], dark=True, actions=()),
-          section('<div class="films">' + "".join(film(n) for n in (1, 2, 3, 4)) + "</div>"),
-          section(links([("/use-cases/", "Use cases", "Each film, with the story around it."), ("/platform/", "The platform", "Tags, anchors and AmIHub."), ("/contact/", "See it live", "The real map, on a call.")]), tone="dark"),
-          close(),
-      ], tone="dark")
-
-# ---------------- resources ----------------
-write("/resources/", "AmIMotion resources: tools, guides and films",
-      "Everything to plan a UWB location project with AmIMotion: the floor diagnostic, planning tools, field guides, films, FAQ and glossary.",
-      [
-          head("Everything", "to plan with.", "Tools, guides and films. No sign-up.",
-               short="AmIMotion’s resources help plants plan real-time location: a floor diagnostic, an anchor estimator, a search-time calculator, a pilot planner, field guides, four short films, an FAQ and a glossary.",
-               trail=[("Resources", None)], actions=()),
-          section(links([("/diagnostic/", "Diagnose your floor", "Six questions, two minutes."), ("/tools/", "Planning tools", "Anchors, search time and pilot brief."), ("/films/", "Films", "Four jobs, in motion.")]),
-                  links([("/learn/", "Field guides", "RTLS, UWB and WIP, explained."), ("/faq/", "Questions and answers", "AmIMotion, answered plainly."), ("/glossary/", "Glossary", "34 terms in plain words.")])),
-          close(),
+          head("Films.", "One floor, in motion.", "Short films of one model factory floor, seen from above. Each one shows a single idea, with no sound and nothing to read.",
+               short="AmIMotion's films show one model factory floor from above. Blue lines show where tagged trolleys, tools and vehicles went. Amber marks the trolleys and pallets that are waiting. "
+                     "The first film runs nine seconds: the same floor before and after AmIMotion, from scan ticks at three desks to every path and wait on one live map.",
+               trail=[START, ("Films", None)],
+               media=slot("The homepage hero film, 9 s, muted, loops when played, camera A locked. Source team/rounds/03-hero-film/film/hall-4x5-av1.mp4 and hall-4x5-h264.mp4 (1:1 crop on phones), posters poster-1x1-*. Poster first, preload none, controls, no autoplay. "
+                          "Engine room to add it to film() as a 4:5 or 1:1 entry.", "1:1",
+                          "A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went. Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting.", "Engine room")),
+          section(vp("What you are looking at."),
+                  tiles([("Blue", "Where a tagged thing went. An AmIGo tag sends a short UWB pulse as it moves, and AmIMo anchors on the columns hear it."),
+                         ("Amber", "Where work waits. AmIHub notes when each trolley or pallet enters a zone and when it leaves, so you see a wait while it is still a wait."),
+                         ("Pale", "Everything nobody has tagged.")], 3)),
+          section(vp("The nine seconds, in words."),
+                  prose(P("The film opens on the floor as AmIMotion shows it. Blue trails run behind every moving thing: the tugger's train, the forklift, an AMR, a trolley leaving the press. Three trolleys in the inspection queue and one pallet in the staging lane stand on amber.",
+                          "At two seconds the colour goes. This is the floor as most plants see it. At three checkpoint desks, a short blue tick appears as a trolley passes. Nothing marks the path between desks. One trolley passes a desk, turns behind the racks and stops. No mark follows it.",
+                          "Then the ticks join into lines, one kind of thing at a time: trolleys, bins and a fixture, the tool cart, the forklift and tugger, the AMR. The three trolleys and the pallet take their amber again. At nine seconds the frame is back where it began."))),
+          section(vp("The same stories, on their own pages."),
+                  links([("/use-cases/find-the-asset/", "Where is that trolley?", "The one that turned behind the racks."),
+                         ("/solutions/wip/", "Work in progress", "The three trolleys waiting at inspection."),
+                         ("/use-cases/ask-your-plant/", "Ask your floor", "A question, answered from the live map."),
+                         ("/technology/", "How it locates a tag", "How a pulse becomes a place.")])),
+          close("See it on your own floor.", "The AmIMotion call is a live demo on real AmIHub data, not slides."),
       ])
 
-# ---------------- what is AmIMotion ----------------
-write("/what-is-amimotion/", "What is AmIMotion? UWB RTLS from Bengaluru",
-      "AmIMotion, a Bengaluru company, builds spatial intelligence for factories and warehouses: AmIGo tags, AmIMo anchors and AmIHub software, down to ±10 cm in 3D.",
+# ---------------- /company/ ----------------
+write("/company/", "About AmIMotion: spatial intelligence from Bengaluru",
+      "AmIMotion, a brand of Locatepro Technologies, designs and builds UWB tags, anchors and AmIHub software in Bengaluru. Led by Kaushal Kukkar and Vivek Dham.",
       [
-          head("What is", "AmIMotion?", trail=[("What is AmIMotion?", None)], short_label="The short answer", actions=(("Book a call", "/contact/"), ("See the platform", "/platform/")),
-               short="AmIMotion is a Bengaluru company that builds spatial intelligence for factories and warehouses, using UWB indoor positioning: AmIGo tags, AmIMo anchors and AmIHub software. "
-                     "Tags are located down to ±10 cm in 3D (with AmIMo anchors), and a built-in MCP server lets AI assistants query live location. It is a brand of Locatepro Technologies Pvt Ltd."),
-          section('<div class="read"><nav class="toc" aria-label="On this page"><ol><li><a href="#definition">Definition</a></li><li><a href="#not">What it is not</a></li><li><a href="#name">The name</a></li><li><a href="#for">Who it is for</a></li><li><a href="#does">What it does</a></li><li><a href="#facts">Facts</a></li></ol></nav>'
-                  + prose(f'<h2 id="definition">The definition, in one paragraph</h2><p>{LONG}</p>'
-                          '<h2 id="not">What AmIMotion is not</h2><p>The name gets confused with others. AmIMotion is an industrial UWB indoor positioning company in Bengaluru, India. It is not related to Animotion, the presentation and video maker, to AIMotion or AI Motion video tools, or to any consumer or lifestyle brand. It does not track people’s bodies. It locates tagged objects, vehicles and badges on an indoor floor.</p>'
-                          '<h2 id="name">The name</h2><p>AmIMotion is written with a capital A, I and M. The products carry the same prefix: AmIGo, the tag; AmIMo, the anchor; and AmIHub, the software.</p>'
-                          '<h2 id="for">Who it is for</h2><p>Manufacturing and intralogistics teams who spend time walking the floor to find things: plant and production heads, operations and industrial engineering, intralogistics and warehouse managers, and the IT and OT teams who connect floor data to MES, ERP and WMS.</p>'
-                          '<h2 id="does">What it does</h2><ul><li><strong>Finds tagged things.</strong> Trolleys, bins, tools, fixtures and forklifts carry AmIGo tags, so a team sees each one on a live map instead of walking the hall.</li>'
-                          '<li><strong>Shows where work waits.</strong> AmIHub turns positions into time-stamped zone entries and dwell. Linked to a job, that becomes work-in-progress visibility.</li>'
-                          '<li><strong>Puts vehicles, robots and people on one map.</strong> Forklifts, AMRs and badges share the same location layer.</li>'
-                          '<li><strong>Answers AI assistants.</strong> AmIHub’s built-in MCP server lets MCP-capable assistants query live positions, with a person’s approval for any action. Shown in a live demo.</li></ul>'
-                          '<h2 id="facts">Facts, with their qualifiers</h2><ul>' + "".join(f"<li>{x}</li>" for x in ENTITY["facts"]) + "</ul>") + "</div>"),
-          section(faq([
-              ("What is AmIMotion?", LONG),
-              ("What does AmIMotion do?", "AmIMotion shows factories and warehouses where work is and where it waits. AmIGo tags on trolleys, bins, pallets, totes, tools and forklifts are located by AmIMo anchors down to ±10 cm in 3D, and AmIHub puts them on a live map of the factory or warehouse."),
-              ("Are there Indian companies making UWB tags and anchors?", "Yes. AmIMotion designs and builds UWB tags (AmIGo), anchors (AmIMo) and software (AmIHub) in India, on NXP Trimension UWB silicon."),
-              ("Is AmIMotion the same as Animotion or AIMotion?", "No. AmIMotion is an industrial UWB indoor positioning company in Bengaluru, India, and is not related to them."),
-              ("Where is AmIMotion based?", "Bengaluru, India. AmIMotion is a brand of Locatepro Technologies Pvt Ltd."),
-          ], "Quick answers.")),
-          close("See it on a live map.", "A short call: the live map, an AI query on AmIHub data, and the questions that scope a pilot."),
-      ], type="article")
-
-# ---------------- industrial spatial intelligence ----------------
-write("/industrial-spatial-intelligence/", "What is Industrial Spatial Intelligence?",
-      "Industrial Spatial Intelligence turns precise, time-stamped location of work, tools and vehicles into answers for people, systems and AI. AmIMotion builds it.",
-      [
-          head("Industrial Spatial", "Intelligence.", trail=[("Industrial Spatial Intelligence", None)], short_label="The short answer", actions=(("Book a call", "/contact/"), ("See the platform", "/platform/")),
-               short="Industrial spatial intelligence is precise, time-stamped location of everything that moves in a plant, such as carriers, pallets, tools, vehicles and robots, joined with jobs and zones, "
-                     "so people, systems and AI assistants can answer where work is and where it waits. AmIMotion builds it for factories and warehouses, on UWB positioning down to ±10 cm in 3D. It is built and supported in India."),
-          section(vp("Three layers.", "One answer."),
-                  tiles([("Location", "Where, precisely", "UWB positions to centimetres, each with the time it was seen."),
-                         ("Context", "What it means", "Zones, jobs and rules: which job is on the trolley in the inspection queue, and how long it has waited."),
-                         ("Answers", "Who can ask", "Supervisors on a map, MES and ERP over open interfaces, and AI assistants over MCP.")], head="over"),
-                  links([("/solutions/wip/", "Where it starts: WIP visibility", "Which job waits where, and for how long."), ("/learn/mcp-location-data/", "AI assistants and location", "MCP, access and approval."), ("/technology/", "The location layer", "How UWB works.")])),
-          section(faq([
-              ("What is Industrial Spatial Intelligence?", "Precise, time-stamped location of what moves in a plant, joined with context such as jobs and zones, so people, systems and AI can answer where work is and where it waits."),
-              ("How is it different from RTLS?", "RTLS is the location layer. Spatial intelligence adds the context and the answers on top of it."),
-              ("Where does AmIMotion start?", "With WIP visibility in factories: tagged carriers, linked to jobs, timed in every zone. In warehouses the same records time pallets and totes from dock to stock."),
-          ])),
+          head("Designed in Bengaluru.", "Built in India.", "AmIMotion makes the tags, the anchors and the software that show where work is in a plant, and where it waits. One team builds all three.",
+               short="AmIMotion is spatial intelligence for factories and warehouses. It is a brand of Locatepro Technologies Pvt Ltd, Bengaluru, India. AmIMotion designs and builds AmIGo tags, AmIMo anchors and AmIHub software, on NXP Trimension UWB silicon. "
+                     "It is built on the FiRa and omlox specifications. AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO.",
+               trail=[("About us", None)], actions=(("What is AmIMotion?", "/what-is-amimotion/"), ("How to buy", "/how-to-buy/")),
+               media=still("pair", eager=True, alt="The AmIGo tag and the AmIMo anchor side by side, both dark grey with amimotion on the cover.")),
+          section(vp("Who leads it."),
+                  prose(P("AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO.",
+                          "AmIMotion is a brand of Locatepro Technologies Pvt Ltd, Bengaluru, India. The tags, the anchors and AmIHub are designed and built in India, with local stock and local engineers on your site."))),
+          section(vp("What we make."),
+                  cards([("/products/amigo/", still("amigo", CARD), "AmIGo tag", "Rides on what moves. Sends a short UWB pulse when it moves and sleeps when it stops."),
+                         ("/products/amimo/", still("amimo", CARD), "AmIMo anchor", "Hears every tag. Fixed to a column or wall, it needs only power."),
+                         ("/products/amihub/", HUB_SLOT(), "AmIHub", "One live map. Runs on an industrial PC inside your plant, with no internet needed.")], 3)),
+          section(vp("How we work."),
+                  tiles([("One team, every layer", "AmIMotion designs the tags, the anchors and AmIHub. One contract and one support line cover every layer."),
+                         ("Made in India", "Designed and built in India, with local stock and local engineers on your site."),
+                         ("Open by design", "Built on the FiRa and omlox specifications. AmIHub connects through open REST, MQTT, WebSocket and omlox hub interfaces, so your team or your integrator can build on it."),
+                         ("One bay first", "Every AmIMotion pilot starts with one bay or line. Then it grows plant-wide on the same AmIHub, without re-fitting the first bay.")], 4)),
+          section(vp("What we will not claim.", lede="A position is only useful when you know what it can and cannot tell you."),
+                  prose(P("A position shows where a trolley is, and AmIHub says when it was last seen. It does not show which job the trolley carries until that job is linked to it. It does not say why work waited. That is for your team to say.",
+                          "This site names no customer and shows no customer result. AmIMotion is built on the FiRa and omlox specifications, and claims no formal certification."))),
+          section(links([("/what-is-amimotion/", "What is AmIMotion?", "The company in one page."),
+                         ("/industrial-spatial-intelligence/", "What is spatial intelligence?", "The category."),
+                         ("/trust/", "Trust and data", "Where your data lives."),
+                         ("/how-to-buy/", "How to buy", "Call, NDA pack, survey, pilot.")]), label="More about AmIMotion"),
           close(),
-      ], type="article")
+      ], page="AboutPage")
 
-# ---------------- FAQ ----------------
-FAQS = [
-    ("The company.", [
-        ("What is AmIMotion?", LONG),
-        ("Who makes AmIMotion and where is it based?", "Locatepro Technologies Pvt Ltd, in Bengaluru, India. AmIMotion is its brand, and the tags, anchors and software are designed and built in India."),
-        ("What does AmIMotion cost?", "After the first call, we share datasheets, architecture, prices and pilot options under NDA."),
-        ("Can we start small?", "Yes. Start with a pilot in one bay or line, then scale on the same AmIHub without re-instrumenting."),
-    ]),
-    ("How it works.", [
-        ("How accurate is AmIMotion?", "Down to ±10 cm in 3D, with AmIMo anchors. Accuracy depends on the site, so a pilot measures it on your floor."),
-        ("Do the anchors need cables?", "No data or sync cabling. Anchors sync over the air and send data over Wi-Fi, with an Ethernet option. Each anchor needs power, from DC or PoE."),
-        ("Does UWB work in a factory full of steel and racking?", "UWB’s wide bandwidth separates the direct signal from reflections. AmIMotion adds non-line-of-sight algorithms and plans anchor density per zone."),
-        ("How long do tag batteries last?", "1 to 3 years, typical and usage-dependent. Tags sleep when still and send when they move."),
-        ("Does AmIMotion track individual parts?", "It tags the carrier: the trolley, bin or rack. Which parts or job it holds comes from a carrier-to-job link, not from the radio."),
-    ]),
-    ("Systems, data and AI.", [
-        ("Can it run without the internet?", "Yes. AmIHub can run on an industrial PC inside your plant with no internet dependency, or in the cloud."),
-        ("Does it connect to our MES or ERP?", "AmIHub offers REST, MQTT and WebSocket and an omlox hub interface, and can push events to MES, ERP, WMS, SCADA or BI. Connectors are confirmed for each site."),
-        ("Does AmIMotion hold FiRa or omlox certification?", "AmIMotion is built on the FiRa and omlox specifications. It claims no formal certification."),
-        ("Does AmIMotion have an MCP server for AI assistants?", "Yes. AmIHub has a built-in MCP server, so MCP-capable AI assistants can query live positions, zones and history. Actions need a person’s approval, and every call is logged. Shown in a live demo."),
-    ]),
-]
-write("/faq/", "AmIMotion FAQ: UWB indoor positioning, answered",
-      "Plain answers about AmIMotion: down to ±10 cm in 3D, anchors and cabling, steel and racking, MES and ERP links, FiRa and omlox, MCP for AI, pilots.",
+# ---------------- /contact/ ----------------
+write("/contact/", "Book a call: a live demo on real data",
+      "Book a call with AmIMotion. We show AmIHub's live map and an AI question on real data, not slides, and talk through one flow on your floor.",
       [
-          head("AmIMotion,", "answered plainly.", trail=[("FAQ", None)], short=LONG, actions=()),
-          *[section(faq(items, title)) for title, items in FAQS],
-          close("Ask us the next one.", "On a call an engineer answers the questions specific to your floor."),
-      ], type="faq")
-
-# ---------------- glossary ----------------
-TERMS = [
-    ("Positioning", [
-        ("rtls", "RTLS", "Real-time location system: fixed infrastructure and software that continuously locate tagged objects or people, usually indoors where GPS does not work."),
-        ("uwb", "UWB", "Ultra-wideband: radio that sends very short pulses across a wide band of frequencies. Short pulses allow precise timing, so distance can be measured to centimetres and echoes told apart."),
-        ("tag", "Tag", "The small device attached to whatever is tracked: a carrier, tool, vehicle or badge. AmIMotion’s tag is AmIGo."),
-        ("anchor", "Anchor", "A fixed reference device at a known position that receives or sends UWB signals. AmIMotion’s anchor is AmIMo, with a 3D angle-of-arrival antenna array."),
-        ("tof", "Time of flight", "The time a radio signal takes to travel from transmitter to receiver. Multiplied by the speed of light, about 30 cm per nanosecond, it gives distance."),
-        ("twr", "TWR", "Two-way ranging: tag and anchor exchange messages and measure the round trip to compute distance."),
-        ("tdoa", "TDoA", "Time difference of arrival: position computed from the differences in when one signal reaches several synchronised receivers."),
-        ("ul-tdoa", "UL-TDoA", "Uplink TDoA: the tag sends a short blink and anchors compute its position. Tags only transmit, so many low-power tags can be tracked."),
-        ("dl-tdoa", "DL-TDoA", "Downlink TDoA: anchors transmit and the device computes its own position, like GPS indoors, which helps privacy."),
-        ("aoa", "AoA", "Angle of arrival: an antenna array measures the direction a signal comes from. 3D AoA measures horizontal and vertical angle."),
-        ("multipath", "Multipath", "Copies of a signal that arrive late after bouncing off metal, walls or racking."),
-        ("nlos", "NLOS", "Non-line-of-sight: the direct path between tag and anchor is blocked, so the strongest signal may be a reflection."),
-        ("ota-sync", "Over-the-air sync", "Synchronising anchor clocks by radio instead of timing cables."),
-        ("ftm", "Wi-Fi FTM", "Fine Timing Measurement (IEEE 802.11mc): Wi-Fi round-trip timing that lets compatible Wi-Fi devices estimate distance without a separate tag."),
-        ("ble", "BLE ranging", "Estimating proximity to Bluetooth Low Energy devices; coarse and typically zone-level."),
-        ("update-rate", "Update rate", "How often a tag reports per second. 0.1 Hz is once every 10 seconds; 10 Hz is ten times a second."),
-    ]),
-    ("Standards", [
-        ("802154z", "IEEE 802.15.4z", "The UWB standard amendment that adds enhanced and secure ranging. HRP is the high-rate pulse physical layer used by most current UWB chips."),
-        ("fira", "FiRa", "The FiRa Consortium, an industry body that defines interoperable UWB specifications and runs certification programmes."),
-        ("omlox", "omlox", "An open standard for interoperable industrial location systems, so different location technologies and vendors can feed one location hub."),
-        ("certification", "Certification", "A formal certification means an authorised body has tested a product against a specification. Following a specification is a company’s own statement. AmIMotion describes itself as built on the FiRa and omlox specifications."),
-    ]),
-    ("Operations", [
-        ("wip", "WIP", "Work in progress: partly finished goods moving through production."),
-        ("wip-visibility", "WIP visibility", "Knowing where work in progress physically is, which job each carrier holds and how long it has waited in each zone."),
-        ("carrier", "Carrier", "The trolley, bin, rack or container that holds WIP. In a WIP visibility system the carrier carries the tag."),
-        ("association", "Association", "The time-bounded link tag to carrier to job that gives a location its work meaning. It has a start, an end and an owner."),
-        ("zone", "Zone", "An agreed area of the floor, such as an assembly queue. Entering or leaving it creates a time-stamped event."),
-        ("dwell", "Dwell", "Time spent in a zone, from entry to exit. It includes waiting, processing and breaks, so it is not the same as cycle time."),
-        ("exception", "Exception", "A rule breach, such as dwell above an agreed limit, that asks a person to look. It is not a diagnosis."),
-        ("mes", "MES, ERP, WMS", "Manufacturing execution, enterprise resource planning and warehouse management systems: the systems of record for jobs, orders and stock."),
-        ("amr", "AGV and AMR", "Automated guided vehicle, which follows fixed paths, and autonomous mobile robot, which navigates freely."),
-        ("milk-run", "Milk run", "A fixed-route delivery loop, often by tugger, feeding line-side stations."),
-    ]),
-    ("Software and AI", [
-        ("amihub", "AmIHub", "AmIMotion’s software: it works out positions and keeps the live map, zones, time-stamped events and interfaces."),
-        ("mcp", "MCP", "Model Context Protocol: an open protocol that lets AI assistants call external tools and data. AmIHub has a built-in MCP server."),
-        ("isi", "Industrial Spatial Intelligence", "Precise, time-stamped location of what moves in a plant, joined with context such as jobs and zones, so people, systems and AI can answer where work is and where it waits."),
-        ("edge", "Edge", "Computing done on site, near the equipment, rather than in a remote cloud."),
-    ]),
-]
-n_terms = sum(len(t) for _, t in TERMS)
-write("/glossary/", "Glossary of RTLS and UWB terms",
-      "Plain definitions of industrial location terms: RTLS, UWB, TDoA, angle of arrival, multipath, omlox, FiRa, WIP visibility, dwell and association.",
-      [
-          head("The words,", "without the jargon.", f"{n_terms} terms you will hear when people talk about location on a factory floor.", trail=[("Glossary", None)], actions=(),
-               short="This glossary from AmIMotion defines the terms used in real-time location on factory floors, from RTLS and UWB to dwell and carrier-to-job association. AmIMotion locates tags down to ±10 cm in 3D, with AmIMo anchors."),
-          section('<nav class="term-index" aria-label="Terms">' + "".join(f'<a href="#{i}">{n}</a>' for _, ts in TERMS for i, n, _ in ts) + "</nav>"
-                  + "".join(f'<div class="term-group"><h2 id="g-{g.lower().replace(' ', '-')}">{g}</h2><dl class="terms">' + "".join(f'<dt id="{i}">{n}</dt><dd>{dd}</dd>' for i, n, dd in ts) + "</dl></div>" for g, ts in TERMS)),
-          close(),
-      ], type="glossary")
-
-# ---------------- company ----------------
-write("/company/", "About AmIMotion: UWB RTLS from Bengaluru",
-      "AmIMotion, a brand of Locatepro Technologies, designs and builds UWB tags, anchors and software in Bengaluru, India. One team, one contract, one support line.",
-      [
-          head("Designed in Bengaluru.", "Built in India.", short=LONG, trail=[("Company", None)],
-               media=ph("The AmIMotion team at work in the Bengaluru lab: a bench with anchors and tags, a laptop with the map, two engineers talking. Natural window light. 21:9. Real photo to be supplied by AmIMotion.", "office", "cine")),
-          section(stats([("Bengaluru", "Designed and built in India", "Engineers on site"), ("End to end", "Tags, anchors and AmIHub", "From one team"),
-                         ("Open", "built on the FiRa and omlox specifications", "REST, MQTT, WebSocket")])),
-          section(vp("Every position", "has an age.", "A position helps only when people know where it came from, how old it is and what work it belongs to. So every record carries a time, unknown is shown as unknown, and nothing is dispatched on location alone."),
-                  tiles([("We start from your floor", "Pilots are scoped from a survey of the flow you care about."),
-                         ("One contract, one support line", "Hardware, software and integration from the people who built them."),
-                         ("We say what location can’t do", "Location is not completion, cause or permission. We design around that."),
-                         ("Pilot first", "Pilot one bay or line, then scale on the same AmIHub.")], 4), tone="dark", id="work-with-us"),
-          section(links([("/what-is-amimotion/", "What is AmIMotion?", "The definition, the name and the facts."), ("/trust/", "Scope and evidence", "What each claim rests on."), ("/contact/", "Contact", "sales@amimotion.com")])),
-          close(),
-      ])
-
-# ---------------- contact ----------------
-write("/contact/", "Book a call with AmIMotion",
-      "Book a call with AmIMotion: see the live map and an AI query on real AmIHub data, and scope a UWB pilot for one bay or line. sales@amimotion.com",
-      [
-          head("Book a call.", None, "Tell us where your team walks to check. We show the live map on real AmIHub data.", trail=[("Contact", None)], actions=()),
+          head("Book a call.", None, "Tell us where your team walks to check. On the call we show AmIHub's live map on real data, not slides.",
+               short="To book a call with AmIMotion, write to sales@amimotion.com or use the form on this page. The call is a live demo on real AmIHub data, not slides: tagged things moving on the live map, and a question typed to an AI assistant. "
+                     "Bring one flow where people walk to find work. After the first call, we share datasheets, architecture, prices and pilot options under NDA.",
+               trail=[ABOUT, ("Book a call", None)]),
           section('<div class="contact-grid"><div>'
                   '<form class="form" data-contact novalidate>'
                   '<label>Your name<input name="name" autocomplete="name" required></label>'
@@ -332,106 +299,187 @@ write("/contact/", "Book a call with AmIMotion",
                   '<label>Company<input name="company" autocomplete="organization" required></label>'
                   '<label>Role (optional)<input name="role" autocomplete="organization-title"></label>'
                   '<label>Which part of your flow needs someone to go and check?<textarea name="flow"></textarea></label>'
-                  '<button class="cta" type="submit">Book a call</button><p class="small">Opens a draft to sales@amimotion.com in your mail app. This site stores nothing.</p></form>'
+                  '<button class="cta" type="submit">Book a call</button><p class="small">Opens a draft to sales@amimotion.com in your own mail app. This site stores nothing you type. <a href="/privacy/">Privacy</a></p></form>'
                   '<div class="draft" data-draft hidden><p><b>Your draft is ready.</b></p><p class="small pre" data-draft-text></p><p class="acts"><a class="cta" data-draft-mail href="mailto:sales@amimotion.com">Open email draft</a> <button class="cta alt" type="button" data-draft-copy>Copy text</button></p></div>'
                   '</div><div>'
-                  '<h2 id="next">What happens next</h2><ol class="next-steps"><li>A call, with a live demo of the map.</li><li>NDA and the detailed pack: datasheets, architecture, pricing.</li><li>A site survey and a pilot in one bay or line.</li><li>Scale on the same AmIHub, if the pilot earns it.</li></ol>'
+                  '<h2 id="next">What happens next</h2><ol class="next-steps"><li>A call, with a live demo on real AmIHub data.</li><li>The NDA pack: datasheets, architecture, prices and pilot options.</li>'
+                  '<li>A site survey, and a pilot in one bay or line.</li><li>Then plant-wide, on the same AmIHub, if the bay proves its numbers.</li></ol>'
                   '<h2 id="write">Write directly</h2><p class="lead"><a href="mailto:sales@amimotion.com">sales@amimotion.com</a></p>'
                   '<p class="small">AmIMotion · Locatepro Technologies Pvt Ltd · Bengaluru, India</p>'
                   '</div></div>'),
           section(faq([
-              ("Do you work with plants outside India?", "AmIMotion is based in Bengaluru, India. For plants elsewhere, including the Gulf, write to sales@amimotion.com and we will set out how survey, installation and support would work for your site."),
-              ("What do you need from us for the first call?", "One flow where people walk to find work, and roughly how big the area is. The pilot planner helps you prepare."),
-              ("Is the demo on real data?", "Yes. The call shows the live map and an AI query on real AmIHub data, not slides."),
+              ("What should we bring to the first call?", 'One flow where people walk to find work, roughly how big the area is, and who owns it. <a href="/tools/pilot/">Your pilot on one page</a> helps you write it down.'),
+              ("Is the demo on real data?", "Yes. The AmIMotion call is a live demo on real AmIHub data, not slides. It includes a question asked of an AI assistant, answered from the live map."),
+              ("Do we need an NDA before the first call?", "No. The first call comes first. After it, we share datasheets, architecture, prices and pilot options under NDA."),
+              ("Our plant is outside India. Can we still talk?", "Yes, write to us. AmIMotion is designed and built in Bengaluru, India. Tell us where your plant is, and we will tell you plainly what a survey and support would look like there."),
           ], "Before you write.")),
-      ], scripts="tools")
+          close("Rather start on your own?", "Six questions about how work moves in your plant. AmIMotion gives you a plan back before anyone calls you.", (("Plan your first bay", "/diagnostic/"),)),
+      ], scripts="tools", page="ContactPage")
 
-# ---------------- trust ----------------
-write("/trust/", "Scope and evidence: what AmIMotion’s claims rest on",
-      "What AmIMotion’s claims rest on, where your data lives and how access is secured: on-premise or cloud, TLS, roles, API keys and audit logs.",
+# ---------------- /trust/ ----------------
+write("/trust/", "Trust and data: where your data lives",
+      "Where AmIMotion's data lives and who can read it: AmIHub inside your plant or in the cloud, TLS, roles, API keys, audit logs, and what each claim rests on.",
       [
-          head("Clear claims.", "Clear boundaries.", "What each claim on this site rests on, and what your floor still has to show.", trail=[("Scope and evidence", None)], actions=(),
-               short="AmIMotion’s product figures, such as down to ±10 cm in 3D (with AmIMo anchors) and 1 to 3 years of tag battery (typical), come from its published brochure and are indicative. A pilot measures them on your floor."),
-          section(tiles([("Product facts", "From the brochure", "Figures are indicative, not independently measured. Confirm hardware revision, software version and setup in your evaluation."),
-                         ("Pictures and films", "Made to explain", "Pictures, films and scenes on this site explain the product. They are not customer sites or live data."),
-                         ("What location does not prove", "Its limits", "Which job is on a trolley, that work is done, why something waited, or that an action is allowed. Those need agreed links, rules and permissions."),
-                         ("Standards", "Built on the specifications", "AmIMotion is built on the FiRa and omlox specifications. This site does not claim FiRa or omlox certification."),
-                         ("Interfaces and hosting", "Confirmed per site", "REST, MQTT, WebSocket and an omlox hub interface, on-premise or cloud. Connectors and responsibilities are confirmed per site."),
-                         ("Analytics and AI", "Shown in a demo", "Analytics views and MCP assistants are shown in a live, scoped demo. This site claims no robot control or measured business gains.")], head="over")),
-          section(vp("Security and your data.", "Where it lives, who can read it.", "The same controls apply on-premise and in the cloud."),
-                  tiles([("Data residency", "On-premise", "AmIHub runs on an industrial PC on your network with no internet dependency. Positions, zones and history stay on your site."),
-                         ("Data residency", "Cloud", "A cloud tenant, with the hosting region and terms set in your contract."),
-                         ("In transit", "TLS", "Every interface, from REST and MQTT to the MCP server, is encrypted."),
-                         ("Access", "Roles and API keys", "Roles per person, keys per system or AI assistant, each with its own scope."),
-                         ("Record", "Audit logs and retention", "Every call is logged. You set how long history is kept."),
-                         ("Updates", "Over the air", "Anchor and tag firmware is updated from AmIHub. Release notes and the update process are in the detailed pack.")]),
-                  links([("/developers/", "For developers", "Interfaces, events and the MCP server."), ("/specs/", "Specifications", "Every figure we publish, and where it comes from.")]),
-                  id="security", tone="light", flush=True),
-          section(vp("Customers and sites.", "Named only with permission."),
-                  tiles([("Customer names", "With written permission", "This site names no customer. Names and outcomes appear only when a customer agrees in writing."),
-                         ("Wording", "Pilot or production", "We say a pilot is a pilot. This site does not use “deployed at” for any customer.")], 2, head="over"),
-                  tone="light", flush=True),
-          close(),
+          head("Trust and data.", "Where your data lives.", "AmIHub can run inside your plant with no internet needed. This page says who can read what, and what each claim on this site rests on.",
+               short="AmIMotion's AmIHub runs on an industrial PC inside your plant, with no internet needed, or in the cloud. Every interface uses TLS. You set who sees what, by role. Each system and AI assistant gets its own API key and scope, and every request is logged. "
+                     "You set how long the map keeps its history. The figures on this site, such as down to ±10 cm with AmIMo anchors, come from AmIMotion's own published specifications and depend on your floor.",
+               trail=[("How it works", "/platform/"), ("Trust and data", None)], actions=(("For developers", "/developers/"), ("People and privacy", "/trust/people/"))),
+          section(vp("Where it runs."),
+                  tiles([("Inside your plant", "AmIHub runs on an industrial PC inside your plant, with no internet needed. Positions, zones and history do not have to leave your network."),
+                         ("In the cloud", "AmIHub can also run in the cloud. The same access controls, audit logs and history settings apply in both.")], 2)),
+          section(vp("Who can read it."),
+                  tiles([("Encrypted in transit", "AmIHub uses TLS on every interface, from REST and MQTT to the MCP server."),
+                         ("Access by role", "You set who sees what, by role. Each system and each AI assistant gets its own API key and scope."),
+                         ("Every request logged", "AmIHub keeps an audit log. For an AI assistant, it records who asked, what was called and what changed."),
+                         ("History you set", "You also set how long the map keeps its history."),
+                         ("A person approves changes", 'Asking changes nothing. Any change, such as raising a work order in AmIHub, needs a person\'s approval. You can require it from a supervisor. We show it live on a call. <a href="/use-cases/ask-your-plant/">Ask your floor</a>.'),
+                         ("Firmware over the air", "AmIHub updates anchor and tag firmware over the air.")], 3)),
+          section(vp("What the claims rest on.", lede="Every figure on this site has a source and a condition."),
+                  tiles([("Product figures", "They come from AmIMotion's own published specifications and are indicative. Down to ±10 cm needs AmIMo anchors and depends on your floor. A battery life of 1 to 3 years depends on use. Final datasheets are shared under NDA."),
+                         ("Standards", "AmIMotion is built on the FiRa and omlox specifications. It claims no formal certification."),
+                         ("What a position cannot tell you", 'A position does not show which job a trolley carries until the job is <a href="/learn/association/">linked to it</a>. It does not show that work is done, or why it waited. Those need your links, your zones and your team.'),
+                         ("Customers", "This site names no customer and shows no customer result.")], 2)),
+          section(faq([
+              ("Does AmIHub need the internet?", "No. AmIHub runs on an industrial PC inside your plant, with no internet needed. It can also run in the cloud."),
+              ("Can an AI assistant change anything in AmIHub?", "Asking changes nothing. Each assistant gets its own access: read-only, or only the actions you allow. Any change, such as raising a work order, needs a person's approval, and you can require it from a supervisor. Every request it makes is logged. AmIMotion shows it live on a call."),
+              ("Does AmIMotion hold a formal certification?", "AmIMotion is built on the FiRa and omlox specifications. It claims no formal certification."),
+              ("Does the pilot track people?", "No. The AmIMotion pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project. It would need its own policy."),
+          ])),
+          section(links([("/developers/", "For developers", "Interfaces, events and the MCP server."),
+                         ("/specs/", "Specifications", "Every figure and its condition."),
+                         ("/trust/people/", "People and privacy", "What a pilot tags, and why."),
+                         ("/privacy/", "Privacy", "What this website collects, and what it does not.")]), label="More on trust"),
+          close("Talk to the team.", "Tell us the flow you want to see. We walk through it with you."),
       ])
 
-# ---------------- privacy ----------------
-write("/privacy/", "Privacy",
-      "This site works without sign-up or advertising pixels. Diagnostic answers, planner briefs and email drafts stay in your browser until you send them.",
+# ---------------- /trust/people/ ----------------
+write("/trust/people/", "People and privacy: what a pilot tags",
+      "An AmIMotion pilot tags trolleys, bins and pallets, not people. The tag goes on the trolley, not on the person pushing it. Here is what the map shows.",
       [
-          head("A useful visit,", "without a profile.", "Everything on this site works without signing up or handing over contact details.", trail=[("Privacy", None)], actions=()),
-          section(prose('<h2>Advertising and tracking</h2><p>This site has no advertising pixels and no cross-site tracking. The host may process technical request data to serve and secure the site.</p>'
-                        '<h2>Floor diagnostic</h2><p>Your answers stay in this browser tab, so you can pick up where you left off. They leave your browser only if you choose to send your profile.</p>'
-                        '<h2>Tools and pilot briefs</h2><p>The anchor estimator, search-time calculator and pilot planner run in your browser. Downloading a brief saves a local file. Nothing is sent to AmIMotion unless you email it.</p>'
-                        '<h2>Enquiries</h2><p>The contact form prepares an email draft in your own mail app. Sending is a step you take.</p>'
-                        '<h2>Questions</h2><p>For questions about information you send to AmIMotion, write to <a href="mailto:sales@amimotion.com">sales@amimotion.com</a>. This page covers this website only.</p>')),
+          head("People and privacy.", "The tag goes on the trolley.", "An AmIMotion pilot follows work, not workers. Here is what it tags, what the map shows and who decides.",
+               short="An AmIMotion pilot tags trolleys, bins and pallets, not people. The AmIGo tag goes on the trolley, not on the person pushing it. AmIHub's map shows where tagged things are and how long they have waited. "
+                     "Tagging people would be a separate project. It would need its own policy. You set who sees what, by role, and how long the map keeps its history.",
+               trail=[ABOUT, ("People and privacy", None)]),
+          section(vp("What the map shows."),
+                  split(None, ["AmIHub shows where each tagged trolley, bin or pallet is, and how long it has waited in a zone. It shows where a tag was last seen, and when.",
+                               "In the AmIMotion pilot, no person carries a tag. So no person is on the map, and the map does not show who pushed a trolley.",
+                               "Why it waited is for your team to say. A long wait shows where to look in the flow. It does not say who is to blame."], (),
+                        hallslot("hall-ask-43", f"{CAM}, homepage screen 4 scene, 4:3 crop on the queue: everything pale, no trails, only the three trolleys in the inspection queue on amber. No people in the hall.", "photo",
+                             "The model factory floor with everything pale except three trolleys at inspection, marked amber: the ones that have waited."))),
+          section(vp("Who sees what."),
+                  tiles([("Access by role", 'You set who sees what, by role. Each system and each AI assistant gets its own access, and every request is logged. <a href="/trust/">Trust and data</a>.'),
+                         ("History you set", "You also set how long the map keeps its history."),
+                         ("Inside your plant", "AmIHub can run on an industrial PC inside your plant, with no internet needed.")], 3)),
+          section(vp("If you ever want to tag people."),
+                  prose(P('It is never part of an AmIMotion WIP pilot. Tagging people would be a separate project, outside the pilot. It would need its own policy. Talk to us about it before anything is tagged. <a href="/pilot/">How a pilot runs</a>.',
+                          'In India, a location tied to a named person is personal data under the Digital Personal Data Protection Act, 2023. Your own policy would need to cover it. <a href="/privacy/">Privacy</a>.'))),
+          section(faq([
+              ("Does AmIMotion track workers?", "The AmIMotion pilot tags trolleys, bins and pallets, not people. The tag goes on the trolley, not on the person pushing it. Tagging people would be a separate project. It would need its own policy."),
+              ("Can a supervisor see who moved a trolley?", "No. The map shows where the trolley went and when. No person carries a tag in the pilot, so the map does not show who pushed it."),
+              ("Who decides how long the history is kept?", "You do. You set how long the map keeps its history."),
+              ("Does a tag on a forklift track its driver?", "Forklifts are not part of the WIP pilot. If you tag vehicles later, the map shows the vehicle, and your policy decides how that history is used."),
+          ])),
+          close("Bring the hard questions to the call.", "Ask who sees what, and how long it is kept. AmIMotion answers on the call, with AmIHub open."),
+      ])
+
+# ---------------- /privacy/ ----------------
+H = lambda t: f"<h2>{t}</h2>"
+write("/privacy/", "Privacy notice",
+      "How the AmIMotion website handles personal data: no sign-up, no ads or analytics trackers, tools that run in your browser, and your rights under the DPDP Act.",
+      [
+          head("Privacy notice.", None, "This notice covers the amimotion.com website. It says what the site collects, what it does not, and what you can ask of us.",
+               short="The AmIMotion website has no sign-up, no advertising trackers and no analytics. The planning tools and Plan your first bay run in your browser. Your answers to Plan your first bay sit in this browser tab only, and nothing reaches AmIMotion until you send an email. "
+                     "When you write to us, Locatepro Technologies Pvt Ltd uses your details to reply and to follow up the enquiry you started. You can ask to see, correct or erase them under India's Digital Personal Data Protection Act, 2023.",
+               trail=[("Privacy", None)], actions=(("Trust and data", "/trust/"), ("People and privacy", "/trust/people/"))),
+          section(prose(
+              H("Who we are") + "<p>This website is run by Locatepro Technologies Pvt Ltd, Bengaluru, India. AmIMotion is its brand. For personal data you send us through this site, we are the Data Fiduciary under India's Digital Personal Data Protection Act, 2023. Write to us at <a href=\"mailto:sales@amimotion.com\">sales@amimotion.com</a>.</p>"
+              + H("What the site does not do") + "<p>There is no sign-up and no account. The site sets no cookies. It loads no advertising, analytics or social-media trackers. It loads no fonts or scripts from other companies' servers.</p>"
+              + H("What stays in your browser") + '<p><a href="/diagnostic/">Plan your first bay</a> keeps your answers in this browser tab, so you can go back a step. They are deleted when you close the tab, and Start over clears them at once. If you type a work email there, the page guesses your company name from it inside your browser. '
+                '<a href="/tools/anchors/">How many anchors you need</a>, <a href="/tools/search-time/">Time spent searching</a> and <a href="/tools/pilot/">Your pilot on one page</a> work out their answers in your browser and keep nothing. A brief you download is a file on your own device. Copy puts text on your own clipboard.</p>'
+              + H("When you send us something") + '<p>The <a href="/contact/">contact form</a> and Plan your first bay open a draft email in your own mail app, addressed to sales@amimotion.com. Nothing reaches us until you press send. When you do, we receive what the email contains: usually your name, work email and company, your role and phone number if you gave them, and your answers. We use it only to reply to you and to follow up the enquiry you started. We do not sell it, and we do not add you to a newsletter.</p>'
+              + H("How long we keep it") + "<p>We keep an enquiry for as long as we need it to reply and to follow up, then erase it, unless a law requires us to keep it longer.</p>"
+              + H("Server logs") + "<p>The company that hosts this site may record standard request data, such as your IP address, browser type, the page asked for and the time, to serve the site and keep it secure. We do not use it to build a profile of you.</p>"
+              + H("Your rights") + "<p>Under the DPDP Act you can ask us for a summary of the personal data we hold about you and how we use it. You can ask us to correct, complete, update or erase it. You can name someone to act for you if you die or cannot act yourself. You can withdraw your consent at any time, as easily as you gave it, by writing to us. Withdrawing does not undo what was lawfully done before.</p>"
+              + H("Complaints") + "<p>Write to sales@amimotion.com first, and we will answer you. If you are not satisfied with our answer, you may complain to the Data Protection Board of India.</p>"
+              + H("Children") + "<p>This site is for businesses. It is not meant for children, and we do not knowingly collect a child's personal data.</p>"
+              + H("Other sites") + "<p>A link to another website, such as a video channel, takes you to that site's own privacy terms.</p>"
+              + H("Changes") + "<p>If this notice changes, the new version goes on this page with its date. Last updated: 2 November 2026.</p>"), label="Privacy notice"),
       ])
 
 # ---------------- 404 ----------------
 write("/404.html", "Page not found",
-      "This page has moved. Return to the AmIMotion homepage or the platform overview.",
+      "This page is not here. The AmIMotion homepage and the four sections of the site will get you where you were going.",
       [
-          head("This page", "has moved.", "We’d rather say so than guess. Try the homepage or the platform.", dark=True, actions=(("Return home", "/"), ("Platform", "/platform/"))),
-      ], tone="dark", noindex="true")
+          head("This page is not here.", None, "The link may be old, or the address may have a typo. These pages are a good next step.",
+               short="AmIMotion is spatial intelligence for factories and warehouses. A small tag rides on each trolley, bin and tool."),
+          section(links([("/", "AmIMotion", "The homepage."), ("/platform/", "How it works", "The tag, the anchor and AmIHub."),
+                         ("/solutions/", "Where it helps", "Work in progress, trolleys, tools and vehicles."), ("/start/", "Start small", "One flow, one bay."),
+                         ("/company/", "About us", "Who makes AmIMotion.")]), label="Pages"),
+          close("Not sure where to start?", "Plan your first bay.", (("Plan your first bay", "/diagnostic/"),)),
+      ], noindex="true")
 
-
-# ---------------- stubs for nav targets that homepage-final.md defines and the site lacked (round 04) ----------------
-# Minimal pages. Every line is a locked line from homepage-final.md (screens 3 and 6, nav lines), so no new claim is made.
-NAV = json.loads((Path(__file__).resolve().parents[2] / "src" / "data" / "nav.json").read_text())
-_start = next(s for s in NAV["sections"] if s["url"] == "/start/")
+# ---------------- /start/ ----------------
 write("/start/", "Start small: one bay first",
-      "Start with one bay. How a pilot runs, how to buy, and the tools and guides that help you plan your first bay with AmIMotion.",
+      "Start with one bay. AmIMotion pilots follow one flow in one bay or line, then grow plant-wide on the same AmIHub. Plan the first bay here.",
       [
-          head("Start with one bay.", None, "A pilot follows one flow in one bay or line. You choose the flow.",
-               short="AmIMotion pilots start in one bay or line. You see your own waits in one bay, and prove the numbers, before you decide on more. "
-                     "Then grow plant-wide on the same AmIHub, without re-fitting the first bay.",
-               trail=[("Start small", None)], actions=(("Book a call", "/contact/"), ("Plan your first bay", "/diagnostic/"))),
-          section(vp("Start small."), links([(u, l, line) for l, u, line in _start["items"]])),
-      ])
+          head("Start with one bay.", "Then grow on the same AmIHub.", "AmIMotion starts small on purpose. One flow, in one bay or line, measured on your own floor before anyone talks about more.",
+               short="AmIMotion pilots start in one bay or one line. You choose the flow. The pilot times today's waits first, so you have a baseline. You see your own waits in one bay, and prove the numbers, before you decide on more. "
+                     "Then you grow plant-wide on the same AmIHub, without re-fitting the first bay.",
+               trail=[("Start small", None)], actions=(("Plan your first bay", "/diagnostic/"), ("How a pilot runs", "/pilot/")),
+               media=hallslot("hall-bay", f"{CAM}, full frame, the homepage screen 6 scene (one bay in colour), 16:9 crop centred on the inspection bay: the whole hall pale, the inspection station and its queue in full colour with its trails, its waits and the two AmIMo anchors on its columns.", "wide", BAY_ALT)),
+          section(vp("Three ways in.", lede="Pick the one that fits where you are today."),
+                  tiles([("Not sure where to start", "Plan your first bay. Six questions about how work moves in your plant. You get a plan for where to start, before anyone calls you."),
+                         ("You know the flow", "Read how an AmIMotion pilot runs: the five steps, what we bring, what your team does and what you decide at the end."),
+                         ("Others need to say yes", "Your pilot on one page turns three answers into a brief you can send to your plant head, IT and finance.")], 3),
+                  more([("Plan your first bay", "/diagnostic/"), ("How a pilot runs", "/pilot/"), ("Your pilot on one page", "/tools/pilot/")])),
+          section(vp("Your numbers, before the call.", lede="Three AmIMotion tools that run in your browser. Nothing you enter leaves it unless you send it."),
+                  links([("/tools/anchors/", "How many anchors you need", "A first range from your floor size and racking, before the survey."),
+                         ("/tools/search-time/", "Time spent searching", "Your own figures, multiplied out into hours a year. No savings assumed."),
+                         ("/tools/pilot/", "Your pilot on one page", "Three answers, one brief to share with your team.")])),
+          section(vp("What a first bay proves."),
+                  split(None, ["A pilot follows one flow in one bay or line. AmIGo tags ride on the trolleys, bins or pallets in that flow. AmIMo anchors on the bay's columns hear them. AmIHub shows where each one is and how long it has waited.",
+                               "Before it starts, we agree how to count a wait that runs past shift end. We also agree who on your team acts when work waits too long.",
+                               "When the bay has shown its numbers, AmIMotion grows plant-wide on the same AmIHub. The first bay is not re-fitted."], (), still("amimo"))),
+          section(vp("Read before you plan."),
+                  links([("/learn/pilot-baseline/", "Measure before you claim", "Why the baseline comes first, and how to set one."),
+                         ("/how-to-buy/", "How to buy", "Call, NDA pack, survey, pilot."),
+                         ("/trust/people/", "People and privacy", "What an AmIMotion pilot tags, and why it is not people."),
+                         ("/learn/", "Field guides", "Plain answers, one per page.")])),
+          close("Not sure which bay?", "Six questions about how work moves in your plant. AmIMotion gives you a plan back before anyone calls you.", (("Plan your first bay", "/diagnostic/"),)),
+      ], page="CollectionPage")
 
-write("/how-to-buy/", "How to buy AmIMotion: call, NDA pack, survey, pilot",
-      "What you buy from AmIMotion: AmIGo tags, AmIMo anchors and AmIHub, plus our survey and an anchor plan for your floor. One contract.",
+# ---------------- /how-to-buy/ ----------------
+write("/how-to-buy/", "How to buy: call, NDA pack, survey, pilot",
+      "What you buy from AmIMotion and in what order: a call with a live demo, the NDA pack with prices, a site survey, then a pilot in one bay or line.",
       [
-          head("How to buy.", None, "Call, NDA pack, survey, pilot.",
-               short="What you buy. AmIGo tags, AmIMo anchors and AmIHub, plus our survey and an anchor plan for your floor. Designed and built in India, with local stock and local engineers on your site. "
-                     "One contract and one support line cover every layer.",
-               trail=[("How to buy", None)], actions=(("Book a call", "/contact/"),)),
+          head("How to buy.", "Four steps, in order.", "AmIMotion sells one system, from one team, under one contract. Here is what you buy and how it reaches your floor.",
+               short="You buy AmIGo tags, AmIMo anchors and AmIHub from AmIMotion, plus our survey and an anchor plan for your floor. It happens in four steps. First, a call with a live demo on real AmIHub data. "
+                     "Second, the NDA pack with datasheets, architecture, prices and pilot options. Third, a site survey and a pilot in one bay or line. Fourth, growth plant-wide on the same AmIHub. One contract and one support line cover every layer.",
+               trail=[START, ("How to buy", None)], actions=(("How a pilot runs", "/pilot/"), ("Your pilot on one page", "/tools/pilot/"))),
           section(vp("Four steps."),
-                  steps([("Call", "The call is a live demo on real AmIHub data, not slides."),
-                         ("NDA pack", "After the first call, we share datasheets, architecture, prices and pilot options under NDA."),
-                         ("Survey", "We survey your floor and set the anchor count."),
-                         ("Pilot", "A pilot follows one flow in one bay or line. You see your own waits in one bay, and prove the numbers, before you decide on more.")]),
-                  prose("<p>Your team or your integrator can build on it at any layer, through open interfaces. AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO.</p>"),
-                  links([("/pilot/", "How a pilot runs", "One flow, one bay"), ("/diagnostic/", "Plan your first bay", "Six questions, a plan back"), ("/contact/", "Book a call", "Talk to the team")])),
-      ])
-
-write("/trust/people/", "People and privacy: what a pilot tags",
-      "An AmIMotion pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project, with its own policy.",
-      [
-          head("People and privacy.", None, "What a pilot tags, and why.",
-               short="The AmIMotion pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project. It would need its own policy. You also set how long the map keeps its history.",
-               trail=[("Trust and data", "/trust/"), ("People and privacy", None)], actions=(("Book a call", "/contact/"),)),
-          section(vp("On the trolley, not the person."),
-                  prose("<p>A small tag rides on each trolley, bin and tool. It goes on the trolley, not on the person pushing it.</p>"
-                        "<p>You set who sees what, by role. Why it waited is for your team to say.</p>"),
-                  links([("/trust/", "Trust and data", "Where your data lives"), ("/pilot/", "How a pilot runs", "One flow, one bay")])),
+                  steps([("A call", "The call is a live demo on real AmIHub data, not slides. Bring one flow where people walk to find work."),
+                         ("The NDA pack", "After the first call, AmIMotion shares datasheets, architecture, prices and pilot options under NDA."),
+                         ("Survey and pilot", "We survey your floor and set the anchor count. A pilot follows one flow in one bay or line."),
+                         ("Grow", "Then grow plant-wide on the same AmIHub, without re-fitting the first bay.")])),
+          section(vp("What you buy.", lede="Three parts, and the work to fit them to your floor."),
+                  cards([("/products/amigo/", still("amigo", "(max-width:639px) 100vw, (max-width:1023px) 50vw, 24vw"), "AmIGo tag", "One on each trolley, bin, pallet or tool in scope. One battery lasts 1 to 3 years, depending on use."),
+                         ("/products/amimo/", still("amimo", "(max-width:639px) 100vw, (max-width:1023px) 50vw, 24vw"), "AmIMo anchor", "Fixed to a column or wall, 3 to 8 m up. It needs only power, from DC or PoE."),
+                         ("/products/amihub/", HUB_SLOT(), "AmIHub", "Works out where each tag is. Runs on an industrial PC inside your plant, with no internet needed, or in the cloud."),
+                         ("/pilot/", "", "Survey and plan", "An AmIMotion survey of your floor and an anchor plan for it, so the anchor count fits your racking and steel.")], 4)),
+          section(vp("What procurement asks."),
+                  tiles([("Who is the supplier?", 'AmIMotion is a brand of Locatepro Technologies Pvt Ltd, Bengaluru, India. It is led by <a href="/company/">Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO</a>.'),
+                         ("Who supports it?", "One contract and one support line cover every layer. AmIMotion designs and builds the tags, the anchors and AmIHub in India, with local stock and local engineers on your site."),
+                         ("Are we tied to one supplier?", 'AmIMotion is built on the FiRa and omlox specifications. Your MES, ERP and WMS connect to AmIHub through <a href="/developers/">open REST, MQTT, WebSocket and omlox hub interfaces</a>. Your team or your integrator can build on it at any layer.'),
+                         ("What will the quote cover?", "Prices are in the NDA pack, after the first call. If you need hardware, services and software on separate lines, say so on the call.")], 2)),
+          section(vp("Bring these to the call.", lede="Four answers make the first AmIMotion call useful."),
+                  tiles([("One flow", "Where people walk to find work today."), ("Its size", "Roughly how big the bay or line is."),
+                         ("Its owner", "The person on the floor who would act on the map."), ("Its jobs", "How a job is linked to its trolley today, if it is.")], 4),
+                  more([("Your pilot on one page", "/tools/pilot/"), ("How many anchors you need", "/tools/anchors/")])),
+          section(faq([
+              ("What does AmIMotion cost?", "After the first call, we share datasheets, architecture, prices and pilot options under NDA. The cost depends on your floor, so it follows the survey and the anchor plan."),
+              ("Can we buy through our integrator?", "Your team or your integrator can build on AmIMotion at any layer, through open interfaces. Tell us on the first call who else will be involved."),
+              ("Does AmIMotion hold a formal certification?", "AmIMotion is built on the FiRa and omlox specifications. It claims no formal certification."),
+              ("Where is AmIMotion made?", "Designed and built in India, on NXP Trimension UWB silicon. AmIMotion is a brand of Locatepro Technologies Pvt Ltd, Bengaluru."),
+          ])),
+          close("Talk to the team.", "Tell us the flow you want to see. We walk through it with you."),
       ])

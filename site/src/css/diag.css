@@ -50,7 +50,7 @@
 .diag-heard{margin-top:var(--s-4);color:var(--ink-soft);font-size:var(--size-small)}
 .diag-heard span+span::before{content:" \00b7  "}
 .diag-block{margin-top:var(--s-6)}
-.mono-label{font-weight:500;margin-bottom:var(--s-2)}
+.diag-h{font-weight:500;margin-bottom:var(--s-2)}
 .diag-block ol,.diag-block ul{color:var(--ink-soft)}
 .diag-block .big{font-size:var(--size-lede);line-height:1.45}
 .diag-block.pilot{background:var(--surface);padding:var(--s-5)}

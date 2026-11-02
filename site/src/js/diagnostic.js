@@ -12,7 +12,7 @@
     { id: 'assets', multi: true, title: 'What does your team look for?', sub: 'Choose all that apply.', options: [
       ['carriers', 'WIP carriers & bins', 'Jobs between operations'], ['tools', 'Tools & fixtures', 'Shared between cells'],
       ['vehicles', 'Forklifts & tuggers', 'Where they are, how they’re used'], ['robots', 'AGVs & AMRs', 'Alongside people and vehicles'],
-      ['goods', 'Pallets & finished goods', 'Staging and dispatch'], ['people', 'People', 'For safety and muster'] ] },
+      ['goods', 'Pallets & finished goods', 'Staging and dispatch'] ] },
     { id: 'found', title: 'How do people find it today?', sub: 'The honest answer is the useful one.', options: [
       ['walk', 'Someone walks the floor and looks', ''], ['call', 'Phone or radio around', ''], ['mes', 'Check the last scan in MES or ERP', ''],
       ['board', 'A whiteboard or spreadsheet', ''], ['late', 'We usually find out when it’s already late', ''] ] },
@@ -114,12 +114,11 @@
     if (set.has('vehicles')) [[50, 118], [96, 190]].forEach(([x, y]) => dots.push(`<rect class="m-vehicle" x="${x - 11}" y="${y - 6}" width="22" height="12" rx="3"/>`));
     if (set.has('robots')) [[230, 116], [372, 116]].forEach(([x, y]) => dots.push(`<circle class="m-robot" cx="${x}" cy="${y}" r="6"/>`));
     if (set.has('goods')) [[40, 170], [58, 170], [40, 186]].forEach(([x, y]) => dots.push(`<rect class="m-goods" x="${x}" y="${y}" width="12" height="12"/>`));
-    if (set.has('people')) [[210, 112], [330, 120], [420, 150]].forEach(([x, y]) => dots.push(`<circle class="m-person" cx="${x}" cy="${y}" r="3.5"/>`));
     s += dots.join('');
     // found-by overlay
     if (A.found === 'walk') s += `<path class="m-walk" d="M30 300 C120 250 160 140 240 150 S330 110 330 74"/><text class="m-note" x="30" y="318">Found on foot</text>`;
     if (A.found === 'call') s += `<text class="m-note" x="30" y="318">Found by phone and radio</text>`;
-    if (A.found === 'mes') s += `<g class="m-stamp"><rect x="150" y="250" width="160" height="26" rx="4"/><text x="160" y="267">Last scan: leaving Cell 2</text></g><text class="m-note" x="30" y="318">The record shows the last scan, not the place</text>`;
+    if (A.found === 'mes') s += `<text class="m-note" x="30" y="318">Last scan, not the place</text>`;
     if (A.found === 'board') s += `<text class="m-note" x="30" y="318">Found on a whiteboard, updated by hand</text>`;
     if (A.found === 'late') s += `<text class="m-note warn" x="30" y="318">Found when it is already late</text>`;
     // job link
@@ -144,17 +143,17 @@
   // ------------------------------------------------------------ profile
   function profile() {
     const titles = { machasm: 'A hidden queue between machining and assembly.', qc: 'Work waiting unseen before inspection.', dock: 'Dock and staging dwell nobody can see.', rework: 'A rework loop without a map.', unknown: 'Work that waits where nobody can see it.' };
-    const found = { walk: 'Your floor is found on foot. Every “where is it?” costs a walk, and the answer is out of date by the time it arrives.', call: 'Your floor is found by phone. The answer depends on who picks up and what they last saw.', mes: 'Your systems know the last scan, not the current place. Between scans, work is invisible.', board: 'Your whiteboard is a snapshot that someone has to keep redrawing by hand.', late: 'You find out when it’s already late. Visibility has to arrive before the delay does.' }[A.found];
-    const link = { scan: 'A scan step already links job and carrier. That event can open the association in AmIHub, so a position becomes “this job, in the queue”.', paper: 'The job travels on paper, which can’t be queried. A scan or MES link at the start of each job is the missing piece for job-level answers.', mes: 'Your MES already holds the job-to-carrier link. That is the fastest route to job-level visibility.', none: 'There’s no reliable job link yet. Start honestly with carrier location and dwell, and define the association as part of the pilot.' }[A.link];
+    const found = { walk: 'Your floor is found on foot. Every “where is it?” costs a walk, and the answer is out of date by the time it arrives.', call: 'Your floor is found by phone. The answer depends on who picks up and what they last saw.', mes: 'Your systems know the last scan, not the current place. Between scans, work is invisible.', board: 'Your whiteboard is a snapshot that someone has to keep redrawing by hand.', late: 'You hear about it when it is already late.' }[A.found];
+    const link = { scan: 'A scan step already links job and carrier. That scan can link the job to its trolley in AmIHub.', paper: 'The job travels on paper, which can’t be queried. A scan or MES link at the start of each job is the missing piece for job-level answers.', mes: 'Your MES already holds the job-to-carrier link. Then AmIHub can take the link from your own system.', none: 'There’s no reliable job link yet. Start honestly with carrier location and dwell, and define the association as part of the pilot.' }[A.link];
     const a = new Set(A.assets || []);
-    const lead = a.has('carriers') ? 'WIP carriers' : a.has('tools') ? 'tools and fixtures' : a.has('vehicles') ? 'forklifts and tuggers' : a.has('robots') ? 'AGVs and AMRs' : a.has('goods') ? 'pallets' : 'people badges';
+    const lead = a.has('carriers') ? 'WIP carriers' : a.has('tools') ? 'tools and fixtures' : a.has('vehicles') ? 'forklifts and tuggers' : a.has('robots') ? 'AGVs and AMRs' : 'pallets';
     const where = { machasm: 'the assembly queue', qc: 'the inspection queue', dock: 'the dock and staging lanes', rework: 'the rework area', unknown: 'the flow you’d show a visitor first' }[A.wait];
     const assetLine = a.size > 2 ? `You named ${a.size} kinds of asset. Start with ${lead} around ${where}; add the rest on the same anchors once the first flow proves itself.` : `Start with ${lead} around ${where}. It’s a contained first step with a clear owner.`;
     const scope = { cell: 'one cell or bay', line: 'one line', hall: 'one line inside the hall first', plant: 'one line first, then the plant on the same AmIHub' }[A.scope];
     const owner = { plant: 'your production team', prod: 'production control', scm: 'logistics', eng: 'the production team, with OT/IT alongside', other: 'the team that owns the flow' }[A.role];
     const see = [
       `Where each tagged ${lead.replace(/s$/, '')} is, with the time it was observed`,
-      `How long work waits in ${where}, against a rule your team sets`,
+      `How long work waits in ${where}, counted the way your team agrees`,
       A.link === 'none' ? 'Job-level answers once the carrier-to-job association is defined' : 'Which job each carrier holds, from your existing link',
     ];
     const ask = [
@@ -162,7 +161,7 @@
       'What would you do differently if you knew within minutes, not hours?',
       A.role === 'eng' ? 'Which system should own each field, and where should events flow?' : 'Which records does your MES keep for this flow today?',
     ];
-    return { title: titles[A.wait], insights: [found, link, assetLine], pilot: `Pilot ${scope}: tag the ${lead}, define the zones around ${where}, agree one dwell rule, and give ${owner} the live view.`, see, ask };
+    return { title: titles[A.wait], insights: [found, link, assetLine], pilot: `Pilot ${scope}: tag the ${lead}, define the zones around ${where}, agree how a wait is counted, and give ${owner} the live view.`, see, ask };
   }
 
   function summaryText(p) {
@@ -183,12 +182,12 @@
     stage.innerHTML = `<div class="diag-result">
       <h3 tabindex="-1">${p.title}</h3>
       <div class="diag-heard">${[...(A.assets || []).map((v) => label('assets', v)), label('found', A.found), label('link', A.link), label('scope', A.scope)].map((t) => `<span>${esc(t)}</span>`).join('')}</div>
-      <div class="diag-block"><p class="mono-label">What it means</p><ol>${p.insights.map((x) => `<li>${x}</li>`).join('')}</ol></div>
-      <div class="diag-block pilot"><p class="mono-label">A pilot that fits</p><p class="big">${p.pilot}</p>
-        <p class="mono-label mt-5">What you’d see first</p><ul>${p.see.map((x) => `<li>${x}</li>`).join('')}</ul></div>
-      <div class="diag-block"><p class="mono-label">On a floor walk, we’d ask</p><ul class="ask">${p.ask.map((x) => `<li>${x}</li>`).join('')}</ul></div>
+      <div class="diag-block"><h4 class="diag-h">What it means</h4><ol>${p.insights.map((x) => `<li>${x}</li>`).join('')}</ol></div>
+      <div class="diag-block pilot"><h4 class="diag-h">A pilot that fits</h4><p class="big">${p.pilot}</p>
+        <h4 class="diag-h mt-5">What you’d see first</h4><ul>${p.see.map((x) => `<li>${x}</li>`).join('')}</ul></div>
+      <div class="diag-block"><h4 class="diag-h">On a floor walk, we’d ask</h4><ul class="ask">${p.ask.map((x) => `<li>${x}</li>`).join('')}</ul></div>
       <form class="diag-lead" data-lead novalidate>
-        <div class="diag-lead-head"><p class="mono-label sig">Take it further</p><h4>Send me this profile and a pilot outline.</h4><p class="small">An AmIMotion engineer replies by email. No newsletter, no sequence.</p></div>
+        <div class="diag-lead-head"><h4>Send me this profile and a pilot outline.</h4><p class="small">The AmIMotion team replies by email. No newsletter.</p></div>
         <div class="field"><label for="d-name">Name</label><input id="d-name" name="name" autocomplete="name" required><span class="error" data-err="name"></span></div>
         <div class="field"><label for="d-email">Work email</label><input id="d-email" name="email" type="email" autocomplete="email" required><span class="hint" data-domain></span><span class="error" data-err="email"></span></div>
         <div class="field"><label for="d-company">Company</label><input id="d-company" name="company" autocomplete="organization"></div>

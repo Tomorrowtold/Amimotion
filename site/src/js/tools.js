@@ -53,9 +53,9 @@
       const q = radio(pilot, 'q'), a = radio(pilot, 'area'), l = radio(pilot, 'link');
       const t = (r) => (r ? r.dataset.label : '—');
       const settle = [];
-      if (l && l.value === 'none') settle.push('How a job gets linked to a trolley (a scan at loading is the simplest start).');
+      if (l && l.value === 'none') settle.push('How a job is linked to its trolley, in AmIHub or from your own system.');
       if (a && a.value === 'unsure') settle.push('Which bay or line to start with, chosen on a short floor walk.');
-      settle.push('The zones that matter and the time limit for each.', 'Who looks when a limit is passed.', 'A baseline: searches per shift and minutes per search, measured before tags go on.');
+      settle.push('The zones that matter, named in your own words.', 'Who on your team acts when work waits too long.', 'How to count a wait that runs past shift end.', 'A baseline: searches per shift and minutes per search, measured before tags go on.');
       const brief = `AmIMotion pilot brief\n\nWhat we need to understand: ${t(q)}\nWhere we begin: ${t(a)}\nHow work is linked to trolleys today: ${t(l)}\n\nTo settle before hardware arrives:\n` + settle.map((s) => '• ' + s).join('\n') +
         '\n\nMade in the browser on amimotion.com. Not a quote or a feasibility result.';
       $('[data-out="brief"]').textContent = brief;
