@@ -1,22 +1,13 @@
 from lib import *
 
-AMIGO = '/assets/img/amigo-card-900.webp 900w, /assets/img/amigo-card-1600.webp 1600w'
-AMIGO_TOP = '/assets/img/amigo-top-900.webp 900w, /assets/img/amigo-top-1600.webp 1600w'
-AMIMO = '/assets/img/amimo-a-900.webp 900w, /assets/img/amimo-a-1600.webp 1600w'
-AMIMO_SIDE = '/assets/img/amimo-side-900.webp 900w, /assets/img/amimo-side-1600.webp 1600w'
-AMIMO_3Q = '/assets/img/amimo-3q-900.webp 900w, /assets/img/amimo-3q-1600.webp 1600w'
-
-
-BLOCKS = Path(__file__).resolve().parent / "blocks"
-
-
-def block(name):
-    return (BLOCKS / f"{name}.html").read_text()
-
-
-def stage(src, srcset, alt, w, h, ground):
-    return (f'<div class="card ground-{ground} product-stage" data-reveal-scale><img src="{src}" srcset="{srcset}" sizes="(max-width: 900px) 90vw, 900px" '
-            f'alt="{alt}" width="{w}" height="{h}" fetchpriority="high" decoding="async"></div>')
+KM_AMIMO = km("amimo", "Anchors need only power", "Where and how anchors mount.", [
+    "Mount on a column, wall or ceiling, 3 to 8 m up.", "Set it up from a phone app. AmIHub finds each anchor itself.",
+    "Each anchor reaches about 50 m in line of sight. Steel and racking set the final count.", "Prefer a wired network? There is an Ethernet option."], "/products/amimo/")
+KM_PRECISION = km("precision", "Down to ±10 cm in 3D", "How a pulse becomes a place.", [
+    "Each tag sends a pulse a few nanoseconds wide. Anchors time its arrival to tens of picoseconds.",
+    "Anchors also read the angle a pulse arrives from, so fewer anchors fix a position.",
+    "The wide band separates the direct signal from reflections off steel and racking.",
+    "Your site sets the final accuracy. A site survey sets the anchor plan."], "/technology/")
 
 
 # ---------------- platform ----------------
@@ -28,9 +19,23 @@ write("/platform/", "UWB RTLS platform: tags, anchors and software",
                      "It locates tagged trolleys, bins, tools and vehicles down to ±10 cm in 3D (with AmIMo anchors), and records which zone each one is in and for how long.",
                trail=[("Platform", None)], actions=(("Book a call", "/contact/"), ("Diagnose your floor", "/diagnostic/")),
                media=ph("Wide view over a working machining hall from a mezzanine: cells, aisles, trolleys and people moving, anchors visible high on two columns. Late afternoon light through high windows. 21:9.", "hall", "cine")),
-          block("amigo"),
-          block("amimo"),
-          block("precision"),
+          section(vp("AmIGo", "The tag that rides on work.", "A small UWB tag for trolleys, bins, tools and forklifts. It wakes when it moves and sleeps when it is still, so one battery lasts 1–3 years."),
+                  split(None, (), media=still("amigo-side"), extra=tiles([
+                      ("One tag, many jobs", "For trolleys, bins, tools, forklifts and badges. The same tag, a different mount."),
+                      ("Wakes on motion", "A built-in motion sensor wakes it to send. At rest it sleeps, which is where the battery life comes from."),
+                      ("Mounts its way", "Adhesive, screw, lanyard or vehicle cradle. Two screw tabs are moulded into the case.")], 1)
+                      + stats([("1–3 years", "Battery, typical", "Usage-dependent")]) + more([("AmIGo tag", "/products/amigo/")]))),
+          section(vp("AmIMo", "Anchors need only power.", "Anchors keep time with each other over the air and send data over Wi-Fi. No data or sync cables to run. Plug in DC or PoE."),
+                  split(None, (), media=still("amimo"), flip=True, extra=tiles([
+                      ("Angle and range", "Reads where each pulse comes from as well as how far it travelled, so fewer anchors fix a position."),
+                      ("Three radios, one anchor", "UWB, BLE and Wi-Fi FTM on the same infrastructure."),
+                      ("Set up from a phone", "AmIHub finds each anchor itself and flags one that goes quiet.")], 1)
+                      + stats([("50 m", "Reach, about, line of sight, per anchor", "Site-dependent. A site survey sets the final count.")]) + more([("AmIMo anchor", "/products/amimo/")])),
+                  KM_AMIMO),
+          section(vp("Down to ±10 cm.", "Right down to the shelf.", "Down to ±10 cm in 3D, with AmIMo anchors. Height counts, so the system knows the rack level, not only the aisle. Your site sets the final figure."),
+                  slot("A three-level rack seen from the side in the model hall, one AmIGo-tagged bin on the middle shelf; the tag's position marks settle within 10 cm of that bin. Camera A lighting, page ground.", "wide",
+                       "A three-level rack. The tag's position marks settle on one bin on the middle shelf."),
+                  KM_PRECISION),
           section(
               vp("How a position is made.", "In under a second.", "A tag sends a very short radio pulse. Anchors time it and read where it came from. AmIHub works out the spot."),
               steps([("The tag speaks", "AmIGo sends a pulse a few billionths of a second long, whenever it moves."),
@@ -70,19 +75,20 @@ write("/products/amigo/", "AmIGo UWB tag for trolleys, tools and vehicles",
           head("AmIGo", "The tag that rides on work.", "A compact UWB tag for trolleys, bins, tools, forklifts and badges. It sends when it moves and sleeps when it doesn’t.",
                trail=[("Platform", "/platform/"), ("AmIGo", None)], product=True,
                actions=(("Book a call", "/contact/"), ("Specifications", "#specs")),
-               media=stage("/assets/img/amigo-card-1600.webp", AMIGO, "AmIGo tag with two screw tabs and an embossed amimotion logo, rendered from the production CAD", 1600, 1079, "champagne")),
+               media=still("amigo", eager=True)),
           section(
-              '<div class="answer-tile" data-reveal><p>AmIGo in short</p><p class="short-answer">AmIGo is AmIMotion’s UWB tag, built to IEEE 802.15.4z HRP on channels 5 and 9. '
-              'With AmIMo anchors it is located down to ±10 cm in 3D. It reports 0.1 to 10 times a second when it moves and lasts 1 to 3 years on battery, typical and usage-dependent.</p></div>',
+              vp("AmIGo, in short."),
+              '<p class="lead short-answer">AmIGo is AmIMotion’s UWB tag, built to IEEE 802.15.4z HRP on channels 5 and 9. '
+              'With AmIMo anchors it is located down to ±10 cm in 3D. It reports 0.1 to 10 times a second when it moves and lasts 1 to 3 years on battery, typical and usage-dependent.</p>',
               stats([("±10 cm", "Down to, in 3D", "With AmIMo anchors, site-dependent"), ("0.1–10 Hz", "Update rate", "Set per tag group, motion-triggered"),
                      ("1–3 yrs", "Battery", "Typical, usage-dependent"), ("−20–60 °C", "Operating range", "Typical")]), flush=False),
           section(
               vp("Speaks when it moves.", "Sleeps when it doesn’t.", more="amigo-sleep"),
               split("Where the battery life comes from.",
-                    ["A 3-axis accelerometer wakes the tag on motion and reports tilt and impact. At rest it deep-sleeps.",
+                    ["A 3-axis accelerometer wakes the tag on motion. At rest it deep-sleeps.",
                      "Battery level is reported to AmIHub, so replacements are planned, not discovered."],
                     ["Whole groups of tags are set up from AmIHub", "Vehicle-powered option for forklifts and tuggers", "Several UWB positioning modes; confirm them for your hardware revision"],
-                    img("/assets/img/amigo-top-900.webp", "AmIGo tag seen from above with its embossed logo", 900, 599, "stone", srcset=AMIGO_TOP)),
+                    slot("AmIGo screwed to the top rail of a mesh trolley, 85 mm look, about 1 m off the floor, page ground.", "photo", "The AmIGo tag screwed to the rail of a trolley.")),
               km("amigo-sleep", "AmIGo battery", "Fewer pulses. Longer life.", [
                   "The tag sends only when the accelerometer says it is moving.",
                   "Update rate is set per tag group, from 0.1 to 10 times a second.",
@@ -95,7 +101,7 @@ write("/products/amigo/", "AmIGo UWB tag for trolleys, tools and vehicles",
                   ("/industries/warehousing/", ph("A forklift mast and cab in a racked aisle, a tag in a cradle on the overhead guard. Cool LED light. 4:3.", "cool"), "Forklifts and tuggers", "A vehicle tag with a powered option and a cradle mount."),
                   ("/solutions/assets/", ph("A gauge case and a fixture on a shadow board, a small tag on each. Soft warm light. 4:3.", "office"), "Tools and fixtures", "Find the tool, and see which cell had it last."),
               ]),
-              tiles([("Badges", "A lanyard or helmet badge for zone presence, under your site’s policy and with people’s consent."),
+              tiles([("Badges", "A lanyard or helmet badge for zone presence. Tagging people would be a separate project, with its own policy."),
                      ("The carrier stays", "A tag names the trolley. Which job is on it comes from a link with a start and an end."),
                      ("Reused trolleys", "When a carrier is reused, the old job link closes before the new one begins.")]), tone="light", flush=True),
           section(
@@ -112,7 +118,7 @@ write("/products/amigo/", "AmIGo UWB tag for trolleys, tools and vehicles",
               ("What battery life does a UWB asset tag have?", "An AmIGo UWB tag lasts 1 to 3 years on battery, typical. It depends on how often the tag moves and the update rate you set, because AmIGo sleeps when still."),
               ("Is AmIGo small enough for totes and hand tools?", "It is a compact tag with adhesive and screw mounts, made for trolleys, bins, tools and fixtures. Exact dimensions are on the datasheet, shared under NDA."),
               ("Does every tag report at the same rate?", "No. Update rate is set per tag group, from 0.1 to 10 times a second, and tags report only when they move."),
-              ("Can AmIGo track people?", "A badge form shows zone presence, under your site’s policy and with people’s consent. AmIMotion locates badges, not bodies or movements."),
+              ("Can AmIGo track people?", "A badge form shows zone presence. Tagging people would be a separate project, with its own policy. AmIMotion locates badges, not bodies or movements."),
           ])),
           close("Tag the thing people look for.", "Bring one flow to the call. We show it on the live map."),
       ], type="product", product="AmIGo", category="UWB tag", og="/assets/img/amigo-card-1600.webp")
@@ -124,10 +130,11 @@ write("/products/amimo/", "AmIMo UWB anchor: 3D angle of arrival, no sync cable"
           head("AmIMo", "Anchors that need only power.", "AmIMo times each tag pulse and reads where it came from. Clocks sync over the air, so there is no data or sync cable to run.",
                trail=[("Platform", "/platform/"), ("AmIMo", None)], product=True, dark=True,
                actions=(("Plan a site survey", "/contact/"), ("Specifications", "#specs")),
-               media=stage("/assets/img/amimo-a-1600.webp", AMIMO, "AmIMo anchor: a dark-grey box with a network port, a mounting tab and an embossed amimotion logo, rendered from the production CAD", 1600, 982, "cobalt")),
+               media=still("amimo", eager=True)),
           section(
-              '<div class="answer-tile" data-reveal><p>AmIMo in short</p><p class="short-answer">AmIMo is AmIMotion’s UWB anchor. A 3D angle-of-arrival antenna array reads direction as well as arrival time, so as few as two anchors in view can fix a position. '
-              'The same unit offers BLE ranging and Wi-Fi FTM. Each anchor reaches about 50 m in line of sight (indicative, site-dependent) and needs only DC or PoE power.</p></div>',
+              vp("AmIMo, in short."),
+              '<p class="lead short-answer">AmIMo is AmIMotion’s UWB anchor. A 3D angle-of-arrival antenna array reads direction as well as arrival time, so as few as two anchors in view can fix a position. '
+              'The same unit offers BLE ranging and Wi-Fi FTM. Each anchor reaches about 50 m in line of sight (indicative, site-dependent) and needs only DC or PoE power.</p>',
               stats([("3D AoA", "Angle of arrival", "Direction as well as time"), ("~50 m", "Line-of-sight radius", "Indicative, site-dependent"),
                      ("0 cables", "For data or sync", "Wi-Fi backhaul, Ethernet option"), ("3–8 m", "Mounting height", "Wall, column, ceiling or pole")]), tone="dark"),
           section(
@@ -140,7 +147,7 @@ write("/products/amimo/", "AmIMo UWB anchor: 3D angle of arrival, no sync cable"
               split("Racking, ceiling height and metal decide where anchors go.",
                     ["Timing plus angle means fewer anchors where the geometry allows. Each anchor is set up from a phone app and found by AmIHub on its own."],
                     ["DC adapter or PoE power", "Hundreds of active tags per anchor cell in UL-TDoA, indicative", "Indoor and sheltered outdoor use, −20 °C to +60 °C typical"],
-                    img("/assets/img/amimo-side-900.webp", "AmIMo anchor side view with the embossed amimotion logo", 900, 495, "graphite", srcset=AMIMO_SIDE), flip=True),
+                    slot("AmIMo fixed to a steel column by its own tab, RJ45 port down, one plain power cable, 70 mm from below.", "photo", "The AmIMo anchor fixed to a steel column."), flip=True),
               km("amimo-survey", "Plan anchors", "Where anchors go.", [
                   "High on columns above machining halls, clear of moving vehicles.",
                   "Over dense racking, where the survey measures the steel first.",
@@ -164,9 +171,8 @@ write("/products/amimo/", "AmIMo UWB anchor: 3D angle of arrival, no sync cable"
               ("Does an RTLS anchor need data cabling?", "Not AmIMo. It syncs over the air and sends data over Wi-Fi, with an Ethernet option. Each anchor still needs power, from DC or PoE."),
               ("How far does one AmIMo anchor reach?", "About 50 m in line of sight, indicative and site-dependent. Racking, machines and metal reduce the useful range."),
               ("How many anchors does a floor need?", "It depends on the accuracy you need, ceiling height and how much racking blocks line of sight. Angle of arrival lets as few as two anchors in view fix a position. A site survey sets the count."),
-              ("Can AmIMo work with phones?", "AmIMo offers Wi-Fi FTM ranging from the same anchors, and in downlink mode a device works out its own position, which keeps it on the device. Which phones and laptops are supported depends on their chipset, so it is confirmed for each site."),
           ])),
-          close("Mount it. Power it. Done.", "A site survey plans the anchors for one bay of your floor."),
+          close("A site survey plans the anchors for one bay of your floor."),
       ], tone="dark", type="product", product="AmIMo", category="UWB anchor", og="/assets/img/amimo-a-1600.webp")
 
 # ---------------- AmIHub ----------------
@@ -178,9 +184,10 @@ write("/products/amihub/", "AmIHub RTLS software: live map, zones and APIs",
                actions=(("See a live demo", "/contact/"), ("Interfaces", "#interfaces")),
                media=ph("Over the shoulder of a production lead at a laptop: the live map of a floor with zones and a few highlighted trolleys, the real floor soft in the background. 21:9. Screen content to be supplied by AmIMotion; no partner names on screen.", "night", "cine")),
           section(
-              '<div class="answer-tile" data-reveal><p>AmIHub in short</p><p class="short-answer">AmIHub is AmIMotion’s positioning engine and system of record. '
+              vp("AmIHub, in short."),
+              '<p class="lead short-answer">AmIHub is AmIMotion’s positioning engine and system of record. '
               'It keeps a live map of zones and tracked items, time-stamps every enter, exit, idle and dwell event, and shares them over REST, MQTT, WebSocket and an omlox hub interface. '
-              'It runs on an industrial PC in your plant with no internet dependency, or in the cloud, and has a built-in MCP server for AI assistants.</p></div>',
+              'It runs on an industrial PC in your plant with no internet dependency, or in the cloud, and has a built-in MCP server for AI assistants.</p>',
               tiles([("Positioning engine", "TDoA, AoA and two-way ranging solvers. Non-line-of-sight algorithms keep positions steady around racking and metal."),
                      ("Live map", "Your floor as a 3D model: plan, zones, geofences and racking, with every tracked item, its trail and history."),
                      ("Zones and events", "Every enter, exit, idle and dwell is time-stamped and queryable, for assets, vehicles, people and work orders."),
