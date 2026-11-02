@@ -354,3 +354,23 @@ em{font-style:normal}
   .cap p{font-size:1rem;margin-top:10px}
   .cap .q-big{font-size:1.3rem}
 }
+
+/* v6 hero: one scene. The words and the tag share the same floor. */
+.hero{display:block;min-height:calc(100svh - 56px);padding:0}
+.hero::before{background:radial-gradient(50% 60% at 69% 52%,#fff 0,rgba(255,255,255,.6) 40%,rgba(255,255,255,0) 75%)}
+.hero-stage{position:absolute;inset:0;height:auto;z-index:1}
+#tagGL{inset:0;width:100%;height:100%}
+.tag-fallback{inset:0;left:42%;padding:12vh 0}
+.hero-copy{position:relative;z-index:2;min-height:calc(100svh - 56px);display:flex;flex-direction:column;justify-content:space-between;padding:clamp(40px,11vh,140px) var(--m) clamp(40px,7vh,88px);pointer-events:none}
+.hero-copy a{pointer-events:auto}
+.hero .display{font-size:clamp(3.2rem,1rem + 6.6vw,10.5rem);line-height:.88;letter-spacing:-.06em}
+.hero .display .ln:nth-child(2){padding-left:.62em}
+.hero .lede{max-width:27em;margin-top:0;font-size:clamp(1rem,.88rem + .32vw,1.25rem);line-height:1.55}
+.hero .lede::before{content:"";display:block;width:44px;height:2px;margin-bottom:18px;background:var(--located)}
+.hero-foot{z-index:2}
+@media (max-width:900px){
+  .hero-copy{padding-top:20px;padding-bottom:96px;min-height:calc(100svh - 56px)}
+  .hero .display{font-size:clamp(2.9rem,12.4vw,4.6rem)}
+  .hero .display .ln:nth-child(2){padding-left:0}
+  .tag-fallback{left:0;padding:34svh 8vw 30svh}
+}
