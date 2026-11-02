@@ -21,15 +21,15 @@ BPY = '/tmp/bpyenv/bin/python'
 W169, W43 = (800, 1600, 2400, 3840), (800, 1600, 2400)
 
 # name: (render WxH, cam, trails, amber, cuts: [(out name, crop (x0,y0,x1,y1) as fractions or None, widths)])
-A169 = '11,45,26,34,0.6,10.0'          # camera A position and angle; lens 30 so the 16:9 frame holds the hall
-C43, C169, C32 = (0.125, 0, 0.875, 1), None, (0.0833, 0, 0.9167, 1)   # 4:3 and 3:2 centre crops of a 16:9 render
+A169 = '11,45,26,34,0.0,7.6'          # camera A position and angle; lens 30 so the 16:9 frame holds the hall
+C43, C169, C32 = (0.125, 0, 0.875, 1), None, (0.078125, 0, 0.921875, 1)   # 4:3 and 3:2 centre crops of a 16:9 render
 def A(lens, tx, ty): return f'11,45,{lens},34,{tx},{ty}'
 # name: (render WxH, cam, trails, amber, cuts [(out base, crop fractions or None, widths)], extra build_hall args)
 V = {
     'a-all':     ('3840x2160', A169, None, None, [('hall-all', None, W169)], []),
     'a-ask':     ('3840x2160', A169, 'none', 'q1,q2,q3', [('hall-ask', None, W169), ('hall-ask-43', (0.0, 0.2, 0.6, 1.0), W43)], []),
     'a-bay':     ('3840x2160', A169, 'ti,q1,q2,q3', 'q1,q2,q3', [('hall-bay', None, W169), ('hall-bay-32', C32, W43)], []),
-    'a-find':    ('3840x2160', '11,45,40,34,3.0,13.6', 't3', 'none', [('hall-find', None, W169), ('hall-find-43', C43, W43)], []),
+    'a-find':    ('3840x2160', '11,50,34,16,4.6,14.0', 't3', 'none', [('hall-find', None, W169), ('hall-find-43', C43, W43)], ['--hide', 'fork']),
     'a-waits':   ('3840x2160', A(35, -1.2, 7.6), None, None, [('hall-waits', None, W169), ('hall-waits-43', C43, W43), ('hall-waits-32', C32, W43)], []),
     'a-inspect': ('2880x2160', A(40, -1.6, 7.8), 'ti,q1,q2,q3', 'q1,q2,q3', [('hall-inspect-43', None, W43)], []),
     'a-wip':     ('3840x2160', A(30, -1.2, 9.6), 't1,ti', 'q1,q2,q3', [('hall-wip', None, W169)], []),

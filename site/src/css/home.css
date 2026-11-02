@@ -51,6 +51,7 @@ main a:hover{text-decoration-thickness:2px}
 .wide{grid-column:1 / -1;margin:var(--rhythm-s) 0 0}
 /* a reserved picture: the final aspect ratio on one step of the ground, until the model hall still exists */
 .slot{display:block;width:100%;background:var(--surface)}
+.shot img,.wide img{display:block;width:100%;height:auto}
 .r43{aspect-ratio:4 / 3}
 .r169{aspect-ratio:16 / 9}
 .r32{aspect-ratio:3 / 2}

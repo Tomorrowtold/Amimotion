@@ -740,6 +740,9 @@ def pose(rig, t, force=None):
         s = M[key].s(tau)
         x, y = P[key].at(s); h = P[key].heading(s)
         r = roots[key]; r.location = (x, y, 0); r.rotation_euler = (0, 0, h)
+    for key in (opt('--hide') or '').split(','):   # stills only: leave a mover out of this picture (its marks too)
+        if key in roots:
+            roots[key].location = (0, 0, -100)
     trails, ticks, amber = marks_at(t, force)
     bm = bmesh.new()
     for i, seg in enumerate(trails):
