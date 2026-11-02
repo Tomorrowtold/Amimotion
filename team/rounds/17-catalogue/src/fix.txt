@@ -1,0 +1,179 @@
+Lineup row thumbnails::P=/products/amigo/,/products/amimo/,/products/amihub/;;U=Under each product H1: a row of the three products (tag, anchor, hub) with names, current one underlined.
+Video modal from hero::P=/;;U=Hero "Watch the film" opens the 90 s plant film full-screen; closing returns to the exact scroll spot.
+Section slides over sticky::P=/solutions/;;U=Three problem panels (time spent searching, waits nobody times, queues at inspection) slide over each other.
+Hero fade to map::Camera re-frame between sections|Vention s1 (caps 02 d1: zone tabs re-frame the factory model)|The same model is re-framed, plant to bay, as the reader moves to the next section.|One continuous place instead of disconnected pictures.|/solutions/wip/|From the plant overview the view tightens to Bay 3 as the WIP-waits section starts.|M|WebGL
+Dark film band in light page::P=/products/amigo/;;U=One dark band mid-page with the 8 s loop of a tag riding a trolley through a dim night-shift aisle.
+Loop seam handover::Zoom-out exit to index|Immersive Garden case (live: "Back to Home" / "See all projects" return to the project rail)|Leaving a detail page zooms back out to the index of items.|Reader keeps a mental map of the collection.|/use-cases/find-the-asset/,/use-cases/station-to-station/|Closing a use case zooms out to the use-case index with that row highlighted.|M|CSS/JS
+Counts in nav::P=/learn/,/films/;;U=Nav panel items show counts: "Field guides (18)", "Films (n)" from the build.
+Prev/next lateral::P=/learn/;;U=Fixed bottom-left "previous guide", bottom-right "next guide" on every field guide.
+Hover prefetch::P=all pages;;U=Nav panel links prefetch the target page on hover so product pages open instantly.
+Chapter nav in films::P=/films/;;U=Chapter list beside the master film: Problem, Install day, The map, What changed.
+Section dots on phone::Language toggle in menu|Locomotive menu (live: "Français" link beside menu)|A single language switch sits inside the menu.|Signals respect for local readers.|/glossary/|Glossary-only toggle English / Hindi for floor words (copy stays; glossary gains a column).|S|CSS/JS
+Scroll position memory::P=/learn/;;U=Field-guide filter (role, topic) and scroll position remembered when the reader comes back.
+Breadcrumb JSON-LD::P=all inner pages;;U=Visible breadcrumb "How it works / AmIMo anchor" plus BreadcrumbList JSON-LD from nav.json.
+Stat row of four::P=/pilot/;;U=Row of four: 1 bay, 20 tags, 4-6 anchors, 6 weeks, each with a two-line caption.
+Live counters ticking::Animated comparison bars|Apple MacBook Pro (sites.py: animated bar charts with footnotes)|Bars grow to compare options, each footnoted.|Comparison read in one glance.|/learn/rtls/|Bars for location accuracy of UWB, BLE, Wi-Fi, RFID, each with its condition footnote.|S|CSS/JS
+Bottom scrim only::P=/,/films/;;U=Film bands use a bottom 30% scrim only; the aisle and trolley stay untouched.
+Cut-out with tiny photo chip::Colour-field thumbnails|Locomotive work index (live: row thumbnails on flat colour fields, blue and yellow)|Small thumbnails sit on single flat colour fields.|Index stays calm and recognisable.|/learn/|Each field guide thumbnail on a flat field of the site palette with one hairline drawing.|S|CSS/JS
+Full-bleed with caption bottom-left::P=/industries/manufacturing/,/industries/warehousing/,/industries/robotics/;;U=Industry heroes: one full-bleed floor still, two-line caption bottom-left, one link.
+Macro with focus falloff::Top-down mezzanine photo|Hadrian s1 (caps 17 d0, plan view) + study move 1|The floor photographed straight down from height.|Bridges photo and map; the floor reads as a plan.|/products/amihub/|Top-down photo of a bay from the mezzanine, AmIHub dots laid exactly on it.|M|CSS/JS
+Video poster = frame 0::P=/films/;;U=Every film poster is frame 0 exported as AVIF so the page never jumps when play starts.
+Count your visuals::P=all pages;;U=Bench quota: home max 10 unique visuals, inner pages 4-6, each at least 60% wide on desktop.
+Edge-to-edge mosaic::Image wall beside headline|Build in Amsterdam home (live d0: wall of case images left of the stacked H1)|A dense wall of small images sits beside a big headline.|Shows breadth while type leads.|/industries/|Nine small floor stills (trolleys, bins, pallets, AMRs) beside the industries H1.|S|CSS/JS
+Image reveal mask on scroll::Brand swatch strip|Basement Vercel case (live: grey swatch strip beside the triangle render)|A strip of flat colour swatches documents the palette.|Shows a system, not decoration.|/company/|Press-kit strip: #f0f6ff, #fff, #0b1238, #4b3df0 with names.|S|CSS/JS
+Real kit photo, not icon::Flat colour wall behind subject|Locomotive hero (live: portrait against flat blue field)|Subject shot against one flat colour field.|Clean, brand-coloured without overlays.|/trust/people/|Worker pushing a trolley in front of a flat pale-blue wall: the person is untagged, the trolley is.|S|CSS/JS
+Hero loop 12-16 s::P=/;;U=Hero film spec: 13 s, three shots (aisle, hand on handle with tag, parked trolley), 1080p, <3 MB.
+Showreel modal::Clip grid playing together|Build in Amsterdam Polaroid case (live: 28 short videos on the phone page)|A grid of short muted clips plays at once.|Shows many situations in one glance.|/industries/manufacturing/|Six 4 s clips: trolley at press, weld, paint, inspection, stores, dispatch (reconstructions, labelled).|M|Video
+Video behind stat::Sensor view beside camera view|Waymo (sites.py: what the car sees, lidar beside camera)|Real footage and the machine's view shown side by side.|Shows what the system knows that people do not.|/technology/|Left: plant film; right: what AmIHub sees, the same trolleys as dots with ages.|M|Video
+Scroll-scrubbed footage::Hands-only task film|1X s3 (study L5: no face, only the job)|Film shows only hands doing the task.|Removes acting; the job is the subject.|/pilot/|6 s of hands fixing an anchor bracket to a column and clipping a tag to a trolley.|S|Video
+Poster for reduced motion::Small square mechanism loop|Apple AirTag s7 (study: 4.5 s 576x576 soft-ring webm, 0.9 MB)|A tiny square loop shows one mechanism.|Light, clear, repeatable.|/learn/location-data-quality/|4 s square loop: tag pings, sleeps when still, wakes when moved.|S|Video
+Muted autoplay, sound only on click::P=all pages;;U=Hero and loops always muted; sound exists only on the /films/ master behind a click.
+Hover-play tile::P=/industries/;;U=Industry tiles play a 3 s loop on hover (manufacturing trolley, warehouse pallet, AMR hand-off).
+Scenario card turns into query::P=/films/;;U=Scenario film "trolley left at inspection" ends and becomes "Ask: which trolleys waited at inspection over 1 h?" with the answer.
+Film thumbnail strip::P=/films/;;U=Under each film a strip of 6 shot stills to preview before pressing play.
+In-film map overlay::P=/ (phone);;U=Phone hero: bottom 40% map strip pans in sync with the camera move in the film.
+Loop seam match::Ambient long loop|SpaceX s1 (study: 133 s Mars rotation)|A very slow, long ambient loop sits under quiet text.|Calm presence, no visible repetition.|/company/|2-minute slow time-lapse from a mezzanine under the company paragraph.|S|Video
+Low-res alternate stream::P=all films;;U=Each film ships a 600 px alternate served on Save-Data or slow connection.
+Letter-roll buttons::P=all pages;;U=Primary buttons "Plan your first bay" and "Book a call" roll their letters on hover.
+Arrow nudge + press scale::P=all pages;;U=Every text link arrow nudges 3 px in 150 ms; buttons press to .97.
+Copy-email button::P=/contact/;;U=Next to the sales address, "Copy" copies it and says "Copied".
+Springy hover::P=/tools/anchors/,/tools/search-time/;;U=Stepper buttons and chips spring slightly on hover and press.
+Magnetic button::P=/diagnostic/;;U=The "Start" button drifts a few px toward the pointer.
+Hover image preview in list::P=/use-cases/;;U=Hovering a use-case row shows a floor still of that flow beside the pointer.
+Sound opt-in toggle::P=/films/;;U=Small "Plant sound" toggle on the film page, off by default.
+Pause control on motion::P=all pages;;U=Every loop on the site gets a 36 px pause button bottom-right.
+Link underline on hover only::P=all pages;;U=Body text links accent colour, underline on hover only.
+Keyboard focus rings designed::P=all pages;;U=2 px #4b3df0 focus ring with 2 px offset on every control.
+Toast confirm::P=/tools/pilot/;;U=Toast "Link copied" when sharing the pilot one-pager.
+Hover lift on cards::P=/learn/;;U=Guide tiles lift 2 px with a softer shadow on hover.
+Ripple tap on phone::P=all pages (phone);;U=Tap ripple from the touch point on buttons in the phone dock.
+Number scrubbing input::P=/tools/anchors/;;U=Drag the bay length number left/right to change it; anchor count updates live.
+Inline definition popover::P=/learn/dwell-time/,/learn/association/;;U=Words like "dwell" or "association" open a two-line glossary popover.
+Hover reveal x-ray::Menu label morph|Lusion header (live: "MENU" / "CLOSE" label pair)|The menu button's word morphs from MENU to CLOSE.|State is read, not guessed from an icon.|all pages|Phone and desktop menu button reads "Menu" then "Close".|S|CSS/JS
+Scroll-hint bounce::P=/platform/;;U=Above the bay twin, the cursor becomes a scroll hint until the reader moves.
+Live clock in footer::P=/contact/;;U=Address block shows "Pune 14:20 IST" so a visitor abroad knows when we answer.
+Button press haptic on phone::P=/tools/anchors/,/tools/search-time/;;U=10 ms vibration on stepper taps on Android.
+Hover tint on rows::P=/specs/;;U=Spec rows tint on hover so the eye tracks a row across columns.
+Expand-in-place FAQ::P=/faq/;;U=Each question expands in place; the URL hash updates so answers can be linked.
+Animated checkmark::P=/learn/uwb-vs-rfid/;;U=Compare marks draw in when the table enters view.
+Hover-to-orbit product::P=/products/amimo/;;U=Anchor still tilts a few degrees toward the pointer (CSS 3D on a cut-out).
+Reduced motion designed stills::Hover-reveal tags on tiles|Lusion featured work (live: "CONCEPT • WEB • DESIGN" tag lines on project tiles)|Tag lines appear on tiles on hover.|Detail on demand, tiles stay clean.|/use-cases/|Use-case tiles reveal "TROLLEYS • WIP • INSPECTION" on hover.|S|CSS/JS
+Problem→mechanism→proof→pilot::P=/;;U=Home order: hero film, the problem with a number, how it locates, the live map, pilot, closing.
+Metadata-first case::P=/use-cases/find-the-asset/,/use-cases/station-to-station/,/use-cases/amr-hand-off/;;U=Each use case opens with Flow / Where / What is tagged / Result facts before the story.
+Dynasty/timeline of years::P=/company/;;U=Company timeline: founding, first plant test, first pilot, product versions, by year.
+One idea per screen::P=all pages;;U=Bench rule: if a screen needs two pictures it becomes two screens.
+Day-in-the-life of a trolley::P=/use-cases/station-to-station/;;U=Follow trolley T-114 through one shift: stores 06:10, weld, waits 42 min at inspection, dispatch.
+Scenario titles::P=/films/;;U=Film list titled "PUNE · NIGHT SHIFT · trolley left at inspection" style.
+Play first, explain after::Capability quartet|Basement home (live: Capabilities in four sticky columns)|Four capabilities side by side, each with a short list.|Whole offer in one view.|/platform/|Four columns: Find, Time, Queue, Ask, each with its pages listed.|S|CSS/JS
+Text-figure-text rhythm::P=/learn/;;U=Every field guide alternates a paragraph and one small live figure.
+Legacy vs new::Partner credit line|Niccolò Miranda Roger Hub (live: "Client: North Kingdom © 2023")|Credits the partner on the work.|Honest collaboration builds trust.|/use-cases/amr-hand-off/|Credit line for the AMR integration partner, only with consent.|S|CSS/JS
+Brief-as-headline::P=/use-cases/;;U=Each use case subtitle states the job in one line ("Find a trolley from a screen").
+Numbered chapters::P=/technology/;;U=Chapters 01 Signal, 02 Anchors, 03 Time, 04 Position, 05 Outages.
+Explorable gallery::P=/tools/;;U=Tools index as three live mini-previews (anchors, search time, pilot) you can try in place.
+Stack of spines::P=/learn/;;U=Field guides shown as a stack of spines with a tick ruler; hover pulls one out.
+Newspaper edition::Prologue paragraph|Locomotive home (live: large manifesto paragraph before the facts)|One large paragraph sets the stance before the details.|Readers get the why first.|/company/|Existing company paragraph set large before the facts list.|S|CSS/JS
+Four frames one idea each::Lab notebook section|Lusion (live: "LABS" and labs.lusion.co), Basement (live: "Lab")|A section for experiments and tests.|Shows rigour and curiosity.|/technology/|"Floor lab": short tests (tag on steel, through racking, in a cold room) with result per test.|M|CSS/JS
+One-interaction page::P=/tools/search-time/;;U=Page is one calculator: trolleys, searches per shift, minutes each; result in hours per month.
+Culture/trips section::P=/company/;;U=Plant visits log: plant type, city, what we learned, by month.
+Reel-first case::Build-log series|Basement (live: "Basement Chronicles" posts)|A running series of build notes.|Ongoing proof of work.|/resources/|"Pilot diary": week-by-week notes of one bay pilot.|S|CSS/JS
+Measure-before-claim arc::P=/learn/pilot-baseline/;;U=Story: what to measure in week 0, how, then what changes.
+Spec sheet with conditions::P=/specs/;;U=Every figure in a hairline panel with its test condition beneath.
+Live system status::Privacy link one click away|Hello Monday footer (live: "Global Privacy Statement")|Privacy statement always one click from the footer.|Small sign of seriousness.|all pages|Footer link to /privacy/ and /trust/ side by side.|S|CSS/JS
+Since-year line::P=/company/,/what-is-amimotion/;;U=Founded line with year under the company H1.
+Security FAQ::P=/trust/;;U=Eight short Q&As for IT: where the hub runs, ports, data retention, access.
+Before-after with baseline::Founder reachable by name|Niccolò Miranda (live: "Email Me")|The person behind the work is reachable directly.|Small companies win on access.|/company/|Founder name with direct email under the team section.|S|CSS/JS
+Footnote superscripts::Published performance metrics|Vercel (sites.py: performance metrics shown)|Live performance metrics shown publicly.|Shows confidence in the system.|/trust/|Demo hub p95 location latency and uptime for the last 30 days.|M|CSS/JS
+Hardware certification row::P=/specs/;;U=Row of certifications held (IP rating, CE, WPC) with dates; only those actually held.
+Product exists only::P=/products/;;U=Only shipping products shown; roadmap items never pictured.
+Case results in big type::P=/use-cases/*;;U=Each use case ends with its measured result in display type, with the condition.
+Engineering voice docs::P=/developers/;;U=API docs in plain engineering voice with copyable examples.
+Let's talk pill always visible::P=all pages;;U="Book a call" pill fixed top-right on desktop.
+Shareable result link::P=/tools/search-time/;;U=Result has a share link carrying the inputs.
+Calculator with email gate after::P=/tools/anchors/;;U=Estimate shown free; "Email me the estimate as PDF" optional.
+Copy email::Address with map link|Hello Monday (live: "View on maps" beside each office)|Each address links to a map.|Real place, real company.|/contact/|Office address with map link and IST hours.|S|CSS/JS
+Calendar slot picker::P=/contact/;;U=Inline 30-minute slot picker in IST.
+Section-end CTA link::P=all pages;;U=Every section ends with one chevron link to the next logical page.
+NDA pack request::P=/how-to-buy/;;U=Short form for the NDA pack: name, plant, role.
+Role picker before form::P=/contact/;;U=Chips (plant head, IE, IT, procurement) set the form's questions.
+Contact as conversation::P=/use-cases/ask-your-plant/;;U=After the demo answer, "Ask us yourself" opens a chat to the team.
+Progress steps in form::P=/diagnostic/;;U=Six dots for six questions, current one filled.
+Prefilled plan PDF::P=/tools/anchors/;;U=Estimate as one-page PDF with bay sketch and anchor count.
+Join-us route::P=/company/;;U=Careers line at the end of the company page.
+Store/merch::Arrow jump to signup|Locomotive footer (live: "Newsletter ↓")|An arrow link jumps to the signup.|One tap to subscribe.|/learn/|"Floor notes ↓" link in guide footers.|S|CSS/JS
+Inline success state::P=all forms;;U=After submit the button becomes "Sent" with what happens next.
+Booking with time zone::P=/contact/;;U=Slots in IST with the visitor's local time beside them.
+Exit-intent none::P=all pages;;U=Bench rule: no popups, no exit-intent modals.
+Download spec sheet::P=/specs/;;U=Spec sheet PDF for procurement.
+Pilot one-pager share::Kit order card|Locomotive store (live: "Buy now→" product cards)|A product-like card with contents and lead time.|Makes a service feel like a product.|/how-to-buy/|Pilot kit card: contents, lead time, "Request pilot".|S|CSS/JS
+One-screen phone hero::P=/ (phone);;U=Phone hero: film top 55%, H1, line and button in bottom 45%, one 100svh.
+Rotate-device overlay::P=/platform/;;U=Lesson from Resn: the bay twin must work portrait; never ask to rotate.
+Bottom nav sheet::Big-type phone menu|Build in Amsterdam phone (live: HOME / WORK / EXPERTISE big caps menu)|Phone menu as a list of large words.|Fast to scan with a thumb.|all pages (phone)|Phone menu: four section words large, items revealed under each.|S|CSS/JS
+Fixed bottom bar::Collapsing header|Build in Amsterdam (live: sticky 80 px header)|Header shrinks on scroll.|More room for content.|all pages (phone)|Header shrinks from 64 to 48 px after the hero.|S|CSS/JS
+Swipe highlights with dots::P=/products/amigo/ (phone);;U=Tag features as a horizontal swipe with dots and a pause.
+Vertical cut film::One button first screen|Hello Monday phone (live: one "View all projects" button on first screen)|The phone's first screen holds only one button.|One clear action.|/ (phone)|Phone first screen: only "Plan your first bay".|S|CSS/JS
+Map in thumb zone::Phone spec cards|Apple compare tables on phone (caps 52)|Wide tables become label/value cards on phone.|No sideways scroll.|/specs/ (phone)|Spec rows become cards: label, value, condition.|S|CSS/JS
+Text ≥17 px, no sideways scroll::P=all pages (phone);;U=Body at least 17 px; scrollWidth checked at 390.
+Tap-to-play only on phone::P=/films/ (phone);;U=Films show poster and play on tap on cellular.
+Phone preloader::P=all pages (phone);;U=Lesson from Locomotive phone preloader: no full-screen loader on phone.
+Sticky phone CTA::Fixed hero background on phone|Locomotive phone (live: fixed hero background 390x844)|The hero image stays fixed while the first text scrolls over.|Depth with no WebGL.|/ (phone)|Hero still stays fixed while H1 and line scroll over it.|S|CSS/JS
+Collapsed spec accordions::P=/specs/ (phone);;U=Spec groups collapsed by default on phone.
+Phone-first calculators::P=/tools/* (phone);;U=48 px steppers and numeric keypad inputs.
+Tap-to-call::P=/contact/ (phone);;U=Phone number is a tel: link.
+Drag strip on phone::Stacked lines on phone|Niccolò Miranda phone (live m0: stacked role lines in big type)|Short lines stacked in big type on phone.|Readable rhythm.|/what-is-amimotion/ (phone)|Product names stacked: AmIGo tag / AmIMo anchor / AmIHub.|S|CSS/JS
+Short sections on phone::P=/use-cases/* (phone);;U=Lesson from BIA Vitra (11,816 px on phone): cap use-case pages at ~8 phone screens.
+Touch-friendly map pinch::P=/products/amihub/ (phone);;U=Demo map supports pinch and two-finger pan.
+Bottom-sheet details::P=/products/amihub/ (phone);;U=Tapping a dot opens a bottom sheet: trolley, job, zone, waiting time.
+Phone-specific copy breaks::P=all pages (phone);;U=Bench checks headline breaks at 390 px.
+Phone safe-area respect::P=all pages (phone);;U=viewport-fit=cover with safe-area padding for the dock.
+Landscape film mode::P=/films/ (phone);;U=Rotating while a film plays goes full-screen.
+Phone hamburger 40x40::P=all pages (phone);;U=Menu button at least 44x44 px.
+Reduced 3D on phone::P=/platform/ (phone);;U=Bay twin replaced on phone by a 2D map with the same data.
+Offline-friendly guides::P=/learn/;;U=Each field guide under 200 KB so it opens on plant Wi-Fi.
+WhatsApp share of result::P=/tools/search-time/;;U="Share on WhatsApp" with result text and link.
+Vertical scenario cards::P=/films/ (phone);;U=Scenario cards at 4:5 on phone.
+Thumb-zone filters::P=/learn/ (phone);;U=Role filter chips sit at the bottom of the screen.
+Phone scroll-progress rule::Add-to-home-screen demo|Active Theory HTML (live: apple-mobile-web-app-capable meta)|Page can be installed to the home screen.|Feels like an app.|/products/amihub/|Supervisors can pin the demo floor to their phone.|S|CSS/JS
+H1 as LCP::P=all pages;;U=H1 text is the LCP on every page; pictures decode async.
+Heavy media after first screen::P=all pages;;U=Films, sequences and 3D load only after the first screen is painted.
+Hero ≤3 MB::P=/;;U=Hero film budget: 3 MB desktop, 2.5 MB phone.
+Poster ≤150 KB AVIF::P=/,/films/;;U=Film posters at most 150 KB AVIF.
+Sequence frames lazy::P=/products/amigo/;;U=Tag turntable frames fetched after onload.
+Save-Data skip::P=all pages;;U=On Save-Data, posters only.
+Numeric preloader honest::Metric-matched fallback fonts|Basement (live: "Geist Fallback" font faces)|Fallback fonts tuned to the web font's metrics.|No layout shift when fonts arrive.|all pages|Fallback faces with size-adjust for the site fonts.|S|CSS/JS
+Loader lockScroll::P=all pages;;U=Lesson from Immersive Garden: never lock scroll while loading.
+WebGL capability fallback::Feature-detect classes|Resn (live: modernizr classes "webgl canvas no-touch" on html)|Capability classes on the root element choose the experience.|Right version for each device.|/platform/,/technology/|html.webgl gets the 3D twin; others get the 2D map.|S|CSS/JS
+Prefetch on intent::Ready-class motion gate|Lusion (live: html class "is-desktop is-ready")|Motion starts only after a ready class is set.|No janky half-loaded animation.|all pages|Animations wait for html.is-ready after fonts and LCP.|S|CSS/JS
+Strict CSP no inline::P=all pages;;U=No inline scripts; CSP header.
+Tiny page weight::P=/learn/,/faq/,/glossary/;;U=Text pages under 150 KB.
+Cookie dialog cost::Audio on opt-in only|Resn, Immersive Garden (live: Howler loaded with a sound button)|Sound engine loads only when the visitor asks.|Saves weight and surprise.|/films/|Plant ambience loaded only on toggle.|S|CSS/JS
+Transform-only animation::P=all pages;;U=Animate transform and opacity only.
+Font subsetting::P=all pages;;U=Two families max, Latin subset.
+Sequence manifest build::Third-party script diet|Build in Amsterdam (live: Cookiebot, HubSpot, GTM scripts)|Lesson: many third-party scripts load before content.|Each one costs speed and trust.|all pages|Bench rule: zero third-party scripts on first load.|S|CSS/JS
+Image CDN auto-format::P=all pages;;U=Build emits AVIF + WebP.
+Pause offscreen WebGL::P=/platform/,/technology/;;U=Render loop stops when the canvas leaves view.
+Reduced motion stills::Desktop-only heavy bundle|Resn (live: main_desktop_extended.js), Lusion (html "is-desktop")|Heavy code ships only to desktop.|Phones stay fast.|/platform/|3D twin bundle loads only on desktop with WebGL.|S|CSS/JS
+Low-res video alternate::Codec ladder|Waymo webm + Agility H.265 (study)|Same film in several codecs.|Smallest file per browser.|all films|AV1, then H.264 fallback.|S|Video
+Static-first site build::P=all pages;;U=Keep static HTML from pagegen; no client framework.
+Self-hosted fonts::P=all pages;;U=Self-host fonts, no Google Fonts at runtime.
+Instanced geometry budget::One persistent canvas|Lusion (live: one fixed webgl2 canvas over a 50,844 px scroll div)|One canvas serves every scene on the page.|One GPU context, smooth hand-offs.|/platform/|One canvas for twin, coverage and route scenes.|M|WebGL
+Decode async images::P=all pages;;U=decoding="async" and width/height on all img.
+Measured LCP budget::P=all pages;;U=CI fails on LCP over 2.0 s.
+Draco/meshopt compression::P=/products/amigo/,/products/amimo/;;U=CAD models compressed with meshopt, under 300 KB.
+Lazy-mount 3D on view::P=/products/amigo/;;U=Spline-style tag viewer mounts when visible.
+Preload="none" below fold::P=all pages;;U=All below-fold video preload none.
+Tiny JS for micro-motion::P=all pages;;U=Micro-motion under 5 KB JS.
+Ask.json static answers::P=all pages;;U=Ask panel answers served from build-time ask.json.
+Real floor photo as map base::P=/products/amihub/;;U=Map drawn over a real top photo of the bay.
+Sections pin and slide over::+Pick: gives /solutions/ a rhythm without carousels.
+Mono labels for tech facts::+Pick: separates measured facts from prose site-wide.
+Band tone steps::+Pick: replaces flat white sameness with quiet rhythm.
+In-page sticky sub-nav::+Pick: long product pages stay navigable for evaluators.
+Separate vertical master::+Pick: India is phone-first; crops lose the trolley.
+Pause control on motion::+Pick: accessibility rule that makes motion safe to add.
+Hover on map dot shows card::+Pick: every dot tells its trolley, job and wait.
+Find-the-thing story::+Pick: universal lost-and-found arc for the asset use case.
+Case-study structure: brief, story, gallery, next::+Pick: one structure for all use cases.
+Filled + text CTA pair::+Pick: clear priority on every page.
+One-screen phone hero::+Pick: complete first screen on 390 px.
+Bottom-sheet details::+Pick: map detail within thumb reach.
+Hero ≤3 MB::+Pick: weight discipline for Indian 4G.

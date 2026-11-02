@@ -1,0 +1,135 @@
+## F05|Product staging
+Seamless cyc, one camera|Rivian s2-s8 (caps 18 d1-d7)|Every product on the same seamless grey cyc, same height and lens.|Consistency reads as a system.|/products/|All three products shot on one cyc, same lens and height.|S|CSS/JS
+Contact shadow always|Apple AirTag s2 (caps 00 d2)|Every product sits on a surface with a contact shadow.|Nothing floats; feels real.|/products/amigo/,/products/amimo/|All product cutouts get contact shadows.|S|CSS/JS
+Product on the job|Figure s2 / Agility s5 (study L5)|Product shown in use at working height in a real place.|Proves it fits the work.|/solutions/wip/|AmIGo clipped to a WIP trolley handle in a Pune bay.|M|Video|Pick: "rides on what moves" made visible.
+Macro on worn surface|Study L10 (Hadrian coolant, Machina tool tip)|One macro of the product on a used, real surface.|Wear signals real deployment.|/products/amigo/|Tag on scuffed yellow powder coat, dust, focus falloff.|S|CSS/JS
+Anchor on concrete column|Study L10|Mount detail on a real column.|Answers "how is it fixed?" without text.|/products/amimo/|Anchor bracket on a concrete column at 6 m with cable.|S|CSS/JS
+Closer-look angle stepper|Apple Vision Pro s5-s6 (caps 53 d5-d6)|Product at five fixed angles stepped with arrows.|Lets buyers inspect without 3D cost.|/products/amimo/|Anchor at 5 angles: front, side, back, bracket, cable gland.|S|CSS/JS
+Interface beside object|Apple AirTag s9 (study L6)|Phone screen next to the product proves the claim.|Object + proof in one frame.|/products/amigo/|Tag beside AmIHub screen "T-114, Bay 3, waiting 42 min".|S|CSS/JS|Pick: object plus proof is the core composition.
+Kit laid out flat|Study job table (pilot kit)|Everything in the box laid out on a bench.|Makes the offer concrete.|/pilot/,/how-to-buy/|20 tags, 4 anchors, 1 hub, tape measure, printed bay plan.|S|CSS/JS|Pick: shows the pilot is small and real.
+Scale against hand|Oura s1 (study L5: ring on hand)|Product held in a hand for scale.|Instant size understanding.|/products/amigo/|Tag held between thumb and finger of a gloved hand.|S|CSS/JS
+Material macro gloss vs matte|Apple AirTag s1 (caps 00 d0)|Macro shows material finish and edge highlights.|Material honesty builds quality perception.|/products/amigo/|IP-rated shell texture and label at macro.|S|CSS/JS
+Two parts shown apart|Apple AirPods Pro s12 (caps 51 d12)|Two components separated in frame.|Shows modularity.|/products/amigo/|Tag and mounting clip apart, then together.|S|CSS/JS
+Family mosaic same grade|Anduril s2 (caps 08 d2)|Mosaic tiles share black point, warmth, grain.|Reads as one family.|/platform/|Product tiles share one grade.|S|CSS/JS
+Spec drawing with FIG labels|Oxide (sites.py: FIG.-style labelled drawings)|Engineering drawings labelled FIG. 1, FIG. 2.|Engineers trust drawings.|/specs/|FIG. 1 tag dimensions, FIG. 2 anchor bracket, in hairline.|S|CSS/JS|Pick: drawing craft replaces grey boxes.
+Product name + one-line purpose|Anduril s2 (caps 08)|Every product name carries the same one-line purpose everywhere.|Consistent positioning.|all product links|"AmIGo tag: rides on what moves" everywhere (nav.json already).|S|CSS/JS
+Product on white square grid|Verkada s7-s8 (caps 41)|Three per row on white squares.|Clean catalogue.|/products/|Three product squares.|S|CSS/JS
+Spotlight on product only|Teenage Engineering (caps 20 d0)|One hard key from above.|Theatrical focus.|/products/amihub/|Hub in a single top light.|S|CSS/JS
+Product in its environment tile|Anduril s3 (study L4)|Each product in its own environment tile.|Context per product.|/solutions/assets/|Forklift tile, fixture tile, AMR tile, each with a tag.|S|CSS/JS
+Configurator-to-parts list|Vention s2 (caps 02 d2)|Choices turn into a parts list beside a stat strip.|Buyers see what they get.|/tools/anchors/|Bay size inputs produce anchor count list.|M|CSS/JS
+Gift-finder question flow|Build in Amsterdam Vitra case (live: Gift Finder asks questions, guides to products)|Questions guide to the right product set.|Choice without catalogue browsing.|/diagnostic/|Six questions lead to the right pilot shape.|M|CSS/JS
+Wishlist shareable plan|Build in Amsterdam Vitra case (live: "WISHLIST", "SHAREABLE WISHLIST")|User collects picks and shares a link.|Bridges visitor to their team.|/tools/pilot/|Pilot one-pager saved as a shareable link.|M|CSS/JS|Pick: buying committees share links.
+Sort-by-iconic grid|Build in Amsterdam Vitra case (live: "SORT BY ICONIC", "THE GRID")|Grid sortable by an editorial criterion.|Curated browse.|/learn/|Guides sortable by "first read", "technical", "numbers".|S|CSS/JS
+Product display page with motion|Build in Amsterdam Vitra case (live: "PRODUCT DISPLAY PAGE" section)|PDP with motion detail.|Product detail feels premium.|/products/amigo/|Spec + motion tile pairs.|S|CSS/JS
+Comparison table plain text|Apple iPhone s10 (caps 52 d10)|Compare models table as text rows.|Easy, indexable comparison.|/learn/uwb-vs-rfid/|UWB vs RFID vs BLE rows.|S|CSS/JS
+Lineup row thumbnails|Apple iPhone s1 (caps 52 d0)|Row of product thumbnails with names under the title.|Quick switching.|/products/*|Product switcher row.|S|CSS/JS
+Product with real wear around|SpaceX s4 (caps 07 d4)|Hardware shown with real-world wear.|Authenticity.|/industries/manufacturing/|Tag on an oily machining trolley.|S|CSS/JS
+Cut-out on page ground|Apple AirPods Pro s1 (caps 51 d0)|Product cut out on the exact page colour.|No box edge, seamless.|/products/amigo/|Tag cutout on #f0f6ff.|S|CSS/JS
+Multiple orientations composition|Apple AirTag s2 (caps 00 d2)|Product shown at several orientations in one composition.|One image, full understanding.|/products/amigo/|Tag front, edge, back.|S|CSS/JS
+Showcase grid / rows toggle|Basement case (live: "Grid" / "Rows" toggle)|Viewer switches between grid and list views.|Serves skimmers and readers.|/learn/,/films/|Grid/Rows toggle for guides and films.|S|CSS/JS
+Product with live LED state|Rive (sites.py: state machines reacting to hover)|Product illustration reacts with state.|Shows behaviour not just shape.|/learn/location-data-quality/|Tag LED states: moving, sleeping, quiet.|S|CSS/JS
+Hub screen as product|Cursor (sites.py: huge product screenshot hero)|The UI screenshot is the product image.|Software buyers want the screen.|/products/amihub/|Large AmIHub screen, real demo data.|S|CSS/JS
+Product next-step strip|Ather s5 (caps 33 d5 "Keep exploring")|Quick routes after product.|No dead ends.|/products/*|Next: specs, pilot, plan your bay.|S|CSS/JS
+Tech-used section|Build in Amsterdam case (live: "TECHNOLOGY WE USED TO BUILD")|Lists the stack behind the work.|Credibility for technical readers.|/developers/|Stack: UWB, MQTT, REST, MCP, omlox.|S|CSS/JS
+
+## F06|Transitions between sections
+Hard cuts not cross-fades|SpaceX s1-s5 (caps 07)|Sections cut, never dissolve.|Crisp, confident pace.|all pages|Bench rule: hard cuts between bands.|S|CSS/JS
+Band tone steps|Apple AirPods Pro (caps 51 d0-d12)|Bands alternate tones in 3-4% L steps.|Rhythm without gradients.|all pages|#f0f6ff / #fff / #e7eefb band rhythm.|S|CSS/JS
+Shader page wipe|Hello Monday (live: PageWipe canvas)|WebGL wipe on route change.|Feels like one continuous site.|all pages|Grid-wipe on nav click.|M|WebGL
+Torn paper edge|Niccolò Miranda Roger Hub (live: torn paper top edge)|Sections meet with a torn-paper edge.|Tactile, editorial.|/learn/|Field guide sections separated by a paper edge (one only).|S|CSS/JS
+Bottom-sheet nav reveal|Build in Amsterdam (live: nav fixed 1440x450 sliding from bottom)|Menu slides up from the bottom as a sheet.|Thumb-friendly, dramatic.|all pages|Phone menu as bottom sheet.|S|CSS/JS
+Video modal from hero|Locomotive (live: c-video-modal fixed 1440x900)|Reel opens in a full-screen modal.|Keeps context.|/,/films/|Films open in modal.|S|Video
+Section slides over sticky|SpaceX (caps 07)|Next section slides over the pinned one.|Physical stacking.|/solutions/|Problem panels stack.|S|CSS/JS
+Colour band statement|Waymo s5 (caps 01 d5)|One full-bleed band in brand colour holds one statement.|A breath between dense sections.|/|#4b3df0 band, one line.|S|CSS/JS
+Next-project footer handover|Lusion case (live: "NEXT PROJECT" with title and counter); Immersive Garden ("See next project")|Page ends with a large link into the next item.|Continuous browsing.|/learn/*|Each field guide ends with the next guide title, large.|S|CSS/JS|Pick: turns 18 guides into a reading path.
+Backstage side tab|Immersive Garden case (live: backstageBttnWrapper 197x900 right edge)|A tall side tab opens behind-the-scenes.|Depth for the curious.|/technology/|Side tab "How we measured" opens methodology.|S|CSS/JS
+Prev/next bar|Immersive Garden case (live: prevNextBttnWrapper 1440x95)|Fixed bar for prev/next project.|Lateral navigation.|/use-cases/*|Prev/next use case bar.|S|CSS/JS
+Scroll-linked colour shift|Darkroom (caps 86)|Background colour shifts between sections on scroll.|Chapters feel distinct.|/films/|Background deepens as you reach the film.|S|CSS/JS
+Hero fade to map|Study move 1|Footage dissolves to UI.|Product continuity.|/|(see hero handover).|L|WebGL+Video
+Mask grow from element|Locomotive (live: polygon clip-path)|Element expands to fill viewport as the next section.|Seamless zoom.|/use-cases/find-the-asset/|Map tile grows into full map section.|M|CSS/JS
+Shared-element transition|Vercel (caps 59: instant navigation)|An element morphs from list to detail page.|Context preserved.|/products/|Product tile morphs into product hero (View Transitions API).|M|CSS/JS
+Line draws into next section|Hadrian (caps 17 hairlines)|A hairline continues from one section to the next.|Connects ideas.|/use-cases/station-to-station/|Route line flows down the page between stations.|S|CSS/JS
+Section number marker|Lusion (live: 001/092 numerals)|Each section opens with a mono number.|Wayfinding and rhythm.|/technology/|01 Signal, 02 Anchors, 03 Time, 04 Position.|S|CSS/JS
+Dark film band in light page|Apple AirPods Pro bands (caps 51)|Black film section in a light page.|Cinema moment.|/|One dark film band.|S|Video
+Blur-in focus transition|Basement (live: filter blur(0px) transitions)|Content goes from blur to sharp on entry.|Soft but cheap.|/trust/|Trust pillars sharpen on entry.|S|CSS/JS
+Curtain lift from preloader|Immersive Garden (live: introLoader lockScroll)|Loader lifts like a curtain, unlocking scroll.|Ceremony for heavy pages.|/platform/|Only for the 3D twin page.|S|CSS/JS
+Grain dissolve|Build in Amsterdam (live: url(#filter))|Images transition through noise.|Analog feel.|/company/|Photo changes through grain.|S|CSS/JS
+Slide-in drawer detail|Hello Monday (live: overlayContainer)|Detail opens in an overlay without page change.|Fast browsing.|/glossary/|Term detail in drawer.|S|CSS/JS
+Section-end one link|Apple AirPods Pro (caps 51 d1-d12)|Every section ends with one text link with chevron.|Clear next step.|all pages|One chevron link per section.|S|CSS/JS
+Tab panel swap|Verkada s3 (caps 41 d3)|Chip tabs swap picture + 2 lines.|Compact exploration.|/products/amimo/|Tabs: mount, power, coverage.|S|CSS/JS
+Loop seam handover|Study L14|Last frame matches first; hero loop invisible.|Polish.|/|Hero loop seam.|S|Video
+Scroll-to-top bulge|Hello Monday (live: "Back to top", closeBulge)|Back-to-top with elastic bulge.|Delight at the end.|all pages|Back to top with spring.|S|CSS/JS
+Zoom-into-detail on click|Apple Vision Pro closer look|Click zooms into a region.|Inspect without leaving.|/specs/|Click zooms FIG drawing details.|S|CSS/JS
+Split-screen wipe compare|Augury (caps 44 d1)|A wipe divides old vs new.|Contrast in one place.|/learn/value-without-mes/|Spreadsheet vs live map wipe.|S|CSS/JS
+Diagonal clip transitions|Locomotive (live: polygon clips)|Sections enter with angled clip.|Energy without motion sickness.|/start/|Step bands enter at a slight angle (once).|S|CSS/JS
+View-transition on filter|Hello Monday work (live: "Filter: Products Experiences Branding")|Filtered grid animates items in and out.|Filtering feels physical.|/learn/,/use-cases/|Guides filtered by role animate.|S|CSS/JS
+
+## F07|Navigation and wayfinding
+In-page sticky sub-nav|NVIDIA Omniverse (caps 48 d0)|Second sticky bar under global nav with its own CTA.|Long pages stay navigable.|/platform/,/technology/|Sub-nav: Tag · Anchor · Hub · Specs + "Plan your bay".|S|CSS/JS
+Fixed bottom nav bar|Basement (live: nav fixed bottom 1440x46)|A thin nav bar fixed at the bottom on desktop too.|Unusual, always reachable.|/learn/*|Guide reader bar: prev, contents, next at bottom.|S|CSS/JS
+Phone bottom-sheet menu|Build in Amsterdam (live: 390x400 nav sheet from bottom on phone)|Menu rises from bottom on phone.|Thumb reach.|all pages|Phone nav sheet (nav.json already builds one; restyle).|S|CSS/JS
+Typographic project index|Locomotive work (live: "All projects 46", rows with industry + city)|Work as an index of rows: name, industry, location.|Scannable, credible volume.|/use-cases/|Use cases index: flow, industry, plant type rows.|S|CSS/JS|Pick: honest index beats cards.
+Keyboard shortcut chat|Basement (live: "Press [/] to chat")|Keyboard shortcut opens a chat box.|Power users love it.|all pages|"/" opens the Ask panel.|S|CSS/JS
+Counts in nav|Basement (live: "Showcase (26)")|Nav items show counts.|Sets expectation.|all pages|"Field guides (18)".|S|CSS/JS
+Filter chips over grid|Hello Monday work (live: Filter: Products/Experiences/Branding)|Chips filter a grid.|Fast narrowing.|/learn/|Filter guides by role.|S|CSS/JS
+Role-based entry|nav.json roles (existing) + Ather "Keep exploring" (caps 33)|Pick your role to get a route.|Personalised start.|/start/|Role chooser tiles leading to the role's first page.|S|CSS/JS
+Breadcrumb with section bar|Apple iPhone local nav (caps 52 d0)|52 px sticky local nav with product name and pill.|Context plus action.|/products/*|Product local nav with "Plan your bay" pill.|S|CSS/JS
+Prev/next lateral|Immersive Garden (live)|Previous/next always available.|Linear reading.|/learn/*|Prev/next guide.|S|CSS/JS
+Back-all link|Niccolò Miranda case (live: "BACK ALL")|Top-left back to all work.|Escape hatch.|/use-cases/*|"All use cases" top-left.|S|CSS/JS
+Menu with preview image|nav.json pictures + Locomotive menu (live)|Menu panel shows preview of hovered item.|Preview before click.|all pages|Nav panel preview stills (exist; re-cut from new visuals).|S|CSS/JS
+Hover prefetch|Vercel (caps 59)|Links prefetch on hover.|Instant pages.|all pages|Prefetch on intent.|S|CSS/JS
+Mega-footer as map|Locomotive footer (live: Menu / Social / External columns)|Footer is a full sitemap.|Second chance navigation.|all pages|Footer columns from nav.json.|S|CSS/JS
+Section tick ruler|Stripe Press (caps 57 d1-d3)|Tick ruler marks place in a stack.|Orientation in long lists.|/glossary/|Alphabet tick ruler on the left.|S|CSS/JS
+Table of contents sticky|Distill (sites.py)|Sticky TOC for long articles.|Readers jump.|/learn/*|Sticky contents on desktop.|S|CSS/JS
+Search-as-nav|Raycast (sites.py: keyboard UI)|Command palette navigation.|Fast for repeat visitors.|all pages|Cmd-K over llms.txt index.|M|CSS/JS
+Chapter nav in films|Seeing Theory (sites.py: chapter navigation)|Chapters listed with progress.|Skippable long content.|/films/|Film chapters list.|S|Video
+Status pill in header|Basement (live: "Online ()")|Small status in header.|Liveness.|all pages|"Demo floor live" pill.|S|CSS/JS
+Locale flag chip|Basement case (live: "[🇺🇸]" visitor locale)|Shows detected region.|Personal, local.|/contact/|"India, IST" chip for timezone.|S|CSS/JS
+Exit route ring|Ather (caps 33 d5)|Four quick routes at end.|No dead end.|all pages|Four routes: pilot, specs, plan, call.|S|CSS/JS
+Large hamburger with bulge|Hello Monday (live: burgers + closeBulge)|Burger morphs with elastic bulge.|Delight in a dull control.|all pages|Phone menu icon with spring.|S|CSS/JS
+Map-based nav|Waymo (study: live city map)|Navigate by map regions.|Spatial product, spatial nav.|/industries/|Plant map regions link to use cases.|M|CSS/JS|Pick: navigation that speaks the product.
+Section dots on phone|Apple AirPods Pro m1 (caps 51 m1)|Swipe with dots and pause.|Clear position.|/products/*|Feature swipe dots.|S|CSS/JS
+Skip-to-numbers link|Waymo (caps 01 d8)|Links straight to methodology.|Engineers jump to proof.|/specs/|"Skip to test conditions".|S|CSS/JS
+Index-first homepage|Niccolò Miranda (live: H1 "Index" / "Work" / "About" in nav)|Nav as typographic index.|Clean, editorial.|/resources/|Resources index as typographic list.|S|CSS/JS
+Cursor label for nav|Immersive Garden (live: cursor__text)|Cursor shows destination label.|Clarity for media links.|/films/|Cursor reads "Play 1:30".|S|CSS/JS
+Glossary hover definitions|Josh Comeau (sites.py: inline widgets)|Terms show definitions on hover.|Keeps reader on page.|/learn/*|Floor/tech terms link to glossary popovers.|S|CSS/JS
+Persistent CTA in nav|Apple iPhone "Buy" (caps 52)|Primary action always one tap away.|Conversion.|all pages|"Plan your first bay" in nav.|S|CSS/JS
+Floor-plan sitemap|Vention (caps 02)|Sitemap drawn as a plan.|Memorable wayfinding.|/start/|Start page: four steps drawn as a bay walk.|M|CSS/JS
+Scroll position memory|Basement (live: Grid/Rows remembered)|Remembers view and position.|Respect for return visits.|/learn/|Remember filter.|S|CSS/JS
+Breadcrumb JSON-LD|nav.json existing|Structured breadcrumbs.|SEO.|all pages|Keep.|S|CSS/JS
+
+## F08|Data visualisation and live UI
+Live demo map|Waymo s5 (study: live city map)|A live map shows the fleet in real time.|Proof by presence.|/products/amihub/|Demo bay map, 38 tags moving from replayed log.|M|CSS/JS|Pick: the product, live, on the page.
+Draggable mechanism figure|Bartosz Ciechanowski GPS s2-s6 (caps 50)|Drag a point; distances and solved position update live.|Understanding through play.|/technology/|Drag a tag; four anchor distances and the solved dot update.|M|CSS/JS|Pick: best possible explanation of UWB.
+Distance closing arrow|Apple AirTag s7-s8 (caps 00 d7-d8)|Arrow and distance shrink as you scroll.|Finding moment felt.|/use-cases/find-the-asset/|"Trolley T-114: 42 m... 8 m... here."|S|CSS/JS|Pick: the find moment, in one screen.
+Wait timeline per trolley|Waymo data hub (study)|Timeline bars of states over time.|Shows where time goes.|/learn/dwell-time/|Trolley timeline: moving, waiting at weld, waiting at inspection.|S|CSS/JS
+Queue length bars by station|The Pudding sticky chart (caps 70)|Bars by category update with steps.|Bottlenecks obvious.|/solutions/wip/|Queue at each station, worst highlighted.|S|CSS/JS
+Heatmap of dwell on plan|Lumafield false colour (study L6)|False-colour overlay on a real image.|Where problems cluster.|/learn/wip-visibility/|Dwell heatmap over the bay plan.|M|CSS/JS
+Last-seen quiet tag timeline|Rive state machines (caps 92)|States visualised over time.|Explains gaps honestly.|/learn/location-data-quality/|Tag timeline: ping, sleep, gap, last seen.|S|CSS/JS
+Accuracy scatter|Waymo methodology (caps 01 d8)|Scatter of measured vs true.|Honest accuracy picture.|/learn/accuracy/|Scatter of 500 readings with ±30 cm ring.|S|CSS/JS|Pick: proves numbers with conditions.
+Anchor estimate calculator|Ramp ROI calculator (sites.py)|Inputs produce live result.|Self-qualification.|/tools/anchors/|Bay size, racking, ceiling height to anchor count.|M|CSS/JS
+Search-time calculator|Ramp (sites.py)|Inputs produce savings.|Personal stake.|/tools/search-time/|Trolleys, searches/shift, minutes to hours/month.|M|CSS/JS
+Query-answer panel|Study move 5|Footage asks, product answers in the same frame.|Product proven inside story.|/use-cases/ask-your-plant/|Answer table under the question.|M|CSS/JS
+Sparkline beside metric|Linear (caps 58)|Tiny trend line beside numbers.|Context without charts.|/products/amihub/|Waiting trolleys sparkline per zone.|S|CSS/JS
+Live JSON panel|Linear code/diff panel (caps 58 d7-d8)|Real code as product.|Developers trust real payloads.|/developers/|Live JSON of a location event.|S|CSS/JS
+Spec panel tabular nums|Oxide s2-s4 (caps 49)|Spec panels with tabular numerals in hairline frames.|Precision look.|/specs/|All specs in hairline panels.|S|CSS/JS
+Stat row of four|Lumafield s3 (caps 42 d2)|Four numbers each with a 2-line caption.|Dense proof.|/pilot/|Pilot outcomes row.|S|CSS/JS
+Stat with video behind|Dexterity (study: stat-3.mp4 behind numbers)|Small loop behind each stat.|Number and evidence together.|/solutions/wip/|"42 min" over a loop of the waiting trolley.|M|Video
+Sankey of flow|The Pudding (sites.py)|Flow widths show volumes.|Where WIP goes.|/use-cases/station-to-station/|Trolley flows stores to dispatch.|M|CSS/JS
+Live counters ticking|Basement (live: "Online ()" counters)|Counters change live.|Liveness.|/products/amihub/|Events/min ticker.|S|CSS/JS
+Multi-cursor live collaboration|Figma (sites.py: multi-cursor animation)|Several cursors act at once.|Shows a shared tool.|/products/amihub/|Supervisor, planner, IE cursors on one map.|S|CSS/JS
+Interactive toggle variables|Bret Victor (sites.py)|Reader controls the variables.|Explorable understanding.|/learn/anchor-planning/|Ceiling height slider changes coverage.|M|CSS/JS
+Simulation with guide|Evolution of Trust (sites.py)|Play first, explain after.|Lasting understanding.|/learn/association/|Play: link trolleys to jobs, see errors.|M|CSS/JS
+Data sorted into piles|R2D3 (sites.py)|Points sort into groups.|Classification visible.|/learn/value-without-mes/|Trolleys sort by "known job" vs "unknown".|M|CSS/JS
+False-colour x-ray|Lumafield s7 (study L6)|CT view in false colour with defect list.|Reveals hidden.|/platform/|Twin overlay reveals hidden queues.|M|CSS/JS
+Signal timing diagram|Bartosz GPS s8 (caps 50)|Clock shows time of flight.|Physics without math.|/technology/|Time-of-flight bars per anchor.|S|CSS/JS
+Accuracy ring comparison|Apple Privacy checklist (caps 55 d2)|Checklist comparison per option.|Simple choice.|/learn/uwb-vs-rfid/|Accuracy rings for UWB, BLE, RFID.|S|CSS/JS
+Floor event feed|Linear issues UI (caps 58)|Feed of live events.|Product feel.|/products/amihub/|"T-114 entered Inspection 09:12".|S|CSS/JS
+Shift timeline scrubber|Visualizing quaternions (sites.py: video + interactive linked)|Scrub time; map and chart follow.|Time is the axis.|/learn/dwell-time/|Scrub a shift; dots move.|M|CSS/JS|Pick: time-based story for a time-based product.
+Baseline vs pilot bars|Waymo comparison basis (caps 01 d8)|Comparison with stated basis.|Honest delta.|/learn/pilot-baseline/|Before/after bars with measurement window.|S|CSS/JS
+Zone entry/exit animation|Helion (caps 04)|Bodies cross a boundary with a caption.|Event logic visible.|/learn/dwell-time/|Trolley crosses zone line; timer starts.|S|CSS/JS
+Coverage map editor|Vention configurator (caps 02 d2)|Drag anchors; coverage recalculates.|Pre-survey confidence.|/learn/anchor-planning/|Drag anchors on a bay.|M|CSS/JS
+Status legend chips|Verkada chips (caps 41)|Small coloured chips explain states.|Readable maps.|/products/amihub/|Moving / waiting / quiet chips.|S|CSS/JS
+MCP tool call trace|GitHub Copilot editor (sites.py)|Shows tool calls step by step.|Developers see how it works.|/learn/mcp-location-data/|Trace: tool call, query, answer.|S|CSS/JS
+omlox interop diagram as live packets|Vercel grid diagrams (caps 59)|Grid diagram with moving packets.|Interop understood.|/learn/omlox/|Packets flow AmIHub to omlox hub to MES.|S|CSS/JS
+India cluster map|Waymo s5 (study: live US city map)|A map places the subject in real geography.|Local relevance at a glance.|/learn/uwb-rtls-india/|Map of India's auto-component and electronics clusters (Chakan, Hosur, Manesar, Sriperumbudur) with the plant types the guide covers; no customer claims.|S|CSS/JS
