@@ -184,6 +184,8 @@
   .js .dock{display:flex;gap:var(--s-2);position:fixed;z-index:40;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom));padding:8px var(--margin) calc(8px + env(safe-area-inset-bottom));align-items:center;background:var(--surface);border-top:1px solid var(--hairline);transform:translateY(105%);transition:transform 200ms var(--ease-ds);visibility:hidden}
   .js.dock-on .dock{transform:none;visibility:visible}
   .js.sheet-on .dock{transform:translateY(105%);visibility:hidden}
+  .act > .cta{transition:opacity var(--t-fast) var(--ease-ds),visibility 0s}
+  .js.dock-on:not(.sheet-on) .act > .cta{opacity:0;visibility:hidden;transition:opacity var(--t-fast) var(--ease-ds),visibility 0s var(--t-fast)}
   .dock-b{flex:none;height:48px;padding:0 18px;border:0;border-radius:var(--radius-pill);background:var(--ground);color:var(--ink);font:500 var(--size-small)/1 var(--font-text);cursor:pointer}
   .dock-b:active,.dock .cta:active{transform:scale(var(--press-scale))}
   .dock .cta{flex:1;min-width:0}
