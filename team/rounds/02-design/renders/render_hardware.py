@@ -2,7 +2,8 @@
 
 Blender 5.1 Python module, Cycles CPU, headless.
     /tmp/bpyenv/bin/python render_hardware.py <shot> [--scale 0.5] [--samples 384] [--out DIR]
-shots: amigo_hero, amigo_logo, amimo_rj45, pair_scale, all
+shots: amigo_hero, amigo_logo, amimo_rj45, pair_scale, amigo_page, all
+    amigo_page takes [--dist 0.35] [--el 30] [--fstop 8] [--border x0,x1,y0,y1]; finish it with --page (see page_grade)
 Outputs <out>/<shot>_raw.png (16-bit, AgX). Finish with:
     python3 render_hardware.py --grade <raw.png> <final.png>   (system python with numpy + PIL)
 
@@ -62,6 +63,135 @@ def grade(src, dst, seed=7):
     Image.fromarray((a * 255 + rng.random(a.shape)).clip(0, 255).astype(np.uint8)).save(dst, optimize=True)
 
 
+def page_grade(src, dst, ground='#f5f5f2', seed=11):
+    """Round 5: put the tag on the page itself. A photographer's flat-field: fit the paper's light fall-off (sweep
+    gradient, cove, lens falloff) with a smooth surface on the paper pixels only, divide it out, and scale so the
+    paper lands exactly on the site ground. The tag and its contact shadow keep their true ratios to the paper,
+    so nothing is painted or cut out by hand. Paper far from the tag is set to the ground value exactly, so the
+    picture has no edge on the page. Then the photographic finish of grade(): veiling glare, sub-pixel lateral CA,
+    luminance-weighted sensor grain, but only where the picture differs from the page (no grain on the ground).
+    Works on a raw 16-bit render or a graded PNG, and on a border (region) render: black outside the region
+    is treated as unrendered paper."""
+    import numpy as np
+    from PIL import Image
+    Image.MAX_IMAGE_PIXELS = None
+    if src.endswith('.npy'):
+        a = np.load(src); raw = True       # a stitched raw render, 0..1, see stitch_tiles
+    else:
+        im = Image.open(src)
+        a = np.asarray(im).astype(np.float32)
+        raw = a.max() > 255
+        a = a / (65535.0 if raw else 255.0)
+    a = a[..., :3]
+    h, w = a.shape[:2]
+    lin = np.where(a <= 0.04045, a / 12.92, ((a + 0.055) / 1.055) ** 2.4).astype(np.float32)
+    del a
+    if raw:
+        # levels and veiling glare as in grade(): x0.95, then ~1.5 % of the mean scene light into the shadows
+        lin *= 0.95 ** 2.2
+        Yr = lin @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+        lin += np.where(Yr > 1e-6, 0.015 * float(Yr[Yr > 1e-6].mean()), 0)[..., None]
+        del Yr
+    g = np.array([int(ground.lstrip('#')[i:i + 2], 16) / 255 for i in (0, 2, 4)], np.float32)
+    g_lin = np.where(g <= 0.04045, g / 12.92, ((g + 0.055) / 1.055) ** 2.4).astype(np.float32)
+    Y = lin @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+    unrendered = Y <= 1e-6
+    # --- fit the paper on a coarse grid: 4th-order surface per channel, two passes to drop the shadow
+    st = max(1, w // 600)
+    ys, xs = np.mgrid[0:h:st, 0:w:st]
+    u = (xs / w * 2 - 1).ravel(); v = (ys / h * 2 - 1).ravel()
+    terms = [u ** i * v ** j for i in range(5) for j in range(5 - i)]
+    A = np.stack(terms, 1)
+    from scipy import ndimage as ndi
+    # sample a blurred copy so grain and noise do not read as shadow
+    Yb = ndi.gaussian_filter(Y, st * 1.5)
+    Ys = Yb[::st, ::st].ravel()
+    Ls = np.stack([ndi.gaussian_filter(lin[..., c], st * 1.5)[::st, ::st] for c in range(3)], -1).reshape(-1, 3)
+    del Yb
+    ok = (Ys > 0.6 * np.median(Ys[Ys > 1e-6])) & (Ys > 1e-6)
+    for _ in range(3):
+        coef, *_ = np.linalg.lstsq(A[ok], Ys[ok], rcond=None)
+        fitY = A @ coef
+        ok = (Ys > 1e-6) & (Ys / np.maximum(fitY, 1e-4) > 0.99)
+        # grow the exclusion around the dark object so its soft shadow is not taken as paper
+        m = (~ok).reshape(ys.shape) & ~unrendered[::st, ::st]
+        m = ndi.binary_opening(m, iterations=2)
+        m = ndi.binary_dilation(m, iterations=max(2, 24 // st))
+        ok = ok & ~m.ravel()
+        assert ok.sum() > 0.2 * ok.size, ok.sum()
+    fits = []
+    for c in range(3):
+        coef, *_ = np.linalg.lstsq(A[ok], Ls[ok, c], rcond=None)
+        fits.append((A @ coef).reshape(ys.shape))
+    paper = np.stack([np.asarray(Image.fromarray(f.astype(np.float32), mode='F').resize((w, h), Image.BICUBIC)) for f in fits], -1)
+    out = lin / np.maximum(paper, 1e-4) * g_lin
+    out[unrendered] = g_lin
+    # nothing on a lit sweep is brighter than the sweep itself next to a dark object (it only occludes), so any
+    # residual of the fit above the ground is fit error: clamp it, or it reads as a halo (a glow) round the tag
+    out = np.minimum(out, g_lin)
+    del paper, lin
+    # --- veiling glare, as in grade(): a real lens never holds a pure-black hole
+    # --- where the picture is the page: weight from the blurred difference to the ground
+    from scipy import ndimage as ndi
+    dY = np.abs((out @ np.array([0.2126, 0.7152, 0.0722], np.float32)) / float(g_lin @ np.array([0.2126, 0.7152, 0.0722], np.float32)) - 1)
+    sm = max(2.0, w / 900)
+    dY = ndi.gaussian_filter(dY, sm)
+    wgt = np.clip((dY - 0.004) / 0.02, 0, 1)
+    wgt = ndi.gaussian_filter(ndi.maximum_filter(wgt, size=int(sm * 3) | 1), sm * 2)
+    # hard guarantee: the outer 4 % of the frame is the ground, feathered
+    yy = np.minimum(np.arange(h), np.arange(h)[::-1])[:, None] / h
+    xx = np.minimum(np.arange(w), np.arange(w)[::-1])[None, :] / w
+    edge = np.clip(np.minimum(yy, xx) / 0.04, 0, 1)
+    wgt = np.clip(wgt, 0, 1) * edge
+    out = g_lin + (out - g_lin) * wgt[..., None]
+    # --- back to sRGB, sub-pixel lateral CA on red, grain only inside the picture
+    o = np.where(out <= 0.0031308, out * 12.92, 1.055 * np.power(np.clip(out, 0, None), 1 / 2.4) - 0.055).astype(np.float32)
+    del out
+    k = 1 + 0.35 / (w / 2) * (w / 2400)
+    c = Image.fromarray(o[..., 0].copy(), mode='F'); W2, H2 = round(w * k), round(h * k)
+    c = np.asarray(c.resize((W2, H2), Image.BICUBIC)); oy, ox = (H2 - h) // 2, (W2 - w) // 2
+    o[..., 0] = o[..., 0] * (1 - wgt) + c[oy:oy + h, ox:ox + w] * wgt
+    rng = np.random.default_rng(seed)
+    L = o @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+    amp = ((0.0050 + 0.006 * (1 - L)) * wgt)[..., None]
+    o = o + amp * rng.standard_normal((h, w, 1), dtype=np.float32)
+    o = np.clip(o, 0, 1)
+    # dither only where the picture is; the ground stays the exact token value
+    d = rng.random(o.shape, dtype=np.float32) * wgt[..., None] + 0.5 * (1 - wgt[..., None])
+    Image.fromarray((o * 255 + d).clip(0, 255).astype(np.uint8)).save(dst, optimize=False, compress_level=3)
+
+
+def stitch_tiles(dst, W, H, *tiles):
+    """Join border tiles of one frame (each 'path:x0,x1,y0,y1', fractions as passed to --border, y from the
+    bottom as Blender counts it) into one W x H raw frame, saved as float .npy for page_grade. Overlaps are
+    cross-faded linearly, so each tile's own denoise cannot leave a seam. Unrendered pixels stay 0."""
+    import numpy as np
+    from PIL import Image
+    Image.MAX_IMAGE_PIXELS = None
+    acc = np.zeros((H, W, 3), np.float32); wsum = np.zeros((H, W), np.float32)
+    for t in tiles:
+        path, b = t.split(':'); x0, x1, y0, y1 = [float(v) for v in b.split(',')]
+        a = np.asarray(Image.open(path)).astype(np.float32)[..., :3]
+        a /= 65535.0 if a.max() > 255 else 255.0      # PIL opens Blender's 16-bit RGBA PNG as 8-bit RGBA
+        th, tw = a.shape[:2]
+        px, py = int(x0 * W), H - int(y0 * H) - th          # Blender: border min rounds down, rows from the bottom
+        ramp = lambda n: np.minimum(1, np.minimum(np.arange(n) + 1, n - np.arange(n)) / 160.0)
+        wt = ramp(th)[:, None] * ramp(tw)[None, :]
+        acc[py:py + th, px:px + tw] += a * wt[..., None]; wsum[py:py + th, px:px + tw] += wt
+    out = np.where(wsum[..., None] > 0, acc / np.maximum(wsum, 1e-6)[..., None], 0).astype(np.float32)
+    np.save(dst, out)
+    print('stitched', W, H, 'covered', float((wsum > 0).mean()))
+
+
+if len(sys.argv) > 1 and sys.argv[1] == '--stitch':
+    stitch_tiles(sys.argv[2], int(sys.argv[3]), int(sys.argv[4]), *sys.argv[5:])
+    sys.exit(0)
+
+if len(sys.argv) > 1 and sys.argv[1] == '--page':
+    page_grade(sys.argv[2], sys.argv[3], *(sys.argv[4:5]))
+    sys.exit(0)
+
+
 if len(sys.argv) > 1 and sys.argv[1] == '--grade':
     grade(sys.argv[2], sys.argv[3])
     sys.exit(0)
@@ -109,6 +239,8 @@ def reset():
     sc.cycles.blur_glossy = 0.5
     sc.cycles.use_light_tree = True
     sc.render.threads_mode = 'FIXED'; sc.render.threads = 4
+    # one tile: Cycles applies time_limit per tile, so an 8K frame in 2048 px tiles would take time_limit x tiles
+    sc.cycles.use_auto_tile = False
     sc.view_settings.view_transform = 'Khronos PBR Neutral'
     sc.view_settings.look = 'None'
     sc.view_settings.exposure = 0.0
@@ -466,6 +598,25 @@ def shot_amimo_rj45():
     render('amimo_rj45')
 
 
+def shot_amigo_page():
+    """Round 5 hero still: the hero angle, closer, so the tag fills the frame and the paper can be flattened into
+    the page ground (#f5f5f2) by --page. Same rig, same light, same lens; only distance and framing change."""
+    sc = reset(); world(0.30, rot=0.6); sweep(-62)
+    root, top, bot = amigo()
+    m_top = plastic('tag_top', PLASTIC, seed=0.0); m_bot = plastic('tag_bot', PLASTIC, seed=5.0)
+    top.data.materials.append(m_top); bot.data.materials.append(m_bot)
+    place(root, rz=math.radians(TAG_RZ))
+    tgt = (0, 0, 0.012)
+    rig(tgt, cam_az=-62, fill=1.2, rake=6.0, rake_az=-62 + 100, rake_el=16)
+    camera(look_from((0, 0, 0.010), -62, PAGE_EL, PAGE_DIST), (0, 0.004, 0.006), lens=90, fstop=PAGE_F, focus=(0, -0.006, 0.020))
+    if BORDER:
+        x0, x1, y0, y1 = BORDER
+        sc.render.use_border = True; sc.render.use_crop_to_border = CROP
+        sc.render.border_min_x, sc.render.border_max_x = x0, x1
+        sc.render.border_min_y, sc.render.border_max_y = y0, y1
+    render('amigo_page' + (opt('--tag', '') and '_' + opt('--tag', '')))
+
+
 def shot_pair_scale():
     sc = reset(); world(0.30, rot=0.6); sweep(-70)
     r1, top, bot = amigo()
@@ -480,10 +631,15 @@ def shot_pair_scale():
 
 
 TAG_RZ = 90.0     # long axis across frame
+PAGE_EL = opt('--el', 30.0)
+PAGE_DIST = opt('--dist', 0.35)
+PAGE_F = opt('--fstop', 8.0)
+CROP = '--crop' in args   # write only the border region (8K masters are rendered as overlapping tiles, see stitch_tiles)
+BORDER = [float(x) for x in opt('--border', '').split(',')] if opt('--border', '') else None
 ANC_RZ = 0.0
 
 if __name__ == '__main__':
     shots = {'amigo_hero': shot_amigo_hero, 'amigo_logo': shot_amigo_logo,
-             'amimo_rj45': shot_amimo_rj45, 'pair_scale': shot_pair_scale}
+             'amimo_rj45': shot_amimo_rj45, 'pair_scale': shot_pair_scale, 'amigo_page': shot_amigo_page}
     for s in (shots if SHOT == 'all' else [SHOT]):
         shots[s]()

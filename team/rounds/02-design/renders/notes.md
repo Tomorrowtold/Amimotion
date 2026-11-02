@@ -79,3 +79,15 @@ Final measurements (graded PNGs)
 - The plastic colour is a guess (#404143 neutral). It is not calibrated against a real part.
 - The grain is procedural. Close inspection of the macro shows a noise-like pattern, not true EDM craters. A scanned VDI 27 normal map would beat it.
 - None of these has been through a blind 2AFC test. That is the render reviewer's next step, and these are not cleared until it is done.
+
+## Round 5: `amigo_page`, the tag on the page (hero strike unit, 1 Nov 2026)
+
+New shot `amigo_page` in `render_hardware.py`: the hero angle and the same rig and lens, the camera moved in from 0.47 m to 0.37 m so the tag fills the frame. Rendered as an 8K master (7680 x 5120) in four overlapping border tiles (`--scale 3.2 --border ... --crop --tag a..d --time 90`, about 6.5 min each on 4 cores), joined with `--stitch` (linear cross-fade over the 307 px and 205 px overlaps; measured tile mismatch in the overlap is 0.5 of 65535 before the fade, so no seam). Why tiles: a single 8K frame did not stop at its Cycles time limit on this machine (two attempts ran past 40 and 50 minutes and were killed), while a tile does.
+
+`--page` (new, `page_grade`) puts the tag on the site ground instead of on grey paper: it fits the sweep's light fall-off on the paper pixels only (4th-order surface, three passes that drop the tag and its contact shadow), divides it out and scales so the paper lands on #f5f5f2 exactly. The tag and its shadow keep their true ratio to the paper, so nothing is painted. Residual fit error above the ground is clamped (a dark object only occludes, so paper brighter than the sweep next to it is fit error and would read as a halo). Then the grade() finish: levels, veiling glare, sub-pixel lateral CA, grain only where the picture differs from the page.
+
+`tools/hero_images.py` cuts the web ladder (800, 1600, 2400, 3840, 5120, 7680; AVIF 4:4:4 and WebP) with alpha: transparent wherever the picture is the page, so no codec rounding can draw a rectangle on the ground. Measured: the page ground is 245,245,242 on both sides of the image edge in Chromium.
+
+The shot also fixed one round-4 fault: at 8K the debossed letters show their lit inner walls (no longer filled black), because the tag is now 4,400 px wide in frame instead of 1,300.
+
+Still open (unchanged from round 4): surfaces too clean, plastic colour uncalibrated, procedural grain, and no blind 2AFC test yet.

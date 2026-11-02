@@ -184,3 +184,7 @@ Inspector R3: **4 FAIL, 3 WARN.** They are listed here so nobody reads "0":
 ## Fix: the capital I (1 Nov 2026)
 
 Mona Sans draws capital I as a bare stem, so "AmIMotion" read as "AmlMotion". `tools/serif_I.py` gives I short slab serifs, scaled to each cut's stem weight, and saves renamed copies as "AmI Sans" (the OFL reserves the name "Mona Sans" for unmodified files). The site uses `fonts/AmISans*.woff2` only. Nothing else in the fonts changed.
+
+## Hero, round 5 (2 Nov 2026)
+
+The hero picture no longer sits in a `--surface` slot. The CAD still is flattened so its paper is `--ground`, and the web files are transparent wherever they equal the page, so the tag stands on the page itself. The picture runs from column 5 to the screen edge; on phones and portrait screens the order is H1, tag, lede. Review, scores and measurements: `hero-review.md`.
