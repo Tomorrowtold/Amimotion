@@ -42,8 +42,18 @@ UC_LINE = {
 }
 
 
+# round 13 (Boston Dynamics jobs grid): the four jobs as picture tiles, each the 4:3 cut of its own head still
+UC_PIC = {
+    "/use-cases/find-the-asset/": ("P-UC1-01c", "A model factory floor. One trolley stopped behind the racks is marked blue."),
+    "/use-cases/station-to-station/": ("P-UC3-01c", "A model factory floor. Blue lines show each trolley's full path between checkpoint desks."),
+    "/use-cases/amr-hand-off/": ("P-UC2-01c", "A model back aisle. A robot and the trolley it tows are marked blue."),
+    "/use-cases/ask-your-plant/": ("P-UC4-01c", "A model factory floor, all pale except three trolleys at inspection, marked amber."),
+}
+ucpics = lambda: {u: pic(c, "4:3 cut of the use case's head still (job tile).", "photo", a) for u, (c, a) in UC_PIC.items()}
+
+
 def others(slug):
-    return section(vp("Other jobs,", "same tags."), links([v for k, v in UC_LINE.items() if k != slug]))
+    return section(vp("Other jobs,", "same tags."), links([v for k, v in UC_LINE.items() if k != slug], pics=ucpics()))
 
 
 # ---------------- /solutions/ ----------------
@@ -72,7 +82,7 @@ write("/solutions/", "Where AmIMotion helps: WIP, tools and vehicles",
                          ("Robotics and AMRs", "AmIMotion puts AMRs and the trolleys they tow on one map with everything else you tag. Your fleet software still drives them.")], 3),
                   more([("Manufacturing", "/industries/manufacturing/"), ("Warehousing", "/industries/warehousing/"), ("Robotics and AMRs", "/industries/robotics/")])),
           section(vp("Four jobs,", "start to finish.", "Each one starts with a walk someone takes today. Each one ends with an answer in AmIHub."),
-                  links(list(UC_LINE.values()))),
+                  links(list(UC_LINE.values()), pics=ucpics())),
           section(vp("What AmIMotion leaves", "to your systems.", "AmIMotion adds where and how long. It does not take over the records you already trust."),
                   tiles([("Your MES or WMS keeps the job.", "AmIHub adds where its trolley or pallet is and how long it has waited. Orders, routes and status stay where they are."),
                          ("Your team says why.", "AmIHub shows that a load waited and for how long. Why it waited is for your team to say."),
