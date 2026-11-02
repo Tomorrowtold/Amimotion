@@ -195,3 +195,5 @@ i.b{background:var(--blue)}i.g{background:#7a8399}i.a{background:var(--amber)}
 .si-record .si-h2{font-size:clamp(2rem,1.3rem + 1.8vw,3.1rem)}
 .si-rec.arm dl>div{opacity:0;transform:translateX(-10px);transition:opacity .6s var(--si-ease),transform .6s var(--si-ease);transition-delay:calc(var(--i) * 90ms)}
 .si-rec.arm.in dl>div{opacity:1;transform:none}
+/* chart labels set in located blue are text: one step darker so they read at AA on the chart paper; marks keep #1f6bff. */
+.si-row.on .si-rl b,.si-zl span:not(.w){color:#1858d8}
