@@ -39,6 +39,19 @@
   // ---- S1 turntable: a frame sequence scrubbed by the hero runway (render job R1). No frames yet: the still stays. ----
   const turn = d.querySelector('[data-turn]'), hero = turn && turn.closest('[data-stage]');
   const N = turn ? +turn.dataset.frames || 0 : 0;
+  // the still, painted into the canvas over the hidden <img> box (CSS hides the img only when JavaScript runs)
+  if (turn) {
+    const cv = turn.querySelector('canvas'), cx = cv.getContext('2d'), im = turn.querySelector('img');
+    const paint = () => {
+      if (turn.classList.contains('is-live') || !im.complete || !im.naturalWidth) return;
+      const k = Math.min(devicePixelRatio || 1, 2), f = turn.getBoundingClientRect(), r = im.getBoundingClientRect(), sc = f.width ? cv.offsetWidth / f.width : 1;
+      cv.width = Math.round(cv.offsetWidth * k); cv.height = Math.round(cv.offsetHeight * k);
+      cx.clearRect(0, 0, cv.width, cv.height);
+      cx.drawImage(im, (r.left - f.left) * sc * k, (r.top - f.top) * sc * k, r.width * sc * k, r.height * sc * k);
+    };
+    im.complete ? paint() : im.addEventListener('load', paint);
+    addEventListener('resize', paint);
+  }
   if (motion && N && !lean) {
     const cv = turn.querySelector('canvas'), cx = cv.getContext('2d'), frames = [], ok = [];
     const w = innerWidth <= 760 ? 720 : 1080, src = (i) => ROOT + turn.dataset.frameSrc.replace(/^\//, '').replace('{w}', w).replace('{i}', String(i).padStart(3, '0'));

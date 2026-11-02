@@ -32,15 +32,15 @@ main a:hover{text-decoration-thickness:2px}
 /* ================= S1 Hero: H1 at display size, the tag on the ground, the lede ================= */
 .hero{position:relative;padding-inline:var(--margin)}
 .hero-pin{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:clamp(24px,4.5svh,64px)}
-.hero h1{font-size:min(var(--size-display),calc((100vw - 2 * var(--margin)) / 7.3));line-height:.94;letter-spacing:-.045em;margin:0}
-.hero h1 span{display:block;white-space:nowrap}
+.hero h1{font-size:min(var(--size-display),calc((100vw - 2 * var(--margin)) / 7.3));line-height:.94;letter-spacing:-.045em;margin:0;white-space:nowrap}
 .hero .lede{order:3;max-width:31em;margin:clamp(16px,3svh,40px) auto var(--rhythm-s);font-size:var(--size-lede);line-height:1.42;color:var(--ink);text-wrap:pretty}
 .turn{order:2;position:relative;width:100%;display:flex;justify-content:center;margin-top:clamp(8px,2svh,32px)}
 .turn picture,.turn img{display:block}
 .turn img{height:min(44svh,46vw);width:auto;max-width:100%;object-fit:contain}
 .turn canvas{position:absolute;inset:0;width:100%;height:100%;display:none}
-.turn.is-live canvas{display:block}
-.turn.is-live picture{visibility:hidden}
+/* with JavaScript the still is painted into the canvas (the H1 stays the largest paint, so it is the LCP element) */
+.js .turn canvas{display:block}
+.js .turn picture{visibility:hidden}
 @media (max-width:1023px){
   .hero .lede{text-align:left;margin-top:var(--s-6)}
   .turn img{height:auto;width:min(100%,560px)}
@@ -69,7 +69,7 @@ main a:hover{text-decoration-thickness:2px}
 .giant{position:relative;z-index:1;font-size:min(var(--size-giant),calc((100vw - 2 * var(--margin)) / 3.3));line-height:.86;letter-spacing:-.05em;white-space:nowrap}
 .giant data{display:block}
 .spec-line{position:relative;z-index:1;max-width:19em;margin:var(--s-6) 0 0;font-size:var(--size-lede);line-height:1.4;color:var(--ink);text-wrap:pretty}
-.macro{position:absolute;bottom:-7vw;right:0;width:50vw;max-width:none}
+.macro{position:absolute;bottom:var(--s-5);right:-5vw;width:48vw;max-width:none}
 .macro img{width:100%;height:auto;max-width:none}
 .motion .macro{transform:translateX(calc((.5 - var(--p)) * 6vw)) scale(calc(.96 + .1 * var(--p)));transform-origin:100% 100%}
 @media (max-width:1023px){
