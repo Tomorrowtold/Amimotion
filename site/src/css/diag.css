@@ -112,3 +112,5 @@
 .diag-lead .hint:empty,.diag-lead .error:empty{display:none}
 /* on a wide screen the sketch stays beside the questions and the profile while they scroll */
 @media (min-width:1024px){.diag-visual{position:sticky;top:88px}}
+/* progress: the six segments read as a track on the ground; each fills as its question is reached */
+.diag-bar.is-seg i{background:rgba(11,18,56,.12);transition:background-color .3s var(--ease-ds)}
