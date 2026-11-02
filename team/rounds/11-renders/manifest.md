@@ -22,7 +22,7 @@ Formats:
 | R2 AmIGo macro | Home S1b | **landed** |
 | R3 family stage still | Home S5, /products/ | **landed** (3:1); 4:5 phone rendering |
 | R3b family dolly | Home S5 | queued |
-| R4 hall wide, pale and after, plus 4 zone masks | Home S4, /diagnostic/ | queued |
+| R4 hall wide plus 4 zone masks | Home S4, /diagnostic/ | **landed** |
 | R5 before/after plus trail SVG | Home S2 | queued |
 | R6 queue full-bleed | Home S3 | **landed** (see below) |
 | R7 one bay | Home S6, /pilot/ | queued |
@@ -65,6 +65,22 @@ A new macro of the tag's top cover (the `macro` shot): 100 mm, f/8, el 58°, foc
 - Plastic median 82/83/84, with no blue cast.
 - The 4:5 phone version (`home/family-45-*`) is a separate render of the same scene: a crop of the 3:1 frame cannot hold both products. It will be added here.
 - Alt: "The AmIGo tag and the AmIMo anchor side by side at true size: a small dark grey tag with amimotion on its cover, and a larger dark grey box with a network port."
+
+## R4 hall wide and zone masks (Home S4 "Ask your floor", /diagnostic/): landed
+
+The wide still is the existing `hall/hall-all` ladder: camera A, 16:9, after state, widths 800, 1600, 2400 and 3840, intrinsic size 3840 x 2160. That is the plan's R4 shot, and the homepage already shows it. The no-JS / inspection state is `hall/hall-ask`: the same camera, with only the three queue trolleys amber. The four masks are rendered from the same camera and geometry (`tools/hall_r11.py masks`), so they lie exactly over both stills.
+
+| File | Size | Bytes | Zone (hall floor area plus 0.35 m, and the things in it) |
+|---|---|---|---|
+| `home/ask/mask-inspection-queue-1920.png` | 1920 x 1080 | 29 KB | the queue outline in front of inspection, its three trolleys and their pads |
+| `home/ask/mask-staging-lane-1920.png` | 1920 x 1080 | 23 KB | the staging lane and its pallet |
+| `home/ask/mask-press-line-1920.png` | 1920 x 1080 | 27 KB | the two presses and their floor (press 1 is in frame, press 2 is cut by the top edge) |
+| `home/ask/mask-racks-1920.png` | 1920 x 1080 | 28 KB | the two rack rows and their floor (camera A's top edge cuts them) |
+
+- Each mask is white with the zone in alpha, antialiased. Things in front of a zone (machines, racks, columns) cut the mask exactly as they hide the floor in the still.
+- Use it as `mask-image` on an overlay: a dark veil over `hall-all` with the zone cut out, or the colour still revealed over a dimmed copy. Scale it with the still: same box, `mask-size: 100% 100%`.
+- The masks have no alt (decorative). Each chip's button text names its zone.
+- The plan names three chips. The fourth mask is spare for /diagnostic/.
 
 ## R6 queue full-bleed (Home S3): landed
 

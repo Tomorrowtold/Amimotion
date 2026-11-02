@@ -7,9 +7,10 @@ R4=11,45,17,34,1.0,10.5      # camera A height, pitch and yaw; wider lens so all
 R5=11,45,26,34,1.5,14.0      # camera A, press line and racks
 R7=9,35,30,34,-2.2,7.6,1.0   # one bay, tight, looking up a little so its two anchors are in frame
 h() { out=$1; shift; [ -f $O/$out.png ] && return; $B build_hall.py --palette sky/palette.json --world-color '#dfeaff' --samples 16 "$@" --out $O/$out.png 2>&1 | grep -E "STILL|rror:"; }
-h r4-pale  --state after --res 3840x2160 --cam $R4 --trails none --amber none
-h r4-after --state after --res 3840x2160 --cam $R4
-[ -f $O/masks/racks_raw.png ] || $B ../11-renders/tools/hall_r11.py masks --cam $R4 --res 1920x1080 --out $O/masks 2>&1 | grep -E "MASK|rror:"
+# R4: the masks are made for camera A's own 16:9 frame (the `hall-all` still the homepage already shows), so they
+# overlay it exactly; no new wide still is needed. (A wider R4 framing, $R4, was tried and dropped.)
+A169=11,45,26,34,0.0,7.6
+[ -f $O/masks/racks_raw.png ] || $B ../11-renders/tools/hall_r11.py masks --cam $A169 --res 1920x1080 --out $O/masks 2>&1 | grep -E "MASK|rror:"
 h r5-before      --state before --t 3.7 --res 2400x1500 --cam $R5
 h r5-after-trail --state after --res 2400x1500 --cam $R5 --trails t3 --amber none
 h r5-after-clean --state after --res 2400x1500 --cam $R5 --trails none --amber none
