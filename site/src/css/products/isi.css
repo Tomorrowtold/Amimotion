@@ -76,7 +76,7 @@
 .si-steps h3{font:600 1.3rem/1.1 var(--font-display);letter-spacing:-.02em;transition:color .4s}
 .si-steps li:not(:has([aria-pressed=true])) h3{color:var(--p-mute)}
 .si-steps p{margin-top:8px!important;padding-left:38px;font:400 15px/1.55 var(--font-text);color:var(--p-soft);transition:opacity .5s}
-.si-layers.pinned .si-steps li:not(:has([aria-pressed=true])) p{opacity:.45}
+.si-layers.pinned .si-steps li:not(:has([aria-pressed=true])) p{color:#666970}
 .si-prog{display:none;height:2px;margin:24px 16px 0;border-radius:2px;background:var(--p-line);overflow:hidden}
 .si-prog i{display:block;height:100%;background:var(--blue);transform-origin:0 50%;transform:scaleX(var(--p))}
 .si-layers.pinned .si-prog{display:block}
@@ -118,14 +118,14 @@
 .si-src b{font-weight:500;color:var(--p-fg)}
 i.b{background:var(--blue)}i.g{background:#7a8399}i.a{background:var(--amber)}
 .si-rec{margin:0;border-radius:24px;background:#0d0f14;color:#e9ecf3;padding:8px 8px 10px;box-shadow:0 0 0 1px rgba(16,18,24,.08),0 60px 100px -50px rgba(10,20,60,.55);font:500 14px/1 var(--mono);font-variant-numeric:tabular-nums}
-.si-rec-top{display:flex;justify-content:space-between;padding:12px 16px 14px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:rgba(233,236,243,.45)}
+.si-rec-top{display:flex;justify-content:space-between;padding:12px 16px 14px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:rgba(233,236,243,.62)}
 .si-rec dl{margin:0;display:grid;gap:3px}
 .si-rec dl>div{position:relative;display:grid;grid-template-columns:120px 1fr;align-items:center;padding:13px 16px 13px 22px;border-radius:12px;background:rgba(255,255,255,.035)}
 .si-rec dl>div::before{content:"";position:absolute;left:9px;top:12px;bottom:12px;width:3px;border-radius:3px;background:var(--c)}
 .si-rec .m{--c:var(--blue)}.si-rec .g{--c:#7a8399}.si-rec .a{--c:var(--amber);background:rgba(255,176,32,.07)}
-.si-rec dt{color:rgba(233,236,243,.45)}
+.si-rec dt{color:rgba(233,236,243,.62)}
 .si-rec dd{margin:0;color:#fff}
-.si-rec dd small{margin-left:6px;font-size:11px;color:rgba(233,236,243,.4)}
+.si-rec dd small{margin-left:6px;font-size:11px;color:rgba(233,236,243,.6)}
 .si-rec dd.big{font:600 clamp(1.6rem,1.1rem + 1.2vw,2.3rem)/1 var(--font-display);letter-spacing:-.03em;color:#ffc35a}
 .si-rec .m+.g,.si-rec .g+.a{margin-top:8px}
 @media (max-width:900px){.si-record-grid{grid-template-columns:1fr}.si-src li{grid-template-columns:14px 1fr}.si-src li span{grid-column:2}.si-rec dl>div{grid-template-columns:96px 1fr}}
