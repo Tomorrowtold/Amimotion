@@ -253,7 +253,7 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
   .sheet-ask .nask-form input{height:52px;padding:0 16px;border-radius:16px;background:rgba(11,18,56,.045);box-shadow:inset 0 1.5px 3px rgba(11,18,56,.13);font-size:17px}
   .asking .sheet-doors{display:none}
   .sheet-doors button{width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:0;border-bottom:1px solid var(--hairline);padding:17px 2px;font:600 28px/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);cursor:pointer;text-align:left}
-  .sheet-doors .chev{width:14px;height:14px;color:rgba(11,18,56,.4)}
+  .sheet-doors .chev{width:14px;height:14px;color:rgba(11,18,56,.4);transition:transform .2s var(--n-ease)}
   .back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;font:500 15px/1 var(--font-text);color:var(--action);padding:2px 0 10px;cursor:pointer}
   .back .chev{transform:rotate(180deg)}
   .js .pane{display:none}
@@ -271,6 +271,22 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
   .no-js .sheet-home,.no-js .sheet-panes{width:auto;height:auto;overflow:visible;padding-bottom:var(--s-5)}
   .no-js .sheet{overflow-y:auto}
   .ft-card{padding-bottom:84px}
+  /* over the night footer (nav.js on-ink) the dock is the same glass, tinted for the ground under it */
+  .top.on-ink:not(:has(details[open])) .cap{background:linear-gradient(180deg,rgba(30,38,96,.66),rgba(14,19,60,.58));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1px rgba(190,204,255,.16),0 14px 34px -18px rgba(0,0,0,.6)}
+  .top.on-ink:not(:has(details[open])) .nask > summary{color:#eef1ff;background:rgba(255,255,255,.08);box-shadow:inset 0 1px 2px rgba(0,0,0,.35),inset 0 -1px 0 rgba(255,255,255,.08)}
+  .cap{transition:transform .5s var(--n-ease),height .35s var(--n-ease),top .35s var(--n-ease),background .35s,box-shadow .35s}
+}
+/* round 2: over the night footer (nav.js on-ink) the desktop capsule is the same glass, tinted for the ground under it */
+@media (min-width:1024px){
+  .top.on-ink:not(:has(details[open])) .cap{background:linear-gradient(180deg,rgba(30,38,96,.66),rgba(14,19,60,.58));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1px rgba(190,204,255,.16),0 14px 34px -18px rgba(0,0,0,.6)}
+  .top.on-ink:not(:has(details[open])) .cap .logo,.top.on-ink:not(:has(details[open])) .door > summary,.top.on-ink:not(:has(details[open])) .w-sec{color:#eef1ff}
+  .top.on-ink:not(:has(details[open])) .w-crumb{color:rgba(208,216,255,.72)}
+  .top.on-ink:not(:has(details[open])) .lens,.top.on-ink:not(:has(details[open])) .w-sec{background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px rgba(190,204,255,.12)}
+  .top.on-ink:not(:has(details[open])) .nask > summary{color:rgba(238,241,255,.8);background:rgba(255,255,255,.08);box-shadow:inset 0 1px 2px rgba(0,0,0,.35),inset 0 -1px 0 rgba(255,255,255,.08)}
+  .top.on-ink:not(:has(details[open])) kbd{color:#eef1ff;background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+  .cap .logo,.door > summary{transition:color .35s}
 }
 @media (max-width:359px){.phone > summary{padding-inline:12px}.cap .cta{padding-inline:12px}.plogo .word{height:13px}}
 @media (prefers-reduced-motion:reduce){.cap,.lens,.drop,.drop-grid,.sheet,.sheet-track,.spine,.plinth{transition:none!important;animation:none!important}}
@@ -388,3 +404,17 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
 }
 @media (prefers-reduced-motion:reduce){.ft-tag::after{animation:none;opacity:0}}
 @media (prefers-reduced-motion:reduce){.ds *{transition:none!important;animation:none!important}}
+/* round 2, touch: the shell's pills and rows answer a press themselves (Apple, Linear), so the browser's grey tap
+   rectangle, which ignores their rounded shapes, is turned off there and only there */
+.top,.ft,.cta,.close a,.tool-cards{-webkit-tap-highlight-color:transparent}
+.phone > summary,.nask > summary,.ft-roles a,.ft-clay,.ft-glass{transition-property:transform,box-shadow,background,color;transition-duration:.18s;transition-timing-function:cubic-bezier(.16,1,.3,1)}
+@media (hover:none){
+  .phone > summary:active,.nask > summary:active,.cap .cta:active,.ft-clay:active,.ft-glass:active,.ft-roles a:active{transform:scale(.96)}
+  .sheet-doors button:active{color:var(--ink-soft)}
+  .sheet-doors button:active .chev{transform:translateX(3px)}
+  .list a:active{background:rgba(255,255,255,.75)}
+  .plinth:active,.photo:active{transform:scale(.98)}
+  .ft-bay a:active,.ft-door:active{color:#fff}
+  .back:active{opacity:.6}
+}
+@media (prefers-reduced-motion:reduce){.phone > summary,.nask > summary,.ft-roles a,.ft-clay,.ft-glass{transition:none}}

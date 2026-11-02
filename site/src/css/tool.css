@@ -95,6 +95,21 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:inset 0 0 0 2px
   .tool-out:has(.bsheet){margin-top:var(--s-6)}
 }
 .tool-cards .mini{position:relative}
+/* round 2: each card is one target (Stripe, Vercel): the title reads in ink, the whole card takes the click, and on
+   hover the drawing lifts and the title takes the action colour with the site's chevron */
+.tool-cards>li{position:relative}
+.tool-cards h3 a{color:var(--ink);text-decoration:none!important;transition:color var(--t-fast) var(--ease-ds)}
+.tool-cards h3 a::before{content:"";position:absolute;inset:0;z-index:1}
+.tool-cards h3 a::after{content:"";display:inline-block;width:.32em;height:.32em;margin-left:.4em;border:solid currentColor;border-width:2px 2px 0 0;transform:translate(-2px,-.1em) rotate(45deg);opacity:.55;transition:transform .25s var(--ease-ds),opacity .25s}
+.tool-cards .mini{transition:transform .45s cubic-bezier(.16,1,.3,1),box-shadow .45s cubic-bezier(.16,1,.3,1),background-color var(--t-fast) var(--ease-ds)}
+@media (hover:hover){
+  .tool-cards li:hover h3 a{color:var(--link)}
+  .tool-cards li:hover h3 a::after{opacity:1;transform:translate(2px,-.1em) rotate(45deg)}
+  .tool-cards li:hover .mini{transform:translateY(-4px);box-shadow:0 0 0 1px var(--hairline),0 24px 40px -28px rgba(11,18,56,.45)}
+}
+.ds .tool-cards h3 a:focus-visible{outline:0}
+.ds .tool-cards li:has(h3 a:focus-visible){outline:2px solid var(--focus);outline-offset:6px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){.tool-cards .mini,.tool-cards h3 a::after{transition:none}}
 @media (max-width:639px){.tool-cards{grid-template-columns:minmax(0,1fr)!important;row-gap:var(--s-7)}.tool-draw canvas,.tool-draw[data-draw="search"] canvas,.tool-draw:empty::before,.tool-draw[data-draw="search"]:empty::before{aspect-ratio:4 / 3}.tool-cards .mini{margin-bottom:var(--s-4)}}
 @media (prefers-reduced-motion:reduce){.bsheet-list li.new,.typing::after{animation:none}}
 /* the typed field reads as a field on any shell: ground fill, an edge at 3:1, a focus ring, and an amber edge when
@@ -103,3 +118,10 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:inset 0 0 0 2px
 @media (hover:hover){.tool-form .field input[type=number]:hover{box-shadow:inset 0 0 0 1px var(--ink)}}
 .tool-form .field input[type=number]:focus-visible{outline:2px solid var(--focus);outline-offset:2px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--ink)}
 .tool-form .field input[type=number]:invalid{box-shadow:inset 0 0 0 2px var(--waiting-edge)}
+/* round 2: the drawing and the answer are one sheet with the corners of the shells they sit in (no square card inside
+   a rounded frame); on phones both run full bleed, so they stay square there */
+@media (min-width:1024px){
+  .tool-out{border-radius:16px}
+  .tool-draw{border-radius:16px 16px 0 0}
+  .tool-draw+.tool-out{border-radius:0 0 16px 16px}
+}

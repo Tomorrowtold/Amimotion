@@ -1,5 +1,5 @@
 /* /diagnostic/: the instrument. The tool sits in a dark device frame, like a meter on a bench. */
 .head h1{font-size:clamp(3rem,1.4rem + 4.8vw,7rem);text-align:center;grid-column:1 / -1}
 .head .words{grid-column:3 / span 8;text-align:center;display:block}.head .lede{margin-inline:auto}
-.head .short-answer{text-align:left}
+.head .short-answer{text-align:left;margin-inline:auto}
 .diag,.dg,.diag-shell,[class^="diag-"]{border-radius:24px}
