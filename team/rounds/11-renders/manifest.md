@@ -20,7 +20,7 @@ Formats:
 |---|---|---|
 | R1 AmIGo turntable | Home S1 | rendering (96 frames, 1440 px) |
 | R2 AmIGo macro | Home S1b | **landed** |
-| R3 family stage still | Home S5, /products/ | queued |
+| R3 family stage still | Home S5, /products/ | **landed** (3:1); 4:5 phone rendering |
 | R3b family dolly | Home S5 | queued |
 | R4 hall wide, pale and after, plus 4 zone masks | Home S4, /diagnostic/ | queued |
 | R5 before/after plus trail SVG | Home S2 | queued |
@@ -48,6 +48,23 @@ A new macro of the tag's top cover (the `macro` shot): 100 mm, f/8, el 58°, foc
 - Swap: `<figure class="macro">` srcset, from the stand-in `amigo-macro-1200/2000/3200` (a crop of the old 7680 still) to `amigo-macro-r2-800/1600/2400`. Intrinsic size 2400 x 1600.
 - Not 3840: the frame holds the logo at about 1,150 px wide at 2400, which is more than S1b shows at 2x. A 3840 render would take about an hour of the shared CPU.
 - Alt (when it is not decorative): "Close up of the AmIGo tag's dark grey cover, with amimotion pressed into it and a screw ear at its side." Next to the "±10 cm" text it is decorative: use `alt=""`.
+
+## R3 family stage (Home S5, /products/): 3:1 landed, 4:5 phone queued
+
+- Scene: AmIGo front-left and AmIMo back-right on one sweep, both at true CAD scale. The anchor lies on its flanged plate, as in `pair`.
+- Camera: 85 mm, el 30°, f/11, 1.0 m out. That is a camera height of about 0.5 m, not the plan's 0.35 m: at 0.35 m the 3:1 frame cut the anchor's top.
+- The products fill the middle 50 % of the width. That leaves the sweep either side for the HTML words "AmIGo" and "AmIMo" at 26vw behind them.
+
+| File | Size | Ratio | Bytes (AVIF / WebP) |
+|---|---|---|---|
+| `home/family-31-1200.{avif,webp}` | 1200 x 400 | 3:1 | 9.8 / 25.2 KB |
+| `home/family-31-2400.{avif,webp}` | 2400 x 800 | 3:1 | 21.4 / 77.5 KB |
+| `home/family-31-3840.{avif,webp}` | 3840 x 1280 | 3:1 | 20.1 / 99.3 KB |
+
+- Format: RGBA, transparent where it is the page. It sits on the sweep band (#f0f6ff) with no edge, and the words behind it show through the transparent area.
+- Plastic median 82/83/84, with no blue cast.
+- The 4:5 phone version (`home/family-45-*`) is a separate render of the same scene: a crop of the 3:1 frame cannot hold both products. It will be added here.
+- Alt: "The AmIGo tag and the AmIMo anchor side by side at true size: a small dark grey tag with amimotion on its cover, and a larger dark grey box with a network port."
 
 ## R6 queue full-bleed (Home S3): landed
 

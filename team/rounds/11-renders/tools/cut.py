@@ -56,7 +56,7 @@ def seq():
     def enc(im, q):
         b = io.BytesIO(); im.save(b, 'AVIF', quality=q, subsampling='4:4:4', speed=6); return b.getvalue()
     probe = [prep(frames[i]) for i in sorted({0, len(frames) // 3, 2 * len(frames) // 3})]
-    q = 70
+    q = 90
     while q > 20 and np.mean([len(enc(p, q)) for p in probe]) / 1024 > target: q -= 3
     tot = 0
     for i, f in enumerate(frames):
