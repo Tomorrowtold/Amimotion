@@ -223,105 +223,21 @@ if (simSec) {
 }
 
 
-/* ---------- floors: three real floors at night; what moves carries blue, what waits carries amber ---------- */
+/* ---------- floors: three film loops made in code; play only while seen ---------- */
 (() => {
   const cards = $$('.ind'); if (!cards.length) return;
-  const band = cards[0].closest('.inds');
-  const small = matchMedia('(max-width:700px)').matches;
   const lowData = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
-  // every literal path is written out so the site build can find and copy it
-  const SRC = {
-    factory: { ph: small ? 'assets/floors/factory-900.webp' : 'assets/floors/factory-1600.webp', mk: 'assets/floors/factory-mask.png', pa: 'assets/floors/factory-path.png', f: [.42, .55], d: 0 },
-    warehouse: { ph: small ? 'assets/floors/warehouse-900.webp' : 'assets/floors/warehouse-1600.webp', mk: 'assets/floors/warehouse-mask.png', pa: 'assets/floors/warehouse-path.png', f: [.5, .6], d: .35 },
-    robots: { ph: small ? 'assets/floors/robots-900.webp' : 'assets/floors/robots-1600.webp', mk: 'assets/floors/robots-mask.png', pa: 'assets/floors/robots-path.png', f: [.47, .6], d: .7, z: 1.2 },
-  };
-  const VS = `attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}`;
-  const FS = `precision highp float;varying vec2 v;
-uniform sampler2D P,M,L;uniform vec2 C,E,R;uniform float Z,T,H,G,B;
-float hs(vec2 q){return fract(sin(dot(q,vec2(12.9898,78.233)))*43758.5453);}
-void main(){
-  vec2 u=C+(v-.5)*E/Z;
-  vec3 ph=texture2D(P,u).rgb; vec4 m=texture2D(M,u); vec2 l=texture2D(L,u).rg;
-  float g=dot(ph,vec3(.2126,.7152,.0722));
-  float vy=mix(.55,1.15,1.-u.y);
-  // the plant after hours: colour drained, cool, the roof falling into the dark
-  vec3 night=(g+(ph-g)*.12)*vec3(.55,.64,.95)*.13*vy+vec3(.006,.008,.02);
-  // hover: the floor comes up under a cool work light
-  vec3 o=mix(night,ph*vec3(.6,.67,.82)*.5*vy,H*.55);
-  float br=.88+.12*sin(T*1.25+B*6.);
-  vec3 blue=ph*vec3(.72,.88,1.25)*.95+vec3(0.,.03,.12);
-  vec3 amb=(g*.6+ph*.4)*vec3(1.3,.84,.4)*1.05;
-  o=mix(o,blue,m.r*.9*(.85+.15*H));
-  o=mix(o,amb*br,m.g*.88);
-  o+=vec3(1.,.58,.16)*m.b*(.15+.85*g)*.42*br;
-  // the line on the floor draws in, then light travels along it toward what moves
-  float on=l.r<.999?smoothstep(G+.004,G-.012,l.r):0.;
-  float hd=fract(T*.16+B)*1.5;
-  float cm=exp(-pow((hd-l.r)*9.,2.))*step(l.r,hd);
-  o+=vec3(.25,.5,1.)*l.g*on*(1.+1.4*cm);
-  float vg=smoothstep(1.25,.25,length((v-.5)*vec2(1.1,1.5)));
-  o*=mix(.55,1.,vg);
-  o=1.-exp(-o*1.25);
-  o+=(hs(v*R+fract(T*7.))-.5)*.014;
-  gl_FragColor=vec4(o,1.);
-}`;
-  const load = (src) => new Promise((ok, no) => { const i = new Image(); i.decoding = 'async'; i.onload = () => ok(i); i.onerror = no; i.src = src; });
-  const ease = (x) => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
-  let seen = -1;
-  const scenes = [];
   cards.forEach((card) => {
-    const cv = card.querySelector('canvas'), S = SRC[card.dataset.scene]; if (!S) return;
-    const gl = !lowData && cv.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false });
-    if (!gl) return;
-    const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); return o; };
-    const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
-    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return;
-    gl.useProgram(pr);
-    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    const ap = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
-    const U = {}; ['P', 'M', 'L', 'C', 'E', 'R', 'Z', 'T', 'H', 'G', 'B'].forEach((k) => (U[k] = gl.getUniformLocation(pr, k)));
-    const sc = { card, cv, gl, U, S, W: 0, H: 0, vis: false, mx: 0, my: 0, px: 0, py: 0, hov: 0, hovT: 0, ready: false, iw: 4, ih: 3 };
-    const fit = () => { const d = Math.min(1.5, devicePixelRatio || 1); sc.W = cv.clientWidth; sc.H = cv.clientHeight; cv.width = Math.max(1, sc.W * d | 0); cv.height = Math.max(1, sc.H * d | 0); };
-    new ResizeObserver(fit).observe(cv); fit();
-    new IntersectionObserver((es) => { sc.vis = es[0].isIntersecting; }, { rootMargin: '120px' }).observe(cv);
-    card.addEventListener('pointermove', (e) => { const r = card.getBoundingClientRect(); sc.mx = (e.clientX - r.left) / r.width - .5; sc.my = (e.clientY - r.top) / r.height - .5; card.style.setProperty('--mx', (sc.mx + .5) * 100 + '%'); card.style.setProperty('--my', (sc.my + .5) * 100 + '%'); card.style.setProperty('--ry', (sc.mx * 5).toFixed(2) + 'deg'); card.style.setProperty('--rx', (-sc.my * 4).toFixed(2) + 'deg'); });
-    card.addEventListener('pointerenter', () => (sc.hovT = 1)); card.addEventListener('pointerleave', () => { sc.hovT = 0; sc.mx = sc.my = 0; card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); });
-    card.addEventListener('focus', () => (sc.hovT = 1)); card.addEventListener('blur', () => (sc.hovT = 0));
-    Promise.all([load(S.ph), load(S.mk), load(S.pa)]).then((ims) => {
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-      ims.forEach((im, i) => {
-        const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, t);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      });
-      gl.uniform1i(U.P, 0); gl.uniform1i(U.M, 1); gl.uniform1i(U.L, 2);
-      sc.iw = ims[0].naturalWidth; sc.ih = ims[0].naturalHeight; sc.ready = true;
-    }).catch(() => {});
-    scenes.push(sc);
+    const v = card.querySelector('video'); if (!v) return;
+    card.addEventListener('pointermove', (e) => { const r = card.getBoundingClientRect(), mx = (e.clientX - r.left) / r.width - .5, my = (e.clientY - r.top) / r.height - .5;
+      card.style.setProperty('--mx', (mx + .5) * 100 + '%'); card.style.setProperty('--my', (my + .5) * 100 + '%');
+      card.style.setProperty('--ry', (mx * 5).toFixed(2) + 'deg'); card.style.setProperty('--rx', (-my * 4).toFixed(2) + 'deg'); });
+    card.addEventListener('pointerleave', () => { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); });
+    if (lowData || reduce) return;   // the poster frame stays
+    new IntersectionObserver((es) => {
+      if (es[0].isIntersecting) { if (!v.src) { v.src = v.dataset.src; v.load(); } const p = v.play(); if (p) p.catch(() => {}); }
+      else if (v.src) v.pause();
+    }, { rootMargin: '200px' }).observe(card);
+    v.addEventListener('playing', () => card.classList.add('lit'), { once: true });
   });
-  if (!scenes.length) return;
-  // the lines start drawing when the band arrives
-  new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { seen = performance.now(); io.disconnect(); } }, { threshold: .35 }).observe(band);
-  const draw = (sc, now) => {
-    const { gl, U, cv, S } = sc; if (!sc.ready || !sc.W) return;
-    const t = now / 1000;
-    sc.hov += (sc.hovT - sc.hov) * .07; sc.px += (sc.mx - sc.px) * .06; sc.py += (sc.my - sc.py) * .06;
-    // cover the card with the still, held on its focus point
-    const ca = sc.W / sc.H, ia = sc.iw / sc.ih;
-    let ex = 1, ey = 1; if (ca > ia) ey = ia / ca; else ex = ca / ia;
-    const z = (S.z || 1.035) + sc.hov * .06;
-    const hx = ex / z / 2, hy = ey / z / 2;
-    let cx = S.f[0] + sc.px * .03, cy = 1 - S.f[1] - sc.py * .025;
-    cx = Math.min(1 - hx, Math.max(hx, cx)); cy = Math.min(1 - hy, Math.max(hy, cy));
-    const g = reduce ? 1 : seen < 0 ? 0 : ease((now - seen) / 1000 / 2.2 - S.d);
-    gl.viewport(0, 0, cv.width, cv.height);
-    gl.uniform2f(U.C, cx, cy); gl.uniform2f(U.E, ex, ey); gl.uniform2f(U.R, cv.width, cv.height);
-    gl.uniform1f(U.Z, z); gl.uniform1f(U.T, reduce ? 2 : t); gl.uniform1f(U.H, sc.hov); gl.uniform1f(U.G, g * 1.02); gl.uniform1f(U.B, S.d);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-    if (!sc.on) { sc.on = true; sc.card.classList.add('lit'); }
-  };
-  const loop = (now) => { requestAnimationFrame(loop); scenes.forEach((sc) => { if (sc.vis) draw(sc, now); }); };
-  if (reduce) { const once = () => { scenes.forEach((sc) => draw(sc, 1e4)); if (scenes.some((s) => !s.ready)) setTimeout(once, 200); }; once(); }
-  else requestAnimationFrame(loop);
 })();

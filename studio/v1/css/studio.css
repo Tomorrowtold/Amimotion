@@ -673,11 +673,8 @@ body:has(.sim-frame:hover) #cursor{opacity:0!important}
 .inds-row{perspective:1400px}
 .ind{background:#030409 center/cover no-repeat;transform-style:preserve-3d;
   transition:flex-grow .9s cubic-bezier(.16,1,.3,1),box-shadow .5s,transform .6s cubic-bezier(.16,1,.3,1),filter .6s}
-.ind[data-scene=factory]{background-image:url(../assets/floors/factory-poster.webp)}
-.ind[data-scene=warehouse]{background-image:url(../assets/floors/warehouse-poster.webp)}
-.ind[data-scene=robots]{background-image:url(../assets/floors/robots-poster.webp)}
-.ind canvas{opacity:0;transition:opacity 1.2s ease}
-.ind.lit canvas{opacity:1}
+.ind video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;transform:scale(1.02);transition:transform 1.4s cubic-bezier(.16,1,.3,1)}
+.ind:hover video,.ind:focus-visible video{transform:scale(1.07)}
 /* the words sit on a floor of shadow, a soft edge of light rims the card */
 .ind::after{background:linear-gradient(180deg,rgba(2,3,8,.35) 0,transparent 22%,transparent 50%,rgba(2,3,8,.9) 100%)}
 .ind::before{content:"";position:absolute;inset:0;z-index:1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .5s;
