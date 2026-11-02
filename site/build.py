@@ -318,6 +318,18 @@ def crumb_labels(body, url=None):
 REGISTER = {"±10 cm", "0.1 to 10 Hz", "1 to 3 years", "about 50 m", "3 to 8 m"}
 
 
+def wire_turntable(body):
+    """Render job R1 (the AmIGo turntable, round 11 cut.py `seq`: <base>-<size>-<iii>.avif at 1080 and 720) is
+    wired into the hero by itself the day its frames land under assets/home/: the hero's canvas then scrubs it."""
+    hits = sorted(x for x in (SRC / "assets" / "home").rglob("*-1080-000.avif") if any(k in x.name for k in ("turn", "tt")))
+    if not hits: return body
+    first = hits[0]; base = first.name[: -len("-1080-000.avif")]
+    n = len(list(first.parent.glob(f"{base}-1080-[0-9][0-9][0-9].avif")))
+    if n < 24 or not (first.parent / f"{base}-720-000.avif").exists(): return body
+    src = "/" + str((first.parent / f"{base}-{{w}}-{{i}}.avif").relative_to(SRC))
+    return body.replace('data-frames="0" data-frame-src=""', f'data-frames="{n}" data-frame-src="{src}"', 1)
+
+
 def check_home(body):
     """Fail the build when the homepage shows a figure that is not in the register, or points at a picture that does
     not exist (an empty slot collapses to nothing; a missing src is a broken page)."""
@@ -341,6 +353,7 @@ def build():
     for f in sorted((SRC / "pages").rglob("*.html")):
         rel = f.relative_to(SRC / "pages")
         meta, body = front(f.read_text()); body = crumb_labels(body, url_for(rel))
+        if url_for(rel) == "/": body = wire_turntable(body)
         pages[url_for(rel) if rel.name != "404.html" else "/404.html"] = (meta, body)
     titles = {u: m.get("crumb") or m.get("title", "").split(" | ")[0] for u, (m, _) in pages.items()}
     check_home(pages["/"][1])
