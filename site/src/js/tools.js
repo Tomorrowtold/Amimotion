@@ -65,13 +65,16 @@
   }
   const label = (c, text, x, y, o = {}) => { c.font = FONT(o.size || 10, o.w || 500); c.fillStyle = o.color || C.soft; c.textAlign = o.align || 'left'; c.textBaseline = o.base || 'alphabetic'; if (o.alpha != null) c.globalAlpha = o.alpha; c.fillText(text, x, y); c.globalAlpha = 1; };
   // a number that counts to its new value
+  // while it counts, its live region is busy, so a screen reader hears the final figure, not the frames between
   function counter(el, render) {
     let cur = null, from = null, to = null, t0 = 0, raf = 0;
+    const region = el.closest('[aria-live]');
+    const busy = (on) => { if (region) on ? region.setAttribute('aria-busy', 'true') : region.removeAttribute('aria-busy'); };
     const step = (t) => {
       const k = outQ((t - t0) / 520); cur = from.map((f, i) => f + (to[i] - f) * k);
-      el.innerHTML = render(cur.map(Math.round)); raf = k < 1 ? requestAnimationFrame(step) : 0;
+      el.innerHTML = render(cur.map(Math.round)); raf = k < 1 ? requestAnimationFrame(step) : 0; if (!raf) busy(false);
     };
-    return (...v) => { if (cur === null || RM.matches) { cur = v; el.innerHTML = render(v); return; } from = cur.slice(); to = v; t0 = performance.now(); if (!raf) raf = requestAnimationFrame(step); };
+    return (...v) => { if (cur === null || RM.matches) { cur = v; el.innerHTML = render(v); return; } from = cur.slice(); to = v; t0 = performance.now(); if (!raf) { busy(true); raf = requestAnimationFrame(step); } };
   }
 
   // ------------------------------------------------------------ anchor estimator
@@ -303,7 +306,8 @@
       return brief;
     };
     live(pilot, make);
-    $('[data-copy]', pilot.parentNode)?.addEventListener('click', async (e) => { try { await navigator.clipboard.writeText(make()); e.target.textContent = 'Copied'; buzz(); } catch (_) {} });
+    // "Copied" shows for two seconds, then the button reads as it did, ready to copy again
+    $('[data-copy]', pilot.parentNode)?.addEventListener('click', async (e) => { const btn = e.currentTarget, was = btn.dataset.was || (btn.dataset.was = btn.textContent); try { await navigator.clipboard.writeText(make()); btn.textContent = 'Copied'; buzz(); clearTimeout(btn._t); btn._t = setTimeout(() => { btn.textContent = was; }, 2000); } catch (_) {} });
     $('[data-download]', pilot.parentNode)?.addEventListener('click', () => {
       const a = d.createElement('a'); a.href = URL.createObjectURL(new Blob([make()], { type: 'text/plain' })); a.download = 'AmIMotion-pilot-brief.txt'; a.click(); buzz();
     });
