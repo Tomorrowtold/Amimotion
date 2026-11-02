@@ -85,9 +85,37 @@ def vortex(S=1200,path='vortex.webp',warm=True):
     acc*=np.clip(1-(r-S*0.38)/(S*0.12),0,1)[...,None]
     rgb=tone(acc,0.95); save(rgb,path,grain=.01)
 
+def spot(W=2000,H=1400,path='spot.webp',apex=-200,floor=1150,half=520,seed=5):
+    """AmIMo's studio light: a soft white cone from above with drifting dust, landing as a pool on the floor."""
+    y,x=np.mgrid[0:H,0:W].astype(np.float32); cx=W/2
+    t=np.clip((y-apex)/(floor-apex),0,1.2)
+    w=40+half*t
+    dx=np.abs(x-cx)
+    cone=np.exp(-(dx/w)**4*1.4)*(0.25+0.75*t)*(y<floor+40)
+    acc=np.zeros((H,W,3),np.float32)
+    n=fbm(H,W,6,3,seed=seed)
+    acc+=0.42*(cone*(0.75+0.5*n))[...,None]*np.array([1,1,1.02])
+    core=np.exp(-(dx/(w*0.35))**2)*(0.3+0.7*t)
+    acc+=0.25*core[...,None]
+    pool=np.exp(-(((x-cx)/(half*1.15))**2+((y-floor)/70)**2))
+    acc+=0.0*pool[...,None]
+    r=np.random.default_rng(seed); k=420
+    px=r.normal(cx,half*0.45,k); py=r.uniform(0,floor,k); s=r.uniform(.6,2.2,k); a=r.uniform(.15,.9,k)
+    for i in range(k):
+        xi,yi=int(px[i]),int(py[i])
+        if 0<=xi<W and 0<=yi<H:
+            ti=np.clip((yi-apex)/(floor-apex),0,1); wi=40+half*ti
+            if abs(xi-cx)<wi*1.05:
+                rr=int(s[i]*3)+1; y0,y1=max(0,yi-rr),min(H,yi+rr+1); x0,x1=max(0,xi-rr),min(W,xi+rr+1)
+                yy,xx=np.mgrid[y0:y1,x0:x1]
+                acc[y0:y1,x0:x1]+=(a[i]*np.exp(-((xx-px[i])**2+(yy-py[i])**2)/(2*s[i]**2)))[...,None]*0.32
+    acc*=np.exp(-np.clip(y-floor-40,0,None)/40)[...,None]
+    rgb=tone(acc,1.0); save(rgb,path,grain=.008)
+
 import sys,os
 out=sys.argv[1]; os.makedirs(out,exist_ok=True)
 beam(path=f'{out}/hub-beam.webp')
 beam(W=2000,H=800,base=700,x0=1000,path=f'{out}/hub-beam-low.webp',haze=.7)
 vortex(path=f'{out}/hub-vortex.webp')
 vortex(path=f'{out}/hub-vortex-cool.webp',warm=False)
+spot(path=f'{out}/amimo-spot.webp')

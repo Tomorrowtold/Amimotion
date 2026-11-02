@@ -1,8 +1,8 @@
 // products/isi.js: the three-layer figure. Each layer button shows the plate with that many layers drawn
-// (1 location, 2 + context, 3 + answers). Without JS all three layers show.
+// (1 location, 2 + context, 3 + answers), lifted apart as a stack. Without JS all three layers show.
 const fig = document.querySelector('[data-layers]');
 if (fig) {
-  const btns = [...fig.querySelectorAll('[data-l] button')];
+  const btns = [...document.querySelectorAll('[data-steps] [data-l] button, [data-layers] [data-l] button')];
   const set = (n) => { fig.dataset.layer = n; btns.forEach((b) => b.setAttribute('aria-pressed', String(+b.closest('[data-l]').dataset.l === n))); };
   btns.forEach((b) => b.addEventListener('click', () => { set(+b.closest('[data-l]').dataset.l); fig.dataset.auto = 'off'; }));
   // a slow walk through the layers the first time the figure is in view
