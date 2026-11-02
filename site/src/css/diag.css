@@ -84,3 +84,20 @@
 .actions{display:flex;flex-wrap:wrap;gap:var(--s-4)}
 @media (max-width:1023px){.diag-main,.diag-visual{grid-column:1 / -1}.diag-visual{order:-1;margin-inline:calc(-1 * var(--margin))}.diag-main{min-height:0}}
 @media (max-width:639px){.diag-options{grid-template-columns:1fr}}
+/* question to question: the JS already marks the old question is-leaving (170 ms) and the stage with the direction;
+   the old one steps aside, the new one arrives from the side it was going, the result rises in. A chosen option
+   gives one small press. */
+.diag-q{transition:opacity .17s var(--ease-ds),transform .17s var(--ease-ds)}
+.diag-q.is-leaving{opacity:0;transform:translateX(calc(var(--dir,1) * -14px))}
+.diag-stage[data-dir="1"]{--from:14px}
+.diag-stage[data-dir="-1"]{--from:-14px}
+.diag-stage[data-dir] .diag-q:not(.is-leaving){animation:q-in .3s var(--ease-ds) both}
+.diag-result{animation:q-up .4s var(--ease-ds) both}
+.diag-opt.is-hit{animation:q-hit .22s var(--ease-ds)}
+.diag-opt:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.diag-back:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:var(--radius-control)}
+.diag-back:hover{color:var(--ink)}
+@keyframes q-in{from{opacity:0;transform:translateX(var(--from,0))}}
+@keyframes q-up{from{opacity:0;transform:translateY(10px)}}
+@keyframes q-hit{50%{transform:scale(.98)}}
+@media (prefers-reduced-motion:reduce){.diag-q,.diag-result,.diag-opt.is-hit{transition:none;animation:none!important}}
