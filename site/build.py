@@ -40,6 +40,8 @@ for _s in NAV["sections"]:
     for _l, _u, _line in _s["items"]: LABEL.setdefault(_u, _l)
 
 part = lambda n: (SRC / "partials" / n).read_text()
+# colours live only in core.css: the browser bar colour is read from the --ground token, so a palette swap is one file
+GROUND = re.search(r"--ground:\s*(#[0-9a-fA-F]{3,8})", (SRC / "css" / "core.css").read_text()).group(1)
 
 
 def front(src):
@@ -165,7 +167,7 @@ def head(meta, url, body, titles):
 <meta name="description" content="{e(d)}">
 <meta name="robots" content="{robots}">
 <link rel="canonical" href="{SITE}{url}">
-<meta name="theme-color" content="#f5f5f2">
+<meta name="theme-color" content="{GROUND}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="AmIMotion"><meta property="og:locale" content="en_IN">
 <meta property="og:title" content="{e(t)}"><meta property="og:description" content="{e(d)}">
 <meta property="og:url" content="{SITE}{url}"><meta property="og:image" content="{SITE}{og}">

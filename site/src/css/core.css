@@ -29,7 +29,7 @@
   color:var(--ink); font-family:var(--font-text);
 }
 .ds :focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:var(--radius-control)}
-.skip-link{position:absolute;left:16px;top:-100px;z-index:9;background:#f5f5f2;color:#16181b;padding:8px 12px;font:500 15px/1 Arial,sans-serif}
+.skip-link{position:absolute;left:16px;top:-100px;z-index:9;background:var(--ground);color:var(--ink);padding:8px 12px;font:500 15px/1 var(--font-text)}
 .skip-link:focus{top:12px}
 
 /* ---------- the bar: logo, four sections, one button ---------- */
@@ -37,6 +37,7 @@
 .top a{color:var(--ink);text-decoration:none}
 .top ul{list-style:none;margin:0;padding:0}
 .logo{grid-column:1 / span 3;display:inline-flex;align-items:center;gap:clamp(8px,.6vw,14px);justify-self:start;padding-block:var(--s-2)}
+.logo .mark path{fill:var(--located)}
 .logo .mark{height:clamp(22px,1.05vw + 10px,40px);width:auto}
 .logo .word{height:clamp(15px,.7vw + 7px,27px);width:auto}
 .top .main{grid-column:6 / span 5}
