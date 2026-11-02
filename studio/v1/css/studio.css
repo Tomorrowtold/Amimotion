@@ -411,9 +411,100 @@ em{font-style:normal}
 .sim-window{position:relative;margin:0 clamp(12px,1.6vw,22px) clamp(12px,1.6vw,22px);border-radius:24px;overflow:hidden;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6);
   border:1px solid rgba(255,255,255,.7);box-shadow:inset 0 1px 0 #fff,0 30px 60px -30px rgba(11,18,56,.55);animation:sim-open .6s cubic-bezier(.16,1,.3,1) both}
 @keyframes sim-open{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
-.sim-frame{display:block;width:100%;height:min(78vh,760px);border:0;background:transparent}
+.sim-frame{display:block;width:100%;height:min(84vh,820px);border:0;background:transparent}
 .sim-close{position:absolute;right:14px;top:14px;z-index:2;width:40px;height:40px;border-radius:14px;border:0;background:#eef3fb;color:#0b1238;font-size:22px;line-height:1;cursor:pointer;box-shadow:3px 3px 8px rgba(11,18,56,.12),-3px -3px 7px #fff}
 .sim.open .sim-teaser{padding-bottom:clamp(18px,2vw,28px)}
 .sim.open .sim-q{display:none}
 .sim.open .sim-teaser{grid-template-columns:1fr}
 @media (max-width:900px){.sim-teaser{grid-template-columns:1fr;gap:18px}.sim-card{border-radius:24px}.sim-frame{height:80svh}.sim-opt{padding:10px 14px;font-size:.9rem}}
+
+/* ---------- who leads it ---------- */
+.team{padding:clamp(40px,6vw,96px) var(--m) clamp(24px,4vw,56px)}
+.team-in{max-width:1180px;margin:0 auto}
+.team-h{font:600 clamp(2rem,1rem + 3vw,4.2rem)/.95 var(--display);letter-spacing:-.05em;margin-bottom:clamp(22px,3vw,40px)}
+.team-row{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2vw,28px)}
+.tm-pic{position:relative;margin:0;aspect-ratio:4 / 4.4;border-radius:26px;overflow:hidden;background:#dfe8f8;isolation:isolate;outline:none;
+  box-shadow:0 30px 60px -36px rgba(11,18,56,.45),inset 0 0 0 1px rgba(255,255,255,.6)}
+.tm-pic img{width:100%;height:100%;object-fit:cover;object-position:50% 22%;filter:grayscale(1) contrast(1.06) brightness(1.04);transition:filter .6s,transform 1.2s cubic-bezier(.16,1,.3,1)}
+/* one coherent tone: the site's sky and indigo washed through the black of their polos */
+.tm-pic::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,#9cc2ff 0%,#4b3df0 100%);mix-blend-mode:screen;opacity:.42;transition:opacity .6s}
+.tm-pic::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(90% 70% at 50% 20%,transparent 50%,rgba(11,18,56,.28));}
+.tm-pic:hover img,.tm-pic:focus-within img{filter:grayscale(.15) contrast(1.02);transform:scale(1.035)}
+.tm-pic:hover::before,.tm-pic:focus-within::before{opacity:.14}
+.tm-pop{position:absolute;left:12px;right:12px;bottom:12px;z-index:2;padding:16px 16px 14px;border-radius:18px;color:#0b1238;
+  background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);border:1px solid rgba(255,255,255,.75);
+  box-shadow:0 18px 40px -20px rgba(11,18,56,.5);opacity:0;transform:translateY(12px);transition:opacity .35s,transform .45s cubic-bezier(.16,1,.3,1)}
+.tm-pic:hover .tm-pop,.tm-pic:focus-within .tm-pop{opacity:1;transform:none}
+.tm-pop p{font-size:.95rem;line-height:1.45;color:#2a3150}
+.tm-in{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:8px 12px;border-radius:12px;font:500 .88rem/1 var(--text);color:#fff!important;text-decoration:none!important;background:#0a66c2;box-shadow:0 6px 14px -6px rgba(10,102,194,.6)}
+.tm-in svg{width:14px;height:14px;fill:#fff}
+.tm-name{margin-top:16px;font:600 clamp(1.2rem,1rem + .6vw,1.6rem)/1.1 var(--display);letter-spacing:-.025em}
+.tm-role{margin-top:4px;color:var(--ink-soft);font-size:1rem}
+@media (max-width:900px){.team-row{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;margin:0 calc(-1 * var(--m));padding:0 var(--m) 8px;scrollbar-width:none}.team-row::-webkit-scrollbar{display:none}.tm{flex:0 0 74vw;scroll-snap-align:start}}
+
+/* ---------- one system: a dark, sideways room for the three parts ---------- */
+.sys{position:relative;height:330vh;background:#05060b;color:#fff}
+.sys-sticky{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:clamp(18px,2.6vh,34px);padding:calc(var(--bar) + 8px) 0 clamp(18px,3vh,32px);
+  background:radial-gradient(60% 50% at 18% 30%,rgba(75,61,240,.22),transparent 70%),radial-gradient(50% 45% at 85% 75%,rgba(31,107,255,.16),transparent 70%),#05060b}
+.sys-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:0 var(--m)}
+.sys-title{font:600 clamp(2.2rem,1rem + 3.6vw,5.4rem)/.92 var(--display);letter-spacing:-.055em;color:#fff}
+.sys-steps{list-style:none;display:flex;gap:6px;margin:0;padding:6px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+.sys-steps li{font:500 .9rem/1 var(--text);padding:10px 16px;border-radius:999px;color:rgba(255,255,255,.55);transition:background .4s,color .4s}
+.sys-steps li.on{background:#fff;color:#0b1238}
+.sys-view{position:relative;overflow:visible}
+.sys-track{position:relative;display:flex;gap:clamp(20px,3vw,48px);padding:0 var(--m);will-change:transform;width:max-content}
+.sys-slide{flex:0 0 min(82vw,1240px);display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(22px,3vw,56px);align-items:center;opacity:.35;transition:opacity .6s}
+.sys-slide.on{opacity:1}
+.sys-pic{position:relative;aspect-ratio:16 / 10;border-radius:28px;overflow:hidden;background:#000;box-shadow:0 50px 100px -50px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.07)}
+.sys-pic img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 1.6s cubic-bezier(.16,1,.3,1)}
+.sys-slide.on .sys-pic img{transform:scale(1)}
+.sys-map{filter:invert(1) hue-rotate(180deg) saturate(1.7) brightness(.92) contrast(1.08);object-position:45% 62%}
+.sys-glow{position:absolute;inset:auto 10% -30% 10%;height:60%;border-radius:50%;filter:blur(40px);opacity:.55;pointer-events:none}
+.sys-tag .sys-glow{background:#4b3df0}.sys-anchor .sys-glow{background:#1f6bff}.sys-hub .sys-glow{background:#ffb020;opacity:.25}
+.sys-name{font:600 clamp(1.6rem,1rem + 1.6vw,2.8rem)/1 var(--display);letter-spacing:-.04em;margin-bottom:18px}
+.sys-tag .sys-name{color:#b4adff}.sys-anchor .sys-name{color:#8fb8ff}.sys-hub .sys-name{color:#fff}
+.sys-lead{font:500 clamp(1.1rem,.95rem + .55vw,1.6rem)/1.35 var(--text);letter-spacing:-.01em;color:rgba(255,255,255,.88)}
+.sys-words details{margin-top:20px}
+.sys-words summary{color:#fff;border-color:rgba(255,255,255,.25)!important;background:rgba(255,255,255,.06)!important}
+.sys-words .more p{color:rgba(255,255,255,.72)}
+.sys-wire{position:absolute;left:var(--m);right:var(--m);top:calc(50% + min(41vw,620px) * .3125 * 0 + 50%);height:10px;width:calc(100% - 2 * var(--m));overflow:visible;pointer-events:none;display:none}
+.sys-foot{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:0 var(--m);color:rgba(255,255,255,.75)}
+.sys-foot .spec-line{margin:0;font-size:1rem;color:#fff}
+.sys-foot .links{display:flex;gap:22px;flex-wrap:wrap}
+.sys-foot .arrow-link{color:#b4c9ff!important}
+/* the signal: a fine line under the steps fills as you move through the three */
+.sys-steps{position:relative}
+.sys-steps::after{content:"";position:absolute;left:14px;right:14px;bottom:-10px;height:2px;border-radius:2px;background:linear-gradient(90deg,#4b3df0,#1f6bff,#ffb020);transform-origin:0 50%;transform:scaleX(var(--sw,0))}
+@media (max-width:900px){
+  .sys{height:300vh}
+  .sys-head{flex-direction:column;align-items:flex-start;gap:14px}
+  .sys-steps li{padding:8px 11px;font-size:.8rem}
+  .sys-slide{flex-basis:84vw;grid-template-columns:1fr;gap:16px}
+  .sys-pic{aspect-ratio:16 / 11;border-radius:20px}
+  .sys-lead{font-size:1.02rem}
+  .sys-words details{margin-top:12px}
+  .sys-foot{display:none}
+}
+@media (prefers-reduced-motion:reduce){.sys{height:auto}.sys-sticky{position:relative;height:auto}.sys-track{flex-direction:column;width:auto}.sys-slide{opacity:1}}
+/* banner nuance (12:13): a soft top light, clay depth, slow ethereal orbs, clay chips */
+.sim-card{background:radial-gradient(120% 140% at 0% 0%,#6a5cff 0,#5244f2 34%,#3446e6 68%,#2a74ff 100%);
+  box-shadow:0 50px 90px -46px rgba(75,61,240,.75),0 14px 30px -18px rgba(31,107,255,.5),inset 0 2px 1px rgba(255,255,255,.35),inset 0 -14px 30px -10px rgba(20,10,120,.45),inset 0 0 0 1px rgba(255,255,255,.12)}
+.sim-light{position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;
+  background:radial-gradient(70% 55% at 22% -8%,rgba(255,255,255,.34),transparent 60%),linear-gradient(180deg,rgba(255,255,255,.1),transparent 30%)}
+.sim-orb{position:absolute;z-index:-1;border-radius:50%;filter:blur(38px);opacity:.55;pointer-events:none;will-change:transform}
+.sim-orb.a{width:340px;height:340px;left:38%;top:-160px;background:#9fd0ff;animation:sim-float 16s ease-in-out infinite}
+.sim-orb.b{width:300px;height:300px;right:-80px;bottom:-170px;background:#c9b8ff;animation:sim-float 19s ease-in-out -6s infinite reverse}
+.sim-orb.c{width:200px;height:200px;left:-60px;bottom:-110px;background:#7fb2ff;opacity:.4;animation:sim-float 22s ease-in-out -3s infinite}
+@keyframes sim-float{50%{transform:translate(40px,24px) scale(1.12)}}
+.sim-h{text-shadow:0 2px 18px rgba(20,10,120,.25)}
+.sim-q{background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.07));border:1px solid rgba(255,255,255,.26);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -10px 24px -16px rgba(20,10,120,.5),0 24px 40px -28px rgba(10,10,80,.6)}
+.sim-opt{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.08));border-color:rgba(255,255,255,.3);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -3px 6px rgba(20,10,120,.22),0 8px 16px -12px rgba(10,10,80,.6)}
+.sim-opt:hover,.sim-opt:focus-visible{background:linear-gradient(180deg,#fff,#eef1ff);color:#3a2fe0;
+  box-shadow:inset 0 1px 0 #fff,inset 0 -3px 0 rgba(75,61,240,.14),0 14px 26px -12px rgba(10,10,80,.6)}
+.sim-opt:active{transform:translateY(1px)}
+.sim-path{filter:drop-shadow(0 0 6px rgba(255,255,255,.55))}
+.sim-tag{filter:drop-shadow(0 0 8px #fff)}
+@media (prefers-reduced-motion:reduce){.sim-orb{animation:none}}
+body:has(.sim-frame:hover) #cursor{opacity:0!important}

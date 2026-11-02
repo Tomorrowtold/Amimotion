@@ -85,6 +85,7 @@
 <!-- 1c. PLAN YOUR FIRST BAY: a banner that opens into the planner -->
 <section class="sim" id="sim" aria-label="Plan your first bay">
   <div class="sim-card" data-sim>
+    <i class="sim-orb a" aria-hidden="true"></i><i class="sim-orb b" aria-hidden="true"></i><i class="sim-orb c" aria-hidden="true"></i><i class="sim-light" aria-hidden="true"></i>
     <svg class="sim-art" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path class="sim-path" d="M-20 250 C 220 250, 260 120, 470 120 S 760 210, 900 150 S 1120 60, 1230 70"/><circle class="sim-wait" cx="900" cy="150" r="9"/><circle class="sim-ring" cx="900" cy="150" r="22"/><circle class="sim-tag" cx="470" cy="120" r="6"/></svg>
     <div class="sim-teaser">
       <div class="sim-words">
@@ -100,6 +101,39 @@
       <button type="button" class="sim-close" aria-label="Close the planner"><span aria-hidden="true">&times;</span></button>
       <iframe class="sim-frame" title="Plan your first bay" tabindex="0"></iframe>
     </div>
+  </div>
+</section>
+
+<!-- 1d. WHO LEADS IT -->
+<section class="team" id="team" aria-labelledby="team-h">
+  <div class="team-in">
+    <h2 class="team-h" id="team-h">Who leads it</h2>
+    <ul class="team-row">
+      <li class="tm">
+        <figure class="tm-pic" tabindex="0" aria-describedby="tm-kaushal-kukkar">
+          <img src="assets/team/kaushal-kukkar.webp" alt="Kaushal Kukkar" width="640" height="800" loading="lazy" decoding="async">
+          <div class="tm-pop" id="tm-kaushal-kukkar" role="note"><p>20 years in product development and business growth. Scaled products from 0 to 1 and led P&amp;L across global markets.</p><a class="tm-in" href="https://www.linkedin.com/search/results/people/?keywords=Kaushal%20Kukkar%20AmIMotion" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.1c0-1.22-.02-2.78-1.7-2.78-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg>Connect on LinkedIn</a></div>
+        </figure>
+        <h3 class="tm-name">Kaushal Kukkar</h3>
+        <p class="tm-role">Founder and CEO</p>
+      </li>
+      <li class="tm">
+        <figure class="tm-pic" tabindex="0" aria-describedby="tm-vivek-dham">
+          <img src="assets/team/vivek-dham.webp" alt="Vivek Dham" width="640" height="800" loading="lazy" decoding="async">
+          <div class="tm-pop" id="tm-vivek-dham" role="note"><p>22 years in hardware systems design and manufacturing. Deep expertise in RF, embedded and volume production.</p><a class="tm-in" href="https://www.linkedin.com/search/results/people/?keywords=Vivek%20Dham%20AmIMotion" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.1c0-1.22-.02-2.78-1.7-2.78-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg>Connect on LinkedIn</a></div>
+        </figure>
+        <h3 class="tm-name">Vivek Dham</h3>
+        <p class="tm-role">CTO</p>
+      </li>
+      <li class="tm">
+        <figure class="tm-pic" tabindex="0" aria-describedby="tm-sumeer-bhatara">
+          <img src="assets/team/sumeer-bhatara.webp" alt="Sumeer Bhatara" width="640" height="800" loading="lazy" decoding="async">
+          <div class="tm-pop" id="tm-sumeer-bhatara" role="note"><p>24 years in wireless product development. Shipped connectivity products across UWB, BLE and Wi-Fi stacks.</p><a class="tm-in" href="https://www.linkedin.com/search/results/people/?keywords=Sumeer%20Bhatara%20AmIMotion" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.1c0-1.22-.02-2.78-1.7-2.78-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg>Connect on LinkedIn</a></div>
+        </figure>
+        <h3 class="tm-name">Sumeer Bhatara</h3>
+        <p class="tm-role">Head of Software</p>
+      </li>
+    </ul>
   </div>
 </section>
 
@@ -143,45 +177,49 @@
   </div>
 </section>
 
-<!-- 5. ONE SYSTEM: a product stage -->
-<section class="screen system" id="system">
-  <div class="wrap">
-    <h2 class="mega k-lines"><span class="ln"><span>Three parts work</span></span><span class="ln"><span>as one system.</span></span></h2>
-    <div class="stage" id="stage">
-      <div class="stage-pics" aria-hidden="true">
-        <img class="sp on" data-i="0" src="assets/home/amigo-side-1500.webp" alt="" width="1500" height="1000" loading="lazy">
-        <img class="sp" data-i="1" src="assets/home/amimo-page-1200.webp" alt="" width="1200" height="800" loading="lazy">
-        <img class="sp sp-hub" data-i="2" src="assets/scene/hall-after-1600.webp" alt="" width="1600" height="2000" loading="lazy">
-        <i class="stage-floor"></i>
+<!-- 5. ONE SYSTEM: scroll moves sideways through the tag, the anchor and AmIHub -->
+<section class="sys" id="system" aria-labelledby="sys-title">
+  <div class="sys-sticky">
+    <div class="sys-head">
+      <h2 class="sys-title k-lines" id="sys-title"><span class="ln"><span>Three parts work</span></span><span class="ln"><span>as one system.</span></span></h2>
+      <ol class="sys-steps" aria-hidden="true"><li class="on">AmIGo tag</li><li>AmIMo anchor</li><li>AmIHub</li></ol>
+    </div>
+    <div class="sys-view">
+      <div class="sys-track">
+        <svg class="sys-wire" viewBox="0 0 300 10" preserveAspectRatio="none" aria-hidden="true"><path d="M0 5 H300" pathLength="1"/></svg>
+          <article class="sys-slide sys-tag" aria-labelledby="sys-h0">
+            <div class="sys-pic"><img src="assets/hw/amigo-dark-1200.webp" alt="The AmIGo tag, dark grey, with the amimotion name pressed into its lid" width="1200" height="679" loading="lazy"><span class="sys-glow" aria-hidden="true"></span></div>
+            <div class="sys-words">
+              <h3 class="sys-name" id="sys-h0">AmIGo tag</h3>
+              <p class="sys-lead">Screws or sticks onto the trolley. Sends a short UWB radio pulse when it moves and sleeps when it stops.</p>
+              <details><summary><span>Read more</span></summary><div class="more"><p>While it sleeps, the map shows where it was last seen. If it comes off the trolley, the map still shows its last-seen spot. One battery lasts 1 to 3 years, depending on use. AmIHub tracks each tag's health and battery level.</p></div></details>
+            </div>
+          </article>
+          <article class="sys-slide sys-anchor" aria-labelledby="sys-h1">
+            <div class="sys-pic"><img src="assets/hw/amimo-dark-1200.webp" alt="The AmIMo anchor, a dark grey box with the amimotion name on its side and a network port" width="1200" height="679" loading="lazy"><span class="sys-glow" aria-hidden="true"></span></div>
+            <div class="sys-words">
+              <h3 class="sys-name" id="sys-h1">AmIMo anchor</h3>
+              <p class="sys-lead">Fixed to a column or wall 3 to 8 m up. Records when each pulse arrives and the angle it came from.</p>
+              <details><summary><span>Read more</span></summary><div class="more"><p>Needs only power, from DC or PoE. It syncs over the air, with no sync cable. It sends its data to AmIHub over Wi-Fi, so it needs no separate data cable. Ethernet is also an option. Each reaches about 50 m around it in clear line of sight. Racking and steel change that, so we survey your floor and set the count. With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor. You set anchors up from a phone app. AmIHub finds each one on its own and raises an alert if one goes dark.</p></div></details>
+            </div>
+          </article>
+          <article class="sys-slide sys-hub" aria-labelledby="sys-h2">
+            <div class="sys-pic"><img class="sys-map" src="assets/scene/hall-after-1600.webp" alt="AmIHub's live map of a model plant: blue paths where work moved, amber where it waits" width="1600" height="2000" loading="lazy"><span class="sys-glow" aria-hidden="true"></span></div>
+            <div class="sys-words">
+              <h3 class="sys-name" id="sys-h2">AmIHub</h3>
+              <p class="sys-lead">Works out where each tag is from those times and angles. Runs on an industrial PC inside your plant, with no internet needed.</p>
+              <details><summary><span>Read more</span></summary><div class="more"><p>Your MES, ERP and WMS connect to it through open REST, MQTT, WebSocket and omlox hub interfaces. Your team, your systems and AI assistants read the same live map. Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited.</p></div></details>
+            </div>
+          </article>
       </div>
-      <div class="stage-side">
-        <div class="tabs" role="tablist" aria-label="The three parts">
-          <button role="tab" id="t0" aria-controls="p0" aria-selected="true">AmIGo tag</button>
-          <button role="tab" id="t1" aria-controls="p1" aria-selected="false" tabindex="-1">AmIMo anchor</button>
-          <button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">AmIHub</button>
-          <i class="tab-ink" aria-hidden="true"></i>
-        </div>
-        <div class="panel" role="tabpanel" id="p0" aria-labelledby="t0">
-          <h3 class="vh">AmIGo tag</h3>
-          <p class="lead">Screws or sticks onto the trolley. Sends a short UWB radio pulse when it moves and sleeps when it stops.</p>
-          <details><summary><span>Read more</span></summary><div class="more"><p>While it sleeps, the map shows where it was last seen. If it comes off the trolley, the map still shows its last-seen spot. One battery lasts 1 to 3 years, depending on use. AmIHub tracks each tag's health and battery level.</p></div></details>
-        </div>
-        <div class="panel" role="tabpanel" id="p1" aria-labelledby="t1" hidden>
-          <h3 class="vh">AmIMo anchor</h3>
-          <p class="lead">Fixed to a column or wall 3 to 8 m up. Records when each pulse arrives and the angle it came from.</p>
-          <details><summary><span>Read more</span></summary><div class="more"><p>Needs only power, from DC or PoE. It syncs over the air, with no sync cable. It sends its data to AmIHub over Wi-Fi, so it needs no separate data cable. Ethernet is also an option. Each reaches about 50 m around it in clear line of sight. Racking and steel change that, so we survey your floor and set the count. With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor. You set anchors up from a phone app. AmIHub finds each one on its own and raises an alert if one goes dark.</p></div></details>
-        </div>
-        <div class="panel" role="tabpanel" id="p2" aria-labelledby="t2" hidden>
-          <h3 class="vh">AmIHub</h3>
-          <p class="lead">Works out where each tag is from those times and angles. Runs on an industrial PC inside your plant, with no internet needed.</p>
-          <details><summary><span>Read more</span></summary><div class="more"><p>Your MES, ERP and WMS connect to it through open REST, MQTT, WebSocket and omlox hub interfaces. Your team, your systems and AI assistants read the same live map. Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited.</p></div></details>
-        </div>
-        <p class="spec-line">Built on the FiRa and omlox specifications.</p>
-        <p class="links"><a class="arrow-link" href="/technology/">How it locates a tag</a><a class="arrow-link" href="/specs/">Specifications</a><a class="arrow-link" href="/developers/">For developers</a></p>
-      </div>
+    </div>
+    <div class="sys-foot">
+      <p class="spec-line">Built on the FiRa and omlox specifications.</p>
+      <p class="links"><a class="arrow-link" href="/technology/">How it locates a tag</a><a class="arrow-link" href="/specs/">Specifications</a><a class="arrow-link" href="/developers/">For developers</a></p>
     </div>
   </div>
 </section>
+
 
 <!-- 6. START WITH ONE BAY -->
 <section class="screen start" id="start">

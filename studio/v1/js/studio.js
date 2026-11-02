@@ -79,25 +79,19 @@ if (qb && !reduce) {
   }).observe(qb.parentElement, { attributes: true, attributeFilter: ['class'] });
 }
 
-/* ---------- product stage tabs ---------- */
-const tabs = $$('.tabs [role=tab]'), panels = $$('.panel'), sps = $$('.sp'), ink = $('.tab-ink');
-let tabIdx = 0, touched = false;
-function selectTab(i, focus) {
-  tabIdx = i;
-  tabs.forEach((t, j) => { t.setAttribute('aria-selected', j === i); t.tabIndex = j === i ? 0 : -1; });
-  panels.forEach((p, j) => { p.hidden = j !== i; });
-  sps.forEach((p, j) => p.classList.toggle('on', j === i));
-  const t = tabs[i]; ink.style.transform = `translateX(${t.offsetLeft}px) scaleX(${t.offsetWidth / 100})`;
-  if (focus) t.focus();
-}
-tabs.forEach((t, i) => {
-  t.addEventListener('click', () => { touched = true; selectTab(i); });
-  t.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { touched = true; selectTab((i + (e.key === 'ArrowRight' ? 1 : 2)) % 3, true); } });
-});
-addEventListener('resize', () => selectTab(tabIdx));
-document.fonts.ready.then(() => selectTab(0));
-let stageOn = false; new IntersectionObserver((es) => { stageOn = es[0].isIntersecting; }, { threshold: .5 }).observe($('#stage'));
-if (!reduce) setInterval(() => { if (stageOn && !touched && !$('#stage details[open]')) selectTab((tabIdx + 1) % 3); }, 5200);
+/* ---------- one system: vertical scroll moves the track sideways, tag, then anchor, then AmIHub ---------- */
+const sysSec = $('#system'), sysTrack = sysSec && sysSec.querySelector('.sys-track'), sysSteps = sysSec ? [...sysSec.querySelectorAll('.sys-steps li')] : [], sysSlides = sysSec ? [...sysSec.querySelectorAll('.sys-slide')] : [];
+const sysFrame = () => {
+  if (!sysTrack) return;
+  const r = sysSec.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
+  const p = clamp(-r.top / (r.height - innerHeight)), view = sysTrack.parentElement.clientWidth, span = sysTrack.scrollWidth - view;
+  // ease each move so every part rests in place before the next slides in
+  const seg = p * 2, i = Math.floor(seg), f = seg - i, k = i >= 2 ? 2 : i + (f < .35 ? 0 : f > .85 ? 1 : (f - .35) / .5);
+  const kk = i >= 2 ? 2 : i + (k - i < 0 ? 0 : (1 - Math.cos(Math.PI * (k - i))) / 2);
+  sysTrack.style.transform = `translate3d(${-kk / 2 * span}px,0,0)`;
+  sysSec.style.setProperty('--sw', (p * 1.02).toFixed(4));
+  const on = Math.round(kk); sysSteps.forEach((li, j) => li.classList.toggle('on', j === on)); sysSlides.forEach((sl, j) => sl.classList.toggle('on', j === on));
+};
 
 /* ---------- details open with a soft height animation ---------- */
 $$('details').forEach((d) => {
@@ -137,6 +131,7 @@ function frame(t) {
   cursor && (cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`);
 
   if (drawStory && storyOn) drawStory(t);
+  sysFrame();
   if (pf && !reduce) { const r = pro.getBoundingClientRect(); const k = clamp(-r.top / (r.height - innerHeight) * 1.25 + .15); const e = 1 - Math.pow(1 - k, 3);
     pf.style.setProperty('--pi', `${(1 - e) * 18}%`); pf.style.setProperty('--pj', `${(1 - e) * 22}%`); pf.style.setProperty('--pr', `${(1 - e) * 28}px`); pf.style.setProperty('--ps', `${1.18 - e * .18}`); }
   if (!reduce) for (const el of pics) { const r = el.parentElement.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue; const k = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; el.style.setProperty('--py', `${k * -5}%`); }
@@ -163,6 +158,7 @@ if (simSec) {
       html,body{background:transparent!important}body{padding:0!important}main{padding:0!important;margin:0!important}
       main > section:has([data-diag]){padding:clamp(18px,2.4vw,34px)!important;margin:0!important}`;
     doc.head.appendChild(st);
+    if (!doc.querySelector('script[data-pl]')) { const sc = doc.createElement('script'); sc.src = '../assets/studio/js/planner.js'; sc.dataset.pl = '1'; doc.body.appendChild(sc); }
   };
   const open = (v) => {
     simSec.classList.add('open'); win.hidden = false;
