@@ -18,3 +18,4 @@
 .contact-grid .form input:focus-visible,.contact-grid .form textarea:focus-visible{outline:0;background:var(--surface);box-shadow:inset 0 0 0 2px var(--action),0 0 0 4px rgba(75,61,240,.14)}
 .contact-grid .form .cta{margin-top:var(--s-2)}
 .contact-grid .draft{background:var(--ground);border-radius:16px;margin-top:var(--s-5)}
+@media (max-width:767px){.contact-grid{padding:var(--s-6) 20px;border-radius:22px}}
