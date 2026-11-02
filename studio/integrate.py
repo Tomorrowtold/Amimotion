@@ -31,7 +31,8 @@ b = (site / "build.py").read_text()
 b = re.sub(r'    if missing: raise SystemExit\("build: homepage pictures missing.*\n', '    if missing: print("build: homepage pictures not landed yet:", len(missing))\n', b)
 (site / "build.py").write_text(b)
 # pages are committed in src/ on the branch (product sites edit them by hand): never regenerate them here
-sh(sys.executable, "build.py", "--share", "--no-brief", cwd=site)
+LAUNCH = os.environ.get("LAUNCH") == "1"   # LAUNCH=1: real links, indexable, for the live host
+sh(sys.executable, "build.py", *(["--indexable"] if LAUNCH else ["--share"]), "--no-brief", cwd=site)
 dist = site / "dist"
 rev = subprocess.run(["git", "-C", str(REPO), "rev-parse", "--short", BRANCH], capture_output=True, text=True).stdout.strip()
 
@@ -76,6 +77,7 @@ main = sm[sm.index("<main"):sm.index("</main>") + 7]
 main = main.replace('<main id="main">', '<main id="main" class="studio">', 1)
 def rel(m):
     u = m.group(1)
+    if LAUNCH: return f'href="{u}"'
     return f'href="./{u.strip("/")}/index.html"' if u != "/" else 'href="./index.html"'
 main = re.sub(r'href="(/[^"#]*)"', rel, main)
 main = main.replace('src="assets/', 'src="./assets/studio/assets/').replace('poster="assets/', 'poster="./assets/studio/assets/')
@@ -129,16 +131,18 @@ def walk(f):
         for u in ([m.group(1)] if m.group(1) else [x.strip().split()[0] for x in m.group(2).split(",") if x.strip()] if m.group(2) else [m.group(3).strip("'\"")] if m.group(3) else [m.group(4)]):
             if not u or u.startswith(("http", "data:", "mailto:")): continue
             if "{" in u:   # frame sequences: keep the whole set
-                base = (f.parent / u.split("{")[0]).resolve()
+                base = (((dist / u.split("{")[0].lstrip("/")) if u.startswith("/") else (f.parent / u.split("{")[0])).resolve())
                 for g in base.parent.glob(base.name + "*"): keep.add(g)
                 continue
-            p = (f.parent / u).resolve()
+            p = ((dist / u.lstrip("/")) if u.startswith("/") else (f.parent / u)).resolve()
             if p.is_file() and p not in keep:
                 keep.add(p)
                 if p.suffix in (".css", ".js"): walk(p)
 for f in list(keep):
     if f.suffix in (".html", ".css", ".js") and f.exists(): walk(f)
 # runtime files fetched by code (product pages load the CAD meshes themselves)
+for g in (dist / "assets" / "vendor").glob("*.js"):   # three.js, imported by the product pages' modules
+    keep.add(g.resolve())
 for g in (dist / "assets" / "locate").rglob("*"):
     if g.is_file(): keep.add(g.resolve())
 # studio runtime files fetched by code

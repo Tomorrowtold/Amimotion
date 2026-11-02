@@ -3,12 +3,12 @@
    lit imagery and bold lead-in captions; a neon-framed product window on a dot grid; glossy icons in a 3 x 2 grid.
    The light (hub-beam*.webp, hub-vortex*.webp) is rendered, not drawn: site/tools/render_light.py.
    Colour: located blue and waiting amber are the only signal colours; violet only lives inside the light. */
-.site-amihub{--p-bg:#07080b;--p-fg:#f3f5fa;--p-soft:rgba(225,231,244,.68);--p-mute:rgba(225,231,244,.46);--p-line:rgba(255,255,255,.09);--p-accent:#7aa2ff;--p-card:#111318;--p-on-accent:#0b0c10;
+.site-amihub{--p-bg:#07080b;--p-fg:#f3f5fa;--p-soft:rgba(225,231,244,.68);--p-mute:rgba(225,231,244,.6);--p-line:rgba(255,255,255,.09);--p-accent:#7aa2ff;--p-card:#111318;--p-on-accent:#0b0c10;
   --blue:#4d8dff;--blue-hi:#9dbbff;--amber:#ffb020;--green:#35d07f;--paper:#f3f4f6;
   --hb-r:22px;--hb-ease:cubic-bezier(.16,1,.3,1);
   background:#07080b;color-scheme:dark}
 .site-amihub main{background:#07080b}
-.site-amihub [data-tone=light]{--p-fg:#0b0c0f;--p-soft:rgba(11,12,15,.68);--p-mute:rgba(11,12,15,.5);--p-line:rgba(11,12,15,.1);--p-accent:#2f63f0;background:var(--paper);color:var(--p-fg);color-scheme:light}
+.site-amihub [data-tone=light]{--p-fg:#0b0c0f;--p-soft:rgba(11,12,15,.68);--p-mute:rgba(11,12,15,.64);--p-line:rgba(11,12,15,.1);--p-accent:#2f63f0;background:var(--paper);color:var(--p-fg);color-scheme:light}
 .site-amihub .more a{color:var(--p-accent)}
 .site-amihub .p-sec{--p-pad:clamp(96px,11vw,176px)}
 

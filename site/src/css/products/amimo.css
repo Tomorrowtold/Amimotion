@@ -2,7 +2,7 @@
    still of the anchor; bands alternate pure black and paper white; the second line of each heading turns to the
    serif italic; an anatomy plate names what the anchor needs with hairline leaders, as a product page would.
    Photographs are graded to silver-gelatin black and white. No colour anywhere. */
-.site-amimo{--p-bg:#fff;--p-fg:#0a0a0b;--p-soft:#3b3b3f;--p-mute:rgba(10,10,11,.5);--p-line:rgba(10,10,11,.12);--p-accent:#0a0a0b;--p-card:#f4f4f2;--p-on-accent:#fff;--p-rail-ink:#0a0a0b;--p-rail-name:#0a0a0b;
+.site-amimo{--p-bg:#fff;--p-fg:#0a0a0b;--p-soft:#3b3b3f;--p-mute:rgba(10,10,11,.64);--p-line:rgba(10,10,11,.12);--p-accent:#0a0a0b;--p-card:#f4f4f2;--p-on-accent:#fff;--p-rail-ink:#0a0a0b;--p-rail-name:#0a0a0b;
   --serif:"AmI Serif",Georgia,serif;--am-ease:cubic-bezier(.16,1,.3,1)}
 .site-amimo [data-tone=dark]{--p-bg:#000;--p-fg:#fff;--p-soft:rgba(255,255,255,.72);--p-mute:rgba(255,255,255,.5);--p-line:rgba(255,255,255,.16);--p-accent:#fff;--p-on-accent:#000;background:#000;color:#fff}
 .site-amimo [data-tone=light]{background:#fff}

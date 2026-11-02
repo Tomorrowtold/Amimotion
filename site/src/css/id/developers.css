@@ -24,3 +24,4 @@ main .crumbs,main .crumbs a{color:#7f8bb0}
 .band .faq details{background:#0f1530!important}
 .close{background:#1f6bff}
 @media (max-width:1023px){.dv-event{grid-template-columns:1fr}}
+main p a:not([class]){color:var(--link)}
