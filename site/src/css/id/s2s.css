@@ -18,3 +18,9 @@
   @keyframes s2s-in{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:none}}
 }}
 @media (max-width:1023px){.s2s-rib{grid-template-columns:1fr 1fr;row-gap:var(--s-5)}}
+/* The paper close sits on the page ground, so its line and its button take the ink and the action colour:
+   the sub line was white on paper, and the white pill barely separated from the ground. */
+.close .sub{color:var(--ink-soft)}
+main .close a{background:var(--action);color:var(--on-action)!important;box-shadow:0 14px 30px -16px rgba(75,61,240,.55)}
+main .close a:hover{background:var(--action-hover)}
+.close :focus-visible{outline-color:var(--action)}
