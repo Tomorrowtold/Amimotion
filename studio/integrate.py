@@ -66,7 +66,7 @@ css = scope((STUDIO / "css" / "studio.css").read_text())
 css = css.replace("url(../assets/fonts/", "url(../fonts/")
 css += """
 .studio{background:var(--ground);color:var(--ink);font-family:var(--text)}
-.studio .hero{padding-top:0}
+.studio .hero{padding-top:calc(var(--bar) + 24px)}
 """
 
 # 3. homepage: their head/header/dock/footer + studio main
