@@ -25,7 +25,7 @@ Formats:
 | R4 hall wide plus 4 zone masks | Home S4, /diagnostic/ | **landed** |
 | R5 before/after plus trail SVG | Home S2 | queued |
 | R6 queue full-bleed | Home S3 | **landed** (see below) |
-| R7 one bay | Home S6, /pilot/ | queued |
+| R7 one bay | Home S6, /pilot/ | **landed** |
 | R8 job crops | Home S7 | **landed** |
 | R9 closer-look angles | Product pages | queued |
 | R10 AmIGo lowers onto trolley | AmIGo page | see notes |
@@ -99,6 +99,24 @@ The chip files replace the stand-in chip under the same names, so no markup chan
 - The 1:1 crop is master pixels x 1100 to 3260, full height. It holds the three amber queue trolleys, the trolley at the station and the amber pallet in the staging lane.
 - Alt for `queue-1x1`: "A model factory floor. Three trolleys in the inspection queue and one pallet in a staging lane are marked amber because they are waiting."
 - Alt for `queue-chip`: `alt=""`. It is decorative and sits inside the headline, which carries the words. Mark it `aria-hidden="true"`.
+
+## R7 one bay (Home S6, /pilot/): landed
+
+- Camera: the hall camera brought in on the inspection bay. 9 m high, pitch 35°, 30 mm, yaw 34, aimed 1 m up at the bay, so both of the bay's AmIMo anchors are in frame (left column and right column).
+- In colour: the inspected trolley's path and the three queue trolleys' paths and amber waits. Everything else is pale, including other trolleys, the press and the racks.
+- The hall has two anchors on this bay's columns, not three. The plan's "three anchors" was not drawn, because the hall does not have them.
+
+| File | Size | Ratio | Bytes (AVIF / WebP) | Use |
+|---|---|---|---|---|
+| `home/bay-32-800.{avif,webp}` | 800 x 533 | 3:2 | 14.3 / 16.2 KB | S6 desktop, about 60 % width |
+| `home/bay-32-1600.{avif,webp}` | 1600 x 1067 | 3:2 | 30.8 / 37.1 KB | |
+| `home/bay-32-2400.{avif,webp}` | 2400 x 1600 | 3:2 | 47.7 / 59.4 KB | master |
+| `home/bay-45-800.{avif,webp}` | 800 x 1000 | 4:5 | 21.4 / 25.3 KB | S6 phone |
+| `home/bay-45-1280.{avif,webp}` | 1280 x 1600 | 4:5 | 35.2 / 43.5 KB | phone at 2x |
+
+- The 4:5 crop is x 380 to 1660 of the master. It is the station and queue only; the anchors fall outside it.
+- Alt (3:2), the homepage screen 6 alt: "The model factory floor, all pale except one inspection bay shown in colour with its paths, its waits and its two anchors."
+- Alt (4:5): "A model inspection bay: one trolley at the station, its path in blue, and three trolleys waiting on amber in the queue."
 
 ## R8 job crops (Home S7 jobs grid): landed
 

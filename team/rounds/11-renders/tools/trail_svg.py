@@ -7,12 +7,21 @@ import sys, json, math
 d = json.load(open(sys.argv[1])); out = sys.argv[2]
 blue = sys.argv[sys.argv.index('--blue') + 1] if '--blue' in sys.argv else '#1f6bff'
 W, H = d['res']; pts = d['points']
-# light simplification: drop points closer than 1.5 px to the last kept one
-keep = [pts[0]]
-for p in pts[1:-1]:
-    if math.dist(p, keep[-1]) >= 1.5: keep.append(p)
-keep.append(pts[-1])
-path = 'M' + ' L'.join(f'{x:.1f} {y:.1f}' for x, y in keep)
+# split into the runs the camera sees (hall_r11.py marks each point), then drop points closer than 1.5 px
+vis = d.get('visible', [True] * len(pts))
+runs, cur = [], []
+for p, v in zip(pts, vis):
+    if v: cur.append(p)
+    elif cur: runs.append(cur); cur = []
+if cur: runs.append(cur)
+def simp(r):
+    k = [r[0]]
+    for p in r[1:-1]:
+        if math.dist(p, k[-1]) >= 1.5: k.append(p)
+    return k + [r[-1]] if len(r) > 1 else k
+runs = [simp(r) for r in runs if len(r) > 1]
+keep = [p for r in runs for p in r]
+path = ' '.join('M' + ' L'.join(f'{x:.1f} {y:.1f}' for x, y in r) for r in runs)
 w = round((d['width_start'] + d['width_end']) / 2, 1)
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" aria-hidden="true">'
        f'<path d="{path}" pathLength="1" fill="none" stroke="{blue}" stroke-width="{w}" stroke-linecap="round" '

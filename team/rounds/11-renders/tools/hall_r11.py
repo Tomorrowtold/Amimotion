@@ -108,6 +108,14 @@ elif mode == 'trail':
     key = opt('--key', 't3'); x0, y0, x1, y1 = (float(v) for v in opt('--crop').split(','))
     tau = 9.0; s = BH.M[key].s(tau)
     seg = BH.P[key].segment(s - BH.TRAIL_L, s)
+    # visibility: a trail point is drawn only where the camera sees the floor there (racks, machines and the
+    # trolley itself hide it in the still, so the SVG must not draw over them)
+    dg = bpy.context.evaluated_depsgraph_get(); co = cam.matrix_world.translation
+    def seen(x, y):
+        tgt = Vector((x, y, 0.004)); d = tgt - co; L = d.length
+        hit, loc, nrm, idx, ob, mtx = sc.ray_cast(dg, co, d.normalized(), distance=L - 0.02)
+        return (not hit) or ob.name in ('ink', 'floor')
+    vis = [seen(x, y) for x, y in seg]
     pts = [px((x, y, 0.004)) for x, y in seg]
     pts = [((p[0] - x0), (p[1] - y0)) for p in pts]
     # the ribbon's width in pixels at its two ends (perspective)
@@ -115,7 +123,7 @@ elif mode == 'trail':
         a = px((pt[0] - BH.MARK_W / 2, pt[1], 0)); b = px((pt[0] + BH.MARK_W / 2, pt[1], 0))
         c = px((pt[0], pt[1] - BH.MARK_W / 2, 0)); d = px((pt[0], pt[1] + BH.MARK_W / 2, 0))
         return max(math.dist(a, b), math.dist(c, d))
-    json.dump(dict(points=pts, width_start=wpx(seg[0]), width_end=wpx(seg[-1]), crop=[x0, y0, x1, y1], res=[W, H]),
+    json.dump(dict(points=pts, visible=vis, width_start=wpx(seg[0]), width_end=wpx(seg[-1]), crop=[x0, y0, x1, y1], res=[W, H]),
               open(opt('--out'), 'w'))
     print('TRAIL', len(pts), 'points')
 
