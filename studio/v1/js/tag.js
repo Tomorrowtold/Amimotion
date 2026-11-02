@@ -216,7 +216,7 @@ export async function init(canvas, fallback, hero) {
     floorMat.uniforms.ring.value = c > 2.6 && c < 5.6 ? (c - 2.6) / 1.5 : 0;
     floorMat.uniforms.wait.value = c > 3.2 ? eo((c - 3.2) / 8) * .86 : 0;
     const fade = t < START ? 0 : clamp(c / .4) * clamp((CYCLE - c) / .8);
-    pathMat.uniforms.fadeAll.value = fade * (1 - sp); floorMat.uniforms.fadeAll.value = (t < START ? clamp(t / START) : clamp((CYCLE - c) / .8) * .6 + .4) * (1 - sp * .8);
+    pathMat.uniforms.fadeAll.value = phone() ? 0 : fade * (1 - sp); floorMat.uniforms.fadeAll.value = (t < START ? clamp(t / START) : clamp((CYCLE - c) / .8) * .6 + .4) * (1 - sp * .8);
 
     const waitK = t < START ? 0 : clamp((c - 3.4) / 7) * clamp((CYCLE - c) / .9);
     pool.material.opacity = waitK * (1 - sp) * .9;
