@@ -1,0 +1,26 @@
+<!doctype html><meta charset="utf-8"><title>floors film</title>
+<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+<canvas id="c"></canvas>
+<script type="module">
+import { film, envFrom, THREE } from './film.js';
+import { SCENES as S0 } from './scenes.js';
+import { MEGA } from './mega.js';
+const SCENES = { ...S0, ...MEGA };
+const q = new URLSearchParams(location.search);
+const W = +(q.get('w') || 1440), H = +(q.get('h') || 1080);
+const cv = document.getElementById('c');
+const F = film(cv, W, H, {});
+const S = SCENES[q.get('scene') || 'robotsA']();
+S.scene.environment = envFrom(F.r, {});
+// forward lighting pays for every light on every pixel: keep only lights near the shot's path
+if (S.cull) { const rm = []; S.scene.traverse((o) => { if (o.isLight && !o.isHemisphereLight && o.parent === S.scene) { const x = o.position.x; if (x < S.cull[0] || x > S.cull[1]) rm.push(o); } }); rm.forEach((o) => { S.scene.remove(o); if (o.target) S.scene.remove(o.target); }); }
+let nl = 0; S.scene.traverse((o) => { if (o.isLight) nl++; }); console.log('lights', nl);
+S.scene.environmentIntensity = +(q.get('env') || S.env || .3);
+S.cam.aspect = W / H; S.cam.updateProjectionMatrix();
+Object.entries(S.look || {}).forEach(([k, v]) => { const u = F.look[k]; if (!u) return; if (Array.isArray(v)) u.value.set(...v); else u.value = v; });
+if (q.has('ap')) S.aperture = +q.get('ap'); if (q.has('focus')) S.focus = +q.get('focus');
+window.frame = (t) => { S.tick(t); F.render(S.scene, S.cam, { focus: S.focus, aperture: S.aperture, maxR: S.maxR, time: t }); return true; };
+window.loop = S.loop;
+window.ready = true;
+if (q.has('t')) frame(+q.get('t'));
+</script>

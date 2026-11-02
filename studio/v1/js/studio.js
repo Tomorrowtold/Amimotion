@@ -234,86 +234,102 @@ if (simSec) {
 }
 
 
-/* ---------- floors: three living plans drawn on black ---------- */
+/* ---------- floors: three film loops made in code; play only while seen ---------- */
 (() => {
   const cards = $$('.ind'); if (!cards.length) return;
-  const BLUE = '31,107,255', IND = '120,110,255', AMB = '255,176,32', LINE = 'rgba(150,170,255,.24)';
-  const poly = (pts) => { const seg = []; let L = 0; for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push([pts[i - 1], pts[i], L, d]); L += d; } return { seg, L }; };
-  const at = (P, t) => { let d = ((t % 1) + 1) % 1 * P.L; for (const [a, b, s, l] of P.seg) if (d <= s + l) { const f = (d - s) / l; return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]; } return P.seg[P.seg.length - 1][1]; };
-  // every scene lives in a 100 x 100 plan, drawn in a gentle isometric tilt
-  const SC = {
-    factory: () => {
-      const cells = [[8, 10, 22, 18], [38, 10, 22, 18], [68, 10, 24, 18], [8, 62, 22, 22], [38, 62, 22, 22], [68, 62, 24, 22]];
-      const paths = [poly([[19, 30], [19, 45], [49, 45], [49, 30]]), poly([[49, 30], [49, 45], [80, 45], [80, 30]]), poly([[80, 30], [80, 45], [80, 60]]), poly([[19, 60], [19, 45], [49, 45], [49, 60]])];
-      const movers = paths.map((p, i) => ({ p, sp: .05 + i * .012, o: i * .27 }));
-      return { boxes: cells, paths, movers, waits: [[49, 52], [80, 52]], grid: true };
-    },
-    warehouse: () => {
-      const racks = []; for (let i = 0; i < 6; i++) racks.push([8 + i * 15, 8, 6, 58]);
-      const paths = [0, 1, 2, 3, 4].map((i) => poly([[17.5 + i * 15, 70], [17.5 + i * 15, 10], [17.5 + i * 15, 70]]));
-      const dock = [[10, 86, 14, 8], [30, 86, 14, 8], [50, 86, 14, 8], [70, 86, 14, 8]];
-      const movers = paths.map((p, i) => ({ p, sp: .04 + (i % 3) * .015, o: i * .31, big: true }));
-      return { boxes: racks.concat(dock), paths, movers, waits: [[17, 90], [57, 90]], rack: true };
-    },
-    robots: () => {
-      const loop = poly([[14, 16], [86, 16], [86, 84], [14, 84], [14, 16]]), inner = poly([[34, 36], [66, 36], [66, 64], [34, 64], [34, 36]]);
-      const cross = poly([[14, 50], [86, 50]]);
-      const movers = [{ p: loop, sp: .045, o: 0, robot: true, tow: true }, { p: loop, sp: .045, o: .5, robot: true }, { p: inner, sp: .07, o: .2, robot: true, tow: true }, { p: cross, sp: .09, o: .1 }];
-      return { boxes: [[44, 44, 12, 12]], paths: [loop, inner, cross], movers, waits: [[86, 50]], zone: [44, 44, 12, 12] };
-    },
-  };
+  const lowData = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
   cards.forEach((card) => {
-    const cv = card.querySelector('canvas'), ctx = cv.getContext('2d'), S = SC[card.dataset.scene]();
-    let W = 0, H = 0, dpr = 1, vis = false, mx = 0, my = 0, hov = 0, hovT = 0;
-    const fit = () => { dpr = Math.min(2, devicePixelRatio || 1); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; };
-    new ResizeObserver(fit).observe(cv); fit();
-    new IntersectionObserver((es) => { vis = es[0].isIntersecting; }).observe(cv);
-    card.addEventListener('pointermove', (e) => { const r = card.getBoundingClientRect(); mx = (e.clientX - r.left) / r.width - .5; my = (e.clientY - r.top) / r.height - .5; });
-    card.addEventListener('pointerenter', () => (hovT = 1)); card.addEventListener('pointerleave', () => { hovT = 0; mx = my = 0; });
-    const trails = S.movers.map(() => []);
-    const draw = (now) => {
-      requestAnimationFrame(draw); if (!vis || !W) return;
-      const t = now / 1000; hov += (hovT - hov) * .06;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-      // isometric plan, centred, leaning toward the pointer
-      const k = Math.min(W * 1.05, H * 1.75) / 110 * (1 + hov * .07), cx = W / 2 + mx * 14, cy = H * .4 + my * 10;
-      const ang = -.52 + mx * .08, sq = .56 - my * .04, c = Math.cos(ang), s = Math.sin(ang);
-      const P = (x, y) => { x -= 50; y -= 50; return [cx + (x * c - y * s) * k, cy + (x * s + y * c) * k * sq]; };
-      // floor dots
-      { const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * .6); g.addColorStop(0, 'rgba(60,70,220,.16)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
-      ctx.fillStyle = 'rgba(130,150,255,.18)';
-      for (let x = 0; x <= 100; x += 5) for (let y = 0; y <= 100; y += 5) { const [px, py] = P(x, y); ctx.fillRect(px - .6, py - .6, 1.2, 1.2); }
-      const quad = (x, y, w, h) => { ctx.beginPath(); const a = P(x, y), b = P(x + w, y), d = P(x + w, y + h), e = P(x, y + h); ctx.moveTo(...a); ctx.lineTo(...b); ctx.lineTo(...d); ctx.lineTo(...e); ctx.closePath(); };
-      // structures: thin walls with a lifted top edge for depth
-      S.boxes.forEach(([x, y, w, h]) => {
-        quad(x, y, w, h); ctx.fillStyle = 'rgba(90,100,170,.06)'; ctx.fill(); ctx.strokeStyle = LINE; ctx.lineWidth = 1; ctx.stroke();
-        const lift = S.rack ? 7 : 4; ctx.save(); ctx.translate(0, -lift); quad(x, y, w, h); ctx.strokeStyle = 'rgba(170,185,255,.4)'; ctx.stroke(); ctx.restore();
-        [[x, y], [x + w, y], [x + w, y + h], [x, y + h]].forEach(([u, v]) => { const [px, py] = P(u, v); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py - lift); ctx.stroke(); });
-      });
-      if (S.zone) { const [x, y, w, h] = S.zone, f = (Math.sin(t * 2) + 1) / 2; quad(x, y, w, h); ctx.setLineDash([3, 3]); ctx.strokeStyle = `rgba(${BLUE},${.35 + f * .4})`; ctx.stroke(); ctx.setLineDash([]); }
-      // the routes, faint
-      ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(31,107,255,.28)';
-      S.paths.forEach((p) => { ctx.beginPath(); p.seg.forEach(([a, b], i) => { const A = P(...a), B = P(...b); if (!i) ctx.moveTo(...A); ctx.lineTo(...B); }); ctx.stroke(); });
-      // waits: amber pools that breathe
-      S.waits.forEach(([x, y], i) => {
-        const [px, py] = P(x, y), f = ((t * .5 + i * .37) % 1);
-        const g = ctx.createRadialGradient(px, py, 0, px, py, 26); g.addColorStop(0, `rgba(${AMB},.45)`); g.addColorStop(1, `rgba(${AMB},0)`);
-        ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(px, py, 26, 26 * sq, 0, 0, 7); ctx.fill();
-        ctx.strokeStyle = `rgba(${AMB},${(1 - f) * .7})`; ctx.beginPath(); ctx.ellipse(px, py, 6 + f * 22, (6 + f * 22) * sq, 0, 0, 7); ctx.stroke();
-        ctx.fillStyle = `rgb(${AMB})`; ctx.beginPath(); ctx.arc(px, py - 3, 3.2, 0, 7); ctx.fill();
-      });
-      // movers: located dots with light trails
-      S.movers.forEach((m, i) => {
-        const u = t * m.sp + m.o, [x, y] = at(m.p, u), [px, py] = P(x, y), tr = trails[i];
-        tr.push([px, py]); if (tr.length > 46) tr.shift();
-        for (let j = 1; j < tr.length; j++) { ctx.strokeStyle = `rgba(${m.robot ? IND : BLUE},${(j / tr.length) * .8})`; ctx.lineWidth = 2 * (j / tr.length); ctx.beginPath(); ctx.moveTo(...tr[j - 1]); ctx.lineTo(...tr[j]); ctx.stroke(); }
-        if (m.tow) { const [bx, by] = P(...at(m.p, u - .025)); ctx.fillStyle = 'rgba(200,210,255,.55)'; ctx.fillRect(bx - 3, by - 6, 6, 5); }
-        const col = m.robot ? IND : BLUE, r = m.big ? 4.2 : 3.4;
-        ctx.shadowColor = `rgba(${col},1)`; ctx.shadowBlur = 14; ctx.fillStyle = `rgb(${col})`;
-        ctx.beginPath(); m.robot ? ctx.ellipse(px, py - 3, r + 1, (r + 1) * .8, 0, 0, 7) : ctx.arc(px, py - 3, r, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
-        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(px, py - 3, 1.2, 0, 7); ctx.fill();
-      });
-    };
-    if (reduce) { vis = true; draw(4000); } else requestAnimationFrame(draw);
+    const v = card.querySelector('video'); if (!v) return;
+    card.addEventListener('pointermove', (e) => { const r = card.getBoundingClientRect(), mx = (e.clientX - r.left) / r.width - .5, my = (e.clientY - r.top) / r.height - .5;
+      card.style.setProperty('--mx', (mx + .5) * 100 + '%'); card.style.setProperty('--my', (my + .5) * 100 + '%');
+      card.style.setProperty('--ry', (mx * 5).toFixed(2) + 'deg'); card.style.setProperty('--rx', (-my * 4).toFixed(2) + 'deg'); });
+    card.addEventListener('pointerleave', () => { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); });
+    if (lowData || reduce) return;   // the poster frame stays
+    new IntersectionObserver((es) => {
+      if (es[0].isIntersecting) { if (!v.src) { v.src = v.dataset.src; v.load(); } const p = v.play(); if (p) p.catch(() => {}); }
+      else if (v.src) v.pause();
+    }, { rootMargin: '200px' }).observe(card);
+    v.addEventListener('playing', () => card.classList.add('lit'), { once: true });
   });
+})();
+
+/* ---------- guides: Shiv's film plays 6 s full frame, settles into the first card, then scroll turns the spiral one guide at a time ---------- */
+(() => {
+  const sec = $('.bs'); if (!sec) return;
+  const stage = $('.bs-stage', sec), intro = $('.bs-intro', sec), iv = $('video', intro), helix = $('.bs-helix', sec);
+  const cards = $$('.bs-card', sec), posts = $$('.bs-post', sec), ticks = $$('.bs-rail i', sec);
+  const N = cards.length, STEP = 50 * Math.PI / 180, HOLD = 6, MORPH = 1.25;
+  const lowData = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
+  const still = /[?&]still/.test(location.search), fm = location.search.match(/[?&]bs=([\d.]+)/), fixed = fm ? +fm[1] : null;
+  const ease = (x) => 1 - Math.pow(1 - x, 4);
+  const hold = (t) => { const i = Math.floor(t), f = t - i, g = clamp((f - .22) / .56); return i + g * g * (3 - 2 * g); };
+  let p = 0, cur = -1, active = -1, seen = false, cw = 0, ch = 0, last = 0;
+  // intro: 0 waiting, 1 playing, 2 morphing, 3 done
+  let phase = (reduce || lowData || still || fixed != null) ? 3 : 0, t0 = 0, m = 0;
+  if (phase === 3) sec.classList.add('done');
+  const measure = () => { cw = cards[0].offsetWidth; ch = cards[0].offsetHeight; sec.style.setProperty('--ch', ch + 'px'); };
+  const progress = () => { const r = sec.getBoundingClientRect(), seg = (sec.offsetHeight - innerHeight) / N;
+    return { t: clamp(-r.top / seg, 0, N), pinned: r.top <= 2 && r.bottom >= innerHeight - 2 }; };
+  const setIntro = (k) => {   // k: 0 = fills the padded screen, 1 = sits exactly on card 1
+    const s = stage.getBoundingClientRect(), h = helix.getBoundingClientRect(), pad = parseFloat(getComputedStyle(sec).getPropertyValue('--pad')) || 16;
+    const a = { l: pad + 10, t: pad + 10, w: s.width - 2 * pad - 20, h: s.height - 2 * pad - 20, r: 26 };
+    const b = { l: h.left - s.left - cw / 2 + 8, t: h.top - s.top - ch / 2 + 8, w: cw - 16, h: ch - 16, r: 15 };
+    const L = (x, y) => x + (y - x) * k;
+    intro.style.setProperty('--il', L(a.l, b.l) + 'px'); intro.style.setProperty('--it', L(a.t, b.t) + 'px');
+    intro.style.setProperty('--iw', L(a.w, b.w) + 'px'); intro.style.setProperty('--ih', L(a.h, b.h) + 'px'); intro.style.setProperty('--ir', L(a.r, b.r) + 'px');
+  };
+  const place = () => {
+    const phone = innerWidth <= 860, R = cw * (phone ? .62 : .82), DY = ch * (phone ? .5 : .46);
+    cards.forEach((c, i) => {
+      const d = i - p, a = d * STEP, ad = Math.abs(d), front = (Math.cos(a) + 1) / 2;
+      c.style.setProperty('--x', (R * Math.sin(a)).toFixed(1) + 'px'); c.style.setProperty('--y', (d * DY).toFixed(1) + 'px');
+      c.style.setProperty('--z', (R * (Math.cos(a) - 1) - ad * 30).toFixed(1) + 'px');
+      c.style.setProperty('--a', (a * .3 * 180 / Math.PI).toFixed(2) + 'deg');
+      c.style.setProperty('--o', (clamp(.34 + .66 * front) * clamp(1.9 - ad * .28)).toFixed(3));
+      c.style.setProperty('--d', clamp((1 - front) * .55 + Math.min(ad, 1) * .2, 0, .75).toFixed(3));
+      c.style.zIndex = String(Math.round(front * 100) + (ad < .5 ? 50 : 0));
+      c.style.pointerEvents = ad < .3 ? 'auto' : 'none';
+    });
+    const k = Math.round(p);
+    if (k !== active) {
+      active = k;
+      posts.forEach((el, i) => el.classList.toggle('on', i === k));
+      ticks.forEach((el, i) => el.classList.toggle('on', i === k));
+      cards.forEach((c, i) => {
+        const v = c.querySelector('video'), img = c.querySelector('img'), near = Math.abs(i - k);
+        if (img) c.style.setProperty('--kb', near === 0 ? '1.12' : '1.04');
+        if (!v || lowData || reduce) return;
+        if (near <= 1 && !v.src) { v.src = v.dataset.src; v.load(); }
+        if (near === 0 && seen && phase === 3) { const pr = v.play(); if (pr) pr.catch(() => {}); } else if (v.src) v.pause();
+      });
+    }
+  };
+  const finish = () => {
+    phase = 3; sec.classList.add('done'); sec.style.setProperty('--pool', 1);
+    const v = cards[0].querySelector('video');
+    if (v) { if (!v.src) { v.src = v.dataset.src; } try { v.currentTime = iv.currentTime % (v.duration || 6); } catch (e) {} const pr = v.play(); if (pr) pr.catch(() => {}); }
+    iv.pause(); active = -1; cur = -1;
+  };
+  const tick = (now) => {
+    const dt = Math.min(.1, last ? (now - last) / 1000 : .016); last = now;
+    const { t, pinned } = progress();
+    if (phase === 0 && t > 1.05) { measure(); finish(); }
+    if (phase === 0 && pinned) { phase = 1; t0 = now; if (!iv.src) iv.src = iv.dataset.src; iv.currentTime = 0; const pr = iv.play(); if (pr) pr.catch(() => {}); }
+    if (phase === 1 && (now - t0) / 1000 >= HOLD) { phase = 2; t0 = now; measure(); }
+    if (phase === 2) { m = clamp((now - t0) / 1000 / MORPH); setIntro(ease(m)); if (m >= 1) finish(); }
+    if (phase < 2) setIntro(0);
+    const target = fixed != null ? fixed : (phase === 3 ? hold(clamp(t - 1, 0, N - 1)) : 0);
+    p = (reduce || still) ? target : lerp(p, target, 1 - Math.exp(-dt * 7.5));
+    if (Math.abs(p - target) < .0005) p = target;
+    if (p !== cur) { cur = p; place(); }
+    if (seen) requestAnimationFrame(tick);
+  };
+  iv.addEventListener('playing', () => { if (phase === 1) t0 = performance.now(); }, { once: true });   // the 6 s count from the first frame actually shown
+  measure(); place(); setIntro(0); if (phase === 3) sec.style.setProperty('--pool', 1);
+  addEventListener('resize', () => { measure(); cur = -1; active = -1; place(); if (phase < 2) setIntro(0); });
+  new IntersectionObserver((es) => {
+    const was = seen; seen = es[0].isIntersecting;
+    if (seen && !was) { active = -1; last = 0; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.load(); } requestAnimationFrame(tick); }
+    if (!seen) { cards.forEach((c) => { const v = c.querySelector('video'); if (v && v.src) v.pause(); }); if (phase === 1) { iv.pause(); phase = 0; } }
+  }, { rootMargin: '300px' }).observe(sec);
 })();
