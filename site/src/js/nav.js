@@ -89,10 +89,13 @@
   if (wc) wc.textContent = crumbs.length ? crumbs[crumbs.length - 1].textContent : here ? here.textContent : '';
   const head = main.querySelector('.head');
   let lastY = scrollY, sec = -1;
+  const ft = d.querySelector('footer.ft .ft-card');
   const tidy = s => (s.querySelector('span') || s).textContent.replace(/\s+/g, ' ').trim().replace(/\.$/, '');
   const onScroll = () => {
     const y = scrollY, dy = y - lastY; lastY = y;
     top.classList.toggle('compact', y > 8);
+    // phones: over the night footer the dock's glass turns dark, so it reads as glass there too, not a grey smear
+    if (ft) top.classList.toggle('on-ink', narrow() && ft.getBoundingClientRect().top < innerHeight - 40);
     if (P.some(p => p.open) || top.contains(d.activeElement) && d.activeElement !== d.body) return;
     const past = head ? head.getBoundingClientRect().bottom < 80 : y > innerHeight * .8;
     if (H.length >= 3 && past && !narrow()) {

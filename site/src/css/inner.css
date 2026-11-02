@@ -286,6 +286,11 @@ main .close a{display:inline-flex;align-items:center;height:48px;margin-top:var(
 main .close a:hover{background:var(--pressed)}
 main .close a:active,main .cta:active,.qstart a:active{transform:scale(var(--press-scale))}
 .close :focus-visible{outline-color:var(--on-action)}
+/* round 2: the close is a card set in the same 12 px frame as the footer card under it, so the page ends on two
+   matched pieces (Stripe, Linear), not a square band butting into a rounded one. The text stays on the grid. */
+.close{--cl-in:12px;margin-inline:calc(var(--cl-in) - var(--margin));margin-bottom:var(--cl-in);padding-inline:calc(var(--margin) - var(--cl-in));border-radius:32px}
+.sec.band+.close{margin-top:var(--cl-in)}
+@media (max-width:640px){.close{--cl-in:8px;border-radius:24px}}
 
 /* ---------- figures: the stat strip (Lumafield), tabular, a hairline over each ---------- */
 .figures{row-gap:var(--s-7)}
