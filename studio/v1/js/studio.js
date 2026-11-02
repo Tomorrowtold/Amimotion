@@ -301,7 +301,7 @@ if (simSec) {
         const v = c.querySelector('video'), img = c.querySelector('img'), near = Math.abs(i - k);
         if (img) c.style.setProperty('--kb', near === 0 ? '1.12' : '1.04');
         if (!v || lowData || reduce) return;
-        if (near <= 1 && !v.src) { v.src = v.dataset.src; v.load(); }
+        if (near <= 1 && !v.src && seen) { v.src = v.dataset.src; v.load(); }
         if (near === 0 && seen && phase === 3) { const pr = v.play(); if (pr) pr.catch(() => {}); } else if (v.src) v.pause();
       });
     }
@@ -331,7 +331,7 @@ if (simSec) {
   addEventListener('resize', () => { measure(); cur = -1; active = -1; place(); if (phase < 2) setIntro(0); });
   new IntersectionObserver((es) => {
     const was = seen; seen = es[0].isIntersecting;
-    if (seen && !was) { active = -1; last = 0; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.load(); } requestAnimationFrame(tick); }
+    if (seen && !was) { active = -1; last = 0; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.load(); } active = -1; requestAnimationFrame(tick); }
     if (!seen) { cards.forEach((c) => { const v = c.querySelector('video'); if (v && v.src) v.pause(); }); if (phase === 1) { iv.pause(); phase = 0; } }
   }, { rootMargin: '300px' }).observe(sec);
 })();

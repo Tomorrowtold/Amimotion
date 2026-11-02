@@ -1082,3 +1082,5 @@ html.tag-live .tag-fallback{opacity:0!important;transition:none}
 .cap h2 .ln:first-child span[data-b]{background:none}
 .cap .q-big.now,.cap .q-big{animation:none;background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--ink)}
 .cap .q-big:not(.lit){color:rgba(11,18,56,.3)}
+/* chapter bar: legible at rest (WCAG AA) */
+@media (min-width:901px){.rail a{opacity:1;color:#5a6280}.rail a.on{color:var(--ink)}}
