@@ -267,7 +267,7 @@ write("/products/", "AmIMotion products: AmIGo tag, AmIMo anchor, AmIHub",
                      "AmIMo anchors, fixed high on columns and walls, record when each tag's UWB pulse arrives and the angle it came from. "
                      "AmIHub software works out each position and keeps one live map that your team, your systems and AI assistants all read. "
                      "With AmIMo anchors, AmIHub places a tag down to ±10 cm in 3D. How close depends on your floor.",
-               trail=[HOW, ("Products", None)]),
+               trail=[HOW, ("Products", None)], media=render("family-31", "(max-width:1023px) 150vw, 100vw")),   # round 11 R3 on the sweep
           section(cards([
                       ("/products/amigo/", still("amigo", LINE), "AmIGo tag", "Screws or sticks onto the trolley. Sends a short pulse when it moves and sleeps when it stops."),
                       ("/products/amimo/", still("amimo", LINE), "AmIMo anchor", "Fixed to a column 3 to 8 m up. Needs only power, from DC or PoE."),
@@ -310,9 +310,7 @@ write("/technology/", "How AmIMotion locates a tag: UWB timing, angle and steel"
                      "Each AmIMo anchor in range records its time of arrival and its angle of arrival. AmIHub compares the times between anchors (time difference of arrival, TDoA) and the angles, and works out a 3D position. "
                      "With AmIMo anchors that is down to ±10 cm, typical. How close depends on your floor. AmIMotion is built on the FiRa and omlox specifications.",
                trail=[HOW, ("How it locates a tag", None)], actions=(("Positioning modes", "#modes"), ("Specifications", "/specs/")),
-               media=hallslot("hall-find", "One aisle of the model hall between two rows of racking, one trolley stopped behind the racks on a blue floor tint, its one blue trail from the press ending where it stands; two AmIMo blocks on the nearest columns. Everything else pale. "
-                          + HALL + " 16:9 crop centred on the racks (the homepage Find it frame, wider).", "cine",
-                          "A model factory floor. One trolley stopped between the racks is marked blue. A blue line shows its path and ends where it stopped.")),
+               media=render("hall-lines", "100vw")),   # round 11 R12, the hall line drawing
           section(vp("Light travels about 30 cm", "in a nanosecond.", "So the time a pulse takes to reach each anchor says how far it went. Small timing differences between anchors become a position."),
                   explain([("Time", "Each AmIMo anchor records when the pulse arrives. The differences between anchors place the tag. This is time difference of arrival, TDoA."),
                            ("Angle", "An antenna array in each AmIMo reads the direction the pulse came from, side to side and up and down. So fewer anchors fix a position, and height counts."),

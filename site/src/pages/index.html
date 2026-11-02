@@ -29,11 +29,13 @@ og: /assets/home/og-home.jpg
 
 <!-- S1b ±10 cm, the giant spec callout (M02, M18). The figure is set as text; build.py checks it against the claims register. -->
 <section class="spec" aria-labelledby="spec-title" data-view>
-  <!-- Stand-in for render job R2 (AmIGo macro on the debossed logo): a crop of the 7680 CAD studio still, bleeding off the right edge. -->
+  <!-- Render job R2 (round 11): the AmIGo macro on the debossed logo. The tag runs off the frame's right and bottom edges,
+       so the figure sits flush on the section's right and bottom edges and only ever moves further off them. -->
   <figure class="macro" aria-hidden="true">
     <picture>
-      <source type="image/avif" srcset="/assets/home/amigo-macro-1200.avif 1200w, /assets/home/amigo-macro-2000.avif 2000w, /assets/home/amigo-macro-3200.avif 3200w" sizes="(max-width:1023px) 120vw, 50vw">
-      <img src="/assets/home/amigo-macro-1200.webp" srcset="/assets/home/amigo-macro-1200.webp 1200w, /assets/home/amigo-macro-2000.webp 2000w, /assets/home/amigo-macro-3200.webp 3200w" sizes="(max-width:1023px) 120vw, 50vw" width="3200" height="2349" loading="lazy" decoding="async" alt="">
+      <source type="image/avif" srcset="/assets/home/amigo-macro-r2-800.avif 800w, /assets/home/amigo-macro-r2-1600.avif 1600w, /assets/home/amigo-macro-r2-2400.avif 2400w" sizes="(max-width:1023px) 110vw, 48vw">
+      <source type="image/webp" srcset="/assets/home/amigo-macro-r2-800.webp 800w, /assets/home/amigo-macro-r2-1600.webp 1600w, /assets/home/amigo-macro-r2-2400.webp 2400w" sizes="(max-width:1023px) 110vw, 48vw">
+      <img src="/assets/home/amigo-macro-r2-1600.webp" width="2400" height="1600" loading="lazy" decoding="async" alt="">
     </picture>
   </figure>
   <h2 id="spec-title" class="giant"><data value="0.1">±10 cm</data></h2>
@@ -56,7 +58,8 @@ og: /assets/home/og-home.jpg
 
   <!-- S2 Find it (M06, M07): a two-screen sticky stage. Scan (the before frame, checkpoint ticks only) gives way to
        Tag (every path drawn) as you scroll, and the frame tightens on the racks. The switch works with JavaScript off
-       (radio buttons). Stand-in pair: hero film frames 3.8 s (before) and 0.0 s (after), camera A, until render job R5. -->
+       (radio buttons). Render job R5 (round 11): before, after-clean with the trail SVG
+       drawn on --p (motion), after-trail with JavaScript off or reduced motion. -->
   <section class="find" id="find" aria-labelledby="find-title">
     <div class="sh">
       <h2 id="find-title"><span>A scan tells you where it last passed.</span> <span>A tag tells you where it stopped.</span></h2>
@@ -67,14 +70,22 @@ og: /assets/home/og-home.jpg
       <input type="radio" name="find-state" id="find-tag" class="vh" checked>
       <div class="find-pin">
         <figure class="find-frame">
-          <picture class="f-tag">
-            <source type="image/avif" srcset="/assets/home/hero-film/poster-4x5-800.avif 800w, /assets/home/hero-film/poster-4x5-1200.avif 1200w, /assets/home/hero-film/poster-4x5-1600.avif 1600w" sizes="(max-width:1023px) 100vw, 46vw">
-            <img src="/assets/home/hero-film/poster-4x5-1200.webp" srcset="/assets/home/hero-film/poster-4x5-800.webp 800w, /assets/home/hero-film/poster-4x5-1200.webp 1200w, /assets/home/hero-film/poster-4x5-1600.webp 1600w" sizes="(max-width:1023px) 100vw, 46vw" width="1600" height="2000" loading="lazy" decoding="async" alt="A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went. Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting.">
-          </picture>
           <picture class="f-scan">
-            <source type="image/avif" srcset="/assets/home/find/scan-4x5-800.avif 800w, /assets/home/find/scan-4x5-1200.avif 1200w, /assets/home/find/scan-4x5-1600.avif 1600w" sizes="(max-width:1023px) 100vw, 46vw">
-            <img src="/assets/home/find/scan-4x5-1200.webp" srcset="/assets/home/find/scan-4x5-800.webp 800w, /assets/home/find/scan-4x5-1200.webp 1200w, /assets/home/find/scan-4x5-1600.webp 1600w" sizes="(max-width:1023px) 100vw, 46vw" width="1600" height="2000" loading="lazy" decoding="async" alt="The same model factory floor with all colour gone. Only short blue ticks at the checkpoint desks show where things last passed.">
+            <source type="image/avif" srcset="/assets/home/find/before-45-800.avif 800w, /assets/home/find/before-45-1200.avif 1200w" sizes="(max-width:1023px) 100vw, 46vw">
+            <source type="image/webp" srcset="/assets/home/find/before-45-800.webp 800w, /assets/home/find/before-45-1200.webp 1200w" sizes="(max-width:1023px) 100vw, 46vw">
+            <img src="/assets/home/find/before-45-1200.webp" width="1200" height="1500" loading="lazy" decoding="async" alt="A model factory floor, all pale. Three short blue ticks mark where trolleys passed the scan desks.">
           </picture>
+          <picture class="f-tag f-still">
+            <source type="image/avif" srcset="/assets/home/find/after-trail-45-800.avif 800w, /assets/home/find/after-trail-45-1200.avif 1200w" sizes="(max-width:1023px) 100vw, 46vw">
+            <source type="image/webp" srcset="/assets/home/find/after-trail-45-800.webp 800w, /assets/home/find/after-trail-45-1200.webp 1200w" sizes="(max-width:1023px) 100vw, 46vw">
+            <img src="/assets/home/find/after-trail-45-1200.webp" width="1200" height="1500" loading="lazy" decoding="async" alt="The same floor. A blue line shows the path of one trolley into the aisle between the racks, where it stopped.">
+          </picture>
+          <picture class="f-tag f-draw">
+            <source type="image/avif" srcset="/assets/home/find/after-clean-45-800.avif 800w, /assets/home/find/after-clean-45-1200.avif 1200w" sizes="(max-width:1023px) 100vw, 46vw">
+            <source type="image/webp" srcset="/assets/home/find/after-clean-45-800.webp 800w, /assets/home/find/after-clean-45-1200.webp 1200w" sizes="(max-width:1023px) 100vw, 46vw">
+            <img src="/assets/home/find/after-clean-45-1200.webp" width="1200" height="1500" loading="lazy" decoding="async" alt="The same floor. A blue line shows the path of one trolley into the aisle between the racks, where it stopped.">
+          </picture>
+          <svg class="f-trail" viewBox="0 0 1200 1500" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke="#1f6bff" stroke-width="9.8" stroke-linecap="round" stroke-linejoin="round"><path d="M663.9 1030.2 L670.3 1028.5 L676.6 1026.8 L682.8 1025.2 L689.1 1023.6 L695.3 1021.9 L701.5 1020.3 L707.7 1018.7 L713.9 1017.1 L720.1 1015.4 L726.3 1013.8 L732.5 1012.2 L738.6 1010.6 L744.8 1009.0 L750.9 1007.4 L757.1 1005.7 L763.2 1004.1 L769.3 1002.5 L775.5 1000.9 L781.6 999.3 L787.7 997.7 L793.8 996.1 L799.8 994.5 L805.9 992.9 L812.0 991.4 L818.0 989.8 L824.1 988.2 L830.1 986.6 L836.2 985.0 L842.2 983.4 L848.2 981.9 L854.2 980.3 L860.2 978.7 L866.2 977.2 L872.2 975.6 L878.1 974.0 L884.1 972.5 L890.1 970.9 L896.0 969.3 L901.9 967.7 L907.7 966.0 L913.3 963.9 L918.6 961.5 L923.6 958.9 L928.6 956.2 L933.1 953.1 L937.2 949.6 L941.2 946.2 L944.6 942.3 L947.6 938.1 L950.2 933.8 L952.8 929.5 L954.6 924.8 L956.1 920.0 L957.2 915.1 L958.2 910.2 L958.8 905.2 L959.5 900.2 L960.1 895.3 L960.7 890.3 L961.3 885.4 L961.9 880.5 L962.5 875.7 L963.1 870.8 L963.7 866.0 L964.3 861.2 L964.9 856.4 L965.5 851.6 L966.1 846.9 L966.6 842.2 L967.2 837.5 L967.7 832.7 L967.9 828.0 L967.7 823.2 L967.2 818.3 L966.3 813.4 L965.1 808.6 L963.5 803.7 L961.5 798.8 L959.2 794.0 L956.6 789.2 L953.5 784.6 L950.2 780.0 L946.9 775.4 L943.6 770.9 L940.3 766.4 L937.0 761.8 L933.8 757.4 L930.5 752.9 L927.3 748.4 L924.1 744.0 L920.9 739.6 L917.7 735.2 L914.5 730.8 L911.4 726.5 L908.2 722.1 L905.1 717.8 L902.0 713.5 L898.9 709.2 L895.8 705.0 L892.7 700.7 L889.6 696.5 L886.6 692.3 L883.5 688.1 L880.5 683.9 L877.5 679.8 L874.5 675.6 L871.5 671.5 L868.5 667.4" pathLength="1" style="--a:0.000;--b:0.954"/><path d="M853.8 647.1 L850.9 643.1 L848.0 639.1 L845.1 635.1 L842.2 631.2 L839.3 627.2 L836.5 623.3" pathLength="1" style="--a:0.954;--b:1.000"/></g></svg>
         </figure>
         <div class="switch" role="group" aria-label="Scan or tag">
           <label for="find-scan">Scan</label><label for="find-tag">Tag</label>
@@ -116,14 +127,16 @@ og: /assets/home/og-home.jpg
 </section>
 
 <!-- S3 See where work waits (M05, M11, M16): the queue full bleed, the headline built word by word over the pale floor with
-     the amber queue set inline; then the copy slides over it on surface. Stand-in for render job R6: hall-waits (camera A). -->
+     the amber queue set inline; then the copy slides over it on surface. Render job R6 (round 11): hall-waits, and its 1:1 crop on phones. -->
 <section class="waits" id="waits" aria-labelledby="waits-title" data-view>
   <div class="waits-panel">
     <picture>
+      <source media="(max-width:700px)" type="image/avif" srcset="/assets/home/queue-1x1-800.avif 800w, /assets/home/queue-1x1-1600.avif 1600w, /assets/home/queue-1x1-2160.avif 2160w" sizes="100vw" width="2160" height="2160">
+      <source media="(max-width:700px)" type="image/webp" srcset="/assets/home/queue-1x1-800.webp 800w, /assets/home/queue-1x1-1600.webp 1600w, /assets/home/queue-1x1-2160.webp 2160w" sizes="100vw" width="2160" height="2160">
       <source type="image/avif" srcset="/assets/hall/hall-waits-800.avif 800w, /assets/hall/hall-waits-1600.avif 1600w, /assets/hall/hall-waits-2400.avif 2400w, /assets/hall/hall-waits-3840.avif 3840w" sizes="100vw">
-      <img src="/assets/hall/hall-waits-1600.webp" srcset="/assets/hall/hall-waits-800.webp 800w, /assets/hall/hall-waits-1600.webp 1600w, /assets/hall/hall-waits-2400.webp 2400w, /assets/hall/hall-waits-3840.webp 3840w" sizes="100vw" width="3840" height="2160" loading="lazy" decoding="async" alt="A model inspection station. One trolley is being worked on. Three trolleys in the queue in front of it and one pallet in a staging lane are marked amber because they are waiting.">
+      <img src="/assets/hall/hall-waits-1600.webp" srcset="/assets/hall/hall-waits-800.webp 800w, /assets/hall/hall-waits-1600.webp 1600w, /assets/hall/hall-waits-2400.webp 2400w, /assets/hall/hall-waits-3840.webp 3840w" sizes="100vw" width="3840" height="2160" loading="lazy" decoding="async" alt="A model factory floor. Three trolleys in the inspection queue and one pallet in a staging lane are marked amber because they are waiting.">
     </picture>
-    <h2 id="waits-title"><span style="--i:0">See</span> <span style="--i:1">where</span> <span style="--i:2">work</span> <img class="q" style="--i:3" src="/assets/home/queue-chip-240.webp" srcset="/assets/home/queue-chip-240.webp 240w, /assets/home/queue-chip-480.webp 480w" sizes="2.4em" width="480" height="240" alt="" loading="lazy" decoding="async"> <span style="--i:4">waits.</span></h2>
+    <h2 id="waits-title"><span style="--i:0">See</span> <span style="--i:1">where</span> <span style="--i:2">work</span> <img class="q" style="--i:3" src="/assets/home/queue-chip-240.webp" srcset="/assets/home/queue-chip-240.webp 240w, /assets/home/queue-chip-480.webp 480w" sizes="2.4em" width="480" height="301" alt="" aria-hidden="true" loading="lazy" decoding="async"> <span style="--i:4">waits.</span></h2>
   </div>
   <div class="waits-copy">
     <p class="lead">The map notes when each trolley or pallet enters a zone and when it leaves. You name the zones. You see how long each one has waited, while it is still waiting.</p>
@@ -136,8 +149,8 @@ og: /assets/home/og-home.jpg
   </div>
 </section>
 
-<!-- S4 Ask your floor (M08, M10): the page's one ink band. Each question lights its zone of the hall (a zoom on the
-     still until render job R4's zone masks land). Radio buttons, so it works with JavaScript off; no answer card, no data. -->
+<!-- S4 Ask your floor (M08, M10): the page's one ink band. Each question lights its zone of the hall (render job R4: the zone's
+     mask cuts a hole in a dark veil over the still, which zooms to the zone). Radio buttons, so it works with JavaScript off; no answer card, no data. -->
 <section class="ask" id="ask" aria-labelledby="ask-title">
   <input type="radio" name="ask-q" id="ask-1" class="vh" checked>
   <input type="radio" name="ask-q" id="ask-2" class="vh">
@@ -157,9 +170,11 @@ og: /assets/home/og-home.jpg
   </div>
   <figure class="ask-hall">
     <picture>
-      <source type="image/avif" srcset="/assets/hall/hall-all-3840.avif 3840w" sizes="100vw">
-      <img src="/assets/hall/hall-all-2400.webp" srcset="/assets/hall/hall-all-2400.webp 2400w, /assets/hall/hall-all-3840.webp 3840w" sizes="100vw" width="3840" height="2160" loading="lazy" decoding="async" alt="A model factory floor from above. Blue lines show where tagged trolleys and vehicles went. Three trolleys at inspection and one pallet in a staging lane are amber because they are waiting.">
+      <source type="image/avif" srcset="/assets/hall/hall-all-800.avif 800w, /assets/hall/hall-all-1600.avif 1600w, /assets/hall/hall-all-2400.avif 2400w, /assets/hall/hall-all-3840.avif 3840w" sizes="160vw">
+      <source type="image/webp" srcset="/assets/hall/hall-all-800.webp 800w, /assets/hall/hall-all-1600.webp 1600w, /assets/hall/hall-all-2400.webp 2400w, /assets/hall/hall-all-3840.webp 3840w" sizes="160vw">
+      <img src="/assets/hall/hall-all-2400.webp" width="3840" height="2160" loading="lazy" decoding="async" alt="A model factory floor from above. Blue lines show where tagged trolleys and vehicles went. Three trolleys at inspection and one pallet in a staging lane are amber because they are waiting.">
     </picture>
+    <span class="veil" aria-hidden="true"></span>
   </figure>
   <div class="ask-copy">
     <div>
@@ -171,7 +186,7 @@ og: /assets/home/og-home.jpg
 </section>
 
 <!-- S5 One system (M03, M09, M02): the family on one sweep with the giant names behind, the 7/5 mosaic, chip tabs and the
-     four-number strip. Stand-ins: the CAD pair still (render job R3), the CAD studio stills (R13), the hall crop for AmIHub. -->
+     four-number strip. Render job R3 (round 11): the family 3:1 on the sweep. Stand-ins: the CAD studio stills (R13), the hall crop for AmIHub. -->
 <section class="system" id="system" aria-labelledby="system-title">
   <div class="sh">
     <h2 id="system-title">Three parts work as one system.</h2>
@@ -179,8 +194,9 @@ og: /assets/home/og-home.jpg
   <div class="fam" data-view>
     <p class="names" aria-hidden="true"><span>AmIGo</span><span>AmIMo</span></p>
     <picture>
-      <source type="image/avif" srcset="/assets/home/pair-800.avif 800w, /assets/home/pair-1600.avif 1600w, /assets/home/pair-2400.avif 2400w" sizes="(max-width:1023px) 100vw, 70vw">
-      <img src="/assets/home/pair-1600.webp" srcset="/assets/home/pair-800.webp 800w, /assets/home/pair-1600.webp 1600w, /assets/home/pair-2400.webp 2400w" sizes="(max-width:1023px) 100vw, 70vw" width="2400" height="1600" loading="lazy" decoding="async" alt="The AmIGo tag and the AmIMo anchor side by side, both dark grey with amimotion on the cover.">
+      <source type="image/avif" srcset="/assets/home/family-31-1200.avif 1200w, /assets/home/family-31-2400.avif 2400w, /assets/home/family-31-3840.avif 3840w" sizes="(max-width:1023px) 150vw, 100vw">
+      <source type="image/webp" srcset="/assets/home/family-31-1200.webp 1200w, /assets/home/family-31-2400.webp 2400w, /assets/home/family-31-3840.webp 3840w" sizes="(max-width:1023px) 150vw, 100vw">
+      <img src="/assets/home/family-31-2400.webp" width="3840" height="1280" loading="lazy" decoding="async" alt="The AmIGo tag and the AmIMo anchor side by side at true size: a small dark grey tag with amimotion on its cover, and a larger dark grey box with a network port.">
     </picture>
   </div>
   <div class="parts-run">
@@ -230,10 +246,11 @@ og: /assets/home/og-home.jpg
 </section>
 
 <!-- S6 Start with one bay (M20): the offer as the headline beside the bay, then the first diagnostic question inline.
-     Stand-in for render job R7 (one bay, everything else pale): hall-waits-43, the inspection bay and its queue. -->
+     Render job R7 (round 11): one bay, 3:2 beside the copy; on phones the 4:5 crop, each with its own alt. -->
 <section class="start" id="start" aria-labelledby="start-title">
   <figure class="bay">
-    <picture><source type="image/avif" srcset="/assets/hall/hall-waits-43-800.avif 800w, /assets/hall/hall-waits-43-1600.avif 1600w, /assets/hall/hall-waits-43-2400.avif 2400w" sizes="(max-width:1023px) 100vw, 58vw"><img src="/assets/hall/hall-waits-43-1600.webp" srcset="/assets/hall/hall-waits-43-800.webp 800w, /assets/hall/hall-waits-43-1600.webp 1600w, /assets/hall/hall-waits-43-2400.webp 2400w" sizes="(max-width:1023px) 100vw, 58vw" width="2880" height="2160" loading="lazy" decoding="async" alt="A model inspection station. One trolley is being worked on. Three trolleys in the queue in front of it and one pallet in a staging lane are marked amber because they are waiting."></picture>
+    <picture class="bay-w"><source type="image/avif" srcset="/assets/home/bay-32-800.avif 800w, /assets/home/bay-32-1600.avif 1600w, /assets/home/bay-32-2400.avif 2400w" sizes="(max-width:1023px) 100vw, 58vw"><source type="image/webp" srcset="/assets/home/bay-32-800.webp 800w, /assets/home/bay-32-1600.webp 1600w, /assets/home/bay-32-2400.webp 2400w" sizes="(max-width:1023px) 100vw, 58vw"><img src="/assets/home/bay-32-1600.webp" width="2400" height="1600" loading="lazy" decoding="async" alt="The model factory floor, all pale except one inspection bay shown in colour with its paths, its waits and its two anchors."></picture>
+    <picture class="bay-t"><source type="image/avif" srcset="/assets/home/bay-45-800.avif 800w, /assets/home/bay-45-1280.avif 1280w" sizes="100vw"><source type="image/webp" srcset="/assets/home/bay-45-800.webp 800w, /assets/home/bay-45-1280.webp 1280w" sizes="100vw"><img src="/assets/home/bay-45-800.webp" width="1280" height="1600" loading="lazy" decoding="async" alt="A model inspection bay: one trolley at the station, its path in blue, and three trolleys waiting on amber in the queue."></picture>
   </figure>
   <div class="start-copy">
     <h2 id="start-title">Start with one bay.</h2>

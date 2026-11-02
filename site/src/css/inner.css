@@ -216,6 +216,9 @@ main [id]{scroll-margin-top:calc(var(--local) + var(--s-5))}
 .has-bleed .head-pic,.sec>.r169-pic{grid-column:1 / -1;margin:var(--rhythm-s) calc(-1 * var(--margin)) 0;overflow:hidden}
 .has-bleed .head-pic img,.sec>.r169-pic img{width:100%;height:auto;aspect-ratio:16 / 9;max-height:92svh;object-fit:cover}
 .sec>.r169-pic{margin-bottom:var(--s-7)}
+/* round 11 renders under the head: the family on its sweep (3:1, transparent) and the hall line drawing (16:10, transparent) keep their own ratio */
+.has-bleed .head-pic .family-31-pic img{aspect-ratio:3 / 1;max-height:none}
+.has-bleed .head-pic .hall-lines-pic img{aspect-ratio:16 / 10;max-height:none}
 @keyframes push{from{transform:scale(1)}to{transform:scale(1.06)}}
 @supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
   .has-bleed .head-pic img,.sec>.r169-pic img{animation:push linear both;animation-timeline:view();animation-range:cover 0% cover 100%}}}
@@ -396,6 +399,8 @@ main .qstart a:hover{background:var(--pressed)}
   .offer h1,.offer .words{grid-column:1 / -1;grid-row:auto}
   .offer .head-pic{grid-column:1 / -1;grid-row:auto;margin:var(--s-6) calc(-1 * var(--margin)) 0}
   .offer .head-pic img{aspect-ratio:4 / 3}
+  .offer .head-pic .bay-45-pic img{aspect-ratio:4 / 5;max-height:none}
+  .has-bleed .head-pic .family-31-pic img{width:150vw;max-width:none;margin-inline:-25vw}
   .prod .prod-stage{min-height:0;padding-block:var(--s-7) var(--s-5)}
   .prod-stage .pic{width:84vw}
   .prod-name{font-size:31vw}

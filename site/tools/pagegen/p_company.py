@@ -198,7 +198,7 @@ write("/pilot/", "How a pilot runs: one flow, one bay",
                      "AmIMotion surveys your floor and sets the anchor count. AmIGo tags go on the trolleys, bins and pallets in that flow, not on people. Your team uses the live map during the shift. "
                      "You see your own waits in one bay, and prove the numbers, before you decide on more.",
                trail=[START, ("How a pilot runs", None)], actions=(("Your pilot on one page", "/tools/pilot/"), ("Plan your first bay", "/diagnostic/")),
-               media=hallslot("hall-bay", f"{CAM}, the homepage screen 6 scene, 16:9: the whole hall pale, the inspection bay in full colour: one trolley inside the station on blue, three trolleys in the queue on amber, the two AmIMo anchors on the bay's columns.", "wide", BAY_ALT), offer=True),
+               media=render("bay-45", "(max-width:1023px) 100vw, 42vw"), offer=True),   # round 11 R7, the 4:5 crop
           # round 13 (Mercury, Formlabs): the diagnostic's first question, inline; each answer opens it with that answer chosen
           section(vp("Plan your first bay."),
                   qstart("What does your team look for?", [("carriers", "WIP carriers &amp; bins"), ("tools", "Tools &amp; fixtures"), ("vehicles", "Forklifts &amp; tuggers"),

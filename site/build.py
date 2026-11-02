@@ -314,6 +314,14 @@ JOB_GROUPS = [
     ("racks", ("Maintenance and OT", "IT and security", "Developers and integrators")),
 ]
 
+# round 11 R8 job crops: the manifest's alt for each (team/rounds/11-renders/manifest.md)
+JOB_ALT = {
+    "inspection": "A model inspection queue: three trolleys waiting on amber pads.",
+    "staging": "A model staging lane: one pallet waiting on an amber pad beside a blue path.",
+    "press": "A model press, with a trolley just out of it on a blue line.",
+    "racks": "Model rack rows and a forklift at the end of an aisle, with blue lines where things went.",
+}
+
 
 def footer_html():
     """Screen 7 of homepage-final.md: start from your job, four columns with the nav labels, the entity paragraph."""
@@ -322,7 +330,7 @@ def footer_html():
     def role(r):
         return f"<div><dt>{html.escape(r)}</dt><dd>" + ' <span aria-hidden="true">·</span> '.join(A(u, l) for l, u in roles[r]) + "</dd></div>"
     jobs = "".join(f'<li><picture><source type="image/avif" srcset="/assets/home/jobs/{c}-600.avif 600w, /assets/home/jobs/{c}-1200.avif 1200w" sizes="(max-width:560px) 100vw, (max-width:1023px) 50vw, 25vw">'
-                   f'<img src="/assets/home/jobs/{c}-600.webp" srcset="/assets/home/jobs/{c}-600.webp 600w, /assets/home/jobs/{c}-1200.webp 1200w" sizes="(max-width:560px) 100vw, (max-width:1023px) 50vw, 25vw" width="1200" height="900" loading="lazy" decoding="async" alt=""></picture>'
+                   f'<img src="/assets/home/jobs/{c}-600.webp" srcset="/assets/home/jobs/{c}-600.webp 600w, /assets/home/jobs/{c}-1200.webp 1200w" sizes="(max-width:560px) 100vw, (max-width:1023px) 50vw, 25vw" width="1200" height="900" loading="lazy" decoding="async" alt="{JOB_ALT[c]}"></picture>'
                    f'<dl class="roles">{"".join(role(r) for r in g)}</dl></li>' for c, g in JOB_GROUPS)
     cols = "".join(f'<div>{A(s["url"], s["label"], " class=\"hub\"")}<ul>' + "".join(f"<li>{A(u, l)}</li>" for l, u, _ in s["items"]) + "</ul></div>" for s in NAV["sections"])
     return (f'<footer class="foot ds">\n<h2>Start from your job.</h2>\n<ul class="jobs">{jobs}</ul>\n'
@@ -406,7 +414,7 @@ def build():
     # assets/intro (the old AI-made hero turn) is no longer shipped: nothing may use it
     # shipped: fonts, CAD stills, film files. Not shipped: assets/intro (the old AI-made turn), assets/scene (the dark
     # glowing scene stills, replaced by reserved slots in round 05), vendor (three.js, no longer loaded)
-    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav"):
+    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech"):
         if (SRC / "assets" / sub).exists(): shutil.copytree(SRC / "assets" / sub, DIST / "assets" / sub)
     shutil.copytree(SRC / "js", DIST / "assets" / "js", dirs_exist_ok=True)
     nav = (SRC / "js" / "nav.js").read_text()

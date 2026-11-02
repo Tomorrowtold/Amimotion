@@ -69,13 +69,14 @@ main a:hover{text-decoration-thickness:2px}
 .giant{position:relative;z-index:1;font-size:min(var(--size-giant),calc((100vw - 2 * var(--margin)) / 3.3));line-height:.86;letter-spacing:-.05em;white-space:nowrap}
 .giant data{display:block}
 .spec-line{position:relative;z-index:1;max-width:19em;margin:var(--s-6) 0 0;font-size:var(--size-lede);line-height:1.4;color:var(--ink);text-wrap:pretty}
-.macro{position:absolute;bottom:var(--s-5);right:-5vw;width:48vw;max-width:none}
+.macro{position:absolute;bottom:0;right:0;width:48vw;max-width:none;margin:0}
 .macro img{width:100%;height:auto;max-width:none}
-.motion .macro{transform:translateX(calc((.5 - var(--p)) * 6vw)) scale(calc(.96 + .1 * var(--p)));transform-origin:100% 100%}
+.motion .macro{transform:translateX(calc((1 - var(--p)) * 2vw)) scale(calc(1 + .06 * var(--p)));transform-origin:100% 100%}
 @media (max-width:1023px){
   .spec{min-height:0;padding-bottom:0;align-content:start}
-  .macro{order:3;position:relative;bottom:auto;right:auto;width:118vw;margin:var(--s-6) 0 0 auto;left:calc(var(--margin) + 4vw);transform:none}
-  .motion .macro{transform:translateX(calc((.5 - var(--p)) * 8vw))}
+  .macro{order:3;position:relative;bottom:auto;right:auto;width:100vw;margin:var(--s-6) 0 0 calc(-1 * var(--margin));transform:none}
+  .macro img{display:block}
+  .motion .macro{transform:translateX(calc((1 - var(--p)) * 3vw))}
 }
 
 /* ================= S1c the hall film, full bleed and sticky; S2 slides over it ================= */
@@ -98,7 +99,12 @@ main a:hover{text-decoration-thickness:2px}
 .find-pin{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:center}
 .find-frame{grid-column:1 / span 6;grid-row:1 / span 2;position:relative;aspect-ratio:4 / 5;max-height:calc(100svh - 2 * var(--s-6));overflow:hidden;border-radius:6px;background:var(--surface);justify-self:start;width:100%}
 .find-frame picture,.find-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.find-frame .f-scan{transition:clip-path 600ms var(--ease-ds);clip-path:inset(0 0 0 100%)}
+.find-frame .f-scan{z-index:2;transition:clip-path 600ms var(--ease-ds);clip-path:inset(0 0 0 100%)}
+.find-frame .f-trail{position:absolute;inset:0;width:100%;height:100%;z-index:1;display:none}
+.find-frame .f-draw{display:none}
+.motion .find-frame .f-still{display:none}
+.motion .find-frame .f-draw,.motion .find-frame .f-trail{display:block}
+.f-trail path{--s:clamp(0,(var(--d,1) - var(--a)) / (var(--b) - var(--a)),1);stroke-dasharray:1 1;stroke-dashoffset:calc(1 - var(--s));opacity:clamp(0,var(--s) * 1000,1)}
 :root:not(.motion) .find-run:has(#find-scan:checked) .f-scan{clip-path:inset(0 0 0 0)}
 .switch{grid-column:8 / span 5;grid-row:1;align-self:end;display:inline-flex;justify-self:start;padding:4px;border-radius:var(--radius-pill);background:var(--surface);box-shadow:inset 0 0 0 1px var(--hairline);margin-bottom:var(--s-7)}
 .switch label{min-width:88px;height:40px;padding:0 20px;display:grid;place-items:center;border-radius:var(--radius-pill);font:500 15px/1 var(--font-text);color:var(--ink-soft);cursor:pointer;transition:background-color var(--t-fast) var(--ease-ds),color var(--t-fast) var(--ease-ds)}
@@ -110,7 +116,8 @@ main a:hover{text-decoration-thickness:2px}
 .motion .find-pin{position:sticky;top:0;height:100svh;align-content:center;row-gap:0}
 .motion .find-frame{height:calc(100svh - 2 * var(--s-7));width:auto;max-width:100%}
 .motion .find-frame .f-scan{transition:none;clip-path:inset(0 0 0 calc(clamp(0,(var(--p) - .2) / .32,1) * 100%))}
-.motion .find-frame picture{--z:clamp(0,(var(--p) - .56) / .34,1);transform:scale(calc(1 + .35 * var(--z)));transform-origin:64% 20%}
+.motion .find-pin{--d:clamp(0,(var(--p) - .44) / .18,1)}
+.motion .find-frame picture,.motion .find-frame .f-trail{--z:clamp(0,(var(--p) - .56) / .34,1);transform:scale(calc(1 + .35 * var(--z)));transform-origin:65% 36%}
 .motion .find-copy p{opacity:clamp(.0,(var(--p) - var(--at)) / .08,1);transform:translateY(calc((1 - clamp(0,(var(--p) - var(--at)) / .08,1)) * 16px))}
 @media (max-width:1023px){
   .find-pin{display:block}
@@ -121,7 +128,8 @@ main a:hover{text-decoration-thickness:2px}
   .motion .find-frame{height:auto;width:calc(100% + 2 * var(--margin));max-width:none}
   .motion .find-frame .f-scan{transition:clip-path 600ms var(--ease-ds);clip-path:inset(0 0 0 100%)}
   .motion .find-run:has(#find-scan:checked) .f-scan{clip-path:inset(0 0 0 0)}
-  .motion .find-frame picture{transform:none}
+  .motion .find-frame picture,.motion .find-frame .f-trail{transform:none}
+  .motion .find-pin{--d:1}
   .motion .find-copy p{opacity:1;transform:none}
 }
 
@@ -192,10 +200,14 @@ main a:hover{text-decoration-thickness:2px}
 .ask:has(#ask-1:focus-visible) label[for=ask-1],.ask:has(#ask-2:focus-visible) label[for=ask-2],.ask:has(#ask-3:focus-visible) label[for=ask-3]{outline:2px solid var(--brand);outline-offset:3px}
 .ask-hall{position:relative;margin:0 var(--margin);aspect-ratio:16 / 9;overflow:hidden;border-radius:6px;background:var(--ground)}
 .ask-hall picture,.ask-hall img{width:100%;height:100%;object-fit:cover}
-.ask-hall picture{display:block;transform-origin:var(--zx,50%) var(--zy,88%);transform:scale(var(--zs,1.9));transition:transform 900ms var(--ease-ds),transform-origin 900ms var(--ease-ds)}
-.ask:has(#ask-1:checked) .ask-hall picture{--zx:44%;--zy:100%;--zs:1.5}
-.ask:has(#ask-2:checked) .ask-hall picture{--zx:60%;--zy:0%;--zs:1.6}
-.ask:has(#ask-3:checked) .ask-hall picture{--zx:48%;--zy:52%;--zs:1.7}
+.ask-hall picture,.ask-hall .veil{display:block;transform-origin:var(--zx,50%) var(--zy,88%);transform:scale(var(--zs,1.9));transition:transform 900ms var(--ease-ds),transform-origin 900ms var(--ease-ds)}
+.ask-hall .veil{position:absolute;inset:-1px;background:color-mix(in srgb,var(--ink) 58%,transparent);-webkit-mask:var(--m) 0 0 / 100% 100% no-repeat,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:var(--m) 0 0 / 100% 100% no-repeat exclude,linear-gradient(#000 0 0)}
+.ask:has(#ask-1:checked) .ask-hall{--m:url(/assets/home/ask/mask-inspection-queue-1920.png)}
+.ask:has(#ask-2:checked) .ask-hall{--m:url(/assets/home/ask/mask-racks-1920.png)}
+.ask:has(#ask-3:checked) .ask-hall{--m:url(/assets/home/ask/mask-press-line-1920.png)}
+.ask:has(#ask-1:checked) .ask-hall{--zx:44%;--zy:100%;--zs:1.5}
+.ask:has(#ask-2:checked) .ask-hall{--zx:59%;--zy:0%;--zs:1.6}
+.ask:has(#ask-3:checked) .ask-hall{--zx:0%;--zy:0%;--zs:1.6}
 .ask-copy{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);padding:var(--rhythm-s) var(--margin) 0}
 .ask-copy > div{grid-column:1 / span 5}
 .ask-copy p{max-width:32em}
@@ -211,8 +223,8 @@ main a:hover{text-decoration-thickness:2px}
 .system{padding:var(--rhythm-l) 0 var(--rhythm-m)}
 .fam{position:relative;margin:var(--s-7) 0 var(--rhythm-s);display:grid;place-items:center;overflow:clip}
 .fam .names{grid-area:1 / 1;margin:0;display:flex;flex-direction:column;align-items:center;font:600 26vw/.8 var(--font-display);letter-spacing:-.06em;color:color-mix(in srgb,var(--ink) 6%,var(--ground));white-space:nowrap;-webkit-user-select:none;user-select:none}
-.fam picture{grid-area:1 / 1;position:relative;width:min(70vw,1400px)}
-.fam img{width:100%;height:auto}
+.fam picture{grid-area:1 / 1;position:relative;width:100%}
+.fam img{display:block;width:100%;height:auto}
 .motion .fam .names span:first-child{transform:translateX(calc((.5 - var(--p)) * 14vw))}
 .motion .fam .names span:last-child{transform:translateX(calc((var(--p) - .5) * 14vw))}
 .motion .fam picture{transform:translateX(calc((.5 - var(--p)) * 3vw))}
@@ -251,7 +263,7 @@ main a:hover{text-decoration-thickness:2px}
 .spec-foot p{margin:0;font-weight:500}
 .spec-foot .more{margin-top:var(--s-4)}
 @media (max-width:1023px){
-  .fam picture{width:100%}
+  .fam img{width:150vw;max-width:none;margin-inline:-25vw}
   .mosaic{grid-template-columns:1fr 1fr;grid-template-rows:auto auto}
   .t-hub{grid-column:1 / -1;grid-row:auto}
   .t-go,.t-mo{aspect-ratio:3 / 2}
@@ -262,7 +274,8 @@ main a:hover{text-decoration-thickness:2px}
 /* ================= S6 Start with one bay: the offer beside the bay, the first question inline ================= */
 .start{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);background:var(--surface);padding:var(--rhythm-l) var(--margin);border-top:1px solid var(--hairline);align-items:start}
 .bay{grid-column:1 / span 7;position:sticky;top:var(--s-6);margin-left:calc(-1 * var(--margin))}
-.bay img{width:100%;height:auto;border-radius:0 6px 6px 0}
+.bay img{display:block;width:100%;height:auto;border-radius:0 6px 6px 0}
+.bay .bay-t{display:none}
 .start-copy{grid-column:8 / span 5;min-width:0}
 .start h2{font-size:var(--size-h2);line-height:1;letter-spacing:-.035em;margin-bottom:var(--s-6)}
 .start .lead{margin-bottom:var(--s-6)}
@@ -280,6 +293,10 @@ main a:hover{text-decoration-thickness:2px}
   .start{display:block}
   .bay{position:static;margin:0 calc(-1 * var(--margin)) var(--s-7)}
   .bay img{border-radius:0}
+}
+@media (max-width:700px){
+  .bay .bay-w{display:none}
+  .bay .bay-t{display:block}
   .first{margin-inline:calc(-1 * var(--s-2));padding:var(--s-6) var(--s-5)}
 }
 

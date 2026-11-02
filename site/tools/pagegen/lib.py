@@ -150,6 +150,27 @@ def still(name, sizes="(max-width:1023px) 100vw, 58vw", eager=False, alt=None):
             f'<img src="{stem}-{mid}.webp" width="{w}" height="{h}" {load} decoding="async" alt="{e(alt or a)}"></picture></figure>')
 
 
+# round 11 renders that ship outside assets/hall (team/rounds/11-renders/manifest.md): stem, widths, w, h, formats, alt
+RENDERS = {
+    "family-31": ("/assets/home/family-31", (1200, 2400, 3840), 3840, 1280, ("avif", "webp"),
+                  "The AmIGo tag and the AmIMo anchor side by side at true size: a small dark grey tag with amimotion on its cover, and a larger dark grey box with a network port."),
+    "bay-45": ("/assets/home/bay-45", (800, 1280), 1280, 1600, ("avif", "webp"),
+               "A model inspection bay: one trolley at the station, its path in blue, and three trolleys waiting on amber in the queue."),
+    "hall-lines": ("/assets/tech/hall-lines", (1600, 3200), 3200, 2000, ("png",),
+                   "A line drawing of the model factory floor seen from above: two rack rows, two presses, the inspection station, trolleys, columns and walls."),
+}
+
+
+def render(name, sizes, cls=""):
+    """A landed round 11 render as a <picture>: AVIF then WebP (or the one format it ships in) at its shipped widths."""
+    stem, widths, w, h, fmts, alt = RENDERS[name]
+    ss = lambda ext: ", ".join(f"{stem}-{x}.{ext} {x}w" for x in widths)
+    mid = widths[min(1, len(widths) - 1)] if len(widths) > 2 else widths[0]
+    src = "".join(f'<source type="image/{f}" srcset="{ss(f)}" sizes="{sizes}">' for f in fmts)
+    return (f'<figure class="pic render {name}-pic{(" " + cls) if cls else ""}"><picture>{src}'
+            f'<img src="{stem}-{mid}.{fmts[-1]}" width="{w}" height="{h}" loading="lazy" decoding="async" alt="{e(alt)}"></picture></figure>')
+
+
 def img(src, alt, w, h, ground="stone", ratio="photo", sizes=None, srcset=None):
     """Kept for old calls: a product still. Only the page-graded ladders are shipped now."""
     return still("amigo-side")
