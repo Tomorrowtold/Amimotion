@@ -63,8 +63,8 @@
     t.style.setProperty('--tp', '0%');
     const box = t.closest('[data-askdemo]'); box.classList.add('hb-arm');
     new IntersectionObserver((es, io) => { if (!es[0].isIntersecting) return; io.disconnect(); const t0 = performance.now();
-      const step = (n) => { const k = Math.min(1, (n - t0) / 1300); t.style.setProperty('--tp', (k * 100).toFixed(1) + '%'); if (k < 1) requestAnimationFrame(step); else box.classList.add('played'); };
-      requestAnimationFrame(step); }, { threshold: .35 }).observe(box);
+      const step = (n) => { const k = Math.min(1, (n - t0) / 900); t.style.setProperty('--tp', (k * 100).toFixed(1) + '%'); if (k < 1) requestAnimationFrame(step); else box.classList.add('played'); };
+      requestAnimationFrame(step); }, { rootMargin: '0px 0px -18% 0px' }).observe(box);
   });
   // live example feeds: a new line slides in every few seconds from the page's own <template>
   d.querySelectorAll('[data-feed]').forEach((box) => {

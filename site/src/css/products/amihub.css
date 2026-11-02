@@ -31,7 +31,7 @@
 .hb-ex{font:500 11px/1 var(--font-text);letter-spacing:.06em;text-transform:uppercase;color:var(--p-mute)}
 
 /* hero */
-.hb-hero{margin-top:calc(-1 * var(--bar));padding-top:calc(var(--bar) + clamp(56px,6.5vw,110px));overflow:hidden;
+.hb-hero{margin-top:calc(-1 * var(--bar));padding-top:calc(var(--bar) + clamp(48px,4.6vw,84px));overflow:hidden;
   background:radial-gradient(60% 50% at 70% 30%,rgba(40,60,160,.18),transparent 70%),#07080b}
 .hb-hero-words{position:relative;z-index:3}
 .hb-h1{margin-top:24px!important;font-size:clamp(2.7rem,1.2rem + 4.4vw,5.4rem);max-width:14em;line-height:.96;letter-spacing:-.05em}
@@ -51,7 +51,7 @@
 .hb-ghost:hover{color:#fff!important}.hb-ghost:hover::after{transform:translateX(3px) rotate(45deg)}
 
 /* the stage: the light is anchored to the screen's top edge (container units keep it on the edge at every width) */
-.hb-stage{position:relative;container-type:inline-size;margin-top:clamp(110px,11vw,170px)!important;--p-wrap:min(1280px,100% - 2 * clamp(12px,2.5vw,48px))}
+.hb-stage{position:relative;container-type:inline-size;margin-top:clamp(96px,7.4vw,124px)!important;--p-wrap:min(1280px,100% - 2 * clamp(12px,2.5vw,48px))}
 .hb-light{position:absolute;left:-2%;width:160%;top:-68.7cqw;z-index:2;pointer-events:none;mix-blend-mode:screen;-webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
 .hb-light img{width:100%;height:auto;max-width:none}
 .hb-pulse{position:absolute;left:50%;top:0;width:2px;height:90px;margin-left:-1px;border-radius:2px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff);filter:blur(.4px);opacity:0}
@@ -301,8 +301,8 @@
 @media (prefers-reduced-motion:no-preference){
   .hb-arm .hb-chat-body>*:not(:first-child){opacity:0;transform:translateY(10px);transition:opacity .6s var(--hb-ease),transform .6s var(--hb-ease)}
   .hb-arm.played .hb-chat-body>*{opacity:1!important;transform:none!important}
-  .hb-arm.played .hb-chat-body>:nth-child(2){transition-delay:.1s}.hb-arm.played .hb-chat-body>:nth-child(3){transition-delay:.55s}
-  .hb-arm.played .hb-chat-body>:nth-child(4){transition-delay:1.05s}.hb-arm.played .hb-chat-body>:nth-child(5){transition-delay:1.5s}.hb-arm.played .hb-chat-body>:nth-child(6){transition-delay:1.9s}
+  .hb-arm.played .hb-chat-body>:nth-child(2){transition-delay:.05s}.hb-arm.played .hb-chat-body>:nth-child(3){transition-delay:.3s}
+  .hb-arm.played .hb-chat-body>:nth-child(4){transition-delay:.6s}.hb-arm.played .hb-chat-body>:nth-child(5){transition-delay:.85s}.hb-arm.played .hb-chat-body>:nth-child(6){transition-delay:1.05s}
 }
 @media (max-width:700px){.hb-scope{display:none}.hb-msg{max-width:92%}}
 /* feature grid with glossy icons */
@@ -386,3 +386,13 @@
 /* the shared footer on AmIHub: black clay with the hub's blue light coming down, so the page ends in its own dark */
 .site-amihub .ft-card{--ft-ground:linear-gradient(180deg,#0b0d14 0%,#07080b 60%,#050608 100%);--ft-beam:rgba(77,124,255,.30);--ft-beam2:rgba(120,160,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 0 0 1px rgba(255,255,255,.04)}
 .site-amihub .ft-bay::after{background:#0a0b10}
+/* the feature icons, calmer: a flat glyph in one signal colour on a hairline tile (Linear's restraint), not glossy
+   gradient blobs with a glow. Same shapes; blue for what AmIHub does, amber only where a person waits or approves */
+.hb-ico,.i4,.j5,.hb-feats.light .hb-ico{width:44px;height:44px;border-radius:12px;filter:none;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.hb-ico::before{inset:10px;background:#66a5fa}
+.hb-ico::after,.i4::after{display:none}
+.i4::before,.j5::before{background:#ffb020}
+.j4::before{-webkit-mask:radial-gradient(circle,transparent 29%,#000 30%);mask:radial-gradient(circle,transparent 29%,#000 30%)}.j4::after{display:none}
+.hb-feats.light .hb-ico{background:#fff;box-shadow:inset 0 0 0 1px rgba(11,18,56,.1),0 1px 2px rgba(11,18,56,.06)}
+.hb-feats.light .hb-ico::before{background:#1f6bff}
+.hb-feats.light .j5::before{background:#ffb020}
