@@ -16,4 +16,4 @@
 /* The white breadcrumb sat on a bright ceiling; a soft scrim at the top of the photograph keeps it readable. */
 .head-pic::before{content:"";position:absolute;inset:0 0 auto 0;height:34%;background:linear-gradient(to bottom,rgba(20,26,46,.62),rgba(20,26,46,.28) 55%,transparent);pointer-events:none;z-index:1}
 .head .crumbs{text-shadow:0 1px 12px rgba(10,14,30,.45)}
-@media (max-width:1023px){.head-pic::before{height:30%;background:linear-gradient(to bottom,transparent 10%,rgba(20,26,46,.5) 45%,transparent)}}
+@media (max-width:1023px){.head-pic::before{height:34%;background:linear-gradient(to bottom,transparent 6%,rgba(20,26,46,.66) 38%,rgba(20,26,46,.3) 62%,transparent)}}
