@@ -246,6 +246,13 @@ KIT_HEAD = """<script type="speculationrules">{"prerender":[{"where":{"and":[{"s
 <script>addEventListener('pageswap',e=>{if(!e.viewTransition||!e.activation)return;const u=e.activation.entry.url,a=[...document.querySelectorAll('main a[href]')].find(x=>x.href===u);const h=document.querySelector('.head h1');if(h)h.style.viewTransitionName='';if(a&&a.getBoundingClientRect().bottom>0&&a.getBoundingClientRect().top<innerHeight)(a.querySelector('b')||a).style.viewTransitionName='k-title'});addEventListener('pagereveal',e=>{if(!e.viewTransition)return;const h=document.querySelector('.head h1');if(!h)return;h.style.viewTransitionName='k-title';e.viewTransition.finished.finally(()=>h.style.viewTransitionName='')})</script>"""
 
 
+# The two faces the first screen paints: the headline (Display) and the short answer under it (Text Regular), which is
+# the page's largest text and so its LCP. Preloaded, they arrive with the HTML instead of after the inline CSS is parsed.
+# The serif and the medium weight stay on font-display: swap behind metric-matched fallbacks (no shift).
+FONT_PRELOAD = "".join(f'<link rel="preload" href="/assets/fonts/{f}.woff2" as="font" type="font/woff2" crossorigin>\n'
+                       for f in ("AmISansDisplay-SemiBold", "AmISansText-Regular"))
+
+
 def styles(meta):
     """Every page carries its whole stylesheet in the first round trip: core.css (tokens, bar, footer) plus one
     template file (home.css, or inner.css with tool.css or diag.css where a page has a tool). No render-blocking
@@ -254,12 +261,12 @@ def styles(meta):
     # site under the AmIMotion nav, so it carries core.css plus its own two files, none of the inner-page kit
     if meta.get("layout") == "product":
         css = css_min("".join((SRC / "css" / f).read_text() for f in ["core.css", "products/base.css", f"products/{meta['id']}.css"]))
-        return ('<link rel="preload" href="/assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>\n'
+        return (FONT_PRELOAD +
                 f"<style>{css}</style>")
     files = ["core.css"] + (["home.css"] if meta.get("layout") == "home" else ["inner.css"] + [f"{x}.css" for x in meta.get("css", "").split()] + ["worlds.css", "kit.css"])
     if meta.get("layout") != "home" and meta.get("id") and (SRC / "css" / "id" / f"{meta['id']}.css").exists(): files.append(f"id/{meta['id']}.css")
     css = css_min("".join((SRC / "css" / f).read_text() for f in files))
-    return ('<link rel="preload" href="/assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>\n'
+    return (FONT_PRELOAD +
             f"<style>{css}</style>")
 
 
@@ -313,12 +320,26 @@ CHEV = '<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2
 LOOK = '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6"/><path d="m13 13 5 5"/></svg>'
 
 
+_SIZES = {}
+def webp_size(src):
+    """Pixel size of a WebP under src/assets, read from its header, so every <img> carries width and height."""
+    if src not in _SIZES:
+        d = (SRC / src.lstrip("/")).read_bytes()[:30]
+        if d[12:16] == b"VP8 ": w, h = (int.from_bytes(d[26:28], "little") & 0x3fff), (int.from_bytes(d[28:30], "little") & 0x3fff)
+        elif d[12:16] == b"VP8L": v = int.from_bytes(d[21:25], "little"); w, h = (v & 0x3fff) + 1, ((v >> 14) & 0x3fff) + 1
+        else: w, h = int.from_bytes(d[24:27], "little") + 1, int.from_bytes(d[27:30], "little") + 1
+        _SIZES[src] = (w, h)
+    return _SIZES[src]
+
+
 def still(u):
-    """The picture an item shows in a panel: a nav still (CAD on a pale ground) or the graded still its page opens on."""
+    """The picture an item shows in a panel: a nav still (CAD on a pale ground) or the graded still its page opens on.
+    The panel's frame sets the shape (aspect-ratio, object-fit), so width and height only tell the browser the ratio early."""
     k = PIC.get(u)
     if not k: return ""
     src = f"/assets/worlds/{k[2:]}-800.webp" if k.startswith("w:") else f"/assets/nav/{k}-640.webp"
-    return f'<span class="pic"><img src="{src}" alt="" loading="lazy" decoding="async"></span>'
+    w, h = webp_size(src)
+    return f'<span class="pic"><img src="{src}" width="{w}" height="{h}" alt="" loading="lazy" decoding="async"></span>'
 
 
 def panel_group(name, kind, items, cur, where):
