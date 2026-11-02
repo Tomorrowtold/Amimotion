@@ -73,8 +73,13 @@ ORG = {
     "legalName": ENTITY["legalName"], "url": SITE + "/", "logo": SITE + "/assets/img/AmIMotion_Logo.svg", "email": ENTITY["email"],
     "description": ENTITY["long"], "slogan": "Where work is. Where it waits.",
     "address": {"@type": "PostalAddress", "addressLocality": "Bengaluru", "addressRegion": "Karnataka", "addressCountry": "IN"},
-    "areaServed": "Worldwide", "knowsAbout": ENTITY["knowsAbout"], "sameAs": ENTITY["sameAs"],
+    "knowsAbout": ENTITY["knowsAbout"], "sameAs": ENTITY["sameAs"],
     "brand": [{"@type": "Brand", "name": n} for n in ("AmIGo", "AmIMo", "AmIHub")],
+    # round 07: the two people the founders approved, no third person (C2, C22); no areaServed (regions open, kit 02 Q18)
+    "founder": {"@type": "Person", "@id": SITE + "/#kaushal-kukkar", "name": "Kaushal Kukkar", "jobTitle": "Founder and CEO"},
+    "employee": [{"@type": "Person", "@id": SITE + "/#kaushal-kukkar", "name": "Kaushal Kukkar", "jobTitle": "Founder and CEO"},
+                 {"@type": "Person", "@id": SITE + "/#vivek-dham", "name": "Vivek Dham", "jobTitle": "CTO"}],
+    "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "email": ENTITY["email"], "availableLanguage": "en"},
 }
 
 # ---- structured data pulled from the visible page, so it can never drift from what people read ----
@@ -116,7 +121,7 @@ def page_schema(meta, url, body, titles):
     if url == "/":
         g.append({"@type": "WebSite", "@id": SITE + "/#site", "url": SITE + "/", "name": "AmIMotion", "inLanguage": "en-IN",
                   "description": ENTITY["short"], "publisher": {"@id": SITE + "/#org"}})
-    wp = {"@type": "WebPage", "@id": full + "#page", "url": full, "name": meta.get("title", ""), "description": meta.get("description", ""),
+    wp = {"@type": meta.get("page", "WebPage"), "@id": full + "#page", "url": full, "name": meta.get("title", ""), "description": meta.get("description", ""),
           "isPartOf": {"@id": SITE + "/#site"}, "about": {"@id": SITE + "/#org"}, "publisher": {"@id": SITE + "/#org"},
           "inLanguage": "en-IN", "dateModified": TODAY}
     if "short-answer" in body:   # the paragraph a voice assistant or answer engine should read out
@@ -126,7 +131,7 @@ def page_schema(meta, url, body, titles):
     if kind == "product":
         g.append({"@type": "Product", "@id": full + "#product", "name": meta.get("product", meta.get("title")), "description": meta.get("description"),
                   "brand": {"@type": "Brand", "name": "AmIMotion"}, "manufacturer": {"@id": SITE + "/#org"},
-                  "category": meta.get("category", "Real-time location system"), "image": SITE + meta.get("og", "/assets/img/og.jpg"),
+                  "category": meta.get("category", "Real-time location system"), "image": SITE + meta.get("og", "/assets/home/og-home.jpg"),
                   "additionalProperty": specs_of(body)})
     if kind == "software":
         g.append({"@type": "SoftwareApplication", "@id": full + "#software", "name": meta.get("product", "AmIHub"), "description": meta.get("description"),
@@ -136,13 +141,22 @@ def page_schema(meta, url, body, titles):
         g.append({"@type": "TechArticle", "@id": full + "#article", "headline": meta.get("title"), "description": meta.get("description"),
                   "author": {"@id": SITE + "/#org"}, "publisher": {"@id": SITE + "/#org"}, "about": {"@id": SITE + "/#org"},
                   "datePublished": meta.get("published", "2026-10-28"), "dateModified": TODAY, "mainEntityOfPage": full, "inLanguage": "en-IN"})
+    if meta.get("app"):   # a tool that runs in the browser (round 07 buying squad)
+        g.append({"@type": "WebApplication", "@id": full + "#app", "name": meta["app"], "url": full, "applicationCategory": "BusinessApplication",
+                  "operatingSystem": "Any modern browser", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": True, "publisher": {"@id": SITE + "/#org"}})
+    if meta.get("term"):  # a page that defines a term (round 07 product squad: /industrial-spatial-intelligence/)
+        g.append({"@type": "DefinedTerm", "@id": full + "#term", "name": meta["term"], "description": meta.get("description"), "inDefinedTermSet": SITE + "/glossary/"})
     if kind == "glossary":
         g.append({"@type": "DefinedTermSet", "@id": full, "name": "Glossary of industrial location terms", "hasDefinedTerm": glossary_of(body, full)})
     faqs = faq_items(body)
     if faqs:
         g.append({"@type": "FAQPage", "@id": full + "#faq", "mainEntity": faqs})
     g.extend(videos_of(body, full))
-    if url != "/":
+    trail = re.search(r'<nav class="crumbs"[^>]*>(.*?)</nav>', body, re.S)
+    if trail:   # the visible breadcrumb trail, so the BreadcrumbList matches what people read (nav sections, not URL folders)
+        crumbs = [(text_of(t), u) for u, t in re.findall(r'<a href="([^"]+)">(.*?)</a>', trail.group(1))] + [(LABEL.get(url, titles.get(url, "")), url)]
+        g.append({"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": n, "item": SITE + u} for i, (n, u) in enumerate(crumbs)]})
+    elif url != "/" and url != "/404.html":
         crumbs, acc = [("Home", "/")], "/"
         for seg in url.strip("/").split("/"):
             acc += seg + "/"
@@ -155,7 +169,7 @@ def head(meta, url, body, titles):
     t = meta.get("title", "AmIMotion")
     t = t if "AmIMotion" in t else f"{t} | AmIMotion"
     d = meta.get("description", "")
-    og = meta.get("og", "/assets/img/og.jpg")
+    og = meta.get("og", "/assets/home/og-home.jpg")
     robots = "noindex,nofollow" if meta.get("noindex") == "true" or not args.indexable else "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"
     e = html.escape
     return f"""<!doctype html>
@@ -292,7 +306,7 @@ def build():
     # assets/intro (the old AI-made hero turn) is no longer shipped: nothing may use it
     # shipped: fonts, CAD stills, film files. Not shipped: assets/intro (the old AI-made turn), assets/scene (the dark
     # glowing scene stills, replaced by reserved slots in round 05), vendor (three.js, no longer loaded)
-    for sub in ("fonts", "img", "home", "film", "photo"):
+    for sub in ("fonts", "img", "home", "film", "photo", "hall"):
         if (SRC / "assets" / sub).exists(): shutil.copytree(SRC / "assets" / sub, DIST / "assets" / sub)
     shutil.copytree(SRC / "js", DIST / "assets" / "js", dirs_exist_ok=True)
     pages = {}

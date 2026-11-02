@@ -34,7 +34,7 @@
     "AmIHub runs on an industrial PC inside your plant, with no internet needed. Interfaces: REST, MQTT, WebSocket and an omlox hub interface, to connect with MES, ERP, WMS, SCADA and BI.",
     "Built on the FiRa and omlox specifications. This is a statement about the specifications, not a certification.",
     "AmIHub has a built-in MCP server, so AI assistants can query live location data. Any action needs a person's approval. This is a described capability, shown in a demo on request.",
-    "Location alone does not show which job is on a carrier. AmIMotion links a tagged carrier to its job through an association with a start and an end.",
+    "Location alone does not show which job is on a carrier. You link each carrier to its job, in AmIHub or from your own system.",
     "Pilots start in one bay or one line and scale on the same AmIHub. A live demo is available on a discovery call."
   ]
 }

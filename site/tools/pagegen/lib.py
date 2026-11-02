@@ -45,10 +45,33 @@ def _id(text):
 
 
 # ---------------- pictures ----------------
-def slot(brief, ratio="photo", alt="", owner="Realism lab", code=None):
+# model-hall stills (round 08, team/rounds/08-pictures/stills-index.md): base -> (widths, intrinsic w, h)
+HALL_DIR = ROOT / "src" / "assets" / "hall"
+_HALL_SIZE = {"r169": ((800, 1600, 2400, 3840), 3840, 2160), "r43": ((800, 1600, 2400), 2880, 2160), "r32": ((800, 1600, 2400), 3240, 2160)}
+
+
+def hall(base, ratio, alt, sizes=None):
+    """A Sky Ground model-hall still as an AVIF/WebP ladder at its intrinsic ratio. Returns None if the files are not
+    in src/assets/hall yet, so the caller keeps its reserved slot."""
+    r = RATIO.get(ratio, "r43")
+    widths, w, h = _HALL_SIZE.get(r, _HALL_SIZE["r43"])
+    if base == "hall-trolley-43": w, h = 2400, 1800
+    widths = tuple(x for x in widths if (HALL_DIR / f"{base}-{x}.webp").exists())
+    if not widths or not (HALL_DIR / f"{base}-1600.webp").exists(): return None
+    sizes = sizes or ("100vw" if r == "r169" else "(max-width:1023px) 100vw, 58vw")
+    ss = lambda ext: ", ".join(f"/assets/hall/{base}-{x}.{ext} {x}w" for x in widths if (HALL_DIR / f"{base}-{x}.{ext}").exists())
+    return (f'<figure class="pic"><picture><source type="image/avif" srcset="{ss("avif")}" sizes="{sizes}">'
+            f'<source type="image/webp" srcset="{ss("webp")}" sizes="{sizes}">'
+            f'<img src="/assets/hall/{base}-1600.webp" width="{w}" height="{h}" loading="lazy" decoding="async" alt="{e(alt)}"></picture></figure>')
+
+
+def slot(brief, ratio="photo", alt="", owner="Realism lab", code=None, base=None, sizes=None):
     """A reserved picture: a --surface block at the final aspect ratio. The comment is the shot list entry:
-    asset code, brief, the alt text it will carry, and its owner. Swap the <div class="slot"> for a <picture>
-    ladder (see still()) when the asset exists; nothing else on the page moves."""
+    asset code, brief, the alt text it will carry, and its owner. With base=, the model-hall still of that name is
+    used as soon as its ladder is in src/assets/hall; until then the slot stays and nothing else on the page moves."""
+    if base:
+        got = hall(base, ratio, alt, sizes)
+        if got: return got
     if code is None:
         _n[0] += 1; code = f"P{_n[0]:02d}"
     r = RATIO.get(ratio, "r43")
@@ -66,6 +89,8 @@ STILLS = {
     "amigo": ("/assets/home/amigo-page", (800, 1600, 2400, 3840), 7680, 4198, "The AmIGo tag in dark grey, with amimotion debossed on its top cover and a screw ear at each end."),
     "amigo-side": ("/assets/home/amigo-side", (640, 1200, 1500), 1500, 1000, "The AmIGo tag, a small dark grey tag with amimotion on its cover."),
     "amimo": ("/assets/home/amimo-page", (640, 1200, 1800), 1800, 1200, "The AmIMo anchor, a dark grey box with a network port."),
+    # pair_scale.png (round 07 specs and company briefs): AmIGo and AmIMo at true scale
+    "pair": ("/assets/home/pair", (800, 1600, 2400), 2400, 1600, "The AmIGo tag in front of the larger AmIMo anchor, both dark grey."),
 }
 
 
@@ -306,3 +331,8 @@ def write(path, title, description, blocks, tone=None, **meta):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(src)
     return out
+
+
+def hallslot(base, *a, **k):
+    """slot(...) that becomes the model-hall still `base` once its ladder exists (round 08 stills index)."""
+    return slot(*a, base=base, **k)
