@@ -173,7 +173,7 @@ function drawHUD(x, p, t, cx, cy, z, span) {
     const kf = clamp((p - .25) / .04);
     if (kf > 0) {
       x.save(); x.globalAlpha = a * kf;
-      const g = x.createRadialGradient(TX, TY, 0, TX, TY, 120 * s); g.addColorStop(0, 'rgba(243,242,238,.8)'); g.addColorStop(.6, 'rgba(243,242,238,.4)'); g.addColorStop(1, 'rgba(243,242,238,0)'); x.fillStyle = g; x.fillRect(TX - 130 * s, TY - 130 * s, 260 * s, 260 * s);
+      const g = x.createRadialGradient(TX, TY, 0, TX, TY, 120 * s); g.addColorStop(0, 'rgba(238,243,251,.8)'); g.addColorStop(.6, 'rgba(238,243,251,.4)'); g.addColorStop(1, 'rgba(238,243,251,0)'); x.fillStyle = g; x.fillRect(TX - 130 * s, TY - 130 * s, 260 * s, 260 * s);
       [[.481, .484], [.6, .39], [.3, .6]].forEach(([u, v], i) => {
         const [X, Y] = P(u, v), ph = (t * .45 + i / 3) % 1, br = Math.sin(ph * 3.1416);
         x.globalAlpha = a * kf * (.4 + .6 * br); x.strokeStyle = `rgba(${INK},.85)`; x.lineWidth = 2 * s; x.setLineDash([3 * s, 6 * s]); x.lineDashOffset = -t * 10;
