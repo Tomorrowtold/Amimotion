@@ -1,0 +1,38 @@
+/* /products/amigo/: the object. An outlined name behind the tag, the tag turning a little as you scroll,
+   one giant figure in the second voice, the pulse strip, and the datasheet set like a manual. */
+.prod-name{color:transparent!important;-webkit-text-stroke:1.5px color-mix(in srgb,var(--ink) 16%,transparent);font-size:30vw!important}
+.prod-stage .pic img{mix-blend-mode:normal!important;filter:drop-shadow(0 40px 40px rgba(11,18,56,.28))}
+@supports (animation-timeline:scroll()){@media (prefers-reduced-motion:no-preference){
+  .prod-stage .pic{animation:ag-turn linear both;animation-timeline:scroll(root);animation-range:0 70vh}
+  @keyframes ag-turn{to{transform:translateY(-6%) rotate(-7deg) scale(.92)}}
+  .prod-name{animation:ag-name linear both;animation-timeline:scroll(root);animation-range:0 70vh}
+  @keyframes ag-name{to{letter-spacing:.02em;opacity:.4}}
+}}
+.head h1{text-align:center;grid-column:1 / -1;margin-inline:auto}
+.head h1 span+span{color:var(--w-accent)}
+.head .words{grid-column:3 / span 8;text-align:center}.head .words .lede{margin-inline:auto}
+.giant{grid-column:1 / -1!important;text-align:center;margin:var(--s-7) 0}
+.giant-num{font:400 clamp(6rem,2rem + 16vw,20rem)/.82 var(--font-serif)!important;letter-spacing:-.05em!important;margin:0}
+.giant-cond{max-width:30em;margin:var(--s-4) auto 0}
+.figures{grid-template-columns:repeat(3,minmax(0,1fr))!important;text-align:center}
+.figures dt{font:400 clamp(2.2rem,1.4rem + 2.2vw,3.6rem)/1 var(--font-serif)!important}
+/* the pulse strip */
+.ag-pulse{margin:var(--s-5) 0 0;background:var(--surface);border-radius:14px;padding:var(--s-4) var(--s-4) var(--s-3)}
+.ag-pulse svg{display:block;width:100%;height:auto}
+.ag-pulse .tick{stroke:var(--located);stroke-width:2;stroke-linecap:round}
+.ag-pulse .mv{fill:color-mix(in srgb,var(--located) 14%,transparent)}
+.ag-pulse .base{stroke:var(--ink);stroke-width:1.5}
+@supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
+  .ag-pulse .tick{animation:ag-tick linear both;animation-timeline:view();animation-range:entry 20% cover 60%}
+  @keyframes ag-tick{from{opacity:0;transform:scaleY(.2)}to{opacity:1;transform:none}}
+  .ag-pulse .tick{transform-box:fill-box;transform-origin:50% 100%}
+}}
+/* the datasheet as a manual: two columns of label and value */
+.spec tbody{display:grid;grid-template-columns:1fr 1fr;column-gap:var(--gutter)}
+.spec tr{display:grid;grid-template-columns:2fr 3fr;background:none!important;box-shadow:0 -1px 0 color-mix(in srgb,var(--ink) 12%,transparent)}
+.spec th{width:auto!important;font-weight:400!important;color:var(--ink-soft);font-size:var(--size-small)}
+.spec td{font-weight:500}
+@media (max-width:1023px){.spec tbody{grid-template-columns:1fr}.figures{grid-template-columns:1fr!important}.head .words{grid-column:1 / -1}}
+.head .words{display:block}
+.prod-stage .pic{width:min(40vw,880px)!important}
+.prod .prod-stage{min-height:min(56svh,40vw)}

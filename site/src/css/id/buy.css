@@ -1,0 +1,12 @@
+/* /how-to-buy/: a path. The four steps run as one horizontal track with a marker that moves along as you scroll. */
+.head h1{font-size:clamp(3rem,1.4rem + 5.2vw,7.6rem)}
+.head h1 span+span{color:var(--w-accent)}
+.head .words{display:block;grid-column:1 / span 7}
+.parts.c4,.points.c4{counter-reset:bs;gap:0!important;position:relative;padding-top:var(--s-6)}
+.points.c4::before{content:"";position:absolute;left:0;right:0;top:9px;height:4px;border-radius:2px;background:color-mix(in srgb,var(--w-accent) 20%,transparent)}
+.points.c4::after{content:"";position:absolute;left:0;top:0;width:22px;height:22px;border-radius:50%;background:var(--w-accent);box-shadow:0 0 0 6px var(--w-ground)}
+@supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
+  .points.c4::after{animation:bs-run linear both;animation-timeline:view();animation-range:entry 60% cover 70%}
+  @keyframes bs-run{to{left:calc(100% - 22px)}}
+}}
+.points.c4>li{background:none!important;padding:var(--s-5) var(--s-5) 0 0!important}

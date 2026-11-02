@@ -67,4 +67,28 @@ document.querySelectorAll('[data-sig="route"]').forEach(f=>{
     const k=stops.filter(s=>p>=s).length-1;legs.forEach((l,i)=>l.style.opacity=i<=k?1:.15);steps.forEach((s,i)=>s.classList.toggle('on',i<=k&&i>=k))};
   addEventListener('scroll',upd,{passive:true});addEventListener('resize',upd);upd();
 });
+/* FEED: zone events arrive at the top of the list, one every few seconds (AmIHub page) */
+document.querySelectorAll('[data-sig="feed"]').forEach(f=>{
+  const ol=f.querySelector('ol'),tpl=f.querySelector('template');if(still||!tpl)return;
+  const pool=[...tpl.content.children];let i=0,t;
+  const add=()=>{const li=pool[i++%pool.length].cloneNode(true);li.classList.add('new');ol.prepend(li);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>li.classList.remove('new')));while(ol.children.length>5)ol.lastElementChild.remove()};
+  inView(f,()=>{t=setInterval(add,2600)});
+});
+/* FIELDS: a zone event sentence and its record light up together, word by field */
+document.querySelectorAll('[data-sig="fields"]').forEach(f=>{
+  const all=[...f.querySelectorAll('[data-f]')],on=k=>all.forEach(e=>e.classList.toggle('on',e.dataset.f===k));
+  all.forEach(e=>{e.addEventListener('pointerenter',()=>on(e.dataset.f));e.addEventListener('pointerleave',()=>on(''))});
+  if(still)return;const ks=['tag','event','zone','time'];let i=0,t;
+  inView(f,()=>{t=setInterval(()=>{if(!f.matches(':hover'))on(ks[i++%ks.length])},1400)});
+});
+/* CLOCKS: each waiting trolley's clock keeps counting (solutions/wip) */
+document.querySelectorAll('.wip-clocks span[data-t]').forEach(c=>{
+  if(still)return;let t=+c.dataset.t;const f=()=>{const m=Math.floor(t/60),s=t%60;c.textContent=m+':'+String(s).padStart(2,'0')};
+  setInterval(()=>{t++;f()},1000);
+});
+/* REGISTER: drag across the photograph to line the live map up with the floor (industries/robotics) */
+document.querySelectorAll('.rb-reg').forEach(r=>{const i=r.querySelector('.rb-range');if(!i)return;
+  const set=()=>r.style.setProperty('--x',(100-+i.value)+'%');i.addEventListener('input',set);set();
+  if(still)return;inView(r,()=>{let v=0;const go=()=>{v+=1.6;if(v<+i.defaultValue){i.value=v;set();requestAnimationFrame(go)}else{i.value=i.defaultValue;set()}};i.value=0;set();go()})});
 })();

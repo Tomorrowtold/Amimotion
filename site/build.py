@@ -192,9 +192,9 @@ def head(meta, url, body, titles):
 <link rel="alternate" type="text/plain" title="AmIMotion for AI assistants" href="/llms.txt">
 {styles(meta)}
 <script>(()=>{{const h=document.documentElement;h.classList.replace('no-js','js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/[?&]still\\b/.test(location.search))h.classList.add('motion')}})()</script>
-<script type="application/ld+json">{page_schema(meta, url, body, titles)}</script>
+<script type="application/ld+json">{page_schema(meta, url, body, titles)}</script>{KIT_HEAD if meta.get("world") else ''}
 </head>
-<body class="ds"{(' data-world="' + e(meta["world"]) + '"') if meta.get("world") else ''}>"""
+<body class="{body_class(meta)}"{(' data-world="' + e(meta["world"]) + '"') if meta.get("world") else ''}{(' style="--cv:' + e(meta["cover"]) + '"') if meta.get("cover") else ''}>{'<div class="k-progress" aria-hidden="true"></div>' if 'progress' in meta.get('look','').split() else ''}"""
 
 
 def css_min(css):
@@ -203,11 +203,23 @@ def css_min(css):
     return re.sub(r"\s*([{};,>])\s*", r"\1", css).replace(";}", "}")
 
 
+def body_class(meta):
+    """The shared class plus the page's looks (front matter look: serif sidehead cards ...): kit.css restyles by them."""
+    return " ".join(["ds"] + ["look-" + x for x in meta.get("look", "").split()])
+
+
+# Inner pages: the next page is prerendered when a visitor's pointer rests on a link, and the headline of the page you
+# open grows out of the link you chose (cross-document view transitions; browsers without them just navigate).
+KIT_HEAD = """<script type="speculationrules">{"prerender":[{"where":{"and":[{"selector_matches":"main a[href], header a[href]"},{"not":{"selector_matches":"[href^='http'], [href*='#']"}}]},"eagerness":"moderate"}]}</script>
+<script>addEventListener('pageswap',e=>{if(!e.viewTransition||!e.activation)return;const u=e.activation.entry.url,a=[...document.querySelectorAll('main a[href]')].find(x=>x.href===u);const h=document.querySelector('.head h1');if(h)h.style.viewTransitionName='';if(a&&a.getBoundingClientRect().bottom>0&&a.getBoundingClientRect().top<innerHeight)(a.querySelector('b')||a).style.viewTransitionName='k-title'});addEventListener('pagereveal',e=>{if(!e.viewTransition)return;const h=document.querySelector('.head h1');if(!h)return;h.style.viewTransitionName='k-title';e.viewTransition.finished.finally(()=>h.style.viewTransitionName='')})</script>"""
+
+
 def styles(meta):
     """Every page carries its whole stylesheet in the first round trip: core.css (tokens, bar, footer) plus one
     template file (home.css, or inner.css with tool.css or diag.css where a page has a tool). No render-blocking
     request; the display face is preloaded."""
-    files = ["core.css"] + (["home.css"] if meta.get("layout") == "home" else ["inner.css"] + [f"{x}.css" for x in meta.get("css", "").split()] + ["worlds.css"])
+    files = ["core.css"] + (["home.css"] if meta.get("layout") == "home" else ["inner.css"] + [f"{x}.css" for x in meta.get("css", "").split()] + ["worlds.css", "kit.css"])
+    if meta.get("layout") != "home" and meta.get("id") and (SRC / "css" / "id" / f"{meta['id']}.css").exists(): files.append(f"id/{meta['id']}.css")
     css = css_min("".join((SRC / "css" / f).read_text() for f in files))
     return ('<link rel="preload" href="/assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>\n'
             f"<style>{css}</style>")
@@ -432,6 +444,16 @@ def build():
         if url_for(rel) == "/": body = wire_turntable(body)
         pages[url_for(rel) if rel.name != "404.html" else "/404.html"] = (meta, body)
     titles = {u: m.get("crumb") or m.get("title", "").split(" | ")[0] for u, (m, _) in pages.items()}
+    worlds = {u: m.get("world") for u, (m, _) in pages.items() if m.get("world")}
+    covers = {u: m.get("cover") for u, (m, _) in pages.items() if m.get("cover")}
+    def connect(body):
+        def li(a):
+            u = a.group(1)
+            if u not in worlds: return a.group(0)
+            cv = f' style="--cv:{covers[u]}"' if u in covers else ""
+            return f'<li data-to="{worlds[u]}"{cv}><a href="{u}"'
+        return re.sub(r'<nav class="related[^"]*".*?</nav>', lambda m: re.sub(r'<li><a href="([^"#]+)"', li, m.group(0)), body, flags=re.S)
+    pages = {u: (m, connect(b) if m.get("world") else b) for u, (m, b) in pages.items()}
     check_home(pages["/"][1])
 
     public = []

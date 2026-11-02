@@ -3,7 +3,10 @@ title: AmIHub for developers: REST, MQTT, WebSocket and MCP
 description: Build on AmIHub: REST queries, MQTT and WebSocket events, an omlox hub interface and a built-in MCP server, with API keys, roles, TLS and audit logs.
 crumb: For developers
 type: article
-scripts: km
+scripts: km worlds
+world: steel
+id: developers
+look: norule
 -->
 <div data-km class="head">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true"> / </span><a href="/platform/">How it works</a><span aria-hidden="true"> / </span><span aria-current="page">For developers</span></nav>
@@ -23,7 +26,12 @@ scripts: km
 
 <section class="sec" aria-labelledby="a-zone-event-in-words">
 <h2 id="a-zone-event-in-words"><span>A zone event, in words.</span></h2>
-<div class="prose"><p>When a tagged trolley enters a zone, AmIHub records an event. It names the tag, the zone, the kind of event (entered, left, idle or dwell) and the time. When the trolley leaves, a second event closes the visit, so the wait is the time between them. You can take these events as they happen over MQTT or WebSocket, or ask AmIHub for them by time window over REST.</p><p>Link each trolley to the job it carries, in AmIHub or from your own system. AmIHub then reports the wait against that job. Your MES stays in charge of the job itself.</p></div>
+<div class="dv-event" data-sig="fields" aria-hidden="true"><div class="dv-say"><span data-f="tag">T-114</span> <span data-f="event">entered</span> <span data-f="zone">Inspection</span> at <span data-f="time">09:12</span>.</div><div class="dv-code">{
+  <span data-f="tag"><span class="k">"tag"</span>: <span class="s">"T-114"</span></span>,
+  <span data-f="zone"><span class="k">"zone"</span>: <span class="s">"Inspection"</span></span>,
+  <span data-f="event"><span class="k">"event"</span>: <span class="s">"entered"</span></span>,
+  <span data-f="time"><span class="k">"time"</span>: <span class="s">"09:12:04"</span></span>
+}</div><p class="dv-cap">Example. Field names for your site come with the datasheets.</p></div><div class="prose"><p>When a tagged trolley enters a zone, AmIHub records an event. It names the tag, the zone, the kind of event (entered, left, idle or dwell) and the time. When the trolley leaves, a second event closes the visit, so the wait is the time between them. You can take these events as they happen over MQTT or WebSocket, or ask AmIHub for them by time window over REST.</p><p>Link each trolley to the job it carries, in AmIHub or from your own system. AmIHub then reports the wait against that job. Your MES stays in charge of the job itself.</p></div>
 </section>
 
 <section class="sec has-lead" aria-labelledby="ai-assistants-with-limits">

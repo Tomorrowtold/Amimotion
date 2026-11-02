@@ -4,10 +4,13 @@ description: An AmIGo tag sends a UWB pulse. AmIMo anchors time it and read its 
 crumb: How it locates a tag
 type: article
 scripts: inner km
+world: steel
+id: technology
+look: serif-all progress dropcap numerals norule close-paper
 -->
 <nav class="local sections" aria-label="How it locates a tag"><a class="local-name" href="#page-title">How it locates a tag</a><ul><li><a href="#light-travels-about-30-cm">Time and angle</a></li><li><a href="#steel-and-racking">Steel and racking</a></li><li><a href="#when-something-goes-quiet">When something goes quiet</a></li><li><a href="#modes">Positioning modes</a></li><li><a href="#open-standards">Open standards</a></li></ul><a class="cta pill" href="/contact/">Book a call</a></nav>
 
-<div data-km class="head has-bleed">
+<div data-km class="head">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true"> / </span><a href="/platform/">How it works</a><span aria-hidden="true"> / </span><span aria-current="page">How it locates a tag</span></nav>
 <h1 id="page-title"><span>How AmIMotion locates a tag.</span></h1>
 <div class="words"><p class="lede">A tag sends a pulse a few nanoseconds long. Anchors note when it arrives and where it came from. AmIHub works out the spot.</p><p class="short-answer">AmIMotion locates tags with ultra-wideband (UWB) radio, to IEEE 802.15.4z. An AmIGo tag sends a pulse a few nanoseconds long. Each AmIMo anchor in range records its time of arrival and its angle of arrival. AmIHub compares the times between anchors (time difference of arrival, TDoA) and the angles, and works out a 3D position. With AmIMo anchors that is down to ±10 cm, typical. How close depends on your floor. AmIMotion is built on the FiRa and omlox specifications.</p><p class="more"><a href="#modes">Positioning modes</a><span class="sep" aria-hidden="true">·</span><a href="/specs/">Specifications</a></p></div>

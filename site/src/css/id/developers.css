@@ -1,0 +1,26 @@
+/* /developers/: the terminal. The one dark page in the site. Code-first, calm, one example event taken apart. */
+body.ds[data-world]{background:#070b1a}
+main{--ink:#e9eef8;--ink-soft:#9aa6c7;--surface:#0f1530;--link:#8fb4ff;--hairline:rgba(255,255,255,.1);color:var(--ink)}
+main .crumbs,main .crumbs a{color:#7f8bb0}
+.head h1{font-size:clamp(3rem,1.4rem + 5vw,7rem)}
+.head h1 span+span{color:#8fb4ff}
+.head .short-answer{background:#0f1530!important;color:#dfe6f7!important;box-shadow:none!important}
+.sec>h2 span+span{color:#7f8bb0}
+.points>li{background:#0f1530;border-radius:12px;padding:var(--s-5)}
+.points h3{font:500 1rem/1.3 ui-monospace,"SF Mono",Menlo,monospace!important;color:#8fb4ff;letter-spacing:0!important}
+.compare tbody tr{background:none!important;box-shadow:0 -1px 0 rgba(255,255,255,.08)}
+.compare tbody th{font:500 1rem/1.3 ui-monospace,"SF Mono",Menlo,monospace!important;color:#fff}
+.compare td{color:#c2cbe3!important}
+.dv-event{grid-column:1 / -1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s-3);margin:0 0 var(--s-7)}
+.dv-event>div{background:#0f1530;border-radius:14px;padding:var(--s-6) var(--s-5)}
+.dv-say{font:600 clamp(1.5rem,1rem + 1.6vw,2.4rem)/1.25 var(--font-display);letter-spacing:-.01em}
+.dv-say span{border-radius:6px;padding:0 .12em;transition:background .25s,color .25s;cursor:default}
+.dv-code{font:500 15px/1.75 ui-monospace,"SF Mono",Menlo,monospace;color:#c2cbe3;white-space:pre;overflow:auto}
+.dv-code span{border-radius:4px;transition:background .25s,color .25s}
+.dv-code .k{color:#8fb4ff}.dv-code .s{color:#ffc35a}
+.dv-event [data-f].on{background:rgba(31,107,255,.28);color:#fff}
+.dv-cap{grid-column:1 / -1;font-size:13px;color:#7f8bb0}
+.band{background:#0b1024!important}
+.band .faq details{background:#0f1530!important}
+.close{background:#1f6bff}
+@media (max-width:1023px){.dv-event{grid-template-columns:1fr}}

@@ -1,0 +1,3 @@
+/* /glossary/: a dictionary. Terms in the serif, definitions beside them, the letters as running heads. */
+.terms dt,.terms h3,.term-group h3{font-family:var(--font-serif)!important;font-weight:400!important;font-size:1.6rem!important;letter-spacing:-.01em}
+.term-group h2{font:400 clamp(4rem,2rem + 5vw,8rem)/.8 var(--font-serif)!important;color:var(--w-accent)}
