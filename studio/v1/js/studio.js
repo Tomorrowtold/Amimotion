@@ -17,40 +17,34 @@ requestAnimationFrame(() => setTimeout(() => { $('#h1').classList.add('in'); $$(
 const mb = $('#menuBtn'), sheet = $('#sheet') || { hidden: true };
 if (mb) mb.addEventListener('click', () => { const o = mb.getAttribute('aria-expanded') !== 'true'; mb.setAttribute('aria-expanded', o); sheet.hidden = !o; });
 
-/* ---------- smooth scroll (wheel only, desktop) ---------- */
-let target = scrollY, cur = scrollY, wheeling = false;
-if (fine && !reduce) {
-  addEventListener('wheel', (e) => {
-    if (e.ctrlKey) return;
-    e.preventDefault();
-    if (document.documentElement.classList.contains('sim-lock')) return; // the planner is open: the page stays put
-    if (!wheeling) { target = cur = scrollY; }
-    wheeling = true;
-    target = clamp(target + e.deltaY * (e.deltaMode === 1 ? 32 : 1), 0, document.documentElement.scrollHeight - innerHeight);
-  }, { passive: false });
-  addEventListener('keydown', () => { wheeling = false; });
-  addEventListener('pointerdown', () => { wheeling = false; });
-}
-
-/* ---------- the film settles on a chapter when the visitor stops scrolling ---------- */
-let lastDir = 1, prevY = scrollY; const FINE = matchMedia('(pointer:fine)').matches;
-let settleT = 0; const STILL = /[?&]still\b/.test(location.search); // screenshots: no settling
-const settle = () => {
-  if (reduce || !storySec || wheeling || STILL) return;
-  const top = storySec.getBoundingClientRect().top + scrollY, len = storySec.offsetHeight - innerHeight, y = scrollY, p = (y - top) / len;
-  if (drawBridge && y < top - 2) return; // the landing is driven by the hand alone: no auto-scroll
-  if (p < -.12 || p > .985) return;
-  const nb = +storySec.dataset.beats || 7; const rests = [0, ...Array.from({ length: nb }, (_, i) => (i + .78) / nb)];
-  // settle only forward in the direction the visitor was going, and only when the next rest is close: never pull back
-  if (!FINE) return;
-  const ahead = rests.filter((r) => lastDir > 0 ? r >= p - .002 : r <= p + .002); if (!ahead.length) return;
-  const best = lastDir > 0 ? Math.min(...ahead) : Math.max(...ahead);
-  if (Math.abs(best - p) * nb > .55) return;
-  const to = top + best * len; if (Math.abs(to - y) < 6) return;
-  target = to; cur = y; wheeling = true;
+/* ---------- scroll: the browser's own, everywhere. One exception: the first scroll in the hero glides straight into the film ---------- */
+let wheeling = false; const STILL = /[?&]still\b/.test(location.search); // screenshots: no glide
+const glide = { on: false, to: 0 };
+const filmStart = () => { const s = storySec; if (!s) return 0; const top = s.getBoundingClientRect().top + scrollY, len = s.offsetHeight - innerHeight, nb = +s.dataset.beats || 19; return Math.round(top + len * (.78 / nb)); };
+const glideTo = (to, ms = 1050) => {
+  if (glide.on) return; glide.on = true; const from = scrollY, t0 = performance.now(); document.documentElement.classList.add('gliding');
+  const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const step = (now) => { const k = Math.min(1, (now - t0) / ms); scrollTo(0, from + (to - from) * ease(k)); if (k < 1) requestAnimationFrame(step); else { glide.on = false; document.documentElement.classList.remove('gliding'); } };
+  requestAnimationFrame(step);
 };
-addEventListener('touchstart', () => { wheeling = false; clearTimeout(settleT); }, { passive: true });
-addEventListener('scroll', () => { const dy = scrollY - prevY; if (dy && !wheeling) lastDir = Math.sign(dy); prevY = scrollY; clearTimeout(settleT); if (!wheeling) settleT = setTimeout(settle, 240); }, { passive: true });
+const inHero = (dir) => { const fs = filmStart(); return dir > 0 ? scrollY < fs - 4 : scrollY > 4 && scrollY <= fs + 4; };
+if (!reduce && !STILL) {
+  addEventListener('wheel', (e) => {
+    if (e.ctrlKey || document.documentElement.classList.contains('sim-lock')) return;
+    if (glide.on) { e.preventDefault(); return; }
+    const dir = Math.sign(e.deltaY); if (!dir || !inHero(dir)) return;
+    e.preventDefault(); glideTo(dir > 0 ? filmStart() : 0, dir > 0 ? 1050 : 800);
+  }, { passive: false });
+  addEventListener('keydown', (e) => {
+    const dir = ['ArrowDown', 'PageDown', ' '].includes(e.key) ? 1 : ['ArrowUp', 'PageUp'].includes(e.key) ? -1 : 0;
+    if (!dir || e.target.closest('input,textarea,select,button,[contenteditable]')) return;
+    if (glide.on) { e.preventDefault(); return; }
+    if (inHero(dir)) { e.preventDefault(); glideTo(dir > 0 ? filmStart() : 0); }
+  });
+  let ty0 = null;
+  addEventListener('touchstart', (e) => { ty0 = e.touches[0].clientY; }, { passive: true });
+  addEventListener('touchmove', (e) => { if (glide.on) { e.preventDefault(); return; } if (ty0 == null) return; const dy = ty0 - e.touches[0].clientY; if (Math.abs(dy) < 12) return; const dir = Math.sign(dy); if (inHero(dir)) { e.preventDefault(); ty0 = null; glideTo(dir > 0 ? filmStart() : 0, 900); } }, { passive: false });
+}
 
 /* ---------- cursor ---------- */
 const cursor = $('#cursor');
@@ -180,7 +174,6 @@ const bar = $('#bar') || document.createElement('i'); let lastY = 0;
 
 /* ---------- main loop ---------- */
 function frame(t) {
-  if (wheeling) { cur = lerp(cur, target, .11); if (Math.abs(target - cur) < .5) { cur = target; wheeling = false; clearTimeout(settleT); settleT = setTimeout(settle, 240); } scrollTo(0, cur); }
   const y = scrollY;
   bar.classList.toggle('scrolled', y > 20);
   bar.classList.toggle('hide', y > innerHeight * 1.2 && y > lastY + 2 && sheet.hidden);
@@ -201,10 +194,16 @@ requestAnimationFrame(frame);
 
 /* ---------- progressive 3D: after first paint and idle ---------- */
 const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
+// the hero's tag starts at once, so it is there on the very first visit; the fallback picture only shows if it cannot run
+const tagFb = $('#tagFallback');
+if (!slow && !reduce && window.WebGLRenderingContext) {
+  document.documentElement.classList.add('tag-live');
+  import('./tag.js').then((m) => m.init($('#tagGL'), tagFb, $('#hero'))).catch(() => document.documentElement.classList.remove('tag-live'));
+  setTimeout(() => { if (!$('#tagGL').classList.contains('ready')) document.documentElement.classList.remove('tag-live'); }, 4000);
+}
 addEventListener('load', () => idle(() => {
   startGL();
   if (slow || reduce) return;
-  import('./tag.js').then((m) => m.init($('#tagGL'), $('#tagFallback'), $('#hero'))).catch(() => {});
   // the three parts, live from CAD, once the visitor is near them
   const knStage = kn && kn.querySelector('.kn-stage');
   if (knStage && window.WebGLRenderingContext) { const o = new IntersectionObserver((es) => { if (es[0].isIntersecting) { o.disconnect(); import('./products3d.js').then((m) => m.mount(knStage, kn)).catch((e) => console.warn(e)); } }, { rootMargin: '120% 0px' }); o.observe(knStage); }

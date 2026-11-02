@@ -1020,3 +1020,65 @@ html.sim-lock{overflow:hidden}
 .kn-3d .kn-shot.kn-hub{z-index:3}
 .kn-3d .kn-shot.kn-hub .kn-screen{transform:perspective(1600px) rotateX(7deg) rotateY(-9deg);box-shadow:0 0 0 1px rgba(11,18,56,.06),0 60px 90px -50px rgba(30,40,110,.65),0 18px 30px -18px rgba(30,40,110,.3)}
 .kn-3d .kn-shot.kn-hub.on .kn-screen{transition:transform 1.1s var(--ease-out)}
+
+/* ---------- explainer v2: the words as instrument, each line tied to its picture ---------- */
+.story{height:calc(19 * 44svh + 100svh)}
+@media (pointer:fine) and (min-width:901px){.story{height:calc(19 * 34svh + 100svh)}}
+.cap .h2{letter-spacing:-.045em;line-height:.97}
+.cap p{max-width:24em}
+/* the lines of each passage stand one under another, like readings */
+.cap p>[data-b]{display:block;position:relative;padding:.2em 0 .2em 1.15em;opacity:1!important;color:rgba(11,18,56,.26);transition:color .5s var(--ease)}
+.cap p>[data-b]::before{content:"";position:absolute;left:0;top:calc(.2em + .72em);width:.62em;height:1.5px;border-radius:1px;background:rgba(11,18,56,.2);transform-origin:0 50%;transform:scaleX(.45);transition:transform .6s var(--ease-out),background-color .4s}
+.cap p>[data-b].past{color:rgba(11,18,56,.52)}
+.cap p>[data-b].past::before{background:rgba(11,18,56,.4);transform:scaleX(.7)}
+.cap p>[data-b].now{color:var(--ink)}
+.cap p>[data-b].now::before{background:var(--located);transform:scaleX(1)}
+/* the line being read is written in, left to right */
+@supports (background-clip:text) or (-webkit-background-clip:text){
+  .cap p [data-b].now,.cap p[data-b].now{color:transparent;background:linear-gradient(90deg,var(--ink) 0 50%,rgba(11,18,56,.26) 50% 100%) 100% 0/200% 100% no-repeat;-webkit-background-clip:text;background-clip:text;animation:capwipe .85s cubic-bezier(.2,.7,.2,1) forwards}
+  .cap .q-big.now{background-image:linear-gradient(90deg,var(--ink) 0 50%,rgba(11,18,56,.3) 50% 100%)}
+}
+@keyframes capwipe{to{background-position:0 0}}
+.cap p[data-b]{opacity:1!important;color:rgba(11,18,56,.3);transition:color .5s var(--ease)}
+.cap p[data-b].lit:not(.now){color:var(--ink-soft)}
+/* a word in a headline that is being shown: underlined in light as the picture finds it */
+.cap h2 span[data-b]{background:linear-gradient(var(--located),var(--located)) 0 92%/0 .06em no-repeat;transition:background-size .7s var(--ease-out),opacity .5s var(--ease)}
+.cap h2 span[data-b].now{background-size:100% .06em}
+.cap .q-big{text-decoration:none;box-shadow:inset 0 -.1em 0 rgba(255,176,32,.0);transition:box-shadow .8s var(--ease)}
+.cap .q-big.now{box-shadow:inset 0 -.09em 0 rgba(255,176,32,.9)}
+/* the thread from the words to the floor */
+.w-thread{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;overflow:visible;opacity:0;transition:opacity .25s}
+.w-thread path{fill:none;stroke:#4b3df0;stroke-width:1;stroke-dasharray:1 1;stroke-linecap:round;opacity:.55}
+.w-thread circle{fill:#fff;stroke:#4b3df0;stroke-width:1.4;transition:opacity .25s}
+.w-thread circle.ws{fill:#4b3df0;stroke:none}
+.q-thread path{stroke-width:1}
+/* the chapters as one segmented bar: each segment fills as its moments play */
+@media (min-width:901px){
+  .rail i,.rail b{display:none}
+  .rail{gap:0 4px;flex-wrap:nowrap}
+  .rail a{position:relative;flex:1 1 0;padding:0 0 14px;font-size:.78rem;letter-spacing:.01em;opacity:.5}
+  .rail a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--located) calc(var(--f,0) * 100%),rgba(11,18,56,.12) 0)}
+  .rail a.on{opacity:1;transform:none}
+}
+@media (max-width:900px){.cap p>[data-b]{padding:.12em 0 .12em 1em}}
+@media (prefers-reduced-motion:reduce){.cap p>[data-b]{color:var(--ink)}.cap p [data-b].now{animation:none;background:none;color:var(--ink)}}
+@media (min-width:901px){.rail{width:min(400px,calc(41vw - var(--m) - 60px))}}
+
+/* ---------- hero v2: compact, one composed group; the live tag from the first frame ---------- */
+html.tag-live .tag-fallback{opacity:0!important;transition:none}
+@media (min-width:901px){
+  .hero-copy{justify-content:center;gap:clamp(26px,4.2vh,52px);padding-top:calc(var(--bar) + 2vh);padding-bottom:6vh}
+  .hero .display{font-size:clamp(3rem,1rem + 5.5vw,9rem)}
+  .hero .lede{max-width:30em}
+}
+/* "waits." carries the same wait as the floor: a fine amber line fills under it */
+.hero .display em{position:relative;display:inline-block}
+.hero .display em::after{content:"";position:absolute;left:.04em;right:.04em;bottom:-.02em;height:.045em;border-radius:1em;background:linear-gradient(90deg,var(--waiting,#ffb020) calc(var(--wait,0) * 100%),rgba(255,176,32,.16) 0);opacity:0;transition:opacity .8s var(--ease)}
+.hero.tag-in .display em::after{opacity:1}
+/* the scroll cue: a slim capsule, one point travelling down it */
+.hero .scroll-cue{width:22px;height:36px;border-radius:12px;background:none;box-shadow:inset 0 0 0 1px rgba(11,18,56,.22);position:relative;overflow:hidden}
+.hero .scroll-cue i{position:absolute;left:50%;top:8px;width:3px;height:3px;margin-left:-1.5px;border-radius:50%;background:var(--located);animation:cue2 2.2s cubic-bezier(.6,0,.3,1) infinite}
+@keyframes cue2{0%{transform:translateY(0);opacity:0}20%{opacity:1}70%{transform:translateY(16px);opacity:0}100%{opacity:0}}
+.cap h2 .ln:first-child span[data-b]{background:none}
+.cap .q-big.now,.cap .q-big{animation:none;background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--ink)}
+.cap .q-big:not(.lit){color:rgba(11,18,56,.3)}

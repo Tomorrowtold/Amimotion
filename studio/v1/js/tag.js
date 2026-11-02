@@ -4,6 +4,7 @@ import * as THREE from '../assets/vendor/three.module.min.js';
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, k) => a + (b - a) * k;
+const sm = (a, b, x) => { const k = clamp((x - a) / (b - a)); return k * k * (3 - 2 * k); };
 const eo = (x) => 1 - Math.pow(1 - clamp(x), 3);
 
 export async function mesh(name, meta) {
@@ -45,9 +46,10 @@ void main(){
   float track=band*.05*step(.001,wait);
   float arc=band*step(u,wait)*.8;
   float head=exp(-pow((r-84.)/1.6,2.))*exp(-pow((u-wait)*600.,2.))*step(.001,wait);
-  float glow=0.;
+  // heard: one fine blue ring runs out across the floor the moment the tag lands
+  float rr=24.+ring*190.;float glow=exp(-pow((r-rr)/1.2,2.))*(1.-ring)*step(.001,ring)*.55;
   float wa=max(max(track,glow),max(arc,head));
-  col=mix(col,vec3(1.,.69,.13),wa/(a+wa+1e-4));a+=wa;
+  vec3 wc=arc+head>glow?vec3(1.,.69,.13):vec3(.12,.42,1.);col=mix(col,wc,wa/(a+wa+1e-4));a+=wa;
   gl_FragColor=vec4(col,a*fadeAll);}`;
 
 
@@ -163,12 +165,13 @@ export async function init(canvas, fallback, hero) {
   let lastBox = '';
   const refit = () => { const b = canvas.clientWidth + 'x' + canvas.clientHeight; if (b !== lastBox) { lastBox = b; size(); } };
 
+  canvas.style.transition = 'none';
   const box = new THREE.Box3(), V = new THREE.Vector3(); let landing = false;
   let wxSet = false, px = 0, py = 0, tx = 0, ty = 0, on = true, t0 = performance.now(), lift = 0;
   addEventListener('pointermove', (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, { passive: true });
   new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on) requestAnimationFrame(loop); }).observe(hero);
 
-  const CYCLE = 13, START = .5, FIRST = 6.5; // the first visit opens with the story already 80% told
+  const CYCLE = 13, START = 1.15, FIRST = 0; // the first visit: the tag settles, is heard, then the path arrives and the wait begins
   function loop(now) {
     if (!on) return;
     const t = (now - t0) / 1000;
@@ -176,31 +179,38 @@ export async function init(canvas, fallback, hero) {
     px = lerp(px, tx, .035); py = lerp(py, ty, .035);
 
     // arrival: the tag drops onto the floor with a soft spring
-    const intro = 1 - Math.exp(-3 * t) * Math.cos(5.2 * t);
+    // arrival: the tag comes down out of the light and settles, turning the last few degrees into its pose; no bounce
+    const intro = eo(clamp(t / 1.25)), ia = clamp(t / .5);
     lift = lerp(lift, sp * 30, .12);
-    tag.position.y = lerp(70, 0, clamp(intro)) + Math.sin(t * 1.05) * 1.0 + sp * 14;
-    tag.rotation.y = 0.98 + Math.sin(t * .3) * .09 + px * .45 + sp * 1.3;
+    tag.position.y = (1 - intro) * 46 + Math.sin(t * 1.05) * 1.0 * intro + sp * 14;
+    tag.rotation.y = 0.98 + (1 - intro) * .55 + Math.sin(t * .3) * .09 * intro + px * .45 + sp * 1.3;
+    canvas.style.opacity = landing ? canvas.style.opacity : ia.toFixed(3);
     tag.rotation.x = py * .18 - sp * .22;
     tag.rotation.z = Math.sin(t * .45) * .015;
     top.position.z = -lift;
 
     // the light follows the hand; the studio turns slowly
     key.position.set(-200 + px * 300, 260 - py * 120, 120 + py * 100);
+    // one long highlight sweeps across the lid as it settles
+    const sw = sm(.35, 1.9, t); key.position.x -= (1 - sw) * 900; key.intensity = 1.4 + Math.sin(sw * Math.PI) * 1.1;
     scene.environmentRotation.y = t * .035 + px * .45;
 
     // the story under the tag, on a loop: a path arrives, it is heard, then it waits
     const lt = Math.max(0, t - START) + FIRST, ci = Math.floor(lt / CYCLE), c = (lt % CYCLE);
     paths.forEach((m, i) => { m.visible = i === ci % ROUTES.length; }); glows.forEach((m, i) => { m.visible = i === ci % ROUTES.length; });
     pathMat.uniforms.draw.value = t < START ? 0 : clamp(c / 2.6) * 1.01;
-    floorMat.uniforms.ring.value = 0;
+    floorMat.uniforms.ring.value = t > 1.05 && t < 3.2 ? eo((t - 1.05) / 2.1) : 0;
+    // the headline's amber word fills with the same wait
+    hero.style.setProperty('--wait', (floorMat.uniforms.wait.value / .62).toFixed(3));
     floorMat.uniforms.wait.value = c > 3.2 ? eo((c - 3.2) / 8) * .62 : 0;
     const fade = t < START ? 0 : clamp(c / .4) * clamp((CYCLE - c) / .8);
-    pathMat.uniforms.fadeAll.value = phone() ? 0 : fade; floorMat.uniforms.fadeAll.value = (phone() ? 0 : 1) * (t < START ? clamp(t / START) : clamp((CYCLE - c) / .8) * .6 + .4) * (1 - sp * .8);
+    const ringOn = t > 1.05 && t < 3.2 ? 1 : 0;
+    pathMat.uniforms.fadeAll.value = phone() ? 0 : fade; floorMat.uniforms.fadeAll.value = (phone() ? 0 : 1) * Math.max(ringOn, t < START ? 0 : clamp((CYCLE - c) / .8) * .6 + .4) * (1 - sp * .8);
 
     const gu = groundMat.uniforms; gu.t.value = t; gu.res.value.set(canvas.width, canvas.height); gu.leftFade.value = phone() ? 0 : 1;
     gu.lightC.value.set(-30 - px * 120, 20 - py * 60, 330);
     gu.fadeAll.value = (phone() ? .75 : 1) * clamp(t / .9) * (1 - sp * .6);
-    shadow.material.opacity = clamp(1 - tag.position.y / 80) * (1 - sp * .5);
+    shadow.material.opacity = clamp(1 - tag.position.y / 50) * ia * (1 - sp * .5); shadow.scale.setScalar(1.25 - .25 * intro);
     refit(); let d = dist;
     cam.position.set(Math.sin(.15 + px * .05) * d, d * .62, Math.cos(.15 + px * .05) * d); cam.lookAt(0, -4, 0);
 
@@ -223,5 +233,5 @@ export async function init(canvas, fallback, hero) {
     if (!(B && B.fade < .01)) renderer.render(scene, cam);
     requestAnimationFrame(loop);
   }
-  requestAnimationFrame((n) => { loop(n); canvas.classList.add('ready'); fallback.classList.add('gone'); });
+  requestAnimationFrame((n) => { t0 = n; loop(n); canvas.classList.add('ready'); fallback.classList.add('gone'); hero.classList.add('tag-in'); });
 }
