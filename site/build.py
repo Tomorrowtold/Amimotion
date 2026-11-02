@@ -361,7 +361,7 @@ def panel_group(name, kind, items, cur, where):
 def over_photo(meta, body):
     """True when the page's first screen is a photograph or dark stage pulled up under the bar (a poster head, or a
     page stylesheet with margin-top: calc(-1 * var(--bar))): on phones the logo then sits on the picture, not on ground."""
-    if 'class="head w-poster' in body: return True
+    if re.search(r'class="head\b[^"]*\bw-poster\b', body): return True
     if not meta.get("id"): return False
     own = [SRC / "css" / "id" / f"{meta['id']}.css", SRC / "css" / "products" / f"{meta['id']}.css"]
     return any(f.exists() and "calc(-1 * var(--bar)" in f.read_text() for f in own)
