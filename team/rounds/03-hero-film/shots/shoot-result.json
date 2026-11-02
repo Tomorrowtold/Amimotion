@@ -1,0 +1,91 @@
+{
+ "1440x900": {
+  "playing": true,
+  "t": 3.648134,
+  "src": "hall-4x5-av1.mp4",
+  "paused": false,
+  "frame": [
+   791,
+   89,
+   649,
+   811
+  ],
+  "h1": [
+   56,
+   301,
+   539,
+   155
+  ],
+  "lede_bottom": 656,
+  "scrollW": 1440,
+  "lcp": [
+   {
+    "t": 60,
+    "el": "IMG",
+    "size": 526176
+   }
+  ],
+  "poster": "poster-4x5-800.avif"
+ },
+ "390x844": {
+  "playing": true,
+  "t": 3.623719,
+  "src": "hall-1x1-av1.mp4",
+  "paused": false,
+  "frame": [
+   0,
+   204,
+   390,
+   390
+  ],
+  "h1": [
+   20,
+   88,
+   350,
+   92
+  ],
+  "lede_bottom": 797,
+  "scrollW": 390,
+  "lcp": [
+   {
+    "t": 36,
+    "el": "IMG",
+    "size": 152063
+   }
+  ],
+  "poster": "poster-1x1-600.avif"
+ },
+ "2560x1440": {
+  "playing": true,
+  "t": 3.755595,
+  "src": "hall-4x5-av1.mp4",
+  "paused": false,
+  "frame": [
+   1485,
+   96,
+   1075,
+   1344
+  ],
+  "h1": [
+   100,
+   531,
+   960,
+   236
+  ],
+  "lede_bottom": 973,
+  "scrollW": 2560,
+  "lcp": [
+   {
+    "t": 68,
+    "el": "IMG",
+    "size": 1444779
+   }
+  ],
+  "poster": "poster-4x5-1200.avif"
+ },
+ "reduced": {
+  "playing": false,
+  "src": ""
+ },
+ "nojs": "shot only"
+}

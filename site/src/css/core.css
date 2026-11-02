@@ -1,0 +1,240 @@
+/* core.css: the design system's tokens and the global components: the bar with its panels, the phone sheet and dock,
+   buttons and links, the footer. Source: team/rounds/02-design/DESIGN_SYSTEM.md, round 10 harvest plan section 2
+   (M11 type scale, M13 nav, M14 buttons and links, M15 footer, M16 rhythm). Inlined on every page by build.py,
+   followed by one template file: home.css on the homepage, inner.css (plus tool.css or diag.css) everywhere else.
+   Tokens sit on .ds (every body). Pages use the semantic names only. */
+@font-face{font-family:"AmI Display";src:url("/assets/fonts/AmISansDisplay-SemiBold.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"AmI Text";src:url("/assets/fonts/AmISansText-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"AmI Text";src:url("/assets/fonts/AmISansText-Medium.woff2") format("woff2");font-weight:500;font-display:swap}
+/* metric-matched fallbacks, so the swap does not move a line (CLS 0) */
+@font-face{font-family:"AmI Display Fallback";src:local("Arial Bold"),local("Arial-BoldMT"),local("Liberation Sans Bold"),local("Arimo Bold");font-weight:600;size-adjust:103.2%;ascent-override:105.6%;descent-override:31%;line-gap-override:0%}
+@font-face{font-family:"AmI Text Fallback";src:local("Arial"),local("ArialMT"),local("Liberation Sans"),local("Arimo");font-weight:400 500;size-adjust:103.4%;ascent-override:105.4%;descent-override:30.9%;line-gap-override:0%}
+
+.ds{
+  --ground:#f0f6ff; --surface:#ffffff; --pressed:#e3eeff;
+  --ink:#0b1238; --ink-soft:#3d4870; --ink-hover:#1c2350; --on-ink:#ffffff;
+  --action:#4b3df0; --action-hover:#3a2cd6; --on-action:#ffffff; --brand:#66a5fa; --waiting-edge:#a86d00;
+  --hardware:#3a3d42; --link:#4b3df0; --focus:#4b3df0;
+  --located:#1f6bff; --waiting:#ffb020;
+  --hairline:rgba(11,18,56,.10);
+  --font-display:"AmI Display","AmI Display Fallback",Arial,sans-serif;
+  --font-text:"AmI Text","AmI Text Fallback",Arial,sans-serif;
+  /* type scale (M11): one giant size for the one number, a display size that can carry a screen, h2 up to 6rem,
+     lede 28 to 30 px, body at least 18 px on desktop, nothing under 15 px except legal */
+  --size-giant:clamp(6rem,2rem + 18vw,22rem);
+  --size-display:clamp(3.5rem,2rem + 7vw,11rem);
+  --size-h2:clamp(2.25rem,1.2rem + 3.4vw,6rem);
+  --size-h3:clamp(1.5rem,1.15rem + 1vw,2.5rem);
+  --size-stat:clamp(3rem,2rem + 2.4vw,4.5rem);
+  --size-lede:clamp(1.1875rem,.85rem + .95vw,1.875rem);
+  --size-body:clamp(1.0625rem,.9rem + .3vw,1.25rem);
+  --size-small:clamp(.9375rem,.88rem + .12vw,1.0625rem);
+  --size-legal:.8125rem;
+  --s-1:4px;--s-2:8px;--s-3:12px;--s-4:16px;--s-5:24px;--s-6:32px;--s-7:48px;--s-8:64px;--s-9:96px;--s-10:128px;
+  --rhythm-s:clamp(48px,5vw,96px); --rhythm-m:clamp(64px,8vw,160px); --rhythm-l:clamp(96px,11vw,224px);
+  --margin:clamp(20px,3.9vw,112px); --gutter:clamp(16px,1.67vw,40px); --bar:56px;
+  --radius-control:6px; --radius-pill:999px; --press-scale:.97; --t-fast:150ms; --ease-ds:cubic-bezier(.2,0,0,1);
+  color:var(--ink); font-family:var(--font-text);
+}
+@media (max-width:1023px){.ds{--bar:52px}}
+.ds :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:var(--radius-control)}
+.skip-link{position:absolute;left:16px;top:-100px;z-index:60;background:var(--ground);color:var(--ink);padding:8px 12px;font:500 15px/1 var(--font-text)}
+.skip-link:focus{top:12px}
+
+/* ---------- buttons (M14): a pill with a chevron that moves 3 px; press scales to .97 ---------- */
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:.55em;height:48px;padding:0 22px;background:var(--action);color:var(--on-action)!important;border:0;border-radius:var(--radius-pill);font:500 var(--size-small)/1 var(--font-text);text-decoration:none!important;white-space:nowrap;cursor:pointer;transition:background-color var(--t-fast) var(--ease-ds),transform var(--t-fast) var(--ease-ds)}
+.cta::after,.go::after{content:"";flex:none;width:.42em;height:.42em;border:solid currentColor;border-width:2px 2px 0 0;transform:translateX(-1px) rotate(45deg);transition:transform var(--t-fast) var(--ease-ds)}
+.cta:hover{background:var(--action-hover)}
+.cta:hover::after,.go:hover::after{transform:translateX(2px) rotate(45deg)}
+.cta:active{transform:scale(var(--press-scale))}
+.cta:focus-visible{outline-offset:2px;border-radius:var(--radius-pill)}
+.cta.alt{background:var(--surface);color:var(--ink)!important;box-shadow:inset 0 0 0 1px var(--hairline)}
+.cta.alt:hover{background:var(--pressed)}
+.cta.white{background:var(--surface);color:var(--action)!important}
+.cta.white:hover{background:var(--pressed)}
+.cta.white:focus-visible{outline-color:var(--on-action)}
+/* links (M14): a "more" link at 19 px in the action colour with a chevron, underline only on hover */
+.go{display:inline-flex;align-items:center;gap:.4em;color:var(--link)!important;font:500 clamp(1.0625rem,.95rem + .25vw,1.1875rem)/1.3 var(--font-text);text-decoration:none!important}
+.go:hover{text-decoration:underline!important;text-decoration-thickness:1px!important;text-underline-offset:4px}
+.go::after{width:.38em;height:.38em}
+
+/* ---------- the nav (round 14, team/rounds/14-nav/notes.md). A 56 px bar split in two (understand | decide), Ask,
+   one button. Panels are <details>: no JS needed to open them. Opens in 180 ms by a clip from the bar down; moving
+   between panels morphs from the old panel's height (--from, set by nav.js); closing is instant. The located dot
+   (the blue a tag shows on the map) marks where you are and what you point at. No glass, glow or gradient. ---------- */
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.top{position:sticky;top:0;z-index:30;height:var(--bar);padding-inline:var(--margin);display:flex;align-items:center;gap:var(--s-4);background:var(--ground)}
+/* the bar stays with you (Shiv, 2 Nov): sticky, solid ground, a hairline fades in once the page moves. Every sticky
+   stage below it starts under the bar, not behind it, and anchor jumps clear it. */
+html{scroll-padding-top:calc(var(--bar) + var(--s-4))}
+@keyframes top-line{to{box-shadow:0 1px 0 var(--hairline)}}
+@supports (animation-timeline:scroll()){.top{animation:top-line linear both;animation-timeline:scroll(root);animation-range:0 96px}}
+html .motion .hero-pin,html .film,html .motion .find-pin,html .motion .how-pin,html .waits-panel{top:var(--bar);height:calc(100svh - var(--bar))}
+html .local{top:var(--bar)}
+html .local .cta{display:none}
+html .top li{margin:0}
+html .bay{top:calc(var(--bar) + var(--s-6))}
+html .ex-stage{top:calc(var(--bar) + var(--local) + var(--s-6))}
+html .read .toc,html .read.has-fig .rail{top:calc(var(--bar) + var(--s-6))}
+html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5))}
+@media (max-width:1023px){html .tool-draw{top:var(--bar)}}
+.top a{color:var(--ink);text-decoration:none}
+.top ul{list-style:none;margin:0;padding:0}
+.top p{margin:0}
+.logo{flex:1 1 0;display:inline-flex;align-items:center;gap:10px;justify-self:start;padding-block:var(--s-2)}
+.logo .mark path{fill:var(--brand)}
+.logo .mark{height:24px;width:auto}
+.logo .word{height:16px;width:auto}
+.act{flex:1 1 0;display:flex;align-items:center;justify-content:flex-end;gap:var(--s-2)}
+.top .main,.links{display:flex;align-items:center;height:100%}
+.links{gap:clamp(0px,.5vw,12px)}
+.links > li:nth-child(3){margin-left:clamp(8px,1.2vw,24px);padding-left:clamp(8px,1.2vw,24px);box-shadow:inset 1px 0 0 var(--hairline)}
+.top summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;height:36px;font:400 15px/1 var(--font-text);color:var(--ink);padding:0 12px;border-radius:var(--radius-pill);white-space:nowrap;-webkit-user-select:none;user-select:none;transition:background-color var(--t-fast) var(--ease-ds)}
+.top summary::-webkit-details-marker{display:none}
+.top summary:hover,.top details[open] > summary{background:var(--surface)}
+.here > details > summary::before,.drop-groups a::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--located)}
+.glide{position:absolute;left:0;top:calc((var(--bar) - 36px) / 2);height:36px;border-radius:var(--radius-pill);background:var(--surface);opacity:0;pointer-events:none;z-index:-1}
+.glide-on .glide{opacity:1;transition:transform var(--t-fast) var(--ease-ds),width var(--t-fast) var(--ease-ds)}
+.glide-on summary:hover{background:none}
+.act > .cta{height:36px;padding:0 16px;font-size:15px}
+.nask > summary{box-shadow:inset 0 0 0 1px var(--hairline);padding-inline:14px 8px;gap:24px;color:var(--ink-soft)}
+.nask kbd{display:grid;place-items:center;width:20px;height:20px;border-radius:4px;background:var(--ground);font:500 12px/1 var(--font-text);color:var(--ink-soft)}
+.no-js .nask,.no-js .sheet-ask{display:none}
+/* a panel: hub and closing line, the item groups (floor side first), and a preview of where the pointer is */
+.drop{position:absolute;left:0;right:0;top:var(--bar);max-height:calc(100vh - var(--bar));overflow:auto;background:var(--surface);border-top:1px solid var(--hairline);box-shadow:0 1px 0 var(--hairline);padding:var(--s-7) var(--margin);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);animation:nav-in 180ms var(--ease-ds) both}
+@keyframes nav-in{from{clip-path:inset(0 0 calc(100% - var(--from,0px)) 0)}to{clip-path:inset(0 0 -2px 0)}}
+@keyframes nav-fade{from{opacity:0;transform:translateY(6px)}}
+.drop > *{animation:nav-fade 160ms var(--ease-ds) both}
+.drop > :nth-child(2){animation-delay:20ms}.drop > :nth-child(3){animation-delay:40ms}
+.drop-head{grid-column:1 / span 3;display:flex;flex-direction:column;justify-content:space-between;gap:var(--s-6)}
+.drop-hub{align-self:start;display:inline-flex;align-items:center;gap:.4em;font:600 var(--size-h3)/1.1 var(--font-display);letter-spacing:-.015em}
+.drop-hub::after{content:"";width:.32em;height:.32em;border:solid currentColor;border-width:2px 2px 0 0;transform:rotate(45deg);transition:transform var(--t-fast) var(--ease-ds)}
+.drop-hub:hover::after{transform:translateX(3px) rotate(45deg)}
+.drop-next,.sheet-next{font:400 15px/1.4 var(--font-text);color:var(--ink-soft)}
+.drop-next a,.sheet-next a{color:var(--link)!important;text-decoration:underline!important;text-underline-offset:4px}
+.drop-groups{grid-column:4 / span 5;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--gutter);align-content:start}
+.g3 .drop-groups{grid-column:4 / span 6;grid-template-columns:repeat(3,minmax(0,1fr))}
+.grp-name{font:500 15px/1.3 var(--font-text);color:var(--ink);padding-bottom:var(--s-3);margin-bottom:var(--s-2)!important;border-bottom:1px solid var(--hairline)}
+.drop-groups a{position:relative;display:block;padding:7px 0 7px 16px;margin-left:-16px}
+.drop-groups a::before{position:absolute;left:2px;top:15px;transform:scale(0);transition:transform 120ms var(--ease-ds)}
+.drop-groups a:hover::before,.drop-groups a:focus-visible::before,.drop-groups a[aria-current]::before{transform:none}
+.drop-groups b,.stage b{display:block;font:500 16px/1.3 var(--font-text)}
+.drop-groups span,.stage span,.sheet-list span{display:block;font:400 14px/1.4 var(--font-text);color:var(--ink-soft)}
+.drop-groups a:hover b{color:var(--link)}
+.stage{grid-column:9 / -1;margin:0}
+.g3 .stage{grid-column:10 / -1}
+.stage-pic{position:relative;aspect-ratio:4 / 3;border-radius:4px;overflow:hidden;background:var(--ground)}
+.stage picture,.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stage picture{opacity:0;transition:opacity 140ms var(--ease-ds)}
+.stage picture.on{opacity:1}
+.stage figcaption{padding-top:var(--s-3)}
+/* Ask: answers from the site's own pages (assets/ask.json), or start from your job */
+.nask-drop{row-gap:var(--s-5)}
+.nask-main{grid-column:1 / span 7}
+.nask-jobs{grid-column:9 / -1}
+.nask-form input{width:100%;height:56px;border:0;border-bottom:2px solid var(--ink);border-radius:0;background:none;padding:0;font:600 var(--size-h3)/1 var(--font-display);letter-spacing:-.01em;color:var(--ink);outline:0;-webkit-appearance:none;appearance:none}
+.nask-form input::placeholder{color:var(--ink-soft);opacity:.6}
+.ds .nask-form input:focus-visible{outline:0;border-bottom-color:var(--focus)}
+.nask-form input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.nask-out a{display:block;padding-block:var(--s-2)}
+.nask-out b{display:block;font:500 17px/1.35 var(--font-text)}
+.nask-out span,.nask-out i{display:block;font:400 15px/1.45 var(--font-text);color:var(--ink-soft);font-style:normal}
+.nask-out .ans{margin-block:var(--s-5) var(--s-3);padding:var(--s-5);border-radius:6px;background:var(--ground)}
+.nask-out .ans b{font:600 var(--size-lede)/1.2 var(--font-display);letter-spacing:-.01em;margin-bottom:var(--s-2)}
+.nask-out .ans span{color:var(--ink);font-size:var(--size-small)}
+.nask-out .ans i{margin-top:var(--s-3);color:var(--link)}
+.nask-out a:hover b,.nask-out a:focus-visible b{color:var(--link)}
+.nask-more{border-top:1px solid var(--hairline)}
+.jobs-list li{display:flex;flex-wrap:wrap;column-gap:.4em;padding-block:6px;border-bottom:1px solid var(--hairline);font:400 15px/1.35 var(--font-text)}
+.jobs-list li > span:first-child{flex:0 0 100%;color:var(--ink-soft);font-size:14px}
+.jobs-list a{color:var(--link)!important;font-weight:500}
+.jobs-list a:hover{text-decoration:underline!important;text-underline-offset:4px}
+.scrim{position:fixed;inset:0;z-index:29;background:var(--ink);opacity:0;visibility:hidden;pointer-events:none;transition:opacity var(--t-fast) var(--ease-ds),visibility 0s var(--t-fast)}
+@media (min-width:1024px){.top:has(.links [open],.nask[open]) + .scrim{opacity:.14;visibility:visible;transition:opacity var(--t-fast) var(--ease-ds)}}
+.phone,.dock{display:none}
+@media (min-width:1024px) and (max-width:1199px){.nask > summary{gap:10px}.links > li:nth-child(3){margin-left:4px;padding-left:4px}.top summary{padding-inline:10px}}
+/* phone and tablet: logo, button, Menu; a full-height sheet with Ask, the four sections as folds, start from your job */
+@media (max-width:1023px){
+  .top{gap:var(--s-2)}
+  .logo{flex:1 1 auto}
+  .act{flex:none}
+  .top .main,.nask{display:none}
+  .act > .cta{padding:0 14px}
+  .phone{display:block}
+  .phone > summary{padding-inline:12px}
+  .m-close,[open] > summary > .m-open{display:none}
+  [open] > summary > .m-close{display:inline}
+  html:has(.phone[open]){overflow:hidden}
+  html:has(.phone[open]) body{padding-top:var(--bar)}
+  html:has(.phone[open]) .top{position:fixed;top:0;left:0;right:0}
+  .sheet{position:fixed;left:0;right:0;top:var(--bar);bottom:0;overflow-y:auto;overscroll-behavior:contain;background:var(--ground);padding:var(--s-3) var(--margin) var(--s-8);animation:nav-fade 180ms var(--ease-ds) both}
+  .sheet-ask{margin-bottom:var(--s-4)}
+  .sheet-ask input{font-size:clamp(1.25rem,1rem + 1.2vw,1.75rem);height:52px}
+  .asking .sheet-secs{display:none}
+  .fold{display:block;border-bottom:1px solid var(--hairline)}
+  .fold > summary{height:auto;padding:var(--s-4) 0;border-radius:0;justify-content:space-between;font:600 clamp(1.625rem,1.2rem + 1.6vw,2.25rem)/1.15 var(--font-display);letter-spacing:-.015em}
+  .fold > summary::after{content:"+";font:400 28px/1 var(--font-text);color:var(--ink-soft);transition:transform var(--t-fast) var(--ease-ds)}
+  .fold[open] > summary::after{transform:rotate(45deg)}
+  .top .fold > summary,.top .fold[open] > summary{background:none}
+  .fold-body{padding-bottom:var(--s-5);animation:nav-fade 160ms var(--ease-ds) both}
+  .fold-hub{display:inline-flex;align-items:center;gap:.4em;min-height:44px;font:500 var(--size-body)/1.2 var(--font-text);color:var(--link)!important}
+  .fold-hub::after{content:"";width:.38em;height:.38em;border:solid currentColor;border-width:2px 2px 0 0;transform:rotate(45deg)}
+  .fold-body .grp-name{margin-top:var(--s-4)!important}
+  .sheet-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(15em,1fr));column-gap:var(--gutter)}
+  .sheet-list a{display:block;min-height:44px;padding-block:var(--s-2)}
+  .sheet-list b{display:block;font:500 var(--size-body)/1.3 var(--font-text)}
+  .sheet-list.pics a{display:grid;grid-template-columns:72px 1fr;column-gap:var(--s-3);align-items:center}
+  .sheet-list.pics picture{grid-row:span 2;display:block;aspect-ratio:4 / 3;border-radius:3px;overflow:hidden;background:var(--surface)}
+  .sheet-list.pics img{display:block;width:100%;height:100%;object-fit:cover}
+  .sheet-list a[aria-current] b::before{content:"";display:inline-block;width:7px;height:7px;margin-right:8px;border-radius:50%;background:var(--located);vertical-align:.15em}
+  .sheet-next{margin-top:var(--s-6)!important}
+  .nask-out .ans{margin-top:var(--s-3)}
+}
+/* the narrowest phones (320 to 359 px): the bar keeps logo, button and Menu on one line */
+@media (max-width:359px){.top{gap:2px}.logo{gap:6px}.logo .mark{height:20px}.logo .word{height:13px}.act > .cta{padding-inline:10px}.act > .cta::after{display:none}.phone > summary{padding-inline:8px}}
+
+/* the phone dock (M13): Menu, Ask and Book a call under the thumb, slid in once the first screen is behind you (JS on) */
+@media (max-width:1023px){
+  .js .dock{display:flex;gap:var(--s-2);position:fixed;z-index:40;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom));padding:8px var(--margin) calc(8px + env(safe-area-inset-bottom));align-items:center;background:var(--surface);border-top:1px solid var(--hairline);transform:translateY(105%);transition:transform 200ms var(--ease-ds);visibility:hidden}
+  .js.dock-on .dock{transform:none;visibility:visible}
+  .js.sheet-on .dock{transform:translateY(105%);visibility:hidden}
+  .act > .cta{transition:opacity var(--t-fast) var(--ease-ds),visibility 0s}
+  .js.dock-on:not(.sheet-on) .act > .cta{opacity:0;visibility:hidden;transition:opacity var(--t-fast) var(--ease-ds),visibility 0s var(--t-fast)}
+  .dock-b{flex:none;height:48px;padding:0 18px;border:0;border-radius:var(--radius-pill);background:var(--ground);color:var(--ink);font:500 var(--size-small)/1 var(--font-text);cursor:pointer}
+  .dock-b:active,.dock .cta:active{transform:scale(var(--press-scale))}
+  .dock .cta{flex:1;min-width:0}
+  .js .foot{padding-bottom:calc(var(--s-8) + 64px)}
+}
+
+/* ---------- the footer (M15): start from your job, four link columns, the entity paragraph ---------- */
+.foot{background:var(--surface);border-top:1px solid var(--hairline);padding:var(--rhythm-m) var(--margin) var(--s-7);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);font:400 15px/1.5 var(--font-text)}
+.foot a{color:var(--ink);text-decoration:none}
+.foot a:hover{color:var(--link);text-decoration:underline;text-underline-offset:4px}
+.foot h2{grid-column:1 / -1;margin:0 0 var(--s-7);font:600 var(--size-h2)/1 var(--font-display);letter-spacing:-.03em}
+.jobs{grid-column:1 / -1;list-style:none;margin:0 0 var(--rhythm-m);padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--gutter);row-gap:var(--s-7)}
+.jobs > li{min-width:0}
+.jobs picture{display:block;aspect-ratio:4 / 3;overflow:hidden;border-radius:4px;background:var(--ground);margin-bottom:var(--s-5)}
+.jobs img{display:block;width:100%;height:100%;object-fit:cover}
+.roles{margin:0}
+.roles div{padding-block:var(--s-3);border-top:1px solid var(--hairline)}
+.roles dt{font:400 15px/1.4 var(--font-text);color:var(--ink-soft);margin-bottom:2px}
+.roles dd{margin:0;font:500 clamp(1.0625rem,.95rem + .25vw,1.1875rem)/1.35 var(--font-text)}
+.roles dd a{color:var(--link)}
+.roles dd span{color:var(--ink-soft)}
+.foot-cols{grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--gutter);padding-top:var(--s-7);border-top:1px solid var(--hairline);margin-bottom:var(--s-8)}
+.foot-cols ul{list-style:none;margin:var(--s-3) 0 0;padding:0}
+.foot-cols li{padding-block:4px}
+.foot-cols .hub{font:600 var(--size-lede)/1.2 var(--font-display);letter-spacing:-.01em}
+.foot-base{grid-column:1 / -1;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:var(--s-4);padding-top:var(--s-6);border-top:1px solid var(--hairline)}
+.foot-base .logo{grid-column:1 / span 3;align-self:start;padding:0}
+.foot p{margin:0;max-width:62em}
+.foot .entity{grid-column:4 / span 7;color:var(--ink-soft)}
+.foot .contact{grid-column:4 / -1;font-weight:500}
+.foot .legal{grid-column:4 / span 7;color:var(--ink-soft);font-size:var(--size-legal)}
+@media (max-width:1023px){
+  .jobs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .foot-cols{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:var(--s-6)}
+  .foot-base .logo,.foot .entity,.foot .contact,.foot .legal{grid-column:1 / -1}
+}
+@media (max-width:560px){.jobs{grid-template-columns:minmax(0,1fr)}.jobs picture{aspect-ratio:2 / 1}}
+@media (prefers-reduced-motion:reduce){.ds *{transition:none!important;animation:none!important}}

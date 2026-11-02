@@ -1,0 +1,260 @@
+[
+ {
+  "n": "airtag",
+  "w": 1440,
+  "h": 900,
+  "kb": 1360,
+  "lcp": 1164,
+  "h1": {
+   "text": "AirTag",
+   "size": "34px",
+   "top": 156,
+   "font": "\"SF Pro Text\", \"SF Pro Icons\", \"Helvetic"
+  }
+ },
+ {
+  "n": "airtag",
+  "w": 390,
+  "h": 844,
+  "kb": 1259,
+  "lcp": 944,
+  "h1": {
+   "text": "AirTag",
+   "size": "34px",
+   "top": 128,
+   "font": "\"SF Pro Text\", \"SF Pro Icons\", \"Helvetic"
+  }
+ },
+ {
+  "n": "airtag",
+  "w": 2560,
+  "h": 1440,
+  "kb": 1523,
+  "lcp": 1284,
+  "h1": {
+   "text": "AirTag",
+   "size": "34px",
+   "top": 156,
+   "font": "\"SF Pro Text\", \"SF Pro Icons\", \"Helvetic"
+  }
+ },
+ {
+  "n": "anduril",
+  "w": 1440,
+  "h": 900,
+  "kb": 630866,
+  "lcp": 1516,
+  "h1": {
+   "text": "@[shortTitle]",
+   "size": "12px",
+   "top": 0,
+   "font": "HelveticaNowDisplay, Helvetica, Arial, s"
+  }
+ },
+ {
+  "n": "anduril",
+  "w": 390,
+  "h": 844,
+  "kb": 631866,
+  "lcp": 1112,
+  "h1": {
+   "text": "@[shortTitle]",
+   "size": "13.006px",
+   "top": 0,
+   "font": "HelveticaNowDisplay, Helvetica, Arial, s"
+  }
+ },
+ {
+  "n": "anduril",
+  "w": 2560,
+  "h": 1440,
+  "kb": 841607,
+  "lcp": 1908,
+  "h1": {
+   "text": "@[shortTitle]",
+   "size": "18px",
+   "top": 0,
+   "font": "HelveticaNowDisplay, Helvetica, Arial, s"
+  }
+ },
+ {
+  "n": "vention",
+  "w": 1440,
+  "h": 900,
+  "kb": 22422,
+  "lcp": 2476,
+  "h1": {
+   "text": "The AI-Defined Manufacturing Automation Platform",
+   "size": "72px",
+   "top": 166,
+   "font": "Inter, \"Inter Fallback\""
+  }
+ },
+ {
+  "n": "vention",
+  "w": 390,
+  "h": 844,
+  "kb": 22591,
+  "lcp": 2776,
+  "h1": {
+   "text": "The AI-Defined Manufacturing Automation Platform",
+   "size": "36px",
+   "top": 166,
+   "font": "Inter, \"Inter Fallback\""
+  }
+ },
+ {
+  "n": "vention",
+  "w": 2560,
+  "h": 1440,
+  "kb": 22427,
+  "lcp": 2120,
+  "h1": {
+   "text": "The AI-Defined Manufacturing Automation Platform",
+   "size": "72px",
+   "top": 166,
+   "font": "Inter, \"Inter Fallback\""
+  }
+ },
+ {
+  "n": "airpods-pro",
+  "w": 1440,
+  "h": 900,
+  "kb": 8312,
+  "lcp": 1124,
+  "h1": {
+   "text": "AirPods Pro 3",
+   "size": "28px",
+   "top": 644,
+   "font": "\"SF Pro Display\", \"SF Pro Icons\", \"Helve"
+  }
+ },
+ {
+  "n": "airpods-pro",
+  "w": 390,
+  "h": 844,
+  "kb": 4799,
+  "lcp": 1020,
+  "h1": {
+   "text": "AirPods Pro 3",
+   "size": "21px",
+   "top": 545,
+   "font": "\"SF Pro Display\", \"SF Pro Icons\", \"Helve"
+  }
+ },
+ {
+  "n": "airpods-pro",
+  "w": 2560,
+  "h": 1440,
+  "kb": 8311,
+  "lcp": 1296,
+  "h1": {
+   "text": "AirPods Pro 3",
+   "size": "28px",
+   "top": 1184,
+   "font": "\"SF Pro Display\", \"SF Pro Icons\", \"Helve"
+  }
+ },
+ {
+  "n": "formenergy",
+  "w": 1440,
+  "h": 900,
+  "kb": 21951,
+  "lcp": 588,
+  "h1": {
+   "text": "ENERGY STORAGE\nFOR A BETTER WORLD",
+   "size": "86px",
+   "top": 279,
+   "font": "\"Roboto Condensed\", sans-serif"
+  }
+ },
+ {
+  "n": "formenergy",
+  "w": 390,
+  "h": 844,
+  "kb": 29925,
+  "lcp": 376,
+  "h1": {
+   "text": "ENERGY STORAGE\nFOR A BETTER WORLD",
+   "size": "43.2px",
+   "top": 158,
+   "font": "\"Roboto Condensed\", sans-serif"
+  }
+ },
+ {
+  "n": "formenergy",
+  "w": 2560,
+  "h": 1440,
+  "kb": 22432,
+  "lcp": 680,
+  "h1": {
+   "text": "ENERGY STORAGE\nFOR A BETTER WORLD",
+   "size": "86px",
+   "top": 436,
+   "font": "\"Roboto Condensed\", sans-serif"
+  }
+ },
+ {
+  "n": "nothing",
+  "w": 1440,
+  "h": 900,
+  "kb": 3885,
+  "lcp": 1140,
+  "h1": {
+   "text": "Studio-level precision for our most advanced headphone ever.",
+   "size": "48px",
+   "top": 384,
+   "font": "NType82-Regular, sans-serif"
+  }
+ },
+ {
+  "n": "nothing",
+  "w": 390,
+  "h": 844,
+  "kb": 5822,
+  "lcp": 6480,
+  "h1": {
+   "text": "Studio-level precision for our most advanced headphone ever.",
+   "size": "32px",
+   "top": 273,
+   "font": "NType82-Regular, sans-serif"
+  }
+ },
+ {
+  "n": "nothing",
+  "w": 2560,
+  "h": 1440,
+  "kb": 3900,
+  "lcp": 1000,
+  "h1": {
+   "text": "Studio-level precision for our most advanced headphone ever.",
+   "size": "48px",
+   "top": 654,
+   "font": "NType82-Regular, sans-serif"
+  }
+ },
+ {
+  "n": "teenage-engineering",
+  "w": 1440,
+  "h": 900,
+  "kb": 1623,
+  "lcp": 960,
+  "h1": null
+ },
+ {
+  "n": "teenage-engineering",
+  "w": 390,
+  "h": 844,
+  "kb": 1135,
+  "lcp": 972,
+  "h1": null
+ },
+ {
+  "n": "teenage-engineering",
+  "w": 2560,
+  "h": 1440,
+  "kb": 3977,
+  "lcp": 812,
+  "h1": null
+ }
+]

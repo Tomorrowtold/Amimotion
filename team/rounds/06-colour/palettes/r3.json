@@ -1,0 +1,70 @@
+[
+ {
+  "id": "skyground",
+  "name": "Sky Ground",
+  "line": "Pale sky page, white raised surfaces, indigo-navy ink, electric-indigo actions, electric-blue located.",
+  "tokens": {
+   "ground": "#f0f6ff",
+   "surface": "#ffffff",
+   "pressed": "#e3eeff",
+   "ink": "#0b1238",
+   "ink-soft": "#3d4870",
+   "ink-hover": "#1c2350",
+   "on-ink": "#ffffff",
+   "hardware": "#3a3d42",
+   "link": "#4b3df0",
+   "focus": "#4b3df0",
+   "brand": "#66a5fa",
+   "located": "#1f6bff",
+   "waiting": "#ffb020",
+   "waiting-edge": "#a86d00",
+   "btn": "#4b3df0",
+   "on-btn": "#ffffff"
+  },
+  "button": [
+   "#4b3df0",
+   "#ffffff",
+   "#3a2cd6"
+  ],
+  "hall": {
+   "floor": "#f0f6ff",
+   "machines": "#ffffff",
+   "shadow": "#c3d3ec"
+  },
+  "section_bg": "ground"
+ },
+ {
+  "id": "indigo",
+  "name": "Indigo Lead",
+  "line": "True white page, electric-indigo type and actions, solid sky surfaces, electric-blue located, amber waiting.",
+  "tokens": {
+   "ground": "#ffffff",
+   "surface": "#e8f1ff",
+   "pressed": "#d6e6ff",
+   "ink": "#1e1a6b",
+   "ink-soft": "#4a4780",
+   "ink-hover": "#2e2990",
+   "on-ink": "#ffffff",
+   "hardware": "#3a3d42",
+   "link": "#4b3df0",
+   "focus": "#4b3df0",
+   "brand": "#66a5fa",
+   "located": "#1f6bff",
+   "waiting": "#ffb020",
+   "waiting-edge": "#a86d00",
+   "btn": "#4b3df0",
+   "on-btn": "#ffffff"
+  },
+  "button": [
+   "#4b3df0",
+   "#ffffff",
+   "#3a2cd6"
+  ],
+  "hall": {
+   "floor": "#ffffff",
+   "machines": "#e6eefb",
+   "shadow": "#c2cde3"
+  },
+  "section_bg": "ground"
+ }
+]

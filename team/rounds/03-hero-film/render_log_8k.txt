@@ -1,0 +1,7 @@
+00:00.335  cycles           | WARNING CUEW initialization failed: Error opening the library
+/home/user/amimotion/team/rounds/03-hero-film/build_hall.py:365: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/home/user/amimotion/team/rounds/03-hero-film/build_hall.py:588: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  w.use_nodes = True
+14:55.582  render           | Saved: '/home/user/amimotion/team/rounds/03-hero-film/master/poster-6400x8000-raw.png'
+STILL master/poster-6400x8000-raw.png 895.3s

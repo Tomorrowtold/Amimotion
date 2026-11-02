@@ -1,0 +1,4 @@
+caps/
+*.png
+!board.png
+__pycache__/

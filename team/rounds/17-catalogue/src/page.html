@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AmIMotion pattern catalogue</title>
+<meta name="description" content="500 UI/UX and visual-storytelling elements from 100 reference sites and 10 studios, mapped to AmIMotion pages.">
+<style>
+:root{--page:#f0f6ff;--surface:#fff;--ink:#0b1238;--muted:#4a5378;--line:#d8e2f3;--accent:#4b3df0;--accent-soft:#ece9ff;--pick:#0b1238}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+header.top{padding:40px 0 20px}
+h1{font-size:clamp(28px,4.2vw,48px);line-height:1.08;letter-spacing:-.02em;margin:0 0 12px;font-weight:650}
+.lede{max-width:760px;color:var(--muted);margin:0}
+.stats{display:flex;flex-wrap:wrap;gap:8px 20px;margin:16px 0 0;font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--muted)}
+.stats b{color:var(--ink);font-weight:600}
+.bar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--page) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:12px 0}
+.controls{display:grid;grid-template-columns:2fr repeat(4,1fr) auto;gap:8px;align-items:center}
+input[type=search],select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:0 12px;font:inherit;font-size:15px}
+input[type=search]:focus,select:focus,button:focus-visible,label.chk:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+label.chk{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);white-space:nowrap;cursor:pointer;font-size:15px}
+label.chk input{accent-color:var(--accent);width:18px;height:18px}
+.fams{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:thin}
+.fams button{flex:0 0 auto;min-height:36px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:0 12px;font:inherit;font-size:13px;cursor:pointer}
+.fams button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.fams button span{opacity:.6;margin-left:4px;font-variant-numeric:tabular-nums}
+.count{font:13px/1 ui-monospace,Menlo,monospace;color:var(--muted);padding:14px 0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;padding-bottom:64px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card.pick{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font:12px/1.3 ui-monospace,Menlo,monospace;color:var(--muted)}
+.id{color:var(--ink);font-weight:600}
+.tag{border:1px solid var(--line);border-radius:6px;padding:2px 6px;background:var(--page)}
+.tag.pk{background:var(--accent);border-color:var(--accent);color:#fff}
+.card h2{font-size:18px;line-height:1.25;margin:0;font-weight:620;letter-spacing:-.01em}
+.src{font-size:13px;color:var(--muted);margin:0}
+.row{margin:0;font-size:14.5px}
+.row b{font-weight:600}
+.use{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:14.5px;margin:2px 0 0}
+.use code{font:12.5px/1.4 ui-monospace,Menlo,monospace;color:var(--accent);word-break:break-word}
+.why-pick{font-size:13.5px;margin:0;color:var(--accent);font-weight:550}
+.empty{padding:40px 0;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding:24px 0 48px;color:var(--muted);font-size:13px}
+@media (max-width:900px){.bar{position:static}.controls{grid-template-columns:1fr 1fr}.controls .q{grid-column:1/-1}}
+@media (max-width:420px){.grid{grid-template-columns:1fr}.card{padding:14px}}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}}
+</style>
+</head>
+<body>
+<header class="top wrap">
+<h1>AmIMotion pattern catalogue</h1>
+<p class="lede">500 UI/UX and visual-storytelling elements, each observed on a reference site or one of ten studios (Active Theory, Locomotive, Resn, Hello Monday, Immersive Garden, Build in Amsterdam, Lusion, Basement, Bruno Simon, Niccolò Miranda), each mapped to the AmIMotion page and section where it would go. 60 are marked Pick. Copy stays as is; this is the bench's menu for the redesign.</p>
+<div class="stats" id="stats"></div>
+</header>
+<div class="bar"><div class="wrap">
+<div class="controls">
+<input class="q" type="search" id="q" placeholder="Search: trolley, map, scroll, Lusion, /pilot/ ..." aria-label="Search elements">
+<select id="page" aria-label="Filter by page"><option value="">All pages</option></select>
+<select id="cost" aria-label="Filter by build cost"><option value="">Any cost</option><option value="S">S: under a day</option><option value="M">M: 2-5 days</option><option value="L">L: a week or more</option></select>
+<select id="tech" aria-label="Filter by technique"><option value="">Any technique</option></select>
+<select id="sort" aria-label="Sort"><option value="id">Sort: number</option><option value="cost">Sort: cheapest first</option></select>
+<label class="chk"><input type="checkbox" id="pick"> Picks only</label>
+</div>
+<div class="fams" id="fams" role="group" aria-label="Filter by family"></div>
+</div></div>
+<main class="wrap">
+<div class="count" id="count" aria-live="polite"></div>
+<div class="grid" id="grid"></div>
+</main>
+<footer class="wrap">Round 17, 2 Nov 2026. Sources are observations, not copies: no third-party images, code or wording are used. Data: catalogue.json. Captures stay local (team/rounds/17-catalogue/caps/, gitignored).</footer>
+<script>
+const DATA = __DATA__;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fams = [...new Set(DATA.map(d => d.family))];
+const pages = [...new Set(DATA.flatMap(d => d.pages))].sort((a,b)=> (a==='all pages')?-1:(b==='all pages')?1:a.localeCompare(b));
+const techs = [...new Set(DATA.map(d => d.tech))].sort();
+pages.forEach(p => $('#page').insertAdjacentHTML('beforeend', `<option>${esc(p)}</option>`));
+techs.forEach(t => $('#tech').insertAdjacentHTML('beforeend', `<option>${esc(t)}</option>`));
+let fam = '';
+function famButtons(){
+  const el = $('#fams'); el.innerHTML = '';
+  [['', 'All families', DATA.length], ...fams.map(f => [f, f, DATA.filter(d => d.family === f).length])].forEach(([v, l, n]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', String(v === fam));
+    b.innerHTML = `${esc(l)}<span>${n}</span>`; b.onclick = () => { fam = v; famButtons(); render(); }; el.appendChild(b);
+  });
+}
+const st = DATA.reduce((a,d)=>{a[d.cost]=(a[d.cost]||0)+1; return a},{});
+$('#stats').innerHTML = `<span><b>500</b> elements</span><span><b>${fams.length}</b> families</span><span><b>60</b> picks</span><span>cost S <b>${st.S}</b> · M <b>${st.M}</b> · L <b>${st.L}</b></span>`;
+function render(){
+  const q = $('#q').value.trim().toLowerCase(), pg = $('#page').value, c = $('#cost').value, t = $('#tech').value, pk = $('#pick').checked;
+  let rows = DATA.filter(d => (!fam || d.family === fam) && (!pg || d.pages.includes(pg)) && (!c || d.cost === c) && (!t || d.tech === t) && (!pk || d.pick)
+    && (!q || [d.id,d.name,d.source,d.what,d.why,d.use,d.pages.join(' '),d.family,d.pick_reason].join(' ').toLowerCase().includes(q)));
+  if ($('#sort').value === 'cost') rows = rows.slice().sort((a,b) => 'SML'.indexOf(a.cost) - 'SML'.indexOf(b.cost) || a.id.localeCompare(b.id));
+  $('#count').textContent = `${rows.length} of 500 shown`;
+  $('#grid').innerHTML = rows.length ? rows.map(d => `<article class="card${d.pick?' pick':''}">
+    <div class="meta"><span class="id">${d.id}</span><span>${esc(d.family)}</span>${d.pick?'<span class="tag pk">Pick</span>':''}<span class="tag">Cost ${d.cost}</span><span class="tag">${esc(d.tech)}</span></div>
+    <h2>${esc(d.name)}</h2>
+    <p class="src">Source: ${esc(d.source)}</p>
+    <p class="row"><b>What it does.</b> ${esc(d.what)}</p>
+    <p class="row"><b>Why it works.</b> ${esc(d.why)}</p>
+    <div class="use"><code>${d.pages.map(esc).join(' · ')}</code><br>${esc(d.use)}</div>
+    ${d.pick?`<p class="why-pick">Pick: ${esc(d.pick_reason)}</p>`:''}
+  </article>`).join('') : '<p class="empty">Nothing matches. Clear a filter or the search.</p>';
+}
+['#q','#page','#cost','#tech','#sort','#pick'].forEach(s => $(s).addEventListener('input', render));
+famButtons(); render();
+</script>
+</body>
+</html>

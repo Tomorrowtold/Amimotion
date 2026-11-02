@@ -1,0 +1,128 @@
+## F13|Proof and trust
+Number with its condition|Waymo s8 (caps 01 d8)|Every big number carries its basis.|Engineers trust conditions.|/specs/,/learn/accuracy/|"±30 cm in open bay, 50 cm near racking".|S|CSS/JS|Pick: the honesty that wins technical reviews.
+Methodology link from number|Waymo (caps 01 d8)|Numbers link to method.|Verifiable.|/learn/accuracy/|Every number links to test page.|S|CSS/JS
+Logo wall "trusted by"|Basement (live: "Trusted by Visionaries" logo row)|Client logos row.|Fast social proof.|/company/|Only with permission; else plant-type list.|S|CSS/JS
+Awards counts|Niccolò Miranda (live: "SITE OF THE DAY / AWARDS 9")|Counted recognition.|Credibility.|/company/|Only real items (certifications: CE, FCC, IP rating).|S|CSS/JS
+Data residency diagram|Apple Privacy (caps 55 d8)|Plain pillars: what stays where.|IT trust.|/trust/|Pillars: on-prem hub, your cloud, no people tracking by default.|S|CSS/JS|Pick: IT approval is a gate in every Indian plant.
+Privacy one-liner band|Apple Privacy (caps 55 d8, "Privacy. That's Apple.")|One-line statement band.|Memorable stance.|/trust/people/|"We tag trolleys, not people."|S|CSS/JS
+Checklist compare marks|Apple Privacy (caps 55 d2)|Filled/empty marks per column.|Quick trust compare.|/trust/|What AmIMotion collects vs not.|S|CSS/JS
+Named place proof|Form Energy (study L16)|Proof with place, date, number.|Real.|/pilot/|Pilot photo: "Chakan, Oct 2026, Bay 3".|S|CSS/JS
+Spec sheet with conditions|Oxide (caps 49)|Dense spec panels.|Technical buyers.|/specs/|All specs.|S|CSS/JS
+Open-source proof|Supabase (sites.py: open-source proof)|Public repos as proof.|Developer trust.|/developers/|Public SDK, MCP server repo link.|S|CSS/JS
+Testimonials from builders|Cursor (sites.py)|Quotes from practitioners.|Peer proof.|/pilot/|Supervisor quote with role and plant type.|S|CSS/JS
+Standards badges|Shopify Plus partner line (live: Build in Amsterdam "CERTIFIED SHOPIFY PLUS PARTNER")|Partner certification line above H1.|Borrowed credibility.|/learn/omlox/|"omlox-ready" line above H1 (if true).|S|CSS/JS
+Live system status|Basement (live: online status)|Status visible.|Operational trust.|/trust/|Demo hub uptime.|S|CSS/JS
+Test conditions page|Waymo safety hub (sites.py)|Public data hub.|Transparency.|/learn/accuracy/|Test conditions table.|M|CSS/JS
+Contact with real addresses|Hello Monday (live: four offices with addresses and phones)|Full addresses, phone numbers, map links.|Real company.|/contact/|Office address and IST hours.|S|CSS/JS
+Since-year line|Locomotive (live: "©2008-2026"), Active Theory (meta: "Founded in 2012")|Founding year stated.|Longevity.|/company/|Founded line.|S|CSS/JS
+Team faces at work|Study (Form Energy s3, Machina s4)|Real team on floor.|Human trust.|/company/|Team on a customer floor.|S|CSS/JS
+Security FAQ|Clerk (sites.py)|Plain answers to security questions.|IT approval.|/trust/|Short Q&A.|S|CSS/JS
+Pilot outcome card|Lumafield (caps 42)|Outcome number with context.|Concrete.|/pilot/|"Search time down from x to y" (only measured).|S|CSS/JS
+Before-after with baseline|Waymo comparison (caps 01)|Comparison with basis.|Fair.|/learn/pilot-baseline/|See F08 bars.|S|CSS/JS
+Footnote superscripts|Apple MacBook Pro (sites.py)|Every claim footnoted.|Precision.|all|See F03.|S|CSS/JS
+Press/articles list|Locomotive (live: "Articles" list)|Articles show thinking.|Expertise.|/resources/|Guides and posts list.|S|CSS/JS
+Hardware certification row|Apple (spec pages)|Certifications listed.|Compliance.|/specs/|IP, CE, WPC India.|S|CSS/JS
+Real kit price anchor|AirTag "Starting at $29" (study)|Price beside product.|Removes doubt.|/how-to-buy/|Pilot price band if policy allows.|S|CSS/JS
+Product exists only|Anduril (caps 08 d2)|Only real products.|Trust.|all|Rule.|S|CSS/JS
+No-cookie stance|Things (caps 96)|No banner because no cookies.|Respect.|all|Drop cookies, no banner (contrast: BIA Cookiebot dialog covering hero, live).|S|CSS/JS|Pick: BIA's cookie wall shows the cost; we can avoid it.
+Case results in big type|Basement Daylight (live: "sold out", awards list)|Outcome stated plainly.|Persuades.|/use-cases/*|Result line per case.|S|CSS/JS
+Live demo login|Linear (caps 58)|Real product access.|Proof by use.|/products/amihub/|"Open the demo floor".|M|CSS/JS
+Data ownership statement|Apple Privacy|Clear ownership.|Trust.|/trust/|"Your data, your server".|S|CSS/JS
+People privacy tagging rule|Apple Privacy pillars|Explicit limits.|Union and HR comfort.|/trust/people/|What a pilot tags, and why.|S|CSS/JS
+Engineering voice docs|Oxide (sites.py)|Deep docs in plain engineering voice.|Technical credibility.|/developers/|API docs.|S|CSS/JS
+
+## F14|Lead capture and CTAs
+Inline field + button|Mercury (caps 90 d0)|Field and button same height inline.|Low friction.|/diagnostic/|First question inline.|S|CSS/JS
+Filled + text CTA pair|Apple iPhone (caps 52 d0); Build in Amsterdam case ("VISIT PLATFORM" / "GET IN TOUCH")|One filled, one text action.|Clear priority.|all pages|"Plan your first bay" + "Book a call".|S|CSS/JS
+Question-led contact blocks|Hello Monday (live: "Want to collaborate? Work with us" + email)|Each contact route as question + address.|Routes leads by intent.|/contact/|"Want a pilot? / Want the NDA pack? / Want a call?".|S|CSS/JS|Pick: routes plant heads, IT and procurement correctly.
+Let's talk pill always visible|Lusion (live: "LET'S TALK" header), Locomotive ("Let's talk")|Persistent contact pill.|Always one tap.|all pages|"Book a call" pill.|S|CSS/JS
+Newsletter in menu|Lusion (live: "Subscribe to our newsletter" in menu)|Signup inside the menu.|Captures returning interest.|all pages|"Floor notes" signup in nav panel.|S|CSS/JS
+Newsletter tile in grid|The Pudding (caps 70 d1)|Signup as a grid tile.|Native placement.|/learn/|Signup tile among guides.|S|CSS/JS
+Diagnostic with plan back|Vitra gift finder (live BIA case)|Questions produce a tailored result.|Value exchange.|/diagnostic/|Six questions, plan back.|M|CSS/JS|Pick: lead form that gives value back.
+Shareable result link|BIA Vitra (live: shareable wishlist)|Result shared by link.|Spreads in buying committee.|/tools/pilot/|Pilot one-pager link.|S|CSS/JS
+Calculator with email gate after|Ramp (sites.py)|Result free, PDF by email.|Fair exchange.|/tools/search-time/|Email the PDF.|S|CSS/JS
+Closing still CTA|Study (contact: last frame of hero)|Closing calm image behind CTA.|Closure.|all pages|Closing band with parked trolley.|S|CSS/JS
+Copy email|Hello Monday (live)|One-click copy.|Fast.|/contact/|See F11.|S|CSS/JS
+WhatsApp route|Locomotive (live: phone emoji line) adapted|Phone and chat routes.|Indian buyers use WhatsApp.|/contact/|WhatsApp business link.|S|CSS/JS
+Calendar slot picker|Cal.com (Basement showcase link, live)|Book a slot inline.|No back and forth.|/contact/|Inline booking.|M|CSS/JS
+Section-end CTA link|Apple (caps 51)|One link per section end.|Momentum.|all|Rule.|S|CSS/JS
+Sticky bottom CTA phone|Apple iPhone (caps 52)|Buy always reachable.|Conversion on phone.|phone|Sticky "Plan your bay".|S|CSS/JS
+NDA pack request|nav.json how-to-buy|Request gated pack.|Qualified lead.|/how-to-buy/|NDA pack form.|S|CSS/JS
+Offer stated in CTA|Formlabs (caps 03)|CTA states the offer.|Clarity.|/pilot/|"Start a one-bay pilot".|S|CSS/JS
+Role picker before form|nav.json roles|Role first.|Routing.|/contact/|Role chips.|S|CSS/JS
+Contact as conversation|Basement (live: chat)|Chat box.|Low pressure.|/use-cases/ask-your-plant/|Ask then book.|M|CSS/JS
+Large closing headline CTA|Locomotive (live: big contact footer)|Huge type CTA in footer.|Final push.|all|"Plan your first bay." closing line (exists in nav.json).|S|CSS/JS
+Progress steps in form|Vitra finder|Step dots.|Completion.|/diagnostic/|Steps 1-6.|S|CSS/JS
+Prefilled plan PDF|Vention parts list (caps 02 d2)|Output as list/PDF.|Tangible.|/tools/anchors/|Anchor estimate PDF.|M|CSS/JS
+Join-us route|Hello Monday (live: "Become a Mondayteer")|Careers in contact.|Talent.|/company/|Careers line.|S|CSS/JS
+Store/merch|Locomotive (live: Store, T-shirt)|Merch.|Brand love.|n/a|Lesson only; skip.|S|CSS/JS
+Inline success state|Mercury (caps 90)|Clear states.|Confidence.|all forms|Rule.|S|CSS/JS
+Booking with time zone|Basement (live: locale)|IST shown.|Clarity.|/contact/|IST slots.|S|CSS/JS
+CTA with micro-copy|Apple (caps 51)|Short helper line.|Reduces fear.|/contact/|"30 minutes, no slides".|S|CSS/JS
+Exit-intent none|Things (caps 96)|No popups.|Respect.|all|Rule.|S|CSS/JS
+Download spec sheet|Oxide|Downloadable spec.|Procurement need.|/specs/|PDF spec.|S|CSS/JS
+Pilot one-pager share|nav.json tools/pilot|Share with team.|Committee.|/tools/pilot/|See above.|S|CSS/JS
+
+## F15|Mobile-specific
+One-screen phone hero|AirPods Pro m0 (caps 51 m0)|Product top 55%, text bottom 45% in 100svh.|Complete first screen.|/|Phone hero rule.|S|CSS/JS
+Rotate-device overlay|Resn (live: rotate-overlay js-rotate)|Prompts landscape for an experience.|Lesson: avoid; design portrait first.|/platform/|Twin works portrait.|S|CSS/JS
+Bottom nav sheet|BIA (live: 390x400)|Menu from bottom.|Thumbs.|all|Phone nav.|S|CSS/JS
+Fixed bottom bar|Basement phone (live: nav fixed bottom 390x46)|Bar at bottom.|Reach.|/learn/*|Reader bar.|S|CSS/JS
+Swipe highlights with dots|AirPods Pro m1 (caps 51 m1)|Horizontal swipe with dots and pause.|Compact features.|/products/*|Feature swipe.|S|CSS/JS
+Vertical cut film|Figure (study)|9:16 master.|Framed.|/|Phone hero film.|M|Video
+Map in thumb zone|Study move 6|Map strip in bottom 40%.|Product within reach.|/products/amihub/|Map strip.|M|CSS/JS
+Text ≥17 px, no sideways scroll|AirTag m0-m3 (caps 00)|Readable and contained.|Basics.|all|Rule.|S|CSS/JS
+Phone canvas reduction|Lusion/BIA phone (live: fewer canvases on phone)|Less WebGL on phone.|Battery, heat.|/platform/|Still poster on phone.|S|CSS/JS
+Tap-to-play only on phone|Study (data budgets)|No autoplay on cellular.|Data respect.|/films/|Tap to play.|S|Video
+Phone preloader|Locomotive phone (live: c-preloader 390x844)|Fullscreen preloader on phone.|Lesson: keep under 1 s or drop.|all|Avoid.|S|CSS/JS
+Sticky phone CTA|Apple (caps 52)|CTA bar.|Conversion.|all|See F14.|S|CSS/JS
+Collapsed spec accordions|Apple specs|Accordions on phone.|Scannability.|/specs/|Accordions.|S|CSS/JS
+Phone-first calculators|Ramp|Big inputs.|Usable.|/tools/*|Large steppers.|S|CSS/JS
+Tap-to-call|Hello Monday (live: Tel lines)|Phone numbers tappable.|Direct.|/contact/|tel: link.|S|CSS/JS
+Drag strip on phone|Niccolò Miranda (live)|Swipe gallery.|Native.|/industries/|Swipe.|S|CSS/JS
+Short sections on phone|BIA phone page height (live: 11816 px Vitra case)|Lesson: very long phone pages.|Cut length.|/use-cases/*|Trim to essentials.|S|CSS/JS
+Touch-friendly map pinch|Waymo map|Pinch zoom.|Natural.|/products/amihub/|Pinch the demo map.|M|CSS/JS
+Bottom-sheet details|Google Maps convention adapted|Detail in sheet.|Thumb.|/products/amihub/|Dot tap opens sheet.|S|CSS/JS
+Phone-specific copy breaks|Apple|Different line breaks.|Clean type.|all|Bench check.|S|CSS/JS
+Share sheet|Web Share API, adapted from BIA shareable wishlist (live)|Native share.|Spread.|/tools/pilot/|Share pilot one-pager.|S|CSS/JS
+Phone safe-area respect|Active Theory (meta viewport-fit=cover)|Uses safe areas.|No clipped UI.|all|Rule.|S|CSS/JS
+Landscape film mode|Vision Pro|Fullscreen landscape on rotate.|Cinema on phone.|/films/|Fullscreen on rotate.|S|Video
+Phone hamburger 40x40|Hello Monday (live: mobileBurger 40x40)|Large tap target.|Accessible.|all|44px min.|S|CSS/JS
+Reduced 3D on phone|Bruno Simon (caps 85)|Simplified scene.|Performance.|/tools/anchors/|2D fallback.|S|CSS/JS
+Offline-friendly guides|Things (caps 96, tiny weight)|Light pages.|Plant Wi-Fi.|/learn/*|Under 200 KB.|S|CSS/JS
+WhatsApp share of result|adapted from BIA share|Share to WhatsApp.|India norm.|/tools/search-time/|Share result.|S|CSS/JS
+Vertical scenario cards|Skydio (study: 1080x1350)|4:5 cards.|Phone fit.|/films/|4:5 scenario cards.|S|Video
+Thumb-zone filters|Hello Monday filter (live)|Filters at bottom.|Reach.|/learn/|Filter chips at bottom.|S|CSS/JS
+Phone scroll-progress rule|Resn (live: interactive bar)|Thin progress line.|Orientation.|/learn/*|Bottom rule.|S|CSS/JS
+
+## F16|Performance and loading craft
+H1 as LCP|AirTag (caps 00 d0)|Text is LCP; image decodes async.|Fast first paint.|all|Rule.|S|CSS/JS|Pick: every redesign must keep this.
+Heavy media after first screen|AirTag (caps 00)|Media after fold.|Speed.|all|Lazy.|S|CSS/JS
+Hero ≤3 MB|Study L19|Weight budget.|Indian 4G.|/|Budget.|S|Video
+Poster ≤150 KB AVIF|Study build notes|Small poster.|LCP.|all films|Rule.|S|Video
+Sequence frames lazy|AirPods (caps 51)|Frames load after onload.|First paint unaffected.|/products/amigo/|Turntable frames.|M|CSS/JS
+Save-Data skip|Harvest pick 1|Skip heavy media on Save-Data.|Respect.|all|Rule.|S|CSS/JS
+Numeric preloader honest|Lusion (live: 001→092 counter)|Real progress counter.|Honest waiting.|/platform/|Only for twin.|S|CSS/JS
+Loader lockScroll|Immersive Garden (live: introLoader lockScroll)|Lesson: locks scroll during load.|Avoid on B2B.|all|Never lock scroll.|S|CSS/JS
+WebGL capability fallback|Active Theory (live: gate)|Lesson: gate.|Provide still.|all WebGL|Fallback still.|S|CSS/JS
+Prefetch on intent|Vercel (caps 59)|Hover prefetch.|Instant.|all|Rule.|S|CSS/JS
+Strict CSP no inline|Stripe (caps 56)|No inline scripts.|Security.|all|Rule.|S|CSS/JS
+Tiny page weight|Things (caps 96)|Very light.|Speed.|/learn/*|Budget.|S|CSS/JS
+Cookie dialog cost|BIA (live: Cookiebot 358x396 over hero)|Lesson: dialog covers hero.|Avoid.|all|No cookies.|S|CSS/JS
+Transform-only animation|Rivian (caps 18)|60 fps transforms.|Smooth.|all|Rule.|S|CSS/JS
+Font subsetting|Lusion (live: 3 font families only)|Few families.|Weight.|all|Max 2 families.|S|CSS/JS
+Sequence manifest build|AirPods (caps 51)|Frames as build artefact.|Repeatable.|site/tools|Build step.|M|CSS/JS
+Image CDN auto-format|Rivian (study: Cloudinary f_auto)|Auto AVIF/WebP.|Weight.|all|Build pipeline.|S|CSS/JS
+Pause offscreen WebGL|Lusion (live: fixed canvas)|Stop render loop offscreen.|Battery.|all WebGL|Rule.|S|WebGL
+Reduced motion stills|Vision Pro|Designed stills.|Accessible.|all|Rule.|S|CSS/JS
+Low-res video alternate|Waymo (study)|Alternate file.|Slow nets.|all films|Rule.|S|Video
+Static-first site build|Basement (live: Next/turbopack chunks), lesson|Many JS chunks.|Keep static.|all|Keep static HTML.|S|CSS/JS
+Self-hosted fonts|Lusion (live: Aeonik self-hosted)|Self-host fonts.|Speed/privacy.|all|Self-host.|S|CSS/JS
+Instanced geometry budget|Vention|Instancing.|Fast 3D.|/platform/|See F04.|M|WebGL
+Decode async images|AirTag|decoding=async.|Smooth.|all|Rule.|S|CSS/JS
+Measured LCP budget|Stripe (caps 56 d0)|Hero motion after LCP.|Measurable.|all|CI check.|S|CSS/JS
+Draco/meshopt compression|Lusion (live WebGL)|Compressed models.|Weight.|/products/*|CAD models compressed.|M|WebGL
+Lazy-mount 3D on view|Spline (caps 93)|Mount when visible.|Speed.|all WebGL|Rule.|S|WebGL
+Preload="none" below fold|Study L19|No preload.|Weight.|all films|Rule.|S|Video
+Tiny JS for micro-motion|Josh Comeau|Small scripts.|Fast.|all|Rule.|S|CSS/JS
+Ask.json static answers|nav.json build (existing)|Static index.|Instant.|all|Keep.|S|CSS/JS

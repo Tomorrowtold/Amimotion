@@ -1,49 +1,51 @@
 <!--
-title: AmIHub for developers: APIs, events and MCP
-description: How to connect to AmIHub: REST queries, MQTT and WebSocket events, an omlox hub interface and a built-in MCP server, with API keys, roles and audit logs.
-tone: light
-crumb: Developers
+title: AmIHub for developers: REST, MQTT, WebSocket and MCP
+description: Build on AmIHub: REST queries, MQTT and WebSocket events, an omlox hub interface and a built-in MCP server, with API keys, roles, TLS and audit logs.
+crumb: For developers
+type: article
+scripts: km
 -->
-<section class="page-head section light" aria-labelledby="page-title">
-<div class="wrap">
-<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/platform/">Platform</a><span aria-hidden="true">/</span><span aria-current="page">Developers</span></nav><h1 id="page-title" class="h-hero">For developers.<br><span class="soft">Five ways in.</span></h1><p class="lede">AmIHub keeps one record of where things are and when they moved. Your systems read it over open interfaces. Nothing you build is tied to one vendor.</p><p class="short-answer">AmIHub exposes location data over REST, MQTT, WebSocket, an omlox hub interface and a built-in MCP server for AI assistants. Access uses API keys and role-based permissions over TLS, and every call is written to an audit log.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Ask for API access</a><a class="btn btn-line" href="/specs/">Specifications</a></div>
+<div data-km class="head">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true"> / </span><a href="/platform/">How it works</a><span aria-hidden="true"> / </span><span aria-current="page">For developers</span></nav>
+<h1 id="page-title"><span>For developers.</span> <span>Five ways into AmIHub.</span></h1>
+<div class="words"><p class="lede">AmIHub keeps one record of where each tag is and when it moved. Your code reads it over open interfaces, inside your plant or in the cloud.</p><p class="short-answer"><a href="/products/amihub/">AmIHub</a>, AmIMotion's software, gives developers location data over REST, MQTT, WebSocket and an omlox hub interface, and has an MCP server built in for AI assistants. Every interface runs over TLS, with API keys and access by role, and every call is logged. On-premise, AmIHub runs on a PC inside your plant, so every interface stays on your network.</p><p class="more"><a href="/specs/">Specifications</a><span class="sep" aria-hidden="true">·</span><a href="/trust/">Trust and data</a></p></div>
 </div>
+
+<section class="sec" aria-labelledby="what-you-can-read">
+<h2 id="what-you-can-read"><span>What you can read.</span> <span>Records, not raw radio.</span></h2>
+<ul class="points c3"><li><h3>Positions</h3><p>A 3D position for every tracked item, with the time AmIHub saw it.</p></li><li><h3>Zone events</h3><p>Each entry, exit, idle and dwell, with the tag, the zone and the time stamps.</p></li><li><h3>History</h3><p>Trails, trips and waits for any item, over the time window you ask for. CSV and Parquet export.</p></li><li><h3>Devices</h3><p>Health, battery level and firmware state for each AmIGo tag and AmIMo anchor.</p></li><li><h3>The map</h3><p>Your floor plan, zones, fences and racking.</p></li><li><h3>Trackables</h3><p>Assets, vehicles and work orders are objects in AmIHub. You assign tags to them, in AmIHub or over the API.</p></li></ul>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">What you can read.<br><span class="soft">Records, not raw radio.</span></h2></div>
-<div class="tiles"><div class="tile" data-reveal><p class="over">Positions</p><h3>Where each tag is</h3><p>A 3D position with the time it was seen, for every tracked item.</p></div><div class="tile" data-reveal><p class="over">Zone events</p><h3>Entered, left, idle, waiting</h3><p>Each event carries the tag, the zone and its time stamps.</p></div><div class="tile" data-reveal><p class="over">History</p><h3>Trips and dwell</h3><p>Trajectory, trip and dwell queries by time window. CSV and Parquet export.</p></div><div class="tile" data-reveal><p class="over">Devices</p><h3>Tags and anchors</h3><p>Health, battery level and firmware state.</p></div><div class="tile" data-reveal><p class="over">Map</p><h3>Your floor model</h3><p>Plan, zones, geofences and racking.</p></div><div class="tile" data-reveal><p class="over">Links</p><h3>Which job rides where</h3><p>A job linked to a carrier, with a start, an end and an owner, set by a scan or your records.</p></div></div>
-</div>
+<section class="sec" aria-labelledby="pick-the-interface">
+<h2 id="pick-the-interface"><span>Pick the interface.</span> <span>By what your system needs.</span></h2>
+<table class="compare"><thead><tr><th scope="col">Interface</th><th scope="col">Pattern</th><th scope="col">Use it for</th></tr></thead><tbody><tr><th scope="row">REST</th><td data-h="Pattern">Request and response</td><td data-h="Use it for">Queries from MES, ERP, WMS and BI tools</td></tr><tr><th scope="row">MQTT</th><td data-h="Pattern">Publish and subscribe</td><td data-h="Use it for">Zone events into plant systems, as they happen</td></tr><tr><th scope="row">WebSocket</th><td data-h="Pattern">Live stream</td><td data-h="Use it for">Screens and your own apps that show live positions</td></tr><tr><th scope="row">omlox hub interface</th><td data-h="Pattern">The open omlox location model</td><td data-h="Use it for">Data that is not tied to one vendor's format</td></tr><tr><th scope="row">MCP server</th><td data-h="Pattern">Tools for AI assistants</td><td data-h="Use it for">Questions in plain words; any change needs a person's approval</td></tr></tbody></table><p class="note">Which topics, fields and rates your systems receive is agreed for your site. The architecture for your site comes with the datasheets, under NDA.</p>
 </section>
 
-<section class="section dark" data-tone="dark">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Pick the interface.<br><span class="soft">By what your system needs.</span></h2></div>
-<div class="table-wrap" data-reveal><table class="compare"><thead><tr><th scope="col">Interface</th><th scope="col">Pattern</th><th scope="col">Use it for</th></tr></thead><tbody><tr><th scope="row">REST</th><td>Request and response</td><td>Queries from MES, ERP, WMS and BI tools</td></tr><tr><th scope="row">MQTT</th><td>Publish and subscribe</td><td>Zone events into plant systems as they happen</td></tr><tr><th scope="row">WebSocket</th><td>Live stream</td><td>Screens and custom apps that show live positions</td></tr><tr><th scope="row">omlox hub interface</th><td>Open location model</td><td>Combining vendors and location technologies</td></tr><tr><th scope="row">MCP server</th><td>Tools for AI assistants</td><td>Plain-language questions, with a person approving any action</td></tr></tbody></table><p class="note">The integration contract (topics, fields and rates) is agreed for each site. The full API reference comes with the detailed pack.</p></div>
-</div>
+<section class="sec" aria-labelledby="a-zone-event-in-words">
+<h2 id="a-zone-event-in-words"><span>A zone event, in words.</span></h2>
+<div class="prose"><p>When a tagged trolley enters a zone, AmIHub records an event. It names the tag, the zone, the kind of event (entered, left, idle or dwell) and the time. When the trolley leaves, a second event closes the visit, so the wait is the time between them. You can take these events as they happen over MQTT or WebSocket, or ask AmIHub for them by time window over REST.</p><p>Link each trolley to the job it carries, in AmIHub or from your own system. AmIHub then reports the wait against that job. Your MES stays in charge of the job itself.</p></div>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">AI assistants, with limits.<br><span class="soft">Built in, not bolted on.</span></h2><p class="lede" style="margin-top:20px">AmIHub has its own MCP server, so an MCP-capable assistant can ask the floor a question.</p></div>
-<div class="tiles"><div class="tile" data-reveal><p class="over">Scoped</p><h3>Each assistant has its own key</h3><p>You choose which tools and zones it may use.</p></div><div class="tile" data-reveal><p class="over">Logged</p><h3>Every call recorded</h3><p>Who asked, what was read and when.</p></div><div class="tile" data-reveal><p class="over">Approved</p><h3>A person decides</h3><p>Any write action waits for a supervisor’s approval.</p></div></div>
-<div class="link-row" style="margin-top:clamp(44px,5vw,72px)"><a class="link-card" href="/learn/mcp-location-data/" data-reveal><b>MCP and location data</b><span>What an assistant can and cannot do.</span></a><a class="link-card" href="/products/amihub/" data-reveal><b>AmIHub</b><span>The software behind the interfaces.</span></a></div>
-</div>
+<section class="sec has-lead" aria-labelledby="ai-assistants-with-limits">
+<h2 id="ai-assistants-with-limits"><span>AI assistants, with limits.</span></h2><p class="lead">AmIHub has an MCP server built in. MCP is an open standard that lets AI assistants use other software.</p>
+<ul class="points c3"><li><h3>Scoped</h3><p>Each assistant gets its own access: read-only, or only the actions you allow.</p></li><li><h3>Logged</h3><p>Every request is logged: who asked, what was called and what changed.</p></li><li><h3>Approved</h3><p>Any change, such as raising a work order, needs a person's approval. You can require it from a supervisor.</p></li></ul>
+<div class="prose"><p>AmIHub's MCP tools cover live positions, history by time window, zones and fences, and the tags assigned to things. The same tools are there over REST and MQTT. Any assistant that supports MCP can connect. We show it live on a call.</p></div>
+<nav class="related" aria-label="Related pages"><ul><li><a href="/learn/mcp-location-data/">MCP and location data</a> <span>What an assistant can and cannot do</span></li><li><a href="/use-cases/ask-your-plant/">Ask your floor</a> <span>AI assistants and MCP</span></li></ul></nav>
 </section>
 
-<section class="section light" style="padding-top:0">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Security.<br><span class="soft">The same controls on every interface.</span></h2></div>
-<div class="tiles"><div class="tile" data-reveal><p class="over">In transit</p><h3>TLS</h3><p>Every interface is encrypted.</p></div><div class="tile" data-reveal><p class="over">Access</p><h3>API keys and roles</h3><p>Keys per system or assistant; roles per person.</p></div><div class="tile" data-reveal><p class="over">Record</p><h3>Audit logs and retention</h3><p>Every call logged; retention rules set by you.</p></div></div>
-<div class="link-row" style="margin-top:clamp(44px,5vw,72px)"><a class="link-card" href="/trust/" data-reveal><b>Trust and data</b><span>Where your data lives and what each claim rests on.</span></a></div>
-</div>
+<section class="sec" aria-labelledby="security">
+<h2 id="security"><span>Security.</span> <span>The same on every interface.</span></h2>
+<ul class="points c3"><li><h3>In transit</h3><p>TLS on every interface.</p></li><li><h3>Access</h3><p>API keys per system or assistant. Access set by role for people.</p></li><li><h3>Record</h3><p>Every call logged. Data retention rules for how long AmIHub keeps history.</p></li></ul>
+<nav class="related" aria-label="Related pages"><ul><li><a href="/trust/">Trust and data</a> <span>Where your data lives</span></li></ul></nav>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Questions teams ask first.</h2></div><div class="faq" style="margin-top:clamp(32px,4vw,56px);max-width:980px"><details><summary>Does AmIHub have an API?</summary><p>Yes. REST for queries, MQTT and WebSocket for live events and positions, an omlox hub interface, and a built-in MCP server for AI assistants.</p></details><details><summary>Can AmIHub send zone events to our MES?</summary><p>Yes, over MQTT or REST. Which fields and topics your MES receives is agreed during scoping.</p></details><details><summary>Where is the API reference?</summary><p>It comes with the detailed pack, shared under NDA before a pilot. Ask on a call.</p></details><details><summary>Does it work without internet?</summary><p>Yes. On-premise, AmIHub runs on an industrial PC in your plant and every interface stays on your network.</p></details></div>
-</div>
+<section class="sec" aria-labelledby="build-on-any-layer">
+<h2 id="build-on-any-layer"><span>Build on any layer.</span></h2>
+<div class="prose"><p>Your team or your integrator can build on AmIMotion at any layer, through open interfaces: the tags and anchors, AmIHub's records, or the MCP tools. One contract and one support line cover every layer.</p></div>
 </section>
 
-<section class="section dark close-cta" aria-labelledby="close-title" data-tone="dark"><div class="wrap" data-reveal><h2 id="close-title" class="h2">See it on a live map.</h2><p class="lede" style="margin:20px auto 0">On a short call we show the live map and an AI query, on real AmIHub data.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Book a call</a><a class="btn btn-line" href="/diagnostic/">Diagnose your floor</a></div></div></section>
+<section class="sec band surface" aria-labelledby="questions-developers-ask">
+<h2 id="questions-developers-ask"><span>Questions developers ask.</span></h2><div class="faq"><details><summary>Does AmIHub have an API?</summary><p>Yes. AmIHub has REST for queries, MQTT and WebSocket for live events and positions, an omlox hub interface, and an MCP server built in for AI assistants.</p></details><details><summary>Can AmIHub send zone events to our MES?</summary><p>Yes, over MQTT as they happen, or over REST when your MES asks. Which fields and topics your MES receives is agreed for your site.</p></details><details><summary>Where is the AmIHub API reference?</summary><p>Ask on the first call. AmIMotion shares the architecture for your site with the datasheets, under NDA.</p></details><details><summary>Does AmIHub work without internet?</summary><p>Yes. On-premise, AmIHub runs on an industrial PC inside your plant, and every interface stays on your network.</p></details><details><summary>Can an integrator build on AmIMotion?</summary><p>Yes. Your team or your integrator can build on AmIMotion at any layer, through open interfaces.</p></details></div>
+</section>
+
+<section class="close" aria-label="Next step"><p><span>See it on a live map.</span><span class="sub">On a short call we show the live map and an AI query, on real AmIHub data.</span><a href="/contact/">Book a call</a></p></section>

@@ -1,0 +1,118 @@
+{
+ "home-1440": {
+  "lcp": {
+   "t": 756,
+   "el": "H1"
+  },
+  "scrollW": 1440,
+  "vw": 1440,
+  "broken": [],
+  "slots": 0,
+  "playing": true
+ },
+ "home-390": {
+  "lcp": {
+   "t": 2124,
+   "el": "H1"
+  },
+  "scrollW": 390,
+  "vw": 390,
+  "broken": [],
+  "slots": 0,
+  "playing": true
+ },
+ "platform-1440": {
+  "lcp": {
+   "t": 1580,
+   "el": "IMG:hall-all-1600.avif"
+  },
+  "scrollW": 1440,
+  "vw": 1440,
+  "broken": [],
+  "slots": 0,
+  "playing": false
+ },
+ "platform-390": {
+  "lcp": {
+   "t": 1272,
+   "el": "P"
+  },
+  "scrollW": 390,
+  "vw": 390,
+  "broken": [],
+  "slots": 0,
+  "playing": false
+ },
+ "solutions-wip-1440": {
+  "lcp": {
+   "t": 1064,
+   "el": "IMG:hall-wip-1600.avif"
+  },
+  "scrollW": 1440,
+  "vw": 1440,
+  "broken": [],
+  "slots": 0,
+  "playing": false
+ },
+ "solutions-wip-390": {
+  "lcp": {
+   "t": 1348,
+   "el": "P"
+  },
+  "scrollW": 390,
+  "vw": 390,
+  "broken": [],
+  "slots": 0,
+  "playing": false
+ },
+ "industries-robotics-1440": {
+  "lcp": {
+   "t": 788,
+   "el": "SPAN"
+  },
+  "scrollW": 1440,
+  "vw": 1440,
+  "broken": [],
+  "slots": 0,
+  "playing": false
+ },
+ "industries-robotics-390": {
+  "lcp": {
+   "t": 748,
+   "el": "SPAN"
+  },
+  "scrollW": 390,
+  "vw": 390,
+  "broken": [],
+  "slots": 0,
+  "playing": false
+ },
+ "learn-dwell-time-1440": {
+  "lcp": {
+   "t": 1280,
+   "el": "IMG:hall-inspect-43-1600.avif"
+  },
+  "scrollW": 1440,
+  "vw": 1440,
+  "broken": [],
+  "slots": 0,
+  "playing": false
+ },
+ "learn-dwell-time-390": {
+  "lcp": {
+   "t": 800,
+   "el": "SPAN"
+  },
+  "scrollW": 390,
+  "vw": 390,
+  "broken": [],
+  "slots": 0,
+  "playing": false
+ },
+ "home-1440-nojs": {
+  "videoSrc": ""
+ },
+ "home-1440-reduced": {
+  "videoSrc": ""
+ }
+}

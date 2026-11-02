@@ -1,0 +1,21 @@
+[
+{"id":"electric","name":"Pure Electric","line":"True white, black ink, electric blue for every action. Shiv's 'blue and black with a hint of white', made fresh.",
+ "tokens":{"ground":"#ffffff","surface":"#f3f6fc","pressed":"#e6ecf7","ink":"#0a0c14","ink-soft":"#4b5163","ink-hover":"#22263a","on-ink":"#ffffff","hardware":"#3a3d42","link":"#1559ff","focus":"#1559ff","brand":"#66a5fa","located":"#1f6bff","waiting":"#ffb020","waiting-edge":"#a86d00"},
+ "hall":{"floor":"#ffffff","machines":"#eceff4","shadow":"#c9d0db"}},
+{"id":"indigo","name":"Indigo Lead","line":"Near-white page, deep-indigo ink, an electric-indigo button and sky-blue surfaces.",
+ "tokens":{"ground":"#fcfcff","surface":"#ebf3ff","pressed":"#dbe9ff","ink":"#17123f","ink-soft":"#4a4766","ink-hover":"#2a2360","on-ink":"#ffffff","hardware":"#3a3d42","link":"#4b3df0","focus":"#4b3df0","brand":"#66a5fa","located":"#1f6bff","waiting":"#ff5c4d"},
+ "button":["#4b3df0","#ffffff","#3a2cd6"],
+ "hall":{"floor":"#fcfcff","machines":"#e8eefa","shadow":"#c5cfe4"}},
+{"id":"skyground","name":"Sky Ground","line":"The whole page is a pale sky; white is the raised surface; navy ink and an electric-blue button.",
+ "tokens":{"ground":"#f0f6ff","surface":"#ffffff","pressed":"#e0ecff","ink":"#0b1736","ink-soft":"#3f4d6b","ink-hover":"#1c2a50","on-ink":"#ffffff","hardware":"#3a3d42","link":"#1450e0","focus":"#1450e0","brand":"#66a5fa","located":"#1f6bff","waiting":"#ffb020","waiting-edge":"#a86d00"},
+ "button":["#1559ff","#ffffff","#0f47d6"],
+ "hall":{"floor":"#f0f6ff","machines":"#ffffff","shadow":"#c3d3ec"}},
+{"id":"band","name":"Indigo Band","line":"White hero, then a deep electric-indigo band where sky blue and amber glow without any glow effect.",
+ "tokens":{"ground":"#ffffff","surface":"#f4f6fb","pressed":"#e7ebf5","ink":"#0c0b1f","ink-soft":"#4b4a60","ink-hover":"#24223f","on-ink":"#ffffff","hardware":"#3a3d42","link":"#4338ca","focus":"#4338ca","brand":"#66a5fa","located":"#66a5fa","waiting":"#ffb020"},
+ "section":{"surface":"#1c1667","ink":"#ffffff","ink-soft":"#c9c6ec","link":"#a9cdff","focus":"#a9cdff","btn":"#ffffff","on-btn":"#1c1667","located":"#66a5fa","waiting":"#ffb020","waiting-edge":"#ffb020"},
+ "hall":{"floor":"#ffffff","machines":"#e9ecf3","shadow":"#c4c9d6"}},
+{"id":"duotone","name":"Duotone","line":"No black anywhere: indigo ink on white, solid sky blocks, hot coral for waiting. Nobody in industrial tech looks like this.",
+ "tokens":{"ground":"#ffffff","surface":"#d9e9ff","pressed":"#c6ddff","ink":"#2a1a8f","ink-soft":"#4a4380","ink-hover":"#3a28b0","on-ink":"#ffffff","hardware":"#3a3d42","link":"#4a2cf5","focus":"#4a2cf5","brand":"#66a5fa","located":"#1f6bff","waiting":"#ff5c4d"},
+ "button":["#4a2cf5","#ffffff","#3a1fd8"],
+ "hall":{"floor":"#ffffff","machines":"#e3eeff","shadow":"#b9c8ea"}}
+]

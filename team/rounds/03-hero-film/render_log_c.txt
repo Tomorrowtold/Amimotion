@@ -1,0 +1,355 @@
+00:00.384  cycles           | WARNING CUEW initialization failed: Error opening the library
+/home/user/amimotion/team/rounds/03-hero-film/build_hall.py:365: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/home/user/amimotion/team/rounds/03-hero-film/build_hall.py:588: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  w.use_nodes = True
+00:38.670  render           | Saved: 'frames_raw/f0050.png.tmp.png'
+FRAME 50 38.3s
+01:16.190  render           | Saved: 'frames_raw/f0051.png.tmp.png'
+FRAME 51 37.5s
+01:54.235  render           | Saved: 'frames_raw/f0052.png.tmp.png'
+FRAME 52 38.0s
+02:32.054  render           | Saved: 'frames_raw/f0053.png.tmp.png'
+FRAME 53 37.8s
+03:08.064  render           | Saved: 'frames_raw/f0054.png.tmp.png'
+FRAME 54 36.0s
+03:45.614  render           | Saved: 'frames_raw/f0055.png.tmp.png'
+FRAME 55 37.6s
+04:22.422  render           | Saved: 'frames_raw/f0056.png.tmp.png'
+FRAME 56 36.8s
+05:01.260  render           | Saved: 'frames_raw/f0057.png.tmp.png'
+FRAME 57 38.8s
+05:39.293  render           | Saved: 'frames_raw/f0058.png.tmp.png'
+FRAME 58 38.0s
+06:16.937  render           | Saved: 'frames_raw/f0059.png.tmp.png'
+FRAME 59 37.6s
+06:53.458  render           | Saved: 'frames_raw/f0060.png.tmp.png'
+FRAME 60 36.5s
+07:29.793  render           | Saved: 'frames_raw/f0061.png.tmp.png'
+FRAME 61 36.3s
+08:06.350  render           | Saved: 'frames_raw/f0062.png.tmp.png'
+FRAME 62 36.6s
+08:44.106  render           | Saved: 'frames_raw/f0063.png.tmp.png'
+FRAME 63 37.8s
+09:21.413  render           | Saved: 'frames_raw/f0064.png.tmp.png'
+FRAME 64 37.3s
+09:59.126  render           | Saved: 'frames_raw/f0065.png.tmp.png'
+FRAME 65 37.7s
+10:36.980  render           | Saved: 'frames_raw/f0066.png.tmp.png'
+FRAME 66 37.9s
+11:14.598  render           | Saved: 'frames_raw/f0067.png.tmp.png'
+FRAME 67 37.6s
+11:52.289  render           | Saved: 'frames_raw/f0068.png.tmp.png'
+FRAME 68 37.7s
+12:29.033  render           | Saved: 'frames_raw/f0069.png.tmp.png'
+FRAME 69 36.7s
+13:07.262  render           | Saved: 'frames_raw/f0070.png.tmp.png'
+FRAME 70 38.2s
+13:43.566  render           | Saved: 'frames_raw/f0071.png.tmp.png'
+FRAME 71 36.3s
+14:20.034  render           | Saved: 'frames_raw/f0072.png.tmp.png'
+FRAME 72 36.5s
+14:56.083  render           | Saved: 'frames_raw/f0073.png.tmp.png'
+FRAME 73 36.0s
+15:31.967  render           | Saved: 'frames_raw/f0074.png.tmp.png'
+FRAME 74 35.9s
+16:09.297  render           | Saved: 'frames_raw/f0075.png.tmp.png'
+FRAME 75 37.3s
+16:46.460  render           | Saved: 'frames_raw/f0076.png.tmp.png'
+FRAME 76 37.2s
+17:22.339  render           | Saved: 'frames_raw/f0077.png.tmp.png'
+FRAME 77 35.9s
+17:58.377  render           | Saved: 'frames_raw/f0078.png.tmp.png'
+FRAME 78 36.0s
+18:34.422  render           | Saved: 'frames_raw/f0079.png.tmp.png'
+FRAME 79 36.0s
+19:10.494  render           | Saved: 'frames_raw/f0080.png.tmp.png'
+FRAME 80 36.1s
+19:46.386  render           | Saved: 'frames_raw/f0081.png.tmp.png'
+FRAME 81 35.9s
+20:22.842  render           | Saved: 'frames_raw/f0082.png.tmp.png'
+FRAME 82 36.5s
+20:59.130  render           | Saved: 'frames_raw/f0083.png.tmp.png'
+FRAME 83 36.3s
+21:34.872  render           | Saved: 'frames_raw/f0084.png.tmp.png'
+FRAME 84 35.7s
+22:09.720  render           | Saved: 'frames_raw/f0085.png.tmp.png'
+FRAME 85 34.8s
+22:44.617  render           | Saved: 'frames_raw/f0086.png.tmp.png'
+FRAME 86 34.9s
+23:19.685  render           | Saved: 'frames_raw/f0087.png.tmp.png'
+FRAME 87 35.1s
+23:55.960  render           | Saved: 'frames_raw/f0088.png.tmp.png'
+FRAME 88 36.3s
+24:31.406  render           | Saved: 'frames_raw/f0089.png.tmp.png'
+FRAME 89 35.4s
+25:07.273  render           | Saved: 'frames_raw/f0090.png.tmp.png'
+FRAME 90 35.9s
+25:43.801  render           | Saved: 'frames_raw/f0091.png.tmp.png'
+FRAME 91 36.5s
+26:19.187  render           | Saved: 'frames_raw/f0092.png.tmp.png'
+FRAME 92 35.4s
+26:56.785  render           | Saved: 'frames_raw/f0093.png.tmp.png'
+FRAME 93 37.6s
+27:33.374  render           | Saved: 'frames_raw/f0094.png.tmp.png'
+FRAME 94 36.6s
+28:10.603  render           | Saved: 'frames_raw/f0095.png.tmp.png'
+FRAME 95 37.2s
+28:49.473  render           | Saved: 'frames_raw/f0096.png.tmp.png'
+FRAME 96 38.9s
+29:28.699  render           | Saved: 'frames_raw/f0097.png.tmp.png'
+FRAME 97 39.2s
+30:08.941  render           | Saved: 'frames_raw/f0098.png.tmp.png'
+FRAME 98 40.2s
+30:48.189  render           | Saved: 'frames_raw/f0099.png.tmp.png'
+FRAME 99 39.2s
+31:25.271  render           | Saved: 'frames_raw/f0100.png.tmp.png'
+FRAME 100 37.1s
+32:03.249  render           | Saved: 'frames_raw/f0101.png.tmp.png'
+FRAME 101 38.0s
+32:40.693  render           | Saved: 'frames_raw/f0102.png.tmp.png'
+FRAME 102 37.4s
+33:20.637  render           | Saved: 'frames_raw/f0103.png.tmp.png'
+FRAME 103 39.9s
+34:01.126  render           | Saved: 'frames_raw/f0104.png.tmp.png'
+FRAME 104 40.5s
+34:41.613  render           | Saved: 'frames_raw/f0105.png.tmp.png'
+FRAME 105 40.5s
+35:19.690  render           | Saved: 'frames_raw/f0106.png.tmp.png'
+FRAME 106 38.1s
+35:57.732  render           | Saved: 'frames_raw/f0107.png.tmp.png'
+FRAME 107 38.0s
+36:36.540  render           | Saved: 'frames_raw/f0108.png.tmp.png'
+FRAME 108 38.8s
+37:14.613  render           | Saved: 'frames_raw/f0109.png.tmp.png'
+FRAME 109 38.1s
+37:52.008  render           | Saved: 'frames_raw/f0110.png.tmp.png'
+FRAME 110 37.4s
+38:28.857  render           | Saved: 'frames_raw/f0111.png.tmp.png'
+FRAME 111 36.8s
+39:07.595  render           | Saved: 'frames_raw/f0112.png.tmp.png'
+FRAME 112 38.7s
+39:44.238  render           | Saved: 'frames_raw/f0113.png.tmp.png'
+FRAME 113 36.6s
+40:21.721  render           | Saved: 'frames_raw/f0114.png.tmp.png'
+FRAME 114 37.5s
+40:58.834  render           | Saved: 'frames_raw/f0115.png.tmp.png'
+FRAME 115 37.1s
+41:35.921  render           | Saved: 'frames_raw/f0116.png.tmp.png'
+FRAME 116 37.1s
+42:11.929  render           | Saved: 'frames_raw/f0117.png.tmp.png'
+FRAME 117 36.0s
+42:47.833  render           | Saved: 'frames_raw/f0118.png.tmp.png'
+FRAME 118 35.9s
+43:24.121  render           | Saved: 'frames_raw/f0119.png.tmp.png'
+FRAME 119 36.3s
+44:01.492  render           | Saved: 'frames_raw/f0120.png.tmp.png'
+FRAME 120 37.4s
+44:38.445  render           | Saved: 'frames_raw/f0121.png.tmp.png'
+FRAME 121 37.0s
+45:16.109  render           | Saved: 'frames_raw/f0122.png.tmp.png'
+FRAME 122 37.7s
+45:52.736  render           | Saved: 'frames_raw/f0123.png.tmp.png'
+FRAME 123 36.6s
+46:29.382  render           | Saved: 'frames_raw/f0124.png.tmp.png'
+FRAME 124 36.6s
+47:06.596  render           | Saved: 'frames_raw/f0125.png.tmp.png'
+FRAME 125 37.2s
+47:45.219  render           | Saved: 'frames_raw/f0126.png.tmp.png'
+FRAME 126 38.6s
+48:21.729  render           | Saved: 'frames_raw/f0127.png.tmp.png'
+FRAME 127 36.5s
+48:58.767  render           | Saved: 'frames_raw/f0128.png.tmp.png'
+FRAME 128 37.0s
+49:37.151  render           | Saved: 'frames_raw/f0129.png.tmp.png'
+FRAME 129 38.4s
+50:20.494  render           | Saved: 'frames_raw/f0130.png.tmp.png'
+FRAME 130 43.3s
+50:57.535  render           | Saved: 'frames_raw/f0131.png.tmp.png'
+FRAME 131 37.0s
+51:35.774  render           | Saved: 'frames_raw/f0132.png.tmp.png'
+FRAME 132 38.2s
+52:13.331  render           | Saved: 'frames_raw/f0133.png.tmp.png'
+FRAME 133 37.6s
+52:50.685  render           | Saved: 'frames_raw/f0134.png.tmp.png'
+FRAME 134 37.4s
+53:29.521  render           | Saved: 'frames_raw/f0135.png.tmp.png'
+FRAME 135 38.8s
+54:06.671  render           | Saved: 'frames_raw/f0136.png.tmp.png'
+FRAME 136 37.1s
+54:44.823  render           | Saved: 'frames_raw/f0137.png.tmp.png'
+FRAME 137 38.2s
+55:23.377  render           | Saved: 'frames_raw/f0138.png.tmp.png'
+FRAME 138 38.6s
+56:01.680  render           | Saved: 'frames_raw/f0139.png.tmp.png'
+FRAME 139 38.3s
+56:38.656  render           | Saved: 'frames_raw/f0140.png.tmp.png'
+FRAME 140 37.0s
+57:16.055  render           | Saved: 'frames_raw/f0141.png.tmp.png'
+FRAME 141 37.4s
+57:53.517  render           | Saved: 'frames_raw/f0142.png.tmp.png'
+FRAME 142 37.5s
+58:30.108  render           | Saved: 'frames_raw/f0143.png.tmp.png'
+FRAME 143 36.6s
+59:07.220  render           | Saved: 'frames_raw/f0144.png.tmp.png'
+FRAME 144 37.1s
+59:45.208  render           | Saved: 'frames_raw/f0145.png.tmp.png'
+FRAME 145 38.0s
+01:00:22.173  render           | Saved: 'frames_raw/f0146.png.tmp.png'
+FRAME 146 37.0s
+01:01:00.506  render           | Saved: 'frames_raw/f0147.png.tmp.png'
+FRAME 147 38.3s
+01:01:37.065  render           | Saved: 'frames_raw/f0148.png.tmp.png'
+FRAME 148 36.6s
+01:02:14.819  render           | Saved: 'frames_raw/f0149.png.tmp.png'
+FRAME 149 37.8s
+01:02:51.251  render           | Saved: 'frames_raw/f0150.png.tmp.png'
+FRAME 150 36.4s
+01:03:28.112  render           | Saved: 'frames_raw/f0151.png.tmp.png'
+FRAME 151 36.9s
+01:04:03.288  render           | Saved: 'frames_raw/f0152.png.tmp.png'
+FRAME 152 35.2s
+01:04:38.615  render           | Saved: 'frames_raw/f0153.png.tmp.png'
+FRAME 153 35.3s
+01:05:13.677  render           | Saved: 'frames_raw/f0154.png.tmp.png'
+FRAME 154 35.1s
+01:05:48.900  render           | Saved: 'frames_raw/f0155.png.tmp.png'
+FRAME 155 35.2s
+01:06:24.443  render           | Saved: 'frames_raw/f0156.png.tmp.png'
+FRAME 156 35.5s
+01:06:59.915  render           | Saved: 'frames_raw/f0157.png.tmp.png'
+FRAME 157 35.5s
+01:07:37.377  render           | Saved: 'frames_raw/f0158.png.tmp.png'
+FRAME 158 37.5s
+01:08:15.273  render           | Saved: 'frames_raw/f0159.png.tmp.png'
+FRAME 159 37.9s
+01:08:51.479  render           | Saved: 'frames_raw/f0160.png.tmp.png'
+FRAME 160 36.2s
+01:09:29.220  render           | Saved: 'frames_raw/f0161.png.tmp.png'
+FRAME 161 37.7s
+01:10:05.646  render           | Saved: 'frames_raw/f0162.png.tmp.png'
+FRAME 162 36.4s
+01:10:43.140  render           | Saved: 'frames_raw/f0163.png.tmp.png'
+FRAME 163 37.5s
+01:11:19.707  render           | Saved: 'frames_raw/f0164.png.tmp.png'
+FRAME 164 36.6s
+01:11:56.960  render           | Saved: 'frames_raw/f0165.png.tmp.png'
+FRAME 165 37.3s
+01:12:36.883  render           | Saved: 'frames_raw/f0166.png.tmp.png'
+FRAME 166 39.9s
+01:13:16.060  render           | Saved: 'frames_raw/f0167.png.tmp.png'
+FRAME 167 39.2s
+01:13:56.874  render           | Saved: 'frames_raw/f0168.png.tmp.png'
+FRAME 168 40.8s
+01:14:34.086  render           | Saved: 'frames_raw/f0169.png.tmp.png'
+FRAME 169 37.2s
+01:15:11.025  render           | Saved: 'frames_raw/f0170.png.tmp.png'
+FRAME 170 36.9s
+01:15:48.878  render           | Saved: 'frames_raw/f0171.png.tmp.png'
+FRAME 171 37.9s
+01:16:26.258  render           | Saved: 'frames_raw/f0172.png.tmp.png'
+FRAME 172 37.4s
+01:17:05.979  render           | Saved: 'frames_raw/f0173.png.tmp.png'
+FRAME 173 39.7s
+01:17:43.665  render           | Saved: 'frames_raw/f0174.png.tmp.png'
+FRAME 174 37.7s
+01:18:20.102  render           | Saved: 'frames_raw/f0175.png.tmp.png'
+FRAME 175 36.4s
+01:18:57.968  render           | Saved: 'frames_raw/f0176.png.tmp.png'
+FRAME 176 37.9s
+01:19:35.460  render           | Saved: 'frames_raw/f0177.png.tmp.png'
+FRAME 177 37.5s
+01:20:11.647  render           | Saved: 'frames_raw/f0178.png.tmp.png'
+FRAME 178 36.2s
+01:20:49.929  render           | Saved: 'frames_raw/f0179.png.tmp.png'
+FRAME 179 38.3s
+01:21:27.604  render           | Saved: 'frames_raw/f0180.png.tmp.png'
+FRAME 180 37.7s
+01:22:05.356  render           | Saved: 'frames_raw/f0181.png.tmp.png'
+FRAME 181 37.8s
+01:22:42.811  render           | Saved: 'frames_raw/f0182.png.tmp.png'
+FRAME 182 37.5s
+01:23:18.269  render           | Saved: 'frames_raw/f0183.png.tmp.png'
+FRAME 183 35.5s
+01:23:53.825  render           | Saved: 'frames_raw/f0184.png.tmp.png'
+FRAME 184 35.6s
+01:24:30.246  render           | Saved: 'frames_raw/f0185.png.tmp.png'
+FRAME 185 36.4s
+01:25:06.613  render           | Saved: 'frames_raw/f0186.png.tmp.png'
+FRAME 186 36.4s
+01:25:44.230  render           | Saved: 'frames_raw/f0187.png.tmp.png'
+FRAME 187 37.6s
+01:26:21.858  render           | Saved: 'frames_raw/f0188.png.tmp.png'
+FRAME 188 37.6s
+01:26:58.055  render           | Saved: 'frames_raw/f0189.png.tmp.png'
+FRAME 189 36.2s
+01:27:35.105  render           | Saved: 'frames_raw/f0190.png.tmp.png'
+FRAME 190 37.1s
+01:28:12.986  render           | Saved: 'frames_raw/f0191.png.tmp.png'
+FRAME 191 37.9s
+01:28:51.518  render           | Saved: 'frames_raw/f0192.png.tmp.png'
+FRAME 192 38.5s
+01:29:27.998  render           | Saved: 'frames_raw/f0193.png.tmp.png'
+FRAME 193 36.5s
+01:30:04.310  render           | Saved: 'frames_raw/f0194.png.tmp.png'
+FRAME 194 36.3s
+01:30:40.191  render           | Saved: 'frames_raw/f0195.png.tmp.png'
+FRAME 195 35.9s
+01:31:16.715  render           | Saved: 'frames_raw/f0196.png.tmp.png'
+FRAME 196 36.5s
+01:31:54.998  render           | Saved: 'frames_raw/f0197.png.tmp.png'
+FRAME 197 38.3s
+01:32:31.332  render           | Saved: 'frames_raw/f0198.png.tmp.png'
+FRAME 198 36.3s
+01:33:07.756  render           | Saved: 'frames_raw/f0199.png.tmp.png'
+FRAME 199 36.4s
+01:33:45.901  render           | Saved: 'frames_raw/f0200.png.tmp.png'
+FRAME 200 38.1s
+01:34:21.877  render           | Saved: 'frames_raw/f0201.png.tmp.png'
+FRAME 201 36.0s
+01:34:57.356  render           | Saved: 'frames_raw/f0202.png.tmp.png'
+FRAME 202 35.5s
+01:35:32.930  render           | Saved: 'frames_raw/f0203.png.tmp.png'
+FRAME 203 35.6s
+01:36:09.691  render           | Saved: 'frames_raw/f0204.png.tmp.png'
+FRAME 204 36.8s
+01:36:46.905  render           | Saved: 'frames_raw/f0205.png.tmp.png'
+FRAME 205 37.2s
+01:37:23.674  render           | Saved: 'frames_raw/f0206.png.tmp.png'
+FRAME 206 36.8s
+01:38:00.713  render           | Saved: 'frames_raw/f0207.png.tmp.png'
+FRAME 207 37.0s
+01:38:36.521  render           | Saved: 'frames_raw/f0208.png.tmp.png'
+FRAME 208 35.8s
+01:39:12.552  render           | Saved: 'frames_raw/f0209.png.tmp.png'
+FRAME 209 36.0s
+01:39:48.044  render           | Saved: 'frames_raw/f0210.png.tmp.png'
+FRAME 210 35.5s
+01:40:23.813  render           | Saved: 'frames_raw/f0211.png.tmp.png'
+FRAME 211 35.8s
+01:40:58.660  render           | Saved: 'frames_raw/f0212.png.tmp.png'
+FRAME 212 34.8s
+01:41:34.850  render           | Saved: 'frames_raw/f0213.png.tmp.png'
+FRAME 213 36.2s
+01:42:09.805  render           | Saved: 'frames_raw/f0214.png.tmp.png'
+FRAME 214 35.0s
+01:42:46.292  render           | Saved: 'frames_raw/f0215.png.tmp.png'
+FRAME 215 36.5s
+01:43:23.176  render           | Saved: 'frames_raw/f0216.png.tmp.png'
+FRAME 216 36.9s
+01:43:59.865  render           | Saved: 'frames_raw/f0217.png.tmp.png'
+FRAME 217 36.7s
+01:44:36.732  render           | Saved: 'frames_raw/f0218.png.tmp.png'
+FRAME 218 36.9s
+01:45:13.971  render           | Saved: 'frames_raw/f0219.png.tmp.png'
+FRAME 219 37.2s
+01:45:51.567  render           | Saved: 'frames_raw/f0220.png.tmp.png'
+FRAME 220 37.6s
+01:46:27.831  render           | Saved: 'frames_raw/f0221.png.tmp.png'
+FRAME 221 36.3s
+01:47:04.636  render           | Saved: 'frames_raw/f0222.png.tmp.png'
+FRAME 222 36.8s
+01:47:41.101  render           | Saved: 'frames_raw/f0223.png.tmp.png'
+FRAME 223 36.5s
+01:48:17.775  render           | Saved: 'frames_raw/f0224.png.tmp.png'
+FRAME 224 36.7s

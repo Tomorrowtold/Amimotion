@@ -1,0 +1,132 @@
+## F09|Image treatment and framing
+One grade per page|Figure, 1X, SpaceX (study L11)|All imagery on a page shares one grade.|Cohesion reads as quality.|all pages|One neutral daylight LUT across all stills and films.|S|CSS/JS|Pick: ends the patchwork of render and stock.
+Planned text zone|SpaceX s2 (study L13)|Shots composed with an empty third for type.|Text never fights the picture.|/,/solutions/|Every new still has a planned text zone.|S|CSS/JS
+Bottom scrim only|Study L13|Only a bottom-edge scrim, no full-frame darkening.|Picture stays alive.|all film bands|Bottom 30% scrim.|S|CSS/JS
+Partial faces, mid-task|Study L9 (Figure s2, 1X s2)|People act, never pose; faces partial.|Avoids stock feel.|/company/,/trust/people/|Workers three-quarter back, hands on handles.|S|CSS/JS
+Imperfect real places|Study (Hadrian coolant mist, Gecko dented tank)|Real wear and mess in frame.|Real reads as real.|/industries/manufacturing/|Chipped floor paint, crushed carton.|S|CSS/JS
+Number on the picture|Study L8 (Waymo s2, Lumafield s3)|Proof number on the exact moment it measures.|Number and evidence fuse.|/solutions/wip/|"42 min" on a frame of the waiting trolley.|S|CSS/JS|Pick: cheapest high-impact proof move.
+Art-directed phone crop|Apple AirTag m0 (caps 00 m0)|Phone crop differs from desktop.|Subject survives.|all pages|Every hero gets a phone crop.|S|CSS/JS
+Multiply image on paper|Niccolò Miranda (live: mix-blend multiply)|Photos multiplied onto paper tone.|Printed, warm look.|/learn/|Guide photos multiplied on paper.|S|CSS/JS
+Grayscale to colour on hover|Niccolò Miranda (live: filter grayscale(0))|Images desaturated until hover.|Focus where the pointer is.|/use-cases/|Use case tiles colour on hover.|S|CSS/JS
+Soft blur gallery backdrop|Niccolò Miranda Roger Hub (live: blur(3px) saturate(.8))|Background images blurred and desaturated behind gallery.|Depth and focus.|/films/|Film list over blurred still.|S|CSS/JS
+Illustrated character mascot|Hello Monday (live: drawn character in contact area)|A hand-drawn character adds warmth.|Human, memorable.|/contact/|Not a mascot: a single line drawing of a supervisor with a tablet.|S|CSS/JS
+Hand-drawn line over photo|Locomotive hero (live)|Drawn line marks over photography.|Annotation feels human.|/use-cases/find-the-asset/|Drawn path to the trolley on a real photo.|S|CSS/JS|Pick: diagram inside the photo, drawn not boxed.
+Cut-out with tiny photo chip|Zipline s3-s5 (study L17)|Cut-out product plus a thumb-size photo chip in the line.|Most memorable non-film move.|/|Brand line with chip.|S|CSS/JS
+Full-bleed with caption bottom-left|SpaceX s1-s5 (caps 07)|Terse caption bottom-left on full-bleed.|Restraint.|/industries/*|Industry heroes.|S|CSS/JS
+Duotone brand treatment|Build in Amsterdam (live: exclusion blends)|Imagery tinted into two tones.|Unifies mixed sources.|/learn/|Archive photos in ink/accent duotone.|S|CSS/JS
+Labelled place and condition caption|Waymo s3 (study L15)|Captions name place and condition.|Specific is believable.|/films/|"PUNE · NIGHT SHIFT · trolley left at inspection".|S|CSS/JS|Pick: specificity is trust.
+Macro with focus falloff|Figure s1 (study L10)|Shallow focus macro.|Craft and attention.|/products/amigo/|Tag macro.|S|CSS/JS
+Same lens across family|Rivian (caps 18)|Same focal length everywhere.|Coherent world.|/products/|All product shots one lens.|S|CSS/JS
+Video poster = frame 0|Study L14|Poster is first frame.|No jump.|/films/|All films.|S|Video
+Count your visuals|Study L12|4-12 large unique visuals per page.|Each one carries the argument.|all pages|Bench quota per page.|S|CSS/JS
+Image inset in grid|Locomotive work (live: small thumbnails in list rows)|Tiny image beside each index row.|Visual hint, compact.|/use-cases/|Small floor thumbnails per row.|S|CSS/JS
+Edge-to-edge mosaic|Anduril s2 (caps 08)|Asymmetric mosaic with no gaps.|Density, family.|/industries/|Three industry tiles.|S|CSS/JS
+X-ray reveal on cursor|Lumafield (study)|Cursor reveals hidden layer.|Discovery.|/products/amimo/|Cursor reveals anchor internals.|M|CSS/JS
+Real floor photo as map base|Study move 7|Map drawn over a real top photo.|Real before abstract.|/products/amihub/|Map layer over drone-style top view.|M|CSS/JS
+Sticker/badge on photo|Niccolò Miranda (live: "New" badges)|Small badges on images.|Flags what's new.|/learn/|"New" on recent guides.|S|CSS/JS
+Image reveal mask on scroll|Build in Amsterdam (live: inset clip)|Images reveal through a mask.|Pace.|all pages|Once per page.|S|CSS/JS
+Photo grid with captions as data|Basement case (live: metadata labels)|Captions read like data.|Matter-of-fact.|/pilot/|Photos captioned "Day 3: anchors up".|S|CSS/JS
+Frame within frame (screen in room)|Apple Vision Pro s4 (study L6)|UI composited into a real room.|Imagined use made real.|/products/amihub/|AmIHub on a supervisor's tablet in the bay.|S|CSS/JS
+Long panoramic strip|Stripe Press (caps 57)|Wide strip images.|Shows scale.|/industries/warehousing/|Panoramic aisle strip.|S|CSS/JS
+Avoid render-card mosaics|Study L20 (Boston Dynamics, Symbotic)|Lesson: render cards read vendor.|Avoid.|all pages|Bench rule: renders only where render is the product.|S|CSS/JS
+Real kit photo, not icon|Study job table (pilot)|Photograph instead of icon.|Honest.|/how-to-buy/|Kit photo per step.|S|CSS/JS
+
+## F10|Video use
+Play-in-view clips with pause|Apple Vision Pro (study: 27 in-view clips, JS play)|Clips play when visible, pause off-view, with a pause button.|Motion only where seen; accessible.|all film use|Shared in-view clip component.|S|Video|Pick: one component for every clip on the site.
+Separate vertical master|Figure, Vention (study L3)|9:16 file for phone.|Subject survives.|/,/films/|Vertical cuts of hero and scenario films.|M|Video
+Click-to-play scenario films|Waymo s3 (study L15)|Long films labelled with place/condition, load on click.|Proof without autoplay weight.|/films/|"PUNE · NIGHT · trolley left at inspection" films.|M|Video|Pick: proof films with honest labels.
+Hero loop 12-16 s|Study L2|Muted loop, 3-4 shots, no controls.|Mood without cost.|/|Hero film spec.|M|Video
+Showreel modal|Locomotive (live: c-video-modal), Lusion (PLAY REEL)|Full-screen reel in a modal.|Optional depth.|/films/|Master film in modal.|S|Video
+Short UI loops 3-5 s|Study (AirTag 4.5 s webm)|Tiny loops for mechanism or UI.|Light and clear.|/products/amihub/|UI loops: search, filter, alert.|S|Video
+Desktop+mobile case videos|Build in Amsterdam Vitra case (live: 3120x1744 desktop + 750x1400 mobile videos)|Same content cut for both devices.|Each view framed.|/use-cases/*|Each use-case loop in both cuts.|M|Video
+Device-framed screen recording|Build in Amsterdam Polaroid (live: showreel-phone 374x700)|Screen recording inside a phone frame.|Shows mobile product.|/products/amihub/|AmIHub on phone recording.|S|Video
+Stabilised floor footage|Hello Monday (live: "Stabilized_2.mp4" 17 s loop)|Handheld footage stabilised.|Calm.|/company/|Stabilised walk through a bay.|S|Video
+Video behind stat|Dexterity (study)|Loop behind number.|Evidence in motion.|/solutions/wip/|See F08.|S|Video
+Watch-the-film link|Apple AirPods Pro (study)|Separate long film behind a button.|Opt-in sound.|/|"Watch the film" link.|S|Video
+Scroll-scrubbed footage|Study move 2|Footage tied to scroll.|Time made tangible.|/learn/dwell-time/|See F02.|M|Video
+Film ends on UI|Study L6|Every film hands over to the interface.|Product proof.|/films/|End cards show AmIHub state.|S|Video
+Poster for reduced motion|Apple Vision Pro (caps 53 d7)|Designed still for reduced motion.|Accessible.|all film use|Poster fallback.|S|Video
+Chaptered long film|Seeing Theory chapters (sites.py)|Chapters with jump points.|Respect time.|/films/|Chapters: problem, install, map, result.|S|Video
+Muted autoplay, sound only on click|Study (sound)|Never sound toggle on hero.|No surprise audio.|all|Rule.|S|Video
+Hover-play tile|Study (industry tiles: 3 s loop on hover)|Tile plays a short loop on hover.|Preview.|/industries/|Industry tiles.|S|Video
+Scenario card turns into query|Study move 5|Loop ends; card becomes a query panel.|Footage to product.|/films/|Scenario cards.|M|Video
+Video with caption track|Study (accessibility)|Captions on all films.|Accessible, silent viewing.|/films/|VTT captions, Hindi and English.|S|Video
+Founder film|Lusion Oryzo case (live: "founder video" link)|Founder speaks directly.|Trust in people.|/company/|90 s founder on a plant floor.|M|Video
+Install time-lapse|Polaroid case sequence (live: many short clips, 28 videos on phone)|Many short clips form a build story.|Shows effort and speed.|/pilot/|Install day time-lapse: anchors up in 4 h.|M|Video|Pick: proves pilot is light.
+Film thumbnail strip|Basement case (live: image strip)|Strip of stills under a film.|Preview.|/films/|Shot strip.|S|Video
+In-film map overlay|Study move 6|Map strip pans with the camera.|Film + product one piece.|/|Phone hero.|L|WebGL+Video
+Reconstruction label|Study (labelled "reconstruction")|AI films labelled honestly.|Trust.|/films/|"Reconstruction" chip.|S|Video
+Behind-the-scenes clip|Immersive Garden (live: "See backstage")|Backstage clip of making.|Credibility.|/technology/|How we tested accuracy, backstage.|S|Video
+Loop seam match|Study L14|Last frame = first frame.|Invisible loops.|all|Rule.|S|Video
+Low-res alternate stream|Waymo (study: 600x354 alternate)|Lower-res file for slow nets.|Indian 4G reality.|all|Save-Data alternate.|S|Video
+HLS adaptive for long films|1X (study: m3u8)|Adaptive streaming.|Smooth on variable nets.|/films/|HLS for films over 30 s.|M|Video
+Video as section background|Darkroom (caps 86: videos per section)|Muted video backgrounds behind text.|Atmosphere.|/industries/warehousing/|Dock loop behind industry text.|S|Video
+No-loop held end frame|Hadrian s1 (study: 11 s, holds last frame)|Film plays once and holds.|Ends on the point.|/use-cases/find-the-asset/|Film ends on found trolley.|S|Video
+
+## F11|Micro-interactions and cursor
+Dual-ring custom cursor|Immersive Garden (live: cursor__follow + cursor__ease 10x10 + cursor__text)|A dot follows exactly, a second eases behind, a label rides along.|Pointer feels tuned.|/platform/|Only on the 3D twin: cursor label "drag to orbit".|S|CSS/JS
+Cursor label on media|Immersive Garden (live: cursor__text "Scroll down")|Cursor carries an action label.|Clear affordance.|/films/|"Play" label over films.|S|CSS/JS
+Letter-roll buttons|Lusion (live: duplicated letters)|Button text rolls on hover.|Delight.|all CTAs|Primary CTA.|S|CSS/JS
+Arrow nudge + press scale|Stripe (caps 56 d0)|Arrow nudges 3 px; press scales .97.|Tactile.|all buttons|Rule.|S|CSS/JS
+Copy-email button|Hello Monday (live: "Copy e-mail")|Click copies email with confirmation.|Saves steps.|/contact/|Copy address button.|S|CSS/JS
+Springy hover|Josh Comeau (caps 73)|Spring physics on hover.|Feels physical.|small UI|Chips and toggles.|S|CSS/JS
+State-machine icon|Rive (caps 92)|Icons react to hover with states.|Alive UI.|/products/amigo/|Tag icon blinks when hovered.|S|CSS/JS
+Magnetic button|Lusion (live: cursor-tracking header)|Button drifts toward cursor.|Attraction.|/diagnostic/|Start button.|S|CSS/JS
+Hover image preview in list|Locomotive (live: work list)|Hovering a row shows preview image.|Preview.|/use-cases/|Row hover preview.|S|CSS/JS
+Sound opt-in toggle|Resn (live: shell__button--sound), Immersive Garden ("Click to enable sound")|Small sound toggle.|Choice.|/films/|Ambient toggle.|S|CSS/JS
+Pause control on motion|Apple Vision Pro (caps 53 d7)|Visible pause on every moving thing.|WCAG 2.2.2.|all|Rule.|S|CSS/JS
+Hover on map dot shows card|Waymo (study)|Hover reveals detail.|Data on demand.|/products/amihub/|Dot hover: T-114, job, wait.|S|CSS/JS
+Link underline on hover only|Apple AirPods Pro (caps 51 d1)|Underline appears on hover.|Clean text links.|all|Rule.|S|CSS/JS
+Keyboard focus rings designed|Stripe (caps 56)|Visible, styled focus.|Accessible.|all|Rule.|S|CSS/JS
+Toast confirm|Basement (live: chat)|Small toast confirms action.|Feedback.|/tools/pilot/|"Link copied".|S|CSS/JS
+Cursor as anchor|Lusion (live)|Cursor becomes part of the scene.|Play.|/industrial-spatial-intelligence/|Cursor as an anchor hearing nearby dots.|M|WebGL
+Hover lift on cards|Verkada (caps 41)|Cards lift slightly.|Interactivity hint.|/learn/|Guide tiles.|S|CSS/JS
+Ripple tap on phone|Hello Monday (live: closeBulge)|Tap ripples.|Touch feedback.|phone|Buttons.|S|CSS/JS
+Number scrubbing input|Bret Victor (sites.py)|Drag a number to change it.|Exploration.|/tools/anchors/|Drag bay length.|S|CSS/JS
+Range slider with live label|Vention configurator|Slider with live result.|Immediate cause-effect.|/tools/search-time/|Searches per shift slider.|S|CSS/JS
+Inline definition popover|Josh Comeau (sites.py)|Popover definitions.|Learn in place.|/learn/*|Glossary popovers.|S|CSS/JS
+Hover reveal x-ray|Study move 3|Hover sharpens the tag in footage.|Discovery.|/products/amigo/|See F04.|M|WebGL
+Debug grid toggle|Hello Monday (live: DebugGrid overlay)|A hidden layout grid overlay.|Craft signal for designers.|/developers/|Press G for grid easter egg.|S|CSS/JS
+Scroll-hint bounce|Immersive Garden (live: scrollCursor)|Cursor turns into scroll hint at top.|Prompt to move.|/platform/|Hint on twin page.|S|CSS/JS
+Live clock in footer|Locomotive footer (live: Montréal address block)|Local time beside address.|Human presence.|/contact/|"Pune 14:20 IST".|S|CSS/JS
+Button press haptic on phone|Bruno Simon (caps 85)|Vibration feedback on tap.|Tactile.|/tools/*|Calculator taps.|S|CSS/JS
+Hover tint on rows|Basement (live: list rows)|Row hover inverts.|Scan clarity.|/specs/|Spec rows.|S|CSS/JS
+Expand-in-place FAQ|Apple (caps 52)|Accordion answers.|Compact.|/faq/|FAQ accordion.|S|CSS/JS
+Animated checkmark|Apple Privacy (caps 55 d2)|Filled/empty marks.|Clear yes/no.|/learn/uwb-vs-rfid/|Compare marks.|S|CSS/JS
+Hover-to-orbit product|Spline (caps 93)|Product tilts toward cursor.|Inspect.|/products/amimo/|Anchor tilts.|S|CSS/JS
+Reduced motion designed stills|Apple Vision Pro (caps 53 d7)|Every motion has a designed still.|Accessible craft.|all|Rule.|S|CSS/JS
+Elastic overscroll pull|Basement (live: bottom nav)|Pull-to-reveal at page end.|Delight.|/learn/*|Pull reveals next guide.|S|CSS/JS
+
+## F12|Storytelling structures
+Page spine: hero→closer look→stats→science→buy|Apple AirPods Pro (caps 51 d0-d12)|A fixed spine for product pages.|Predictable, complete.|/products/*|Spine for three products.|S|CSS/JS|Pick: one spine for every product page.
+Problem→mechanism→proof→pilot|Study job table|Narrative order across a page.|Buyer logic.|/|Home order.|S|CSS/JS
+Case-study structure: brief, story, gallery, next|Niccolò Miranda Roger Hub (live: "THE WORK / STORY / GALLERY / NEXT")|Case page sections.|Clear reading.|/use-cases/*|Use cases: Flow / Story / Pictures / Next.|S|CSS/JS
+Metadata-first case|Basement (live: Client/Year/Type/Awards/Link column)|Facts first, story after.|Busy readers.|/pilot/|Pilot facts first.|S|CSS/JS
+Satire as storytelling|Lusion Oryzo case (live: cork coaster launched as AI product)|Treating a mundane object as a hero product.|Memorable tone.|/learn/|Lesson: a trolley treated as a hero object in one film.|M|Video
+Dynasty/timeline of years|Locomotive (live: "Seven Years Running 2018-2024 The dynasty", trips by year)|Years list as a story.|Track record.|/company/|Company timeline.|S|CSS/JS
+One idea per screen|AirTag (study L1)|Each screen one point.|Clarity.|all|Rule.|S|CSS/JS
+Find-the-thing story|AirTag s7-s9 (caps 00)|Lost→found arc.|Universal story.|/use-cases/find-the-asset/|Supervisor searches, map finds.|S|CSS/JS
+Day-in-the-life of a trolley|Study move 2|Follow one object through time.|Empathy for the object.|/use-cases/station-to-station/|T-114's shift.|M|CSS/JS|Pick: one trolley's day carries WIP better than any diagram.
+Scenario titles|Waymo s3 (study L15)|Place + condition title.|Specific.|/films/|Scenario list.|S|CSS/JS
+Play first, explain after|Evolution of Trust (sites.py)|Interaction precedes text.|Discovery sticks.|/technology/|Drag the tag first.|M|CSS/JS
+Text-figure-text rhythm|Red Blob Games (caps 72)|Paragraph, small interactive figure, paragraph.|Learn in steps.|/learn/*|Guides rhythm.|S|CSS/JS
+Legacy vs new|Augury (caps 44)|Side-by-side contrast.|Change visible.|/learn/alternatives/|Clipboard vs map.|S|CSS/JS
+Intuition then notation|3Blue1Brown (sites.py)|Picture first, numbers second.|Accessible to all levels.|/learn/accuracy/|Ring picture then table.|S|CSS/JS
+Campaign beyond the site|Lusion Oryzo (live: GitHub page, Product Hunt, founder video)|Story spans channels.|Reach.|/films/|Films cut for LinkedIn.|S|Video
+Brief-as-headline|Build in Amsterdam (live: "Designing & engineering an immersive gift finder" subtitle)|Case subtitle states the brief.|Instant context.|/use-cases/*|Use case subtitles.|S|CSS/JS
+Partnership section|Build in Amsterdam Polaroid (live: "PARTNERSHIP")|Ends with the relationship.|Long-term trust.|/how-to-buy/|After pilot: rollout partnership.|S|CSS/JS
+Numbered chapters|Lusion (live: 001-style numerals)|Chapters numbered.|Structure.|/technology/|01-04.|S|CSS/JS
+Guide character|Evolution of Trust (sites.py)|A recurring character guides.|Continuity.|/learn/|Recurring supervisor "Shift lead".|M|CSS/JS
+Q&A answer-first|How Search Works (sites.py)|Plain step-by-step answers.|Answer engines and readers.|/faq/|Answer first sentence.|S|CSS/JS
+Explorable gallery|Explorable Explanations (sites.py)|Index of interactive pieces.|Hub of learning.|/tools/|Tools as explorables.|S|CSS/JS
+Editorial release page|Shopify Editions (sites.py)|Themed release.|Event feel.|/resources/|Quarterly "Floor notes".|M|CSS/JS
+Stack of spines|Stripe Press (caps 57 d1-d3)|Items as book spines.|Collectible feel.|/learn/|Guides as spines.|S|CSS/JS
+Newspaper edition|Niccolò Miranda (live)|Page as a newspaper.|Format with authority.|/learn/|See F01.|M|CSS/JS
+Four frames one idea each|Helion (caps 04)|Same camera, four frames.|Clarity.|/technology/|See F02.|S|CSS/JS
+Hook question opener|Hello Monday (live: "Want to collaborate? / Want to say hi? / Want to join us?")|Questions as section openers.|Conversational routing.|/contact/|"Want a pilot? Want the NDA pack? Want to talk?".|S|CSS/JS
+Award strip as story beat|Niccolò Miranda (live: SITE OF THE DAY counts)|Recognition as a beat.|Social proof.|/company/|Only real recognitions.|S|CSS/JS
+Signature visual style|Kurzgesagt (sites.py)|A consistent illustration language.|Recognisable.|all diagrams|One line-drawing style for all diagrams.|M|CSS/JS|Pick: one drawing language replaces the grey boxes.
+One-interaction page|Neal.fun (sites.py)|One idea, one interaction.|Shareable.|/tools/search-time/|Single calculator.|S|CSS/JS
+Culture/trips section|Locomotive (live: "Annual trips" by year)|Human moments.|Team warmth.|/company/|Plant visits log.|S|CSS/JS
+Reel-first case|Build in Amsterdam (live: showreel per case)|Each case opens with a reel.|Show, don't tell.|/use-cases/*|Loop per case.|S|Video
+Measure-before-claim arc|Waymo (caps 01 d8)|Methodology then claim.|Credibility.|/learn/pilot-baseline/|Baseline story.|S|CSS/JS
