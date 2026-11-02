@@ -289,8 +289,8 @@
 @media (prefers-reduced-motion:no-preference){
   .hb-arm .hb-chat-body>*:not(:first-child){opacity:0;transform:translateY(10px);transition:opacity .6s var(--hb-ease),transform .6s var(--hb-ease)}
   .hb-arm.played .hb-chat-body>*{opacity:1!important;transform:none!important}
-  .hb-arm.played .hb-chat-body>:nth-child(2){transition-delay:.2s}.hb-arm.played .hb-chat-body>:nth-child(3){transition-delay:1s}
-  .hb-arm.played .hb-chat-body>:nth-child(4){transition-delay:2s}.hb-arm.played .hb-chat-body>:nth-child(5){transition-delay:2.8s}.hb-arm.played .hb-chat-body>:nth-child(6){transition-delay:3.4s}
+  .hb-arm.played .hb-chat-body>:nth-child(2){transition-delay:.1s}.hb-arm.played .hb-chat-body>:nth-child(3){transition-delay:.55s}
+  .hb-arm.played .hb-chat-body>:nth-child(4){transition-delay:1.05s}.hb-arm.played .hb-chat-body>:nth-child(5){transition-delay:1.5s}.hb-arm.played .hb-chat-body>:nth-child(6){transition-delay:1.9s}
 }
 @media (max-width:700px){.hb-scope{display:none}.hb-msg{max-width:92%}}
 /* feature grid with glossy icons */
@@ -370,3 +370,8 @@
 .hb-close p>span:first-child{background:linear-gradient(180deg,#fff,rgba(255,255,255,.7));-webkit-background-clip:text;background-clip:text;color:transparent}
 .hb-close .hb-pill{margin-top:22px;background:linear-gradient(90deg,#c9cfdb 0%,#eef1f7 55%,#fff 100%)!important;height:54px!important;padding:0 28px!important;font-size:13px!important}
 .hb-light.low{position:absolute;left:50%;top:auto;bottom:-4%;width:max(1400px,120%);transform:translateX(-50%);z-index:0;-webkit-mask:linear-gradient(transparent 30%,#000 70%);mask:linear-gradient(transparent 30%,#000 70%)}
+/* the shared footer, in AmIHub's dark, so the page does not end on a white flash */
+.site-amihub .foot{--surface:#07080b;--ink:#eef1f8;--ink-soft:rgba(225,231,244,.6);--hairline:rgba(255,255,255,.08);--link:#9dbbff;background:#07080b;color:#eef1f8;border-top-color:rgba(255,255,255,.06);color-scheme:dark}
+.site-amihub .foot img{border-radius:14px;filter:brightness(.92) saturate(.9)}
+.site-amihub .foot dt{color:rgba(225,231,244,.5)}
+.site-amihub .foot dd a{color:#9dbbff}
