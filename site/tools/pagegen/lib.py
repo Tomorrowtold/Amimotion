@@ -153,12 +153,15 @@ def stats(items, three=False):
 figures = stats
 
 
-def tiles(items, cols=3):
-    """Points: short headed paragraphs in a row (2, 3 or 4 across). No cards, no eyebrows: a 3-tuple's first
-    item (the old eyebrow) is dropped."""
+def tiles(items, cols=3, head="h"):
+    """Points: short headed paragraphs in a row (2, 3 or 4 across). No cards, no eyebrows. Items are (heading, text);
+    old 3-tuples (eyebrow, heading, text) keep one of the two as the heading: head="h" (default) keeps the heading,
+    head="over" makes the old eyebrow the heading and opens the text with the old heading (no word lost).
+    With head="h" the eyebrow is dropped."""
     out = []
     for it in items:
-        h, p = (it[1], it[2]) if len(it) == 3 else it
+        if len(it) == 3 and head == "over": h, p = it[0], f"{it[1].rstrip('.')}. {it[2]}"
+        else: h, p = (it[1], it[2]) if len(it) == 3 else it
         out.append(f"<li><h3>{h}</h3><p>{p}</p></li>")
     return f'<ul class="points c{cols}">' + "".join(out) + "</ul>"
 
@@ -248,16 +251,20 @@ FILMS = {
 def film(n, caption=True):
     """A film at 16:9: poster first, controls, never autoplay, loads nothing until play."""
     name, desc, iso, mmss = FILMS[n]
-    v = (f'<video controls muted playsinline preload="none" width="1600" height="900" poster="/assets/film/v6/film0{n}-poster.jpg" '
+    v = (f'<video controls muted playsinline preload="none" width="1600" height="900" poster="/assets/film/v6/film0{n}-poster-1600.webp" '
          f'data-name="{e(name)}" data-description="{e(desc)}" data-duration="{iso}" data-date="2026-10-28" aria-label="{e(name)}">'
          f'<source src="/assets/film/v6/film0{n}.mp4" type="video/mp4"></video>')
     cap = f"<figcaption>{e(name)}, {mmss}</figcaption>" if caption else ""
     return f'<figure class="pic film">{v}{cap}</figure>'
 
 
-def poster(n, alt=""):
-    return (f'<figure class="pic"><img class="r169" src="/assets/film/v6/film0{n}-poster.jpg" alt="{e(alt)}" width="1600" height="900" '
-            'loading="lazy" decoding="async"></figure>')
+def poster(n, alt="", sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw"):
+    """A film's poster as a picture (AVIF/WebP, 800 and 1600), for lists of films."""
+    st = f"/assets/film/v6/film0{n}-poster"
+    ss = lambda x: f"{st}-800.{x} 800w, {st}-1600.{x} 1600w"
+    return (f'<figure class="pic"><picture><source type="image/avif" srcset="{ss("avif")}" sizes="{sizes}">'
+            f'<source type="image/webp" srcset="{ss("webp")}" sizes="{sizes}">'
+            f'<img class="r169" src="{st}-800.webp" alt="{e(alt)}" width="1600" height="900" loading="lazy" decoding="async"></picture></figure>')
 
 
 # ---------------- the closing line ----------------

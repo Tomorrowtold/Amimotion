@@ -59,7 +59,7 @@ write("/specs/", "AmIMotion specifications: AmIGo, AmIMo and AmIHub",
               vp("Not public yet.", "Shared under NDA, before a pilot.", "The detailed pack has the final datasheets and the architecture for your site."),
               tiles([("Datasheets", "Final figures", "Size, weight, ingress rating and the hardware revision for your evaluation."),
                      ("Capacity", "Your mix of tags", "Tags per anchor cell at the update rates your flows need."),
-                     ("Accuracy", "How it is measured", "The test method a pilot uses, with anchor count and geometry, so you can check the figure yourself.")])),
+                     ("Accuracy", "How it is measured", "The test method a pilot uses, with anchor count and geometry, so you can check the figure yourself.")], head="over")),
           section(faq([
               ("Which positioning scheme does AmIMotion use?", "Several, chosen per zone: UL-TDoA, DL-TDoA, two-way ranging and 3D angle of arrival. Most asset tracking uses UL-TDoA, where tags send and anchors time the pulse."),
               ("What update rate do AmIGo tags support?", "0.1 to 10 Hz, set per tag group. Tags sleep when still and send when they move, which is why one battery lasts 1 to 3 years, typical."),
@@ -85,7 +85,7 @@ write("/developers/", "AmIHub for developers: APIs, events and MCP",
                      ("History", "Trips and dwell", "Trajectory, trip and dwell queries by time window. CSV and Parquet export."),
                      ("Devices", "Tags and anchors", "Health, battery level and firmware state."),
                      ("Map", "Your floor model", "Plan, zones, geofences and racking."),
-                     ("Links", "Which job rides where", "A job linked to a carrier, with a start, an end and an owner, set by a scan or your records.")])),
+                     ("Links", "Which job rides where", "A job linked to a carrier, with a start, an end and an owner, set by a scan or your records.")], head="over")),
           section(
               vp("Pick the interface.", "By what your system needs."),
               compare(["Interface", "Pattern", "Use it for"], [
