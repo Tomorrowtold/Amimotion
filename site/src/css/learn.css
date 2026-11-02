@@ -8,6 +8,8 @@
 .motion .qa>span:first-child{transform:translateY(var(--s,0px));clip-path:inset(-.2em -.1em calc(var(--p,0) * 100% + var(--p,0) * .3em) -.1em);will-change:transform}
 .motion .qa>span:last-child{opacity:calc(.55 + var(--p,0) * .45);transition:opacity .2s linear}
 .motion .qa.live>span:first-child{animation-fill-mode:backwards}
+/* on a cover, a card colour or a photograph the dim start washed the answer out (1.9 to 3:1): it starts at 90% there */
+.motion .look-cover .qa>span:last-child,.motion .look-card .qa>span:last-child,.motion .w-poster .qa>span:last-child{opacity:calc(.9 + var(--p,0) * .1)}
 
 /* 2. the rail and the figure */
 .read.has-fig .rail{grid-column:1 / span 6;min-width:0;position:sticky;top:var(--s-6);align-self:start;padding-right:var(--s-6)}
@@ -20,7 +22,10 @@
 .gfig{margin:0}
 .gsvg{display:block;width:100%;height:auto;max-height:calc(100svh - 360px);min-height:300px;overflow:visible}
 .gsvg.true{width:600px;max-width:100%;max-height:none}
-.gsvg text{font:400 18px/1 var(--font-text);fill:var(--ink);font-variant-numeric:tabular-nums}
+.gsvg text{font:400 18px/1 var(--font-text);fill:var(--ink)}
+/* only the numbers that count up keep tabular figures (steady while counting); AmI Text's tabular zero is slashed and
+   made the axis labels read as code */
+.gsvg [data-count]{font-variant-numeric:tabular-nums}
 .gsvg .lab{font-weight:500;font-size:19px}
 .gsvg .sm{font-size:15.5px}
 .gsvg .num{font-weight:500;font-size:18px}
@@ -68,4 +73,34 @@
   .gsvg text{font-size:21px}.gsvg .lab,.gsvg .num{font-size:22px}.gsvg .sm{font-size:18px}.gsvg .big{font-size:28px}
   .gsvg.true text{font-size:17px}.gsvg.true .sm{font-size:14.5px}
   .motion .gfig.live [data-s].on:not(.now){opacity:1}
+}
+
+/* 3. the worked example (dwell): the readout in the guide's own type, no monospace; the waiting number in an amber
+      dark enough for AA at phone size (the shared waiting-edge is 4.3:1 on white) */
+.prose .w-lab .read dt{font:500 .8rem/1.2 var(--font-text);letter-spacing:.01em;text-transform:none}
+.prose .w-lab .read dd.wait{color:#9e6600}
+.prose .w-lab label{font:400 max(var(--size-small),.9rem)/1.45 var(--font-text)}
+.prose .w-lab .w-lbl{font:500 13px var(--font-text);letter-spacing:.06em}
+@media (max-width:639px){.prose .w-lab .w-lbl{font-size:20px;letter-spacing:.02em}}
+
+/* 4. the rail must fit under the bar (sticky at 88px): the figure takes 100svh - 360px, so the contents list is
+      held to the rest (six entries at 33px). The true-size figure (accuracy) cannot shrink: on a screen too short for
+      it the rail stops being sticky rather than cut the list off */
+@media (min-width:1024px){
+  .read.has-fig .toc{margin-top:var(--s-5)!important}
+  .read.has-fig .toc li{padding-block:6px}
+  .read.has-fig .rail:has(.gsvg.true) .toc{margin-top:var(--s-3)!important}
+}
+@media (min-width:1024px) and (max-height:899px){.read.has-fig .rail:has(.gsvg.true){position:static}}
+
+/* 5. the guides' comparison tables: text, not figures, so proportional numerals (the tabular zero is slashed); on a
+      phone each row is a small card: the row name in ink, each column's name a small caption over its answer */
+.prose .compare{font-variant-numeric:normal}
+.prose .compare thead tr{border-bottom:1px solid color-mix(in srgb,var(--ink) 35%,transparent)}
+.prose .compare thead th{font-size:var(--size-small);font-weight:500;letter-spacing:.01em;padding-bottom:var(--s-3)}
+@media (max-width:639px){
+  .prose .compare tbody th{font:600 1.06rem/1.3 var(--font-display);color:var(--ink);padding-bottom:var(--s-2)}
+  .prose .compare td[data-h]{padding-bottom:var(--s-3);line-height:1.5}
+  .prose .compare td[data-h]::before{content:attr(data-h);display:block;margin-bottom:2px;font:500 .78rem/1.3 var(--font-text);letter-spacing:.01em;color:var(--ink-soft)}
+  .prose .compare td{color:var(--ink)}
 }
