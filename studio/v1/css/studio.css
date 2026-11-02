@@ -1086,3 +1086,5 @@ html.tag-live .tag-fallback{opacity:0!important;transition:none}
 @media (min-width:901px){.rail a{opacity:1;color:#5a6280}.rail a.on{color:var(--ink)}}
 /* the hero's lede is the page's largest text: shown at once, it only slides, so it paints with the first frame */
 .hero .lede.k-fade{opacity:1;transition:transform 1.2s var(--ease-out)}
+/* single-paragraph explainer lines and the question rest at AA contrast (4.8:1); the line being read is full ink */
+.cap p[data-b]:not(.now),.cap .q-big:not(.lit){color:#646b88}
