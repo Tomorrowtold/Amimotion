@@ -98,7 +98,7 @@
 .am-steps figure img{width:100%;height:100%;object-fit:cover}
 .am-steps figure.cad{background:radial-gradient(80% 80% at 50% 40%,#f6f6f4,#d6d6d2)}
 .am-steps figure.cad img{object-fit:contain;padding:12%;filter:grayscale(1) contrast(1.05)}
-.am-n{display:block;margin-top:20px;font:500 12px/1 var(--font-text);letter-spacing:.1em;color:rgba(255,255,255,.45);font-variant-numeric:tabular-nums}
+.am-n{display:block;margin-top:20px;font:500 12px/1 var(--font-text);letter-spacing:.1em;color:rgba(255,255,255,.62);font-variant-numeric:tabular-nums}
 .am-steps h3{margin-top:10px!important;font:500 15.5px/1.45 var(--font-text);letter-spacing:0;color:#fff;max-width:20em}
 @media (max-width:1023px){.am-steps{grid-template-columns:1fr 1fr}}
 @media (max-width:560px){.am-steps{grid-template-columns:1fr}}
@@ -146,3 +146,5 @@
 .am-close p{position:relative;z-index:1}
 .am-close .am-pill{margin-top:20px;height:52px!important;padding:0 26px!important;background:linear-gradient(180deg,#fff,#e4e4e2)!important;color:#000!important}
 .am-spot.low{top:-30%;width:max(1200px,90%);-webkit-mask:linear-gradient(#000 40%,transparent 85%);mask:linear-gradient(#000 40%,transparent 85%)}
+/* the rail over a dark band: name and current tick turn white so they still read */
+.site-amimo .p-rail[data-tone=dark]{--p-rail-ink:#fff;--p-rail-name:#fff}

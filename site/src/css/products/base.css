@@ -113,3 +113,5 @@ body.pl{margin:0}
 .pl .where{display:none!important}
 .p-rail[data-tone=dark]{--p-fg:#fff;--p-mute:rgba(255,255,255,.55);--p-line:rgba(255,255,255,.18)}
 .p-rail[data-tone=light]{--p-fg:#0a0a0b;--p-mute:rgba(10,10,11,.5);--p-line:rgba(10,10,11,.14)}
+/* the rail carries data-tone too: page rules that paint [data-tone] bands must not paint a box behind it */
+body .p-rail[data-tone]{background:none}
