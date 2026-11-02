@@ -630,6 +630,158 @@ def shot_pair_scale():
     render('pair_scale')
 
 
+# ---------------- round 11 (realism lab, harvest plan render jobs) ----------------
+# Sequences render many frames in one Blender session (scene built once, persistent data) and are resumable:
+# a frame whose PNG exists is skipped. '--plate' renders the same studio with the products hidden: the empty
+# sweep is the exact flat-field for that camera, so tools/plate_grade.py divides it out (no per-frame fit, so
+# the paper cannot flicker between frames). Fixed seed, adaptive sampling with a sample cap and no time limit,
+# so a frame's noise does not depend on how busy the machine is.
+def _seq_settings(sc, samples):
+    sc.cycles.samples = samples; sc.cycles.time_limit = 0; sc.cycles.seed = 11
+    sc.cycles.use_animated_seed = False; sc.cycles.adaptive_threshold = 0.02
+    sc.render.use_persistent_data = True
+    if '--fast' in args:   # web sequences: frames shown at <= 1440 px under AVIF; fewer bounces, cheaper bevel
+        sc.cycles.max_bounces = 4; sc.cycles.diffuse_bounces = 2; sc.cycles.glossy_bounces = 2
+        for m in bpy.data.materials:
+            if m.node_tree:
+                for n in m.node_tree.nodes:
+                    if n.bl_idname == 'ShaderNodeBevel': n.samples = 2
+
+
+def _frames(default):
+    s = opt('--frames', default); a, b = (int(v) for v in s.split('-')); return range(a, b + 1)
+
+
+def _hide(objs):
+    for o in objs:
+        for c in [o] + list(o.children_recursive):
+            c.hide_render = True
+
+
+def _render_seq(path, w, h):
+    sc = bpy.context.scene
+    sc.render.resolution_x, sc.render.resolution_y = w, h; sc.render.resolution_percentage = 100
+    sc.render.filepath = path + '.tmp.png'
+    bpy.ops.render.render(write_still=True)
+    os.replace(path + '.tmp.png', path)
+
+
+def shot_turntable():
+    """R1: AmIGo turntable for the homepage hero. The tag turns on a fixed studio (as on a real turntable),
+    so the light and the sweep stay put and only the product moves. 85 mm, camera el 22 deg at 0.35 m.
+    The camera stands at az -30 so the rig's graduated scrim key sits at az 150, el 52 (plan: key az 150 el 55).
+        render_hardware.py turntable --res 1440 --steps 96 --frames 0-95 [--plate] [--samples 48] --out DIR"""
+    res = opt('--res', 1440); steps = opt('--steps', 96)
+    sc = reset(); _seq_settings(sc, SAMPLES); world(0.30, rot=0.6); sweep(-30)
+    root, top, bot = amigo()
+    top.data.materials.append(plastic('tag_top', PLASTIC, 0.0)); bot.data.materials.append(plastic('tag_bot', PLASTIC, 5.0))
+    base = root.matrix_world.copy(); _seq_settings(sc, SAMPLES)
+    rig((0, 0, 0.012), cam_az=-30, fill=1.2, rake=6.0, rake_az=-30 + 100, rake_el=16)
+    camera(look_from((0, 0, 0.010), -30, 22, 0.35), (0, 0, 0.009), lens=85, fstop=8.0, focus=(0, 0, 0.012))
+    os.makedirs(OUT, exist_ok=True)
+    if '--plate' in args:
+        _hide([root]); _render_seq(os.path.join(OUT, 'plate.png'), res // 4, res // 4); return   # smooth: a quarter size is enough
+    # only the region the turning tag and its contact shadow can reach is path traced (measured on a 480 px
+    # test: x 0.12-0.80, y 0.29-0.66 of the frame); outside it the frame is the plate, so it is left black here
+    # and plate_grade.py takes the plate there. About 36 % of the pixels, so about 3x faster.
+    sc.render.use_border = True; sc.render.use_crop_to_border = False
+    sc.render.border_min_x, sc.render.border_max_x, sc.render.border_min_y, sc.render.border_max_y = 0.07, 0.87, 0.23, 0.71
+    for f in _frames(f'0-{steps - 1}'):
+        p = os.path.join(OUT, 'f%04d.png' % f)
+        if os.path.exists(p): continue
+        # frame 0 is the poster: logo face toward the camera, turned ~30 deg off square (the hero three-quarter); the tag turns CCW seen from above
+        root.matrix_world = Matrix.Rotation(math.radians(TAG_RZ + 50 + 360.0 * f / steps), 4, 'Z') @ base
+        bpy.context.view_layer.update()
+        t0 = __import__('time').time(); _render_seq(p, res, res); print('FRAME', f, '%.1fs' % (__import__('time').time() - t0), flush=True)
+
+
+def _still_or_plate(name, w, h, products):
+    """Render <OUT>/<name>.png, or with --plate the same frame with the products hidden at a quarter size (the
+    empty sweep is smooth, so plate_grade.py upsamples it). --border x0,x1,y0,y1 limits path tracing to a region
+    (the rest is left black and plate_grade.py takes the plate there)."""
+    sc = bpy.context.scene; os.makedirs(OUT, exist_ok=True)
+    if '--plate' in args:
+        _hide(products); _render_seq(os.path.join(OUT, name + '_plate.png'), max(64, w // 4), max(64, h // 4)); return
+    if BORDER:
+        sc.render.use_border = True; sc.render.use_crop_to_border = False
+        sc.render.border_min_x, sc.render.border_max_x, sc.render.border_min_y, sc.render.border_max_y = BORDER
+    t0 = __import__('time').time(); _render_seq(os.path.join(OUT, name + '.png'), w, h)
+    print('STILL', name, '%.1fs' % (__import__('time').time() - t0), flush=True)
+
+
+def _tag(rz=0.0, loc=(0, 0, 0)):
+    root, top, bot = amigo()
+    top.data.materials.append(plastic('tag_top', PLASTIC, 0.0)); bot.data.materials.append(plastic('tag_bot', PLASTIC, 5.0))
+    place(root, loc=loc, rz=math.radians(rz)); return root
+
+
+def _anchor(rz=0.0, loc=(0, 0, 0)):
+    root, body, cap = amimo()
+    body.data.materials.append(plastic('anchor', PLASTIC, 2.0)); cap.data.materials.append(plastic('anchor_cap', PLASTIC, 7.0))
+    place(root, loc=loc, rz=math.radians(rz)); return root
+
+
+def shot_family():
+    """R3 / R3b: AmIGo front-left and AmIMo back-right on one sweep at true CAD scale, 85 mm, el 30, 3:1.
+    Still: camera 0.35 m above the target at el 30 (0.70 m away). --frames a-b renders the R3b lateral dolly
+    instead: --dolly-dist 0.5, the camera and its look point track along the frame's horizontal from the tag's
+    centre to the anchor's (--track -0.07,0.075), studio fixed; --steps 24. --res WxH."""
+    W, H = (int(v) for v in opt('--res', '3840x1280').split('x'))
+    sc = reset(); _seq_settings(sc, SAMPLES); world(0.30, rot=0.6)
+    CAZ = -80.0
+    sweep(CAZ)
+    t = _tag(TAG_RZ - 14, (-0.060, -0.018, 0)); a = _anchor(ANC_RZ - 8, (0.066, 0.022, 0))
+    _seq_settings(sc, SAMPLES)
+    rig((0, 0, 0.012), cam_az=CAZ, fill=1.6, rake=4.0, rake_az=CAZ + 100, rake_el=16)
+    ca, sa = math.cos(math.radians(CAZ + 90)), math.sin(math.radians(CAZ + 90))   # frame-right in world xy
+    if '--frames' not in args:
+        camera(look_from((0.003, 0.002, 0.020), CAZ, 30, opt('--dist', 1.0)), (0.003, 0.002, 0.020), lens=85, fstop=11.0, focus=(0, 0, 0.016))
+        _still_or_plate('family', W, H, [t, a]); return
+    d = opt('--dolly-dist', 0.8); x0, x1 = (float(v) for v in opt('--track', '-0.075,0.085').split(','))
+    steps = opt('--steps', 24)
+    for f in _frames(f'0-{steps - 1}'):
+        u = f / (steps - 1); u = u * u * (3 - 2 * u) * 0.0 + u     # linear in frame: the page's scroll sets the ease
+        off = x0 + (x1 - x0) * u
+        tgt = (0.003 + ca * off, 0.002 + sa * off, 0.020)
+        for o in [o for o in bpy.data.objects if o.name == 'cam']: bpy.data.objects.remove(o)
+        camera(look_from(tgt, CAZ, 30, d), tgt, lens=85, fstop=11.0, focus=(tgt[0], tgt[1], 0.016))
+        name = 'dolly_f%04d' % f
+        if '--plate' in args:
+            p = os.path.join(OUT, name + '_plate.png')
+            if not os.path.exists(p): _hide([t, a]); _render_seq(p, W // 4, H // 4)
+            continue
+        if os.path.exists(os.path.join(OUT, name + '.png')): continue
+        _still_or_plate(name, W, H, [t, a])
+
+
+def shot_macro():
+    """R2: AmIGo macro for the giant spec screen. Logo face and the left screw ear, the tag's right end running
+    off the frame's right edge (the page bleeds it off the viewport). 100 mm, f/8, focus on the logo plane."""
+    W, H = (int(v) for v in opt('--res', '2400x1600').split('x'))
+    sc = reset(); _seq_settings(sc, SAMPLES); world(0.22, rot=0.6); sweep(-90)
+    t = _tag(TAG_RZ - 4.0, (0.030, 0.003, 0)); _seq_settings(sc, SAMPLES)
+    rig((0, 0, 0.023), cam_az=-90, key=0.7, bg=0.6, rake=12.0, rake_az=165, rake_el=12)
+    el = opt('--el', 58.0); dist = opt('--dist', 0.29)
+    camera(look_from((0.0, -0.007, 0.020), -90, el, dist), (0.0, -0.007, 0.020), lens=100, fstop=8.0, focus=(0.0, 0.0, 0.0232))
+    _still_or_plate('macro', W, H, [t])
+
+
+def shot_closer():
+    """R9: closer-look angles on the turntable rig (camera az -30, 85 mm): --product amigo|amimo --az A --el E.
+    The product turns by --az (0 = the turntable's poster pose) and the camera rises to --el."""
+    W, H = (int(v) for v in opt('--res', '1600x1600').split('x'))
+    prod = opt('--product', 'amigo'); az = opt('--az', 0.0); el = opt('--el', 30.0)
+    sc = reset(); _seq_settings(sc, SAMPLES); world(0.30, rot=0.6); sweep(-30)
+    if prod == 'amigo':
+        p = _tag(TAG_RZ + 50 + az); dist = 0.33; tz = 0.010
+    else:
+        p = _anchor(ANC_RZ + 40 + az); dist = 0.38; tz = 0.014
+    _seq_settings(sc, SAMPLES)
+    rig((0, 0, 0.012), cam_az=-30, fill=1.6 if prod == 'amimo' else 1.2, rake=6.0, rake_az=-30 + 100, rake_el=16)
+    camera(look_from((0, 0, tz), -30, el, dist), (0, 0, tz), lens=85, fstop=8.0, focus=(0, 0, tz + 0.004))
+    _still_or_plate(f'closer_{prod}_az{int(az)}_el{int(el)}', W, H, [p])
+
+
 TAG_RZ = 90.0     # long axis across frame
 PAGE_EL = opt('--el', 30.0)
 PAGE_DIST = opt('--dist', 0.35)
@@ -640,6 +792,7 @@ ANC_RZ = 0.0
 
 if __name__ == '__main__':
     shots = {'amigo_hero': shot_amigo_hero, 'amigo_logo': shot_amigo_logo,
-             'amimo_rj45': shot_amimo_rj45, 'pair_scale': shot_pair_scale, 'amigo_page': shot_amigo_page}
+             'amimo_rj45': shot_amimo_rj45, 'pair_scale': shot_pair_scale, 'amigo_page': shot_amigo_page,
+             'turntable': shot_turntable, 'family': shot_family, 'macro': shot_macro, 'closer': shot_closer}
     for s in (shots if SHOT == 'all' else [SHOT]):
         shots[s]()
