@@ -26,7 +26,7 @@ Formats:
 | R5 before/after plus trail SVG | Home S2 | queued |
 | R6 queue full-bleed | Home S3 | **landed** (see below) |
 | R7 one bay | Home S6, /pilot/ | queued |
-| R8 job crops | Home S7 | queued (cut from R4) |
+| R8 job crops | Home S7 | **landed** |
 | R9 closer-look angles | Product pages | queued |
 | R10 AmIGo lowers onto trolley | AmIGo page | see notes |
 | R11 AmIGo covers part | AmIGo page | see notes |
@@ -83,6 +83,19 @@ The chip files replace the stand-in chip under the same names, so no markup chan
 - The 1:1 crop is master pixels x 1100 to 3260, full height. It holds the three amber queue trolleys, the trolley at the station and the amber pallet in the staging lane.
 - Alt for `queue-1x1`: "A model factory floor. Three trolleys in the inspection queue and one pallet in a staging lane are marked amber because they are waiting."
 - Alt for `queue-chip`: `alt=""`. It is decorative and sits inside the headline, which carries the words. Mark it `aria-hidden="true"`.
+
+## R8 job crops (Home S7 jobs grid): landed
+
+Four 4:3 crops cut at native pixels from the graded camera A after-state master (`08-pictures/raw/a-all-graded.png`, the source of `hall-all`). They replace the stand-ins under the same names, so no markup change is needed.
+
+| File | Size | Bytes 1200 (AVIF / WebP) | Crop in the 3840 master | Alt |
+|---|---|---|---|---|
+| `home/jobs/inspection-{600,1200}.{avif,webp}` | 600 x 450, 1200 x 900 | 18.5 / 23.4 KB | 900,1150 to 2100,2050 | "A model inspection queue: three trolleys waiting on amber pads." |
+| `home/jobs/staging-{600,1200}` | same | 11.3 / 15.7 KB | 1975,655 to 3175,1555 | "A model staging lane: one pallet waiting on an amber pad beside a blue path." |
+| `home/jobs/press-{600,1200}` | same | 13.0 / 15.9 KB | 80,90 to 1280,990 | "A model press, with a trolley just out of it on a blue line." |
+| `home/jobs/racks-{600,1200}` | same | 17.7 / 23.3 KB | 1450,0 to 2650,900 | "Model rack rows and a forklift at the end of an aisle, with blue lines where things went." |
+
+In the racks crop, the master's top edge cuts the rack rows (camera A is framed on the floor in front of them).
 
 ## R12 hall line drawing (/technology/ header): landed
 
