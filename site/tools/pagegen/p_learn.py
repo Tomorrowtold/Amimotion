@@ -724,11 +724,11 @@ def build():
           "Free resources to plan UWB location with AmIMotion: a floor diagnostic, anchor estimator, search-time calculator, pilot planner, guides, FAQ and glossary.",
           [
               head("Resources.", "Plan a location project, with no sign-up.", short=RES_SHORT, trail=[("Resources", None)]),
-              section(vp("Tools that work it out.", None, "Each one runs in your browser. Nothing is stored and nobody asks for an email."), tiles([(f'<a href="{h}">{label(h, t)}</a>', d) for t, h, d in RES_TOOLS], cols=2)),
+              section(vp("Tools that work it out.", None, "Each one runs in your browser. Nothing is stored and nobody asks for an email."), minis([(h, t, d) for t, h, d in RES_TOOLS])),
               section(vp("Pages that explain it."), tiles([(f'<a href="{h}">{label(h, t)}</a>', d) for t, h, d in RES_READ], cols=3)),
               section(vp("Where to begin."), steps(RES_STEPS)),
               close(),
-          ])
+          ], scripts="tools")
 
 
 LEARN_SHORT = ("AmIMotion's field guides answer the questions plants ask about real-time location: how UWB compares with BLE and RFID, how many anchors a floor needs, how to test accuracy, how dwell time is measured and how to see where work in progress waits. "

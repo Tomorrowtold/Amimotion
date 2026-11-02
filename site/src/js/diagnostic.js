@@ -102,26 +102,29 @@
   const Z = { dock: [20, 28, 96, 78, 'Dock'], mach: [132, 28, 150, 78, 'Machining'], queue: [298, 28, 74, 78, 'Queue'], asm: [388, 28, 72, 196, 'Assembly'],
     stage: [20, 146, 96, 78, 'Staging'], rework: [132, 146, 72, 78, 'Rework'], qc: [220, 146, 152, 78, 'Inspection'] };
   const WAITZ = { machasm: ['queue'], qc: ['qc'], dock: ['dock', 'stage'], rework: ['rework'], unknown: [] };
+  let drawn = false;
   const ctr = (k) => [Z[k][0] + Z[k][2] / 2, Z[k][1] + Z[k][3] / 2];
   function drawMap() {
     const hot = WAITZ[A.wait] || [];
+    // round 21 (Kenji): an engineering sketch. Hairline walls and zones, the hall outline, and every new mark draws in
     let s = `<defs><pattern id="g" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M12 0H0V12" fill="none" class="m-grid"/></pattern></defs><rect width="480" height="330" fill="url(#g)"/>`;
-    s += `<path class="m-aisle" d="M68 116 H420 M124 66 V200 M290 66 V200"/>`;
+    s += `<rect class="m-wall" x="12" y="18" width="456" height="216"/><path class="m-aisle" d="M14 126 H466 M124 20 V232 M290 20 V232"/>`;
     for (const [k, [x, y, w, h, l]] of Object.entries(Z)) {
       const isHot = hot.includes(k);
-      s += `<g class="m-zone${isHot ? ' hot' : ''}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4"/><text x="${x + 8}" y="${y + 16}">${l}</text>${isHot ? `<text class="m-flag" x="${x + 8}" y="${y + h - 10}">waits here</text>` : ''}</g>`;
+      s += `<g class="m-zone${isHot ? ' hot' : ''}"${isHot ? ` data-k="hot-${k}"` : ''}><rect x="${x}" y="${y}" width="${w}" height="${h}"/><text x="${x + 8}" y="${y + 16}">${l}</text>${isHot ? `<text class="m-flag" x="${x + 8}" y="${y + h - 10}">waits here</text>` : ''}</g>`;
       if (A.wait === 'unknown') s += `<text class="m-q" x="${x + w - 18}" y="${y + h - 10}">?</text>`;
     }
     const set = new Set(A.assets || []);
     const dots = [];
-    if (set.has('carriers')) [[60, 70], [190, 80], [240, 62], [318, 74], [345, 58], [250, 190]].forEach(([x, y]) => dots.push(`<rect class="m-carrier" x="${x - 6}" y="${y - 4}" width="12" height="8" rx="2"/>`));
-    if (set.has('tools')) [[160, 50], [300, 180], [175, 185]].forEach(([x, y]) => dots.push(`<rect class="m-tool" x="${x - 4}" y="${y - 4}" width="8" height="8" transform="rotate(45 ${x} ${y})"/>`));
-    if (set.has('vehicles')) [[50, 118], [96, 190]].forEach(([x, y]) => dots.push(`<rect class="m-vehicle" x="${x - 11}" y="${y - 6}" width="22" height="12" rx="3"/>`));
-    if (set.has('robots')) [[230, 116], [372, 116]].forEach(([x, y]) => dots.push(`<circle class="m-robot" cx="${x}" cy="${y}" r="6"/>`));
-    if (set.has('goods')) [[40, 170], [58, 170], [40, 186]].forEach(([x, y]) => dots.push(`<rect class="m-goods" x="${x}" y="${y}" width="12" height="12"/>`));
+    const at = (k, n, x, y, inner) => dots.push(`<g data-k="${k}${n}" style="--d:${n * 60}ms" transform="translate(${x} ${y})"><g class="m-drop">${inner}</g></g>`);
+    if (set.has('carriers')) [[60, 70], [190, 80], [240, 62], [318, 74], [345, 58], [250, 190]].forEach(([x, y], n) => at('c', n, x, y, `<rect class="m-carrier" x="-6" y="-4" width="12" height="8" rx="1"/>`));
+    if (set.has('tools')) [[160, 50], [300, 180], [175, 185]].forEach(([x, y], n) => at('t', n, x, y, `<rect class="m-tool" x="-4" y="-4" width="8" height="8" transform="rotate(45)"/>`));
+    if (set.has('vehicles')) [[50, 126], [96, 190]].forEach(([x, y], n) => at('v', n, x, y, `<rect class="m-vehicle" x="-11" y="-6" width="22" height="12" rx="2"/>`));
+    if (set.has('robots')) [[230, 126], [372, 126]].forEach(([x, y], n) => at('r', n, x, y, `<circle class="m-robot" r="6"/>`));
+    if (set.has('goods')) [[46, 176], [64, 176], [46, 192]].forEach(([x, y], n) => at('g', n, x, y, `<rect class="m-goods" x="-6" y="-6" width="12" height="12"/>`));
     s += dots.join('');
     // found-by overlay
-    if (A.found === 'walk') s += `<path class="m-walk" d="M30 300 C120 250 160 140 240 150 S330 110 330 74"/><text class="m-note" x="30" y="318">Found on foot</text>`;
+    if (A.found === 'walk') s += `<path class="m-walk" data-k="walk" pathLength="1" d="M30 300 C120 250 160 140 240 150 S330 110 330 74"/><text class="m-note" x="30" y="318">Found on foot</text>`;
     if (A.found === 'call') s += `<text class="m-note" x="30" y="318">Found by phone and radio</text>`;
     if (A.found === 'mes') s += `<text class="m-note" x="30" y="318">Last scan, not the place</text>`;
     if (A.found === 'board') s += `<text class="m-note" x="30" y="318">Found on a whiteboard, updated by hand</text>`;
@@ -129,15 +132,20 @@
     // job link
     if (A.link && set.has('carriers')) {
       const solid = A.link === 'mes' || A.link === 'scan';
-      s += `<path class="m-link${solid ? '' : ' weak'}" d="M318 74 L338 250"/><g class="m-job${solid ? '' : ' weak'}"><rect x="314" y="250" width="${A.link === 'none' ? 96 : 84}" height="24" rx="4"/><text x="322" y="266">${A.link === 'none' ? 'job: unknown' : A.link === 'paper' ? 'job · on paper' : 'job linked'}</text></g>`;
+      s += `<path class="m-link${solid ? '' : ' weak'}" data-k="link-${A.link}" pathLength="1" d="M318 74 L338 250"/><g class="m-job${solid ? '' : ' weak'}" data-k="job-${A.link}"><rect x="314" y="250" width="${A.link === 'none' ? 96 : 84}" height="24" rx="4"/><text x="322" y="266">${A.link === 'none' ? 'job: unknown' : A.link === 'paper' ? 'job · on paper' : 'job linked'}</text></g>`;
     }
     // pilot boundary
     const box = { cell: hot.length ? Z[hot[0]] : Z.queue, line: [124, 20, 344, 94], hall: [12, 20, 456, 212], plant: [6, 14, 468, 224] }[A.scope];
     if (box) {
       const [x, y, w, h] = box, pad = A.scope === 'cell' ? 6 : 0;
-      s += `<g class="m-pilot"><rect x="${x - pad}" y="${y - pad}" width="${w + pad * 2}" height="${h + pad * 2}" rx="6"/><text x="${x - pad + 6}" y="${y - pad - 6}">${A.scope === 'plant' ? 'Plant · start with one line' : 'Pilot area'}</text></g>`;
+      s += `<g class="m-pilot" data-k="pilot-${A.scope}-${A.wait}"><rect pathLength="1" x="${x - pad}" y="${y - pad}" width="${w + pad * 2}" height="${h + pad * 2}"/><text x="${x - pad + 6}" y="${y - pad - 6}">${A.scope === 'plant' ? 'Plant · start with one line' : 'Pilot area'}</text></g>`;
     }
+    // title block, bottom right: who the live view is for, once the last answer is in
+    s += `<g class="m-title"><path d="M300 290 H468 M300 290 V320 H468 V290"/><text x="308" y="302">YOUR FLOOR · SKETCH</text>${A.role ? `<text class="m-role" data-k="role-${A.role}" x="308" y="315">${esc(label('role', A.role))}</text>` : ''}</g>`;
+    const before = new Set([...map.querySelectorAll('[data-k]')].map((el) => el.dataset.k));
     map.innerHTML = s;
+    if (!REDUCED && drawn) map.querySelectorAll('[data-k]').forEach((el) => { if (!before.has(el.dataset.k)) el.classList.add('in'); });
+    drawn = true;
     const bits = [];
     if ((A.assets || []).length) bits.push(`${A.assets.length} kind${A.assets.length > 1 ? 's' : ''} of asset`);
     if (A.wait) bits.push(A.wait === 'unknown' ? 'waiting point unknown' : `waits ${label('wait', A.wait).replace(/^(Between|Before|At the|In) /, (m) => m.toLowerCase()).replace('between ', 'between ')}`);

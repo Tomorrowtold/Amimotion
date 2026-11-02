@@ -2,7 +2,7 @@
    left (5 columns), the 2D floor sketch on the surface on the right (7). The 3D floor is no longer loaded. */
 .diag-shell{grid-column:1 / -1;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:var(--s-6);align-items:start}
 .diag-main{grid-column:1 / span 5;display:flex;flex-direction:column;min-height:540px;min-width:0}
-.diag-visual{grid-column:6 / -1;background:var(--surface);min-width:0}
+.diag-visual{grid-column:6 / -1;background:var(--surface);min-width:0;padding:var(--s-5) var(--s-5) 0}
 .diag-visual svg{display:block;width:100%;height:auto;aspect-ratio:480 / 330}
 .diag-visual text{font-family:var(--font-text)}
 .diag-caption{padding:var(--s-4) var(--s-5);margin:0;font-size:var(--size-small);color:var(--ink-soft)}
@@ -31,22 +31,38 @@
 .diag-nav .cta{margin-left:auto}
 .diag-nav .cta:disabled{background:var(--pressed);color:var(--ink-soft)!important;cursor:default}
 .diag-shell .btn{display:inline-flex;align-items:center;height:48px;padding-inline:24px;background:var(--action);color:var(--on-action);border:0;border-radius:var(--radius-control);font:500 var(--size-small)/1 var(--font-text);cursor:pointer}
-.m-grid{stroke:var(--pressed)}
-.m-aisle{stroke:var(--ground);stroke-width:10;fill:none}
-.m-zone rect{fill:var(--ground)}
-.m-zone text,.m-note{fill:var(--ink-soft);font-size:10px}
-.m-zone.hot rect{fill:var(--waiting)}
+.m-grid{stroke:var(--ink);stroke-opacity:.045}
+.m-wall{fill:none;stroke:var(--ink);stroke-width:1.25}
+.m-aisle{stroke:var(--ink);stroke-opacity:.22;stroke-width:1;stroke-dasharray:8 3 2 3;fill:none}
+.m-zone rect{fill:var(--surface);stroke:var(--ink);stroke-opacity:.45;stroke-width:1;transition:fill .4s var(--ease-ds)}
+.m-zone text,.m-note,.m-title text{fill:var(--ink-soft);font-size:10px;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.m-zone text:first-of-type{text-transform:uppercase}
+.m-zone.hot rect{fill:var(--waiting);stroke-opacity:1}
 .m-zone.hot text,.m-flag,.m-q,.m-note.warn{fill:var(--ink)!important}
 .m-carrier,.m-tool,.m-goods{fill:var(--located)}
 .m-vehicle,.m-robot{fill:var(--hardware)}
 .m-person{fill:var(--ink-soft)}
-.m-walk{stroke:var(--waiting);stroke-width:3;stroke-dasharray:4 5;fill:none}
-.m-link{stroke:var(--located);stroke-width:3}
-.m-link.weak{stroke-dasharray:3 4}
+.m-walk{stroke:var(--ink);stroke-width:1.5;stroke-dasharray:.012 .012;fill:none}
+.m-link{stroke:var(--located);stroke-width:1.5}
+.m-link.weak{stroke-dasharray:.02 .02}
 .m-job rect,.m-stamp rect{fill:var(--ink)}
 .m-job text,.m-stamp text{fill:var(--on-ink);font-size:10px}
-.m-pilot rect{fill:none;stroke:var(--located);stroke-width:3;stroke-dasharray:6 5}
-.m-pilot text{fill:var(--ink);font-size:10px}
+.m-pilot rect{fill:none;stroke:var(--action);stroke-width:1.5;stroke-dasharray:.012 .008}
+.m-pilot text{fill:var(--action);font-size:10px;font-weight:500}
+.m-title path{fill:none;stroke:var(--ink);stroke-opacity:.5}
+.m-title .m-role{fill:var(--ink);font-size:10px;letter-spacing:0}
+/* new marks arrive: glyphs land, lines draw, zones fill */
+.diag-visual .in .m-drop{animation:m-land .46s cubic-bezier(.2,.9,.3,1.2) both;animation-delay:var(--d,0ms)}
+.diag-visual path.in.m-link:not(.weak){stroke-dasharray:1;animation:m-draw .6s var(--ease-ds) both}
+.diag-visual path.in.m-walk{animation:m-fade .9s var(--ease-ds) both}
+.diag-visual .m-pilot.in rect{animation:m-fade .5s var(--ease-ds) both}
+.diag-visual .m-zone.in rect{animation:m-fill .5s var(--ease-ds) both}
+.diag-visual .in text,.diag-visual text.in,.diag-visual .m-job.in{animation:m-fade .5s .15s var(--ease-ds) both}
+@keyframes m-land{from{opacity:0;transform:translateY(-10px)}}
+@keyframes m-draw{from{stroke-dashoffset:1}}
+@keyframes m-fade{from{opacity:0}}
+@keyframes m-fill{from{fill:var(--surface)}}
+@media (prefers-reduced-motion:reduce){.diag-visual .in,.diag-visual .in *{animation:none!important}}
 .diag-heard{margin-top:var(--s-4);color:var(--ink-soft);font-size:var(--size-small)}
 .diag-heard span+span::before{content:" \00b7  "}
 .diag-block{margin-top:var(--s-6)}

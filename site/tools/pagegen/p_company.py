@@ -48,7 +48,7 @@ write("/tools/anchors/", "UWB anchor estimator: a first range for your floor",
               + rng("a-h", "height", "Ceiling height", 3, 20, 1, 9, " m")
               + '<fieldset class="field"><legend>What is on the floor?</legend>' + seg("env", [("mixed", "Some racking", None), ("open", "Open hall", None), ("dense", "Dense high racking", None)]) + "</fieldset>"
               + '<fieldset class="field"><legend>Position needed</legend>' + seg("dim", [("3d", "3D, with height", None), ("2d", "2D, floor only", None)]) + "</fieldset>"
-              + '</form><div class="tool-out" aria-live="polite"><p class="out-name">First range</p><p class="big" data-out="range">—</p>'
+              + '</form>' + draw("anchors", "Plan of your floor: the planning grid and an anchor at each of its corners, drawn to scale, with a section through the hall.") + '<div class="tool-out" aria-live="polite"><p class="out-name">First range</p><p class="big" data-out="range">—</p>'
               '<div class="lines"><p>Floor area <b data-out="area">—</b></p><p>Planning grid <b data-out="grid">—</b></p><p>Floor type <b data-out="env">—</b></p><p>Lowest count this tool gives <b data-out="min">—</b></p></div>'
               "<p class=\"note\">A planning estimate from this page's own grid. It is not a quote and not an AmIMotion specification. Angle of arrival can mean fewer anchors. Aisles between high racks can mean more. The survey sets the count.</p>"
               + btns((("Book a call", "/contact/"), ("Anchor planning, explained", "/learn/anchor-planning/"))) + "</div></div>", label="How many anchors you need"),
@@ -85,8 +85,8 @@ write("/tools/search-time/", "What searching costs: a search-time calculator",
               + rng("s-s", "shifts", "Shifts per day", 1, 3, 1, 2)
               + rng("s-d", "days", "Working days a year", 200, 365, 1, 300)
               + numf("rate", "Loaded cost per hour, ₹ (optional)", "", "Leave empty to see hours only.")
-              + '</form><div class="tool-out" aria-live="polite"><p class="out-name">Time spent searching</p><p class="big" data-out="hours">—</p>'
-              '<div class="lines"><p>Per day <b data-out="day">—</b></p><p>Full-time people, at 8 h a day <b data-out="fte">—</b></p><p>Cost a year <b data-out="cost">—</b></p></div>'
+              + '</form>' + draw("search", "Hours spent searching, piling up month by month through your working year.") + '<div class="tool-out" aria-live="polite"><p class="out-name">Time spent searching</p><p class="big" data-out="hours">—</p>'
+              '<div class="lines"><p>Per day <b data-out="day">—</b></p><p>Per week <b data-out="week">—</b></p><p>Full-time people, at 8 h a day <b data-out="fte">—</b></p><p>Cost a year <b data-out="cost">—</b></p></div>'
               '<p class="note">Your numbers, multiplied out. This is what searching costs today, not a forecast of what you would save. A pilot measures the change on your floor.</p>'
               + btns((("Book a call", "/contact/"), ("Measure before you claim", "/learn/pilot-baseline/"))) + "</div></div>", label="Time spent searching"),
           section(vp("Where the numbers come from."),
@@ -121,7 +121,7 @@ write("/tools/pilot/", "Your pilot on one page: a brief to share",
               '<fieldset class="field"><legend>What do you need to understand?</legend>' + seg("q", [("find", "Find tagged trolleys", "Where a trolley was last seen."), ("link", "Link trolleys to jobs", "Which job is on which trolley, and where."), ("wait", "See where work waits", "Zones, visits and how long work sits.")], True) + "</fieldset>"
               '<fieldset class="field"><legend>Where would you begin?</legend>' + seg("area", [("bay", "One production bay", None), ("line", "One line-side flow", None), ("tools", "One tools or fixtures area", None), ("unsure", "Not sure yet", None)]) + "</fieldset>"
               '<fieldset class="field"><legend>How is work linked to trolleys today?</legend>' + seg("link", [("none", "Not defined yet", None), ("scan", "Manual or scanned", None), ("mes", "A record in our MES or ERP", None), ("na", "Not needed", None)]) + "</fieldset>"
-              '</form><div class="tool-out" aria-live="polite"><p class="out-name">Your brief</p><p class="brief" data-out="brief"></p>'
+              '</form><div class="tool-out" aria-live="polite"><p class="out-name">Your brief</p><div class="bsheet" data-bsheet aria-hidden="true"></div><p class="brief" data-out="brief"></p>'
               '<p class="acts"><button class="cta" type="button" data-download>Download</button> <button class="cta alt" type="button" data-copy>Copy</button> <a data-out="mail" href="mailto:sales@amimotion.com">Email it</a></p>'
               '<p class="note">Written in this browser. It is not a quote, a feasibility result or a commitment. Email it opens your own mail app.</p></div></div>', label="Your pilot on one page"),
           section(vp("Who the brief is for.", lede="A pilot needs more than one yes."),
@@ -149,11 +149,11 @@ write("/tools/", "Free RTLS planning tools",
                trail=[START, ("Tools", None)]),
           # the four tools as linked points, not a related-pages nav: they are the page's content (and keep it over 250 words for crawlers)
           section(vp("Pick the question you have."),
-                  tiles([(f'<a href="{h}">{label(h, t)}</a>', d) for h, t, d in [
+                  minis([(h, t, d) for h, t, d in [
                       ("/diagnostic/", "Plan your first bay", "Where would location help first? Six questions, and a plan comes back."),
                       ("/tools/anchors/", "How many anchors you need", "How much hardware might one bay take? A first range, before the survey."),
                       ("/tools/search-time/", "Time spent searching", "What does looking for trolleys cost today? Your own numbers, multiplied out."),
-                      ("/tools/pilot/", "Your pilot on one page", "How do I explain it to my team? A brief to share.")]], 2)),
+                      ("/tools/pilot/", "Your pilot on one page", "How do I explain it to my team? A brief to share.")]])),
           section(vp("What these tools are not."),
                   prose(P("They are planning aids, built from your answers and a few stated assumptions. None of them is a quote, a survey or a forecast of savings. Each AmIMotion tool shows its assumptions next to its answer.",
                           "The real anchor count comes from an AmIMotion survey of your floor. The real change in search time comes from a pilot that measures it, against a baseline set before it starts.",
@@ -162,7 +162,7 @@ write("/tools/", "Free RTLS planning tools",
                   links([("/learn/pilot-baseline/", "Measure before you claim", "Set the baseline before the tags go on."),
                          ("/pilot/", "How a pilot runs", "One flow, one bay, five steps.")])),
           close(*TALK),
-      ], page="CollectionPage")
+      ], page="CollectionPage", scripts="tools")
 
 # ---------------- /diagnostic/ ----------------
 diag = (Path(__file__).resolve().parent / "diag_block.html").read_text().rstrip()

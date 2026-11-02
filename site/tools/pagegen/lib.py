@@ -324,6 +324,22 @@ def links(items, pics=None):
 related = links
 
 
+def draw(kind, alt):
+    """Round 21 (Kenji): the live drawing beside a planning tool. tools.js draws it to a canvas as the inputs move."""
+    return f'<figure class="tool-draw" data-draw="{kind}" role="img" aria-label="{alt}"></figure>'
+
+
+MINI = {"/diagnostic/": "diag", "/tools/anchors/": "anchors", "/tools/search-time/": "search", "/tools/pilot/": "pilot"}
+
+
+def minis(items):
+    """Round 21 (Kenji): the tool hubs' cards. Each card carries a live miniature of its tool's drawing above the
+    linked name and its one line (tools.js draws it; without JS the card is the plain point)."""
+    return '<ul class="points c2 tool-cards">' + "".join(
+        f'<li><a class="mini" href="{h}" tabindex="-1" aria-hidden="true"><span data-mini="{MINI.get(h, "")}"></span></a>'
+        f'<h3><a href="{h}">{label(h, t)}</a></h3><p>{d}</p></li>' for h, t, d in items) + "</ul>"
+
+
 def faq(items, title="Questions teams ask first.", soft=None):
     """Questions as native disclosures. build.py reads every plain <details> into FAQPage JSON-LD."""
     return vp(title, soft) + '<div class="faq">' + "".join(f"<details><summary>{q}</summary><p>{a}</p></details>" for q, a in items) + "</div>"
