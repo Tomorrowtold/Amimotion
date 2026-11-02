@@ -19,3 +19,6 @@
 .contact-grid .form .cta{margin-top:var(--s-2)}
 .contact-grid .draft{background:var(--ground);border-radius:16px;margin-top:var(--s-5)}
 @media (max-width:767px){.contact-grid{padding:var(--s-6) 20px;border-radius:22px}}
+/* the photograph runs to the very top edge, under the bar; a soft scrim keeps the crumbs legible on the bright roof. */
+.head{padding-top:0!important}
+.head-pic::before{content:"";position:absolute;inset:0 0 auto;height:clamp(140px,22vh,220px);background:linear-gradient(rgba(18,32,82,.5),transparent);pointer-events:none}
