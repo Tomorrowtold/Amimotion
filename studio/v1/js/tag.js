@@ -103,7 +103,7 @@ export async function init(canvas, fallback, hero) {
 
   const FLOOR_Y = -16;
   const floorMat = new THREE.ShaderMaterial({ vertexShader: FLOOR_VS, fragmentShader: FLOOR_FS, transparent: true, depthWrite: false, uniforms: { t: { value: 0 }, ring: { value: 0 }, wait: { value: 0 }, fadeAll: { value: 1 } } });
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), floorMat); floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_Y; scene.add(floor);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), floorMat); floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_Y; floor.visible = false; scene.add(floor);
 
   const pathMat = new THREE.ShaderMaterial({ vertexShader: PATH_VS, fragmentShader: PATH_FS, transparent: true, depthWrite: false, uniforms: { draw: { value: 0 }, fadeAll: { value: 1 } } });
   const paths = ROUTES.map((r) => { const m = new THREE.Mesh(ribbon(r, 2.1), pathMat); m.position.y = FLOOR_Y + .05; m.visible = false; scene.add(m); return m; });
@@ -122,11 +122,12 @@ export async function init(canvas, fallback, hero) {
     let fx = .69, fy = .52;
     if (phone()) { const cr = canvas.getBoundingClientRect(), a = hero.querySelector('h1').getBoundingClientRect(), b = hero.querySelector('p').getBoundingClientRect(); fx = .5; fy = clamp(((a.bottom + b.top) / 2 - cr.top) / h, .3, .7); }
     dist = phone() ? 150 / (2 * Math.tan(10 * Math.PI / 180) * cam.aspect) : Math.max(560, 260 / (2 * Math.tan(10 * Math.PI / 180) * cam.aspect));
+    hero.dataset.fx = fx; hero.dataset.fy = fy;
     cam.setViewOffset(w, h, -(fx - .5) * w, -(fy - .5) * h, w, h); cam.updateProjectionMatrix();
   };
   size(); addEventListener('resize', size);
 
-  let px = 0, py = 0, tx = 0, ty = 0, on = true, t0 = performance.now(), lift = 0;
+  let px = 0, py = 0, tx = 0, ty = 0, on = true, t0 = performance.now(), lift = 0, landedSent = false;
   addEventListener('pointermove', (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, { passive: true });
   new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on) requestAnimationFrame(loop); }).observe(hero);
 
@@ -152,7 +153,8 @@ export async function init(canvas, fallback, hero) {
 
     // the story under the tag, on a loop: a path arrives, it is heard, then it waits
     const lt = Math.max(0, t - START), ci = Math.floor(lt / CYCLE), c = (lt % CYCLE);
-    paths.forEach((m, i) => { m.visible = i === ci % ROUTES.length; });
+    paths.forEach((m) => { m.visible = false; });
+    if (!landedSent && t > 1.0) { landedSent = true; hero.dispatchEvent(new Event('landed')); }
     pathMat.uniforms.draw.value = t < START ? 0 : clamp(c / 2.6) * 1.01;
     floorMat.uniforms.ring.value = c > 2.6 && c < 5.6 ? (c - 2.6) / 1.5 : 0;
     floorMat.uniforms.wait.value = c > 3.2 ? eo((c - 3.2) / 8) * .86 : 0;
