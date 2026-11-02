@@ -220,3 +220,23 @@ h3{font:600 clamp(1.4rem,1.1rem + .9vw,2.2rem)/1.1 var(--display);letter-spacing
   .ln>span,.k-fade{transform:none;opacity:1}.k-pic{clip-path:none}
   .floor{height:auto}.floor-sticky{position:relative}.bay{height:auto}.bay-sticky{position:relative}
 }
+
+/* ---------- story film ---------- */
+.story{height:900vh;position:relative}
+.story-sticky{position:sticky;top:0;height:100svh;overflow:hidden;background:#f3f2ee}
+.caps{position:absolute;left:var(--m);right:var(--m);bottom:clamp(36px,8vh,96px);pointer-events:none}
+.caps::before{content:"";position:absolute;left:-20vw;right:30vw;bottom:-14vh;height:70vh;background:radial-gradient(60% 60% at 30% 70%,rgba(243,242,238,.94),rgba(243,242,238,0));z-index:-1}
+.cap{position:absolute;left:0;bottom:0;max-width:min(980px,92vw)}
+.cap .h2{font-size:clamp(2.1rem,1rem + 3.6vw,6rem);line-height:.98}
+.cap p{margin-top:clamp(14px,1.6vw,24px);font-size:clamp(1.05rem,.9rem + .5vw,1.6rem);color:var(--ink-soft);max-width:30em;opacity:0;transform:translateY(16px);transition:opacity .6s var(--ease),transform .8s var(--ease-out)}
+.cap .ln>span{transition-duration:.9s}
+.cap:not(.on) .ln>span{transform:translateY(-105%) rotate(-1deg);transition-duration:.5s}
+.cap.on .ln>span{transform:none}
+.cap.on .ln:nth-child(2)>span{transition-delay:.07s}
+.cap.on p{opacity:1;transform:none;transition-delay:.18s}
+.cap .q-big{font:600 clamp(1.5rem,1rem + 2vw,3.4rem)/1.05 var(--display);letter-spacing:-.04em;color:var(--ink);max-width:18em;display:block;margin-top:clamp(18px,2vw,28px);text-decoration:underline;text-decoration-color:var(--waiting);text-decoration-thickness:.12em;text-underline-offset:.14em}
+.cap em{color:var(--action)}
+.rail{position:absolute;right:var(--m);top:50%;height:28vh;width:2px;transform:translateY(-50%);background:rgba(11,18,56,.12)}
+.rail i{display:block;height:100%;background:var(--located);transform-origin:0 0;transform:scaleY(0)}
+@media (max-width:900px){.caps::before{left:-10vw;right:-10vw;height:62vh;bottom:-10vh;background:linear-gradient(180deg,rgba(243,242,238,0),rgba(243,242,238,.92) 38%,rgba(243,242,238,.97))}.cap .h2 .ln{display:inline}.cap .h2 .ln+.ln::before{content:" "}.rail{right:12px}}
+@media (prefers-reduced-motion:reduce){.story{height:auto}.story-sticky{position:relative}.cap{position:relative;margin-top:24px}.cap p,.cap .ln>span{opacity:1;transform:none}}

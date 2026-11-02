@@ -60,21 +60,23 @@
   </div>
 </section>
 
-<!-- 1b. THE FLOOR: before / after, scroll-driven -->
-<section class="floor" id="floor" aria-label="A scan versus a tag">
-  <div class="floor-sticky">
+<!-- 1b. THE STORY: one scroll film over the model hall -->
+<section class="story" id="story" aria-label="One trolley, one tag">
+  <div class="story-sticky">
     <div class="floor-media">
       <img class="floor-poster" src="assets/scene/hall-before-1600.webp" alt="A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went. Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting." width="1600" height="2000" loading="lazy">
-      <canvas class="floor-gl" id="floorGL" data-before="assets/scene/hall-before" data-after="assets/scene/hall-after"></canvas>
+      <canvas class="floor-gl" id="storyGL"></canvas>
     </div>
-    <div class="floor-copy">
-      <h2 class="h2">
-        <span class="swap" data-step="0">A scan tells you where it last passed.</span>
-        <span class="swap" data-step="1">A tag tells you where it stopped.</span>
-      </h2>
-      <div class="meter" aria-hidden="true"><i id="meter"></i></div>
-      <p class="hint">Move across the floor to look through it.</p>
+    <div class="caps">
+      <div class="cap" data-from="0" data-to=".17"><h2 class="h2 k-cap"><span class="ln"><span>Think of the last time someone</span></span><span class="ln"><span>went looking for a trolley.</span></span></h2><p>The walk. The calls to stores. The second walk.</p></div>
+      <div class="cap" data-from=".17" data-to=".32"><h2 class="h2 k-cap"><span class="ln"><span>A scan tells you</span></span><span class="ln"><span>where it last passed.</span></span></h2><p>Between scans at each checkpoint, work moves and waits out of sight.</p></div>
+      <div class="cap" data-from=".32" data-to=".45"><h2 class="h2 k-cap"><span class="ln"><span>A small tag rides on each</span></span><span class="ln"><span>trolley, bin and tool.</span></span></h2><p>Anchors on your columns hear its signal.</p></div>
+      <div class="cap" data-from=".45" data-to=".62"><h2 class="h2 k-cap"><span class="ln"><span>A tag tells you</span></span><span class="ln"><span>where it stopped.</span></span></h2><p>One live map shows where it went and how long it has waited.</p></div>
+      <div class="cap" data-from=".62" data-to=".76"><h2 class="h2 k-cap"><span class="ln"><span>See where</span></span><span class="ln"><span>work <em>waits.</em></span></span></h2><p>You see how long each one has waited, while it is still waiting.</p></div>
+      <div class="cap" data-from=".76" data-to=".9"><h2 class="h2 k-cap"><span class="ln"><span>Ask your floor a question.</span></span></h2><p class="q-big">Which trolleys have waited at inspection for more than an hour?</p></div>
+      <div class="cap" data-from=".9" data-to="1.01"><h2 class="h2 k-cap"><span class="ln"><span>Start with one bay.</span></span></h2><p>You see your own waits in one bay, and prove the numbers, before you decide on more.</p></div>
     </div>
+    <div class="rail" aria-hidden="true"><i></i></div>
   </div>
 </section>
 
@@ -154,17 +156,8 @@
 </section>
 
 <!-- 6. START WITH ONE BAY -->
-<section class="bay" id="bay" aria-label="Start with one bay">
-  <div class="bay-sticky">
-    <div class="floor-media">
-      <img class="floor-poster" src="assets/scene/hall-before-1600.webp" alt="The model factory floor, all pale except one inspection bay shown in colour with its paths and its waits." width="1600" height="2000" loading="lazy">
-      <canvas class="floor-gl" id="bayGL" data-before="assets/scene/hall-before" data-after="assets/scene/hall-after" data-mode="bay"></canvas>
-    </div>
-    <h2 class="mega bay-title k-lines"><span class="ln"><span>Start with</span></span><span class="ln"><span>one bay.</span></span></h2>
-  </div>
-</section>
-
 <section class="screen start" id="start">
+  <div class="wrap"><h2 class="mega k-lines"><span class="ln"><span>Start with</span></span><span class="ln"><span>one bay.</span></span></h2></div>
   <div class="wrap two">
     <div class="copy">
       <p class="big k-fade">A pilot follows one flow in one bay or line. You choose the flow. The pilot times today's waits first, over a window you choose. That is your baseline. Before it starts, we agree how to count a wait that runs past shift end. We also agree who on your team acts when work waits too long.</p>
