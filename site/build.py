@@ -78,7 +78,7 @@ ORG = {
 # ---- structured data pulled from the visible page, so it can never drift from what people read ----
 def faq_items(body):
     return [{"@type": "Question", "name": text_of(q), "acceptedAnswer": {"@type": "Answer", "text": text_of(a)}}
-            for q, a in re.findall(r"<details[^>]*>\s*<summary[^>]*>(.*?)</summary>(.*?)</details>", body, re.S)]
+            for q, a in re.findall(r"<details>\s*<summary>(.*?)</summary>(.*?)</details>", body, re.S)]
 
 
 def specs_of(body):
@@ -176,20 +176,23 @@ def head(meta, url, body, titles):
 <script>document.documentElement.classList.replace('no-js','js')</script>
 <script type="application/ld+json">{page_schema(meta, url, body, titles)}</script>
 </head>
-<body{' class="ds"' if meta.get("layout") == "home" else ''}>
-{'' if meta.get("layout") == "home" else part('sprite.html')}"""
+<body class="ds">"""
+
+
+def css_min(css):
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    css = re.sub(r"\s*\n\s*", "", css)
+    return re.sub(r"\s*([{};,>])\s*", r"\1", css).replace(";}", "}")
 
 
 def styles(meta):
-    if meta.get("layout") == "home":
-        # the homepage carries its whole stylesheet in the first round trip: no render-blocking request
-        css = (SRC / "css" / "core.css").read_text() + (SRC / "css" / "home.css").read_text()
-        css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
-        css = re.sub(r"\s*\n\s*", "", css)
-        return ('<link rel="preload" href="/assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>\n'
-                f"<style>{css}</style>")
-    return ('<link rel="preload" href="/assets/fonts/InterTight.woff2" as="font" type="font/woff2" crossorigin>\n'
-            '<link rel="stylesheet" href="/assets/css/site.css">\n<link rel="stylesheet" href="/assets/css/core.css">')
+    """Every page carries its whole stylesheet in the first round trip: core.css (tokens, bar, footer) plus one
+    template file (home.css, or inner.css with tool.css or diag.css where a page has a tool). No render-blocking
+    request; the display face is preloaded."""
+    files = ["core.css"] + (["home.css"] if meta.get("layout") == "home" else ["inner.css"] + [f"{x}.css" for x in meta.get("css", "").split()])
+    css = css_min("".join((SRC / "css" / f).read_text() for f in files))
+    return ('<link rel="preload" href="/assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>\n'
+            f"<style>{css}</style>")
 
 
 A = lambda u, t, extra="": f'<a href="{u}"{extra}>{html.escape(t)}</a>'
@@ -239,18 +242,14 @@ FILM_JS = ("<script>(()=>{const v=document.querySelector('video[data-hero-film]'
 
 
 def scripts(meta):
+    """Inner pages load no shared script: the panels script (inline), plus a tool's own file where it has one.
+    The diagnostic's 3D floor (three.js, about 690 KB) is no longer loaded: it drew a plant in code and broke the
+    first-screen budget. Its 2D sketch stays."""
     if meta.get("layout") == "home": return NAV_JS + FILM_JS
     s = meta.get("scripts", "").split()
-    out = [NAV_JS, '<script src="/assets/js/site.js" defer></script>']
-    if "hero" in s: out.append('<script src="/assets/js/hero.js" defer></script>')
-    if "diag" in s:
-        out.append('<script src="/assets/js/config.js" defer></script><script src="/assets/js/diagnostic.js" defer></script>')
-        out.append('<script type="importmap">{"imports":{"three":"/assets/vendor/three.module.min.js"}}</script>'
-                   # the 3D floor (and three.js, about 690 KB) loads only when the diagnostic comes near the screen
-                   '<script>(()=>{const d=document,el=d.querySelector("[data-diag]");if(!el)return;const go=()=>{if(go.done)return;go.done=1;const s=d.createElement("script");s.type="module";s.src=d.querySelector(\'script[src*="assets/js/site.js"]\').src.replace("site.js","diag3d.js");d.body.appendChild(s)};'
-                   'if(!("IntersectionObserver"in window))return go();const io=new IntersectionObserver(e=>{if(e.some(x=>x.isIntersecting)){io.disconnect();go()}},{rootMargin:"800px 0px"});io.observe(el)})();</script>')
-    for x in s:
-        if x not in ("hero", "diag"): out.append(f'<script src="/assets/js/{x}.js" defer></script>')
+    out = [NAV_JS]
+    if "diag" in s: out.append('<script src="/assets/js/config.js" defer></script><script src="/assets/js/diagnostic.js" defer></script>')
+    out += [f'<script src="/assets/js/{x}.js" defer></script>' for x in s if x not in ("hero", "diag")]
     return "\n".join(out)
 
 
@@ -270,96 +269,34 @@ def relativise(page, url):
     return page.replace('<html lang="en-IN"', f'<html lang="en-IN" data-root="{pre}" data-index="index.html"', 1)
 
 
-# The guided path: each section's pages in order, so every page can show where you are and what comes next
-TOURS = [(sec["label"], [(sec["url"], "Overview")] + [(u, l) for l, u, _ in sec["items"]]) for sec in NAV["sections"]]
-NEXT_LINE = {"/platform/": "Start with the tag", "/products/amigo/": "Then the anchor", "/products/amimo/": "Then the software",
-             "/products/amihub/": "How the accuracy is reached", "/technology/": "Every figure we publish", "/specs/": "Build on it", "/developers/": "What it solves", "/industries/": "Try it on your floor",
-             "/faq/": "Who builds it", "/trust/": "Talk to the team"}
-
-
-def tour_of(url):
-    flat = [(name, u, label) for name, items in TOURS for u, label in items]
-    best = None
-    for k, (name, u, label) in enumerate(flat):
-        if url == u or (url.startswith(u) and u != "/" and (best is None or len(u) > len(flat[best][1]))): best = k
-    if best is None: return None
-    name, u, _ = flat[best]
-    items = dict(TOURS)[name]
-    nxt = flat[best + 1] if best + 1 < len(flat) else None
-    return name, u, items, nxt
-
-
-def subnav(url):
-    t = tour_of(url)
-    if not t: return "", ""
-    name, cur, items, nxt = t
-    links = "".join(f'<a href="{u}"' + (' aria-current="page"' if u == cur else "") + f">{label}</a>" for u, label in items)
-    nl = (nxt[0] if nxt[2] == "Overview" else nxt[2]) if nxt else ""
-    nx = f'<a class="subnav-next" href="{nxt[1]}"><span>Next</span> {nl}</a>' if nxt else '<a class="subnav-next" href="/contact/"><span>Next</span> Book a call</a>'
-    bar = f'<nav class="subnav" aria-label="{name} pages" data-subnav><a class="subnav-name" href="{items[0][0]}">{name}</a><div class="subnav-links">{links}</div>{nx}</nav>\n'
-    band = ""
-    if nxt:
-        line = NEXT_LINE.get(cur, "Keep going")
-        band = (f'<section class="next-band dark" aria-label="Next page"><div class="wrap"><a href="{nxt[1]}"><span class="nb-kicker">{line}</span>'
-                f'<span class="nb-title">{nl if nxt[0] == name or nxt[2] == "Overview" else nxt[0] + ": " + nl}</span><i aria-hidden="true"></i></a></div></section>\n')
-    return bar, band
-
-
-def crumb_labels(body):
-    """Visible breadcrumbs use the nav label of each URL, the same as the bar and BreadcrumbList."""
+def crumb_labels(body, url=None):
+    """Visible breadcrumbs use the nav label of each URL, the same as the bar and BreadcrumbList, the current page too."""
     def fix(m):
-        return re.sub(r'<a href="([^"]+)">([^<]*)</a>', lambda a: f'<a href="{a.group(1)}">{LABEL.get(a.group(1), a.group(2))}</a>', m.group(0))
+        t = re.sub(r'<a href="([^"]+)">([^<]*)</a>', lambda a: f'<a href="{a.group(1)}">{LABEL.get(a.group(1), a.group(2))}</a>', m.group(0))
+        return re.sub(r'<span aria-current="page">[^<]*</span>', lambda a: f'<span aria-current="page">{LABEL[url]}</span>', t) if url in LABEL else t
     return re.sub(r'<nav class="crumbs".*?</nav>', fix, body, flags=re.S)
-
-
-SCENES = {k: v for k, v in json.loads((SRC / "data" / "scenes.json").read_text()).items() if not k.startswith("_")}
-PH_RE = re.compile(r'<div class="card ph mood-(\w+)(?: ratio-(\w+))?">(\s*)<p class="ph-brief"><b>(P\d+)</b>')
-
-
-def scenes(body):
-    def sub(m):
-        mood, ratio, ws, code = m.groups()
-        if code not in SCENES: return m.group(0)
-        stem, alt, pos, *kind = SCENES[code] + [None]
-        if kind[0] == "screen":
-            im = f'<img src="/assets/scene/{stem}.webp" alt="{alt}" width="2000" height="994" loading="lazy" decoding="async" style="object-position:{pos}">'
-        else:
-            # AVIF first, WebP fallback (both cut by the round 04 build; AVIF is about half the bytes)
-            sz = 'sizes="(max-width: 900px) 92vw, 1200px"'
-            im = (f'<picture><source type="image/avif" srcset="/assets/scene/{stem}-900.avif 900w, /assets/scene/{stem}-1600.avif 1600w" {sz}>'
-                  f'<img src="/assets/scene/{stem}-1600.webp" srcset="/assets/scene/{stem}-900.webp 900w, /assets/scene/{stem}-1600.webp 1600w" '
-                  f'{sz} alt="{alt}" width="1600" height="900" loading="lazy" decoding="async" style="object-position:{pos}"></picture>')
-        return f'<div class="card ph scene{" screen" if kind[0] == "screen" else ""} mood-{mood}{" ratio-" + ratio if ratio else ""}">{ws}{im}<p class="ph-brief"><b>{code}</b>'
-    return PH_RE.sub(sub, body)
 
 
 def build():
     if DIST.exists(): shutil.rmtree(DIST)
     (DIST / "assets").mkdir(parents=True)
     # assets/intro (the old AI-made hero turn) is no longer shipped: nothing may use it
-    for sub in ("fonts", "img", "home", "vendor", "film", "photo", "scene"):
+    # shipped: fonts, CAD stills, film files. Not shipped: assets/intro (the old AI-made turn), assets/scene (the dark
+    # glowing scene stills, replaced by reserved slots in round 05), vendor (three.js, no longer loaded)
+    for sub in ("fonts", "img", "home", "film", "photo"):
         if (SRC / "assets" / sub).exists(): shutil.copytree(SRC / "assets" / sub, DIST / "assets" / sub)
     shutil.copytree(SRC / "js", DIST / "assets" / "js", dirs_exist_ok=True)
-    (DIST / "assets" / "css").mkdir()
-    css = (SRC / "css" / "site.css").read_text()
-    if SHARE: css = css.replace('url("/assets/', 'url("../')
-    (DIST / "assets" / "css" / "site.css").write_text(css)
-    core = (SRC / "css" / "core.css").read_text()
-    if SHARE: core = core.replace('url("/assets/', 'url("../')
-    (DIST / "assets" / "css" / "core.css").write_text(core)
-
     pages = {}
     for f in sorted((SRC / "pages").rglob("*.html")):
         rel = f.relative_to(SRC / "pages")
-        meta, body = front(f.read_text()); body = scenes(crumb_labels(body))
+        meta, body = front(f.read_text()); body = crumb_labels(body, url_for(rel))
         pages[url_for(rel) if rel.name != "404.html" else "/404.html"] = (meta, body)
     titles = {u: m.get("crumb") or m.get("title", "").split(" | ")[0] for u, (m, _) in pages.items()}
 
     public = []
     for url, (meta, body) in pages.items():
         header = header_html()
-        bar, band = subnav(url) if url not in ("/", "/404.html") else ("", "")
-        page = head(meta, url, body, titles) + "\n" + header + "\n" + bar + f'<main id="main"' + (' class="has-sub"' if bar else "") + f'>\n{body}\n{band}</main>\n' + footer_html() + "\n" + (part("km.html") if "data-km=" in body else "") + "\n" + scripts(meta) + "\n</body>\n</html>\n"
+        page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main">\n{body}\n</main>\n' + footer_html() + "\n" + scripts(meta) + "\n</body>\n</html>\n"
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
         out.parent.mkdir(parents=True, exist_ok=True); out.write_text(page)

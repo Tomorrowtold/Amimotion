@@ -1,7 +1,7 @@
 /* core.css: the design system's tokens, the bar with its panels, the phone sheet and the footer.
-   Source: team/rounds/02-design/DESIGN_SYSTEM.md and frame/hero.html (round 5). Inlined on the homepage,
-   linked after site.css on every other page. Tokens sit on .ds (the homepage body, and the bar and footer
-   everywhere), so they never collide with site.css on the inner pages. Pages use the semantic names only. */
+   Source: team/rounds/02-design/DESIGN_SYSTEM.md and frame/hero.html (round 5). Inlined on every page by build.py,
+   followed by one template file: home.css on the homepage, inner.css (plus tool.css or diag.css) everywhere else.
+   Tokens sit on .ds (every body). Pages use the semantic names only. */
 @font-face{font-family:"AmI Display";src:url("/assets/fonts/AmISansDisplay-SemiBold.woff2") format("woff2");font-weight:600;font-display:swap}
 @font-face{font-family:"AmI Text";src:url("/assets/fonts/AmISansText-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
 @font-face{font-family:"AmI Text";src:url("/assets/fonts/AmISansText-Medium.woff2") format("woff2");font-weight:500;font-display:swap}

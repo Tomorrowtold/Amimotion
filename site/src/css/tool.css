@@ -1,0 +1,41 @@
+/* tool.css: the planning tools and the contact form (round 05). Inlined after inner.css on /tools/anchors/,
+   /tools/search-time/, /tools/pilot/ and /contact/. Inputs on one fill step, choices fill with ink when chosen,
+   the answer sits on the surface beside the form (5:7). No borders, no pills. */
+.tool-shell{grid-column:1 / -1;row-gap:var(--s-7)}
+.tool-form{grid-column:1 / span 5;display:grid;gap:var(--s-6)}
+.tool-out{grid-column:6 / -1;background:var(--surface);padding:var(--s-7) var(--s-6)}
+.field{display:grid;gap:var(--s-2);border:0;margin:0;padding:0;min-width:0}
+.field legend{font-weight:500;padding:0;margin-bottom:var(--s-3)}
+.field-row{display:flex;justify-content:space-between;gap:var(--s-4);font-weight:500}
+.field output{font-variant-numeric:tabular-nums}
+.field small{color:var(--ink-soft);font-size:var(--size-small)}
+input[type=range]{width:100%;height:28px;margin:0;accent-color:var(--ink)}
+.field input[type=number],.form input,.form textarea{font:inherit;color:var(--ink);background:var(--surface);border:0;border-radius:var(--radius-control);padding:var(--s-3) var(--s-4);min-height:48px;width:100%}
+.form textarea{min-height:8em;resize:vertical}
+.seg{display:flex;flex-wrap:wrap;gap:var(--s-2)}
+.seg.stack{flex-direction:column}
+.seg label{position:relative;cursor:pointer}
+.seg input{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0}
+.seg span{display:block;padding:var(--s-3) var(--s-4);min-height:44px;background:var(--surface);border-radius:var(--radius-control);transition:background-color var(--t-fast) var(--ease-ds)}
+.seg label:hover span{background:var(--pressed)}
+.seg input:checked+span{background:var(--ink);color:var(--on-ink)}
+.seg input:focus-visible+span{outline:2px solid var(--focus);outline-offset:3px}
+.seg i{display:block;font-style:normal;font-size:var(--size-small);color:var(--ink-soft)}
+.seg input:checked+span i{color:var(--on-ink)}
+.out-name{font-weight:500;color:var(--ink-soft);margin-bottom:var(--s-2)}
+.big{font:600 var(--size-h2)/1.05 var(--font-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-bottom:var(--s-6)}
+.lines p{display:flex;justify-content:space-between;gap:var(--s-4);margin:0;padding:var(--s-2) 0}
+.lines b{font-weight:500;font-variant-numeric:tabular-nums;text-align:right}
+.brief{white-space:pre-wrap;margin-bottom:var(--s-5)}
+.tool-out .note{margin-top:var(--s-6)}
+.contact-grid{grid-column:1 / -1;row-gap:var(--s-8)}
+.contact-grid>div:first-child{grid-column:1 / span 7}
+.contact-grid>div:last-child{grid-column:9 / -1}
+.contact-grid h2{font-size:var(--size-h3);line-height:1.2;letter-spacing:-.01em;margin:0 0 var(--s-4)}
+.contact-grid h2+p,.next-steps{margin-bottom:var(--s-7)}
+.form{display:grid;gap:var(--s-5)}
+.form label{display:grid;gap:var(--s-2);font-weight:500}
+.form .cta{justify-self:start}
+.draft{background:var(--surface);padding:var(--s-6)}
+@media (max-width:1023px){.tool-form,.tool-out,.contact-grid>div:first-child,.contact-grid>div:last-child{grid-column:1 / -1}.tool-out{margin-inline:calc(-1 * var(--margin));padding-inline:var(--margin)}}
+.big small{font:500 var(--size-lede)/1 var(--font-text);letter-spacing:0;margin-left:.3em;color:var(--ink-soft)}
