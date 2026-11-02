@@ -30,7 +30,7 @@ site = WORK / "site"
 b = (site / "build.py").read_text()
 b = re.sub(r'    if missing: raise SystemExit\("build: homepage pictures missing.*\n', '    if missing: print("build: homepage pictures not landed yet:", len(missing))\n', b)
 (site / "build.py").write_text(b)
-if (site / "tools" / "pagegen" / "run.py").exists(): sh(sys.executable, "tools/pagegen/run.py", cwd=site)
+# pages are committed in src/ on the branch (product sites edit them by hand): never regenerate them here
 sh(sys.executable, "build.py", "--share", "--no-brief", cwd=site)
 dist = site / "dist"
 rev = subprocess.run(["git", "-C", str(REPO), "rev-parse", "--short", BRANCH], capture_output=True, text=True).stdout.strip()
@@ -138,9 +138,15 @@ def walk(f):
                 if p.suffix in (".css", ".js"): walk(p)
 for f in list(keep):
     if f.suffix in (".html", ".css", ".js") and f.exists(): walk(f)
+# runtime files fetched by code (product pages load the CAD meshes themselves)
+for g in (dist / "assets" / "locate").rglob("*"):
+    if g.is_file(): keep.add(g.resolve())
 # studio runtime files fetched by code
 for g in sa.rglob("*"):
     if g.is_file() and not g.name.startswith("hall-1600") : keep.add(g.resolve())
+# studio files nothing loads any more (keeps the build under the artifact's 511-file cap)
+UNUSED = re.compile(r"assets/studio/assets/(film/|fonts/|scene/hall-waits-|hw/.*(dark|pair-34|-k800))")
+keep = {f for f in keep if not UNUSED.search(str(Path(f).resolve().relative_to(dist.resolve())))}
 shutil.rmtree(OUT, ignore_errors=True)
 n = 0
 for f in keep:
