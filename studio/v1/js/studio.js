@@ -242,25 +242,37 @@ if (simSec) {
   });
 })();
 
-/* ---------- notes: seven guides on a spiral; scroll turns the helix, one guide rests in front at a time ---------- */
+/* ---------- guides: Shiv's film plays 6 s full frame, settles into the first card, then scroll turns the spiral one guide at a time ---------- */
 (() => {
   const sec = $('.bs'); if (!sec) return;
-  const cards = $$('.bs-card', sec), posts = $$('.bs-post', sec), ticks = $$('.bs-rail i', sec), helix = $('.bs-helix', sec);
-  const N = cards.length, STEP = 50 * Math.PI / 180;
+  const stage = $('.bs-stage', sec), intro = $('.bs-intro', sec), iv = $('video', intro), helix = $('.bs-helix', sec);
+  const cards = $$('.bs-card', sec), posts = $$('.bs-post', sec), ticks = $$('.bs-rail i', sec);
+  const N = cards.length, STEP = 50 * Math.PI / 180, HOLD = 6, MORPH = 1.25;
   const lowData = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
   const still = /[?&]still/.test(location.search), fm = location.search.match(/[?&]bs=([\d.]+)/), fixed = fm ? +fm[1] : null;
-  // rest at each guide: the middle half of every scroll segment turns, the rest holds
+  const ease = (x) => 1 - Math.pow(1 - x, 4);
   const hold = (t) => { const i = Math.floor(t), f = t - i, g = clamp((f - .22) / .56); return i + g * g * (3 - 2 * g); };
-  let cur = -1, target = 0, p = 0, active = -1, seen = false, cw = 0, ch = 0;
-  const measure = () => { const r = cards[0].getBoundingClientRect(); cw = cards[0].offsetWidth; ch = cards[0].offsetHeight; };
-  const progress = () => { const r = sec.getBoundingClientRect(), seg = (sec.offsetHeight - innerHeight) / Math.max(1, N - 1);
-    return clamp(-r.top / seg, 0, N - 1); };
+  let p = 0, cur = -1, active = -1, seen = false, cw = 0, ch = 0, last = 0;
+  // intro: 0 waiting, 1 playing, 2 morphing, 3 done
+  let phase = (reduce || lowData || still || fixed != null) ? 3 : 0, t0 = 0, m = 0;
+  if (phase === 3) sec.classList.add('done');
+  const measure = () => { cw = cards[0].offsetWidth; ch = cards[0].offsetHeight; sec.style.setProperty('--ch', ch + 'px'); };
+  const progress = () => { const r = sec.getBoundingClientRect(), seg = (sec.offsetHeight - innerHeight) / N;
+    return { t: clamp(-r.top / seg, 0, N), pinned: r.top <= 2 && r.bottom >= innerHeight - 2 }; };
+  const setIntro = (k) => {   // k: 0 = fills the padded screen, 1 = sits exactly on card 1
+    const s = stage.getBoundingClientRect(), h = helix.getBoundingClientRect(), pad = parseFloat(getComputedStyle(sec).getPropertyValue('--pad')) || 16;
+    const a = { l: pad + 10, t: pad + 10, w: s.width - 2 * pad - 20, h: s.height - 2 * pad - 20, r: 26 };
+    const b = { l: h.left - s.left - cw / 2 + 8, t: h.top - s.top - ch / 2 + 8, w: cw - 16, h: ch - 16, r: 15 };
+    const L = (x, y) => x + (y - x) * k;
+    intro.style.setProperty('--il', L(a.l, b.l) + 'px'); intro.style.setProperty('--it', L(a.t, b.t) + 'px');
+    intro.style.setProperty('--iw', L(a.w, b.w) + 'px'); intro.style.setProperty('--ih', L(a.h, b.h) + 'px'); intro.style.setProperty('--ir', L(a.r, b.r) + 'px');
+  };
   const place = () => {
     const phone = innerWidth <= 860, R = cw * (phone ? .62 : .82), DY = ch * (phone ? .5 : .46);
     cards.forEach((c, i) => {
       const d = i - p, a = d * STEP, ad = Math.abs(d), front = (Math.cos(a) + 1) / 2;
-      const x = R * Math.sin(a), z = R * (Math.cos(a) - 1) - ad * 30, y = d * DY;
-      c.style.setProperty('--x', x.toFixed(1) + 'px'); c.style.setProperty('--y', y.toFixed(1) + 'px'); c.style.setProperty('--z', z.toFixed(1) + 'px');
+      c.style.setProperty('--x', (R * Math.sin(a)).toFixed(1) + 'px'); c.style.setProperty('--y', (d * DY).toFixed(1) + 'px');
+      c.style.setProperty('--z', (R * (Math.cos(a) - 1) - ad * 30).toFixed(1) + 'px');
       c.style.setProperty('--a', (a * .3 * 180 / Math.PI).toFixed(2) + 'deg');
       c.style.setProperty('--o', (clamp(.34 + .66 * front) * clamp(1.9 - ad * .28)).toFixed(3));
       c.style.setProperty('--d', clamp((1 - front) * .55 + Math.min(ad, 1) * .2, 0, .75).toFixed(3));
@@ -277,24 +289,36 @@ if (simSec) {
         if (img) c.style.setProperty('--kb', near === 0 ? '1.12' : '1.04');
         if (!v || lowData || reduce) return;
         if (near <= 1 && !v.src) { v.src = v.dataset.src; v.load(); }
-        if (near === 0 && seen) { const pr = v.play(); if (pr) pr.catch(() => {}); } else if (v.src) v.pause();
+        if (near === 0 && seen && phase === 3) { const pr = v.play(); if (pr) pr.catch(() => {}); } else if (v.src) v.pause();
       });
     }
   };
-  let last = 0;
+  const finish = () => {
+    phase = 3; sec.classList.add('done'); sec.style.setProperty('--pool', 1);
+    const v = cards[0].querySelector('video');
+    if (v) { if (!v.src) { v.src = v.dataset.src; } try { v.currentTime = iv.currentTime % (v.duration || 6); } catch (e) {} const pr = v.play(); if (pr) pr.catch(() => {}); }
+    iv.pause(); active = -1; cur = -1;
+  };
   const tick = (now) => {
     const dt = Math.min(.1, last ? (now - last) / 1000 : .016); last = now;
-    target = fixed != null ? fixed : hold(progress());
+    const { t, pinned } = progress();
+    if (phase === 0 && t > 1.05) { measure(); finish(); }
+    if (phase === 0 && pinned) { phase = 1; t0 = now; if (!iv.src) iv.src = iv.dataset.src; iv.currentTime = 0; const pr = iv.play(); if (pr) pr.catch(() => {}); }
+    if (phase === 1 && (now - t0) / 1000 >= HOLD) { phase = 2; t0 = now; measure(); }
+    if (phase === 2) { m = clamp((now - t0) / 1000 / MORPH); setIntro(ease(m)); if (m >= 1) finish(); }
+    if (phase < 2) setIntro(0);
+    const target = fixed != null ? fixed : (phase === 3 ? hold(clamp(t - 1, 0, N - 1)) : 0);
     p = (reduce || still) ? target : lerp(p, target, 1 - Math.exp(-dt * 7.5));
     if (Math.abs(p - target) < .0005) p = target;
     if (p !== cur) { cur = p; place(); }
     if (seen) requestAnimationFrame(tick);
   };
-  measure(); place();
-  addEventListener('resize', () => { measure(); cur = -1; active = -1; place(); });
+  iv.addEventListener('playing', () => { if (phase === 1) t0 = performance.now(); }, { once: true });   // the 6 s count from the first frame actually shown
+  measure(); place(); setIntro(0); if (phase === 3) sec.style.setProperty('--pool', 1);
+  addEventListener('resize', () => { measure(); cur = -1; active = -1; place(); if (phase < 2) setIntro(0); });
   new IntersectionObserver((es) => {
     const was = seen; seen = es[0].isIntersecting;
-    if (seen && !was) { active = -1; last = 0; requestAnimationFrame(tick); }
-    if (!seen) cards.forEach((c) => { const v = c.querySelector('video'); if (v && v.src) v.pause(); });
-  }, { rootMargin: '100px' }).observe(sec);
+    if (seen && !was) { active = -1; last = 0; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.load(); } requestAnimationFrame(tick); }
+    if (!seen) { cards.forEach((c) => { const v = c.querySelector('video'); if (v && v.src) v.pause(); }); if (phase === 1) { iv.pause(); phase = 0; } }
+  }, { rootMargin: '300px' }).observe(sec);
 })();
