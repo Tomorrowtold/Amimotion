@@ -375,10 +375,3 @@ em{font-style:normal}
   .tag-fallback{left:0;padding:34svh 8vw 30svh}
 }
 
-/* the wire: the hero's blue path runs down the page into the film */
-.wire{position:relative;height:clamp(160px,30vh,340px);margin-top:-2px;pointer-events:none}
-.wire svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.wire svg{clip-path:inset(0 0 var(--wc,100%) 0)}
-.wire path{fill:none;stroke:#1f6bff;stroke-linecap:round;vector-effect:non-scaling-stroke}
-.wire .wire-line{stroke-width:2.6px}
-.wire .wire-glow{stroke-width:14px;opacity:.14;filter:blur(6px)}

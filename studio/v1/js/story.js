@@ -23,10 +23,9 @@ void main(){
   col=mix(col,vec3(.35,.62,1.),front*.8);
   // one bay in colour
   vec2 bd=(iu-bayC)*vec2(.8,1.25);float bl=length(bd);
-  float inBay=(1.-smoothstep(bay-.01,bay+.01,bl))*step(.001,bay);
+  float inBay=(1.-smoothstep(bay-.035,bay+.02,bl))*step(.001,bay);
   col=mix(col,A,inBay);
-  col=mix(col,vec3(.12,.42,1.),exp(-pow((bl-bay)/.0011,2.))*step(.001,bay)*.85);
-  // the tag, located
+    // the tag, located
   vec2 tp=(tagPos-cam.xy)/span*cam.z+.5; vec2 dp=(uv-tp)*res; float dd=length(dp)/(res.y*.001);
   float pulse=fract(time*.55);
   col=mix(col,vec3(.12,.42,1.),tagOn*(1.-smoothstep(8.,9.5,dd)));
@@ -43,8 +42,8 @@ const Q = [0.40, 0.80];      // inspection queue
 const K = [
   { at: 0.00, cam: [0.60, 0.60, 1.05], draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 },
   { at: 0.12, cam: [0.52, 0.50, 1.12], draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 },
-  { at: 0.20, cam: [0.40, 0.36, 1.30], draw: 0, dash: 1, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 },
-  { at: 0.28, cam: [0.40, 0.36, 1.30], draw: 0, dash: 1, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 },
+  { at: 0.20, cam: [0.40, 0.36, 1.30], draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 },
+  { at: 0.28, cam: [0.40, 0.36, 1.30], draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1 },
   { at: 0.36, cam: [0.60, 0.36, 1.18], draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 1, grey: 1 },
   { at: 0.43, cam: [0.60, 0.36, 1.18], draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 1, grey: 1 },
   { at: 0.52, cam: [0.50, 0.50, 1.00], draw: 1.03, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: .6, grey: 0 },
@@ -112,6 +111,7 @@ export function story(section, canvas) {
 }
 
 /* ---------- the story layer: no words, only light, shape and motion ---------- */
+const TAGIMG = new Image(); TAGIMG.decoding = 'async'; TAGIMG.src = 'assets/home/amigo-side-1500.webp';
 const INK = '11,18,56', BLUE = '31,107,255', AMB = '255,176,32';
 const WALK = [[.97, .99], [.86, .9], [.93, .76], [.8, .67], [.64, .56], [.71, .44], [.6, .39], [.5, .43], [.33, .37], [.26, .45], [.12, .5], [.17, .64], [.07, .72]];
 const LOOK = [[.8, .67, 3], [.6, .39, 6], [.26, .45, 9], [.17, .64, 11]];
@@ -151,20 +151,36 @@ function drawHUD(x, p, t, cx, cy, z, span) {
     x.restore();
   }
 
-  // 2. scans: each checkpoint flashes once, then the trail runs into fog
+  // 2. scans: two checkpoints flash, the trace between them is sure, after the last one it breaks up, and the trolley could be anywhere
   a = fade(p, .18, .33);
   if (a > 0) {
-    GATES.forEach(([u, v], i) => {
-      const [X, Y] = P(u, v), k = clamp((p - .195 - i * .03) / .03); x.save(); x.globalAlpha = a;
-      x.strokeStyle = `rgb(${INK})`; x.lineWidth = 3 * s; x.beginPath(); x.moveTo(X - 13 * s, Y + 9 * s); x.lineTo(X + 13 * s, Y - 9 * s); x.stroke();
-      if (k > 0) { x.globalAlpha = a * (1 - k) * .9; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1.5 * s; floorRing(x, X, Y, 8 + k * 60, s); x.stroke(); x.globalAlpha = a; x.fillStyle = `rgb(${INK})`; x.beginPath(); x.arc(X + 18 * s, Y - 14 * s, 4 * s * eo(k * 3), 0, 7); x.fill(); }
-      x.restore();
+    const G = GATES.map(([u, v]) => P(u, v)), [TX, TY] = P(.481, .484);
+    x.save(); x.globalAlpha = a;
+    const k1 = eo((p - .2) / .03);
+    if (k1 > 0) { x.strokeStyle = `rgba(${INK},.6)`; x.lineWidth = 2.2 * s; x.beginPath(); x.moveTo(G[0][0], G[0][1]); x.lineTo(lerp(G[0][0], G[1][0], k1), lerp(G[0][1], G[1][1], k1)); x.stroke(); }
+    const k2 = eo((p - .232) / .035);
+    if (k2 > 0) { const N = 14; for (let i = 0; i < N * k2; i++) { const q = i / N, X = lerp(G[1][0], TX, q * .72), Y = lerp(G[1][1], TY, q * .72); x.fillStyle = `rgba(${INK},${.55 * (1 - q)})`; x.beginPath(); x.arc(X, Y, 2 * s * (1 - q * .6), 0, 7); x.fill(); } }
+    G.forEach(([X, Y], i) => {
+      const k = clamp((p - .195 - i * .03) / .03);
+      // a checkpoint: two posts and a beam
+      x.fillStyle = `rgb(${INK})`; for (const d of [-1, 1]) { x.beginPath(); x.roundRect(X + d * 15 * s - 2 * s, Y - 22 * s, 4 * s, 22 * s, 2 * s); x.fill(); }
+      x.strokeStyle = k > 0 && k < 1 ? `rgba(${BLUE},${1 - k * .6})` : `rgba(${INK},.35)`; x.lineWidth = 1.6 * s; x.beginPath(); x.moveTo(X - 15 * s, Y - 14 * s); x.lineTo(X + 15 * s, Y - 14 * s); x.stroke();
+      if (k > 0 && k < 1) { x.globalAlpha = a * (1 - k); x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1.4 * s; floorRing(x, X, Y, 10 + k * 64, s); x.stroke(); x.globalAlpha = a; }
+      if (k >= 1) { x.fillStyle = `rgb(${INK})`; x.beginPath(); x.arc(X, Y + 6 * s, 3.4 * s, 0, 7); x.fill(); }
     });
-    const [X, Y] = P(.481, .484), k = clamp((p - .245) / .04);
-    x.save(); x.globalAlpha = a * k;
-    const g = x.createRadialGradient(X, Y, 0, X, Y, 120 * s); g.addColorStop(0, 'rgba(243,242,238,.75)'); g.addColorStop(.6, 'rgba(243,242,238,.35)'); g.addColorStop(1, 'rgba(243,242,238,0)'); x.fillStyle = g; x.fillRect(X - 130 * s, Y - 130 * s, 260 * s, 260 * s);
-    x.strokeStyle = `rgba(${INK},.45)`; x.lineWidth = 1.6 * s; x.setLineDash([4 * s, 7 * s]); x.lineDashOffset = -t * 10; floorRing(x, X, Y, 52 + Math.sin(t * 1.4) * 4, s); x.stroke();
     x.restore();
+    // out of sight: fog where it really is, and doubt in three places
+    const kf = clamp((p - .25) / .04);
+    if (kf > 0) {
+      x.save(); x.globalAlpha = a * kf;
+      const g = x.createRadialGradient(TX, TY, 0, TX, TY, 120 * s); g.addColorStop(0, 'rgba(243,242,238,.8)'); g.addColorStop(.6, 'rgba(243,242,238,.4)'); g.addColorStop(1, 'rgba(243,242,238,0)'); x.fillStyle = g; x.fillRect(TX - 130 * s, TY - 130 * s, 260 * s, 260 * s);
+      [[.481, .484], [.6, .39], [.3, .6]].forEach(([u, v], i) => {
+        const [X, Y] = P(u, v), ph = (t * .45 + i / 3) % 1, br = Math.sin(ph * 3.1416);
+        x.globalAlpha = a * kf * (.4 + .6 * br); x.strokeStyle = `rgba(${INK},.85)`; x.lineWidth = 2 * s; x.setLineDash([3 * s, 6 * s]); x.lineDashOffset = -t * 10;
+        floorRing(x, X, Y, 26 + br * 8, s); x.stroke();
+      });
+      x.restore();
+    }
   }
 
   // 3. the tag: anchors listen, signal travels, the fix closes in
@@ -185,6 +201,22 @@ function drawHUD(x, p, t, cx, cy, z, span) {
     x.restore();
   }
 
+  // 3b. a loupe opens over the trolley and shows the real tag riding on it
+  a = fade(p, .385, .47);
+  if (a > 0 && TAGIMG.complete && TAGIMG.naturalWidth) {
+    const [TX, TY] = P(.481, .484), k = eo((p - .385) / .03), R = Math.min(W, H) * .17 * k;
+    const R0 = Math.min(W, H) * .17, LX = clamp(TX + (W < 700 ? -1 : 1) * Math.min(W * .26, 230 * s), R0 + 14 * s, W - R0 - 14 * s), LY = clamp(TY - Math.min(H * .24, 200 * s), R0 + 14 * s, H);
+    x.save(); x.globalAlpha = a;
+    x.strokeStyle = `rgba(${BLUE},.55)`; x.lineWidth = 1.4 * s; x.beginPath(); x.moveTo(TX, TY); x.lineTo(lerp(TX, LX, k), lerp(TY, LY, k)); x.stroke();
+    x.shadowColor = 'rgba(11,18,56,.22)'; x.shadowBlur = 30 * s; x.shadowOffsetY = 10 * s; x.fillStyle = '#fff'; x.beginPath(); x.arc(LX, LY, R + 5 * s, 0, 7); x.fill(); x.shadowColor = 'transparent';
+    x.save(); x.beginPath(); x.arc(LX, LY, R, 0, 7); x.clip();
+    const iw = R * 2.5, ih = iw * TAGIMG.naturalHeight / TAGIMG.naturalWidth, dr = (1 - k) * 12 * s + Math.sin(t * .8) * 2 * s;
+    x.fillStyle = '#f4f7fc'; x.fillRect(LX - R, LY - R, R * 2, R * 2); x.drawImage(TAGIMG, LX - iw / 2, LY - ih * .48 + dr, iw, ih); x.restore();
+    x.strokeStyle = `rgba(${BLUE},.9)`; x.lineWidth = 2 * s; x.beginPath(); x.arc(LX, LY, R + 5 * s, 0, 7); x.stroke();
+    const pp = (t * .5) % 1; x.strokeStyle = `rgba(${BLUE},${.35 * (1 - pp)})`; x.beginPath(); x.arc(LX, LY, R + 5 * s + pp * 24 * s, 0, 7); x.stroke();
+    x.restore();
+  }
+
   // 4. paths: a pin settles where the tag stopped
   a = fade(p, .47, .63);
   if (a > 0) {
@@ -198,6 +230,14 @@ function drawHUD(x, p, t, cx, cy, z, span) {
     x.restore();
   }
 
+  // 6a. the question dims the floor; only the answers stay lit
+  a = fade(p, .775, .905, .03);
+  if (a > 0) {
+    x.save(); x.globalAlpha = a; x.fillStyle = 'rgba(232,238,248,.72)'; x.fillRect(0, 0, W, H);
+    x.globalCompositeOperation = 'destination-out';
+    WAITS.slice(0, 3).forEach(([u, v]) => { const [X, Y] = P(u, v), R = 110 * s; const g = x.createRadialGradient(X, Y - 10 * s, 0, X, Y - 10 * s, R); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(.55, 'rgba(0,0,0,.9)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(X - R, Y - R - 10 * s, R * 2, R * 2); });
+    x.restore();
+  }
   // 5. waits: an amber dial grows around every waiting trolley
   a = fade(p, .62, .9);
   WAITS.forEach(([u, v, w], i) => {
@@ -214,13 +254,15 @@ function drawHUD(x, p, t, cx, cy, z, span) {
   // 6. ask: the answer draws itself around the three that match
   a = fade(p, .77, .91);
   if (a > 0) {
-    const pts = WAITS.slice(0, 3).map(([u, v]) => P(u, v));
-    pts.forEach(([X, Y], i) => { const k = eo((p - .795 - i * .012) / .03); if (k <= 0) return; x.save(); x.globalAlpha = a; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 2.4 * s; x.beginPath(); x.ellipse(X, Y, 62 * s, 40 * s, -.5, -2.2, -2.2 + 6.283 * k); x.stroke(); x.restore(); });
-    const k = eo((p - .835) / .03);
-    if (k > 0) { x.save(); x.globalAlpha = a * .5; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1.3 * s; x.setLineDash([3 * s, 6 * s]); x.beginPath(); x.moveTo(pts[0][0], pts[0][1] - 40 * s); for (let i = 1; i < 3; i++) { const [X0, Y0] = pts[i - 1], [X1, Y1] = pts[i]; x.quadraticCurveTo((X0 + X1) / 2, Math.min(Y0, Y1) - 80 * s, lerp(X0, X1, 1) , Y1 - 40 * s); } x.stroke(); x.restore(); }
+    WAITS.slice(0, 3).forEach(([u, v], i) => { const [X, Y] = P(u, v), k = eo((p - .795 - i * .014) / .03); if (k <= 0) return; x.save(); x.globalAlpha = a;
+      x.strokeStyle = `rgba(${AMB},.28)`; x.lineWidth = 9 * s; x.beginPath(); x.ellipse(X, Y, 58 * s, 36 * s, -.5, -2.2, -2.2 + 6.283 * k); x.stroke();
+      x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1.8 * s; x.beginPath(); x.ellipse(X, Y, 58 * s, 36 * s, -.5, -2.2, -2.2 + 6.283 * k); x.stroke(); x.restore(); });
   }
 
-  // 7. one bay: corner marks settle around the bay
+  // 7. one bay: corner marks settle around the bay, a soft blue edge breathes
   a = fade(p, .9, 1.2);
-  if (a > 0) { const [X, Y] = P(.40, .80), k = eo((p - .925) / .04); x.save(); x.globalAlpha = a * k; x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 2.6 * s; const r = (.2 * z / span[0]) * W * .9; brackets(x, X, Y, r + (1 - k) * 40 * s, 18, s); x.restore(); }
+  if (a > 0) { const [X, Y] = P(.40, .80), k = eo((p - .925) / .04), rx = (.2 / .8) * z / span[0] * W, ry = (.2 / 1.25) * z / span[1] * H;
+    x.save(); x.globalAlpha = a * k; x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 2.6 * s; const e = (1 - k) * 40 * s, L = 26 * s;
+    for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { const cx = X + dx * (rx + e), cy = Y + dy * (ry + e); x.beginPath(); x.moveTo(cx, cy - dy * L); x.lineTo(cx, cy); x.lineTo(cx - dx * L, cy); x.stroke(); }
+    x.globalAlpha = a * k * (.35 + .2 * Math.sin(t * 1.6)); x.lineWidth = 1.2 * s; x.setLineDash([2 * s, 8 * s]); x.strokeRect(X - rx, Y - ry, rx * 2, ry * 2); x.restore(); }
 }
