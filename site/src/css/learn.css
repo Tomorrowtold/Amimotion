@@ -9,7 +9,7 @@
 .motion .qa>span:last-child{opacity:calc(.55 + var(--p,0) * .45);transition:opacity .2s linear}
 .motion .qa.live>span:first-child{animation-fill-mode:backwards}
 /* on a cover, a card colour or a photograph the dim start washed the answer out (1.9 to 3:1): it starts at 90% there */
-.motion .look-cover .qa>span:last-child,.motion .look-card .qa>span:last-child,.motion .w-poster .qa>span:last-child{opacity:calc(.9 + var(--p,0) * .1)}
+.motion .look-cover .qa>span:last-child,.motion .look-card .qa>span:last-child,.motion .w-poster .qa>span:last-child,.motion .look-soft .qa>span:last-child{opacity:calc(.9 + var(--p,0) * .1)}
 
 /* 2. the rail and the figure */
 .read.has-fig .rail{grid-column:1 / span 6;min-width:0;position:sticky;top:var(--s-6);align-self:start;padding-right:var(--s-6)}
