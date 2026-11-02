@@ -756,3 +756,19 @@ body:has(.sim-frame:hover) #cursor{opacity:0!important}
 .cap p [data-b].lit{color:var(--ink-soft)}
 .cap p [data-b].now,.cap p[data-b].now{color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.story{height:auto}.cap [data-b],.cap [data-b] .ln>span{opacity:1!important}}
+
+/* ===== hero polish (from the design audits): one clean light pool, upright emphasis, a precise lede, the cue out of the copy's way ===== */
+.hero::before{background:radial-gradient(42% 52% at 69% 55%,#fff 0,rgba(255,255,255,.72) 38%,rgba(255,255,255,0) 72%),linear-gradient(168deg,rgba(255,255,255,.55) 0,rgba(255,255,255,0) 38%,rgba(214,226,248,0) 70%,rgba(214,226,248,.35) 100%)}
+.display em,.h2 em,.cap em{font-style:normal;font-synthesis:none}
+.hero .display{letter-spacing:-.05em;word-spacing:.03em;font-kerning:normal}
+.hero .lede-lead{color:var(--ink);font-weight:500}
+.hero .lede::before{width:28px;height:2px;border-radius:2px;margin-bottom:20px;opacity:.9}
+.hero .hero-foot{left:auto;right:var(--m);bottom:clamp(24px,4.5vh,44px);justify-content:flex-end;opacity:var(--glow,1)}
+.hero .scroll-cue{width:1px;height:40px;background:rgba(11,18,56,.12)}
+.hero .scroll-cue i{background:var(--ink-soft)}
+@media (max-width:900px){
+  .hero::before{background:radial-gradient(70% 34% at 50% 46%,#fff 0,rgba(255,255,255,.7) 40%,rgba(255,255,255,0) 75%)}
+  .hero .hero-foot{display:none}
+  .hero .display{letter-spacing:-.046em}
+}
+@media (prefers-reduced-motion:reduce){.hero .scroll-cue i{animation:none}}

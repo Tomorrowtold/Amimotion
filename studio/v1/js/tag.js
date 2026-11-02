@@ -38,20 +38,14 @@ uniform float t,ring,wait,fadeAll;
 const float PI=3.14159265;
 void main(){
   float r=length(vP);
-  vec2 g=fract(vP/10.)-.5; float dotm=1.-smoothstep(.045,.085,length(g));
-  float field=dotm*.11*smoothstep(330.,60.,r)*smoothstep(52.,84.,r);
-  vec3 col=vec3(.043,.07,.22); float a=field;
-  // located: rings leave the tag
-  for(int i=0;i<3;i++){float ph=fract(ring-float(i)*.33);float rr=72.+ph*170.;
-    float w=exp(-pow((r-rr)/.9,2.))*pow(1.-ph,1.8)*.3*step(.001,ring)*step(ring-float(i)*.33,1.);
-    col=mix(col,vec3(.12,.42,1.),w/(a+w+1e-4));a+=w;}
+  vec3 col=vec3(.043,.07,.22); float a=0.;
   // waiting: an amber dial fills around the tag
   float ang=atan(vP.x,vP.y); float u=fract(ang/(2.*PI)+.5);
-  float band=exp(-pow((r-84.)/1.1,2.));
-  float track=band*.12*step(.001,wait);
-  float arc=band*step(u,wait)*.95;
-  float head=exp(-pow((r-84.)/2.6,2.))*exp(-pow((u-wait)*600.,2.))*step(.001,wait);
-  float glow=exp(-pow((r-84.)/7.,2.))*step(u,wait)*.07;
+  float band=exp(-pow((r-84.)/.75,2.));
+  float track=band*.05*step(.001,wait);
+  float arc=band*step(u,wait)*.8;
+  float head=exp(-pow((r-84.)/1.6,2.))*exp(-pow((u-wait)*600.,2.))*step(.001,wait);
+  float glow=0.;
   float wa=max(max(track,glow),max(arc,head));
   col=mix(col,vec3(1.,.69,.13),wa/(a+wa+1e-4));a+=wa;
   gl_FragColor=vec4(col,a*fadeAll);}`;
@@ -61,10 +55,10 @@ const PATH_VS = `attribute float u;varying float vU;varying float vS;attribute f
 const PATH_FS = `precision highp float;varying float vU;varying float vS;uniform float draw,fadeAll;
 void main(){float on=1.-smoothstep(draw-.004,draw+.004,vU);
   float front=exp(-pow((vU-draw)/.02,2.))*step(.01,draw)*step(draw,.995);
-  float edge=1.-smoothstep(.55,1.,abs(vS));
+  float edge=1.-smoothstep(.35,1.,abs(vS));
   float tail=smoothstep(0.,.25,vU);
-  vec3 c=mix(vec3(.12,.42,1.),vec3(.55,.75,1.),front);
-  gl_FragColor=vec4(c,(on*.9*tail+front*.8)*edge*fadeAll);}`;
+  vec3 c=mix(vec3(.12,.42,1.),vec3(.40,.62,1.),front*.6);
+  gl_FragColor=vec4(c,(on*.85*tail+front*.35)*edge*fadeAll);}`;
 
 function ribbon(pts, w) {
   const curve = new THREE.CatmullRomCurve3(pts.map(([x, z]) => new THREE.Vector3(x, 0, z)), false, 'centripetal');
@@ -88,16 +82,16 @@ export async function init(canvas, fallback, hero) {
   const [gTop, gBot] = await Promise.all([mesh('top_cover', meta), mesh('bottom_cover', meta)]);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene(); scene.environment = studioEnv(renderer); scene.environmentIntensity = 1.0;
   const cam = new THREE.PerspectiveCamera(20, 1, 10, 5000);
 
   // the founders' dark grey shell; a satin finish that holds a long highlight
-  const shell = (c, r) => new THREE.MeshPhysicalMaterial({ color: c, roughness: r, metalness: 0, clearcoat: .22, clearcoatRoughness: .32, });
+  const shell = (c, r, cc, ccr) => new THREE.MeshPhysicalMaterial({ color: c, roughness: r, metalness: 0, clearcoat: cc, clearcoatRoughness: ccr, });
   const top = new THREE.Group(), bot = new THREE.Group();
-  top.add(new THREE.Mesh(gTop, shell(0x3a3c40, .46))); bot.add(new THREE.Mesh(gBot, shell(0x2c2d31, .52)));
+  top.add(new THREE.Mesh(gTop, shell(0x3a3c40, .46, .22, .32))); bot.add(new THREE.Mesh(gBot, shell(0x2c2d31, .52, .22, .32)));
   const inner = new THREE.Group(); inner.add(top, bot); inner.position.set(-61.77, -65.98, 1.0);
   const mid = new THREE.Group(); mid.add(inner); mid.rotation.x = Math.PI / 2;
   const tag = new THREE.Group(); tag.add(mid); scene.add(tag);
@@ -107,13 +101,13 @@ export async function init(canvas, fallback, hero) {
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), floorMat); floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_Y; scene.add(floor);
 
   const pathMat = new THREE.ShaderMaterial({ vertexShader: PATH_VS, fragmentShader: PATH_FS, transparent: true, depthWrite: false, uniforms: { draw: { value: 0 }, fadeAll: { value: 1 } } });
-  const glowMat = new THREE.ShaderMaterial({ vertexShader: PATH_VS, fragmentShader: PATH_FS.replace('gl_FragColor=vec4(c,', 'gl_FragColor=vec4(c,.16*'), transparent: true, depthWrite: false, uniforms: pathMat.uniforms });
+  const glowMat = new THREE.ShaderMaterial({ vertexShader: PATH_VS, fragmentShader: PATH_FS.replace('gl_FragColor=vec4(c,', 'gl_FragColor=vec4(c,.10*'), transparent: true, depthWrite: false, uniforms: pathMat.uniforms });
   const glows = ROUTES.map((r) => { const m = new THREE.Mesh(ribbon(r, 7), glowMat); m.position.y = FLOOR_Y + .03; m.visible = false; scene.add(m); return m; });
   const paths = ROUTES.map((r) => { const m = new THREE.Mesh(ribbon(r, 1.5), pathMat); m.position.y = FLOOR_Y + .05; m.visible = false; scene.add(m); return m; });
 
   // contact shadow
-  const shadowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(11,18,56,.55)'); g.addColorStop(.45, 'rgba(11,18,56,.16)'); g.addColorStop(1, 'rgba(11,18,56,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); })();
-  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(170, 130), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false })); shadow.rotation.x = -Math.PI / 2; shadow.position.y = FLOOR_Y + .1; scene.add(shadow);
+  const shadowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(11,18,56,.42)'); g.addColorStop(.18, 'rgba(11,18,56,.24)'); g.addColorStop(.5, 'rgba(11,18,56,.07)'); g.addColorStop(1, 'rgba(11,18,56,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); })();
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(160, 118), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false })); shadow.rotation.x = -Math.PI / 2; shadow.position.y = FLOOR_Y + .1; scene.add(shadow);
 
   const key = new THREE.DirectionalLight(0xffffff, 1.4); key.position.set(-200, 260, 120); scene.add(key);
   const rim = new THREE.DirectionalLight(0x7fa6ff, 1.8); rim.position.set(240, 70, -260); scene.add(rim);
@@ -143,29 +137,29 @@ export async function init(canvas, fallback, hero) {
     if (!on) return;
     const t = (now - t0) / 1000;
     const r = hero.getBoundingClientRect(); const sp = clamp(-r.top / r.height);
-    px = lerp(px, tx, .05); py = lerp(py, ty, .05);
+    px = lerp(px, tx, .035); py = lerp(py, ty, .035);
 
     // arrival: the tag drops onto the floor with a soft spring
     const intro = 1 - Math.exp(-3 * t) * Math.cos(5.2 * t);
     lift = lerp(lift, sp * 30, .12);
-    tag.position.y = lerp(70, 0, clamp(intro)) + Math.sin(t * 1.05) * 1.6 + sp * 14;
-    tag.rotation.y = 0.98 + Math.sin(t * .3) * .14 + px * .7 + sp * 1.3;
-    tag.rotation.x = py * .28 - sp * .22;
-    tag.rotation.z = Math.sin(t * .45) * .025;
+    tag.position.y = lerp(70, 0, clamp(intro)) + Math.sin(t * 1.05) * 1.0 + sp * 14;
+    tag.rotation.y = 0.98 + Math.sin(t * .3) * .09 + px * .45 + sp * 1.3;
+    tag.rotation.x = py * .18 - sp * .22;
+    tag.rotation.z = Math.sin(t * .45) * .015;
     top.position.z = -lift;
 
     // the light follows the hand; the studio turns slowly
-    key.position.set(-200 + px * 520, 260 - py * 200, 120 + py * 160);
-    scene.environmentRotation.y = t * .06 + px * .8;
+    key.position.set(-200 + px * 300, 260 - py * 120, 120 + py * 100);
+    scene.environmentRotation.y = t * .035 + px * .45;
 
     // the story under the tag, on a loop: a path arrives, it is heard, then it waits
     const lt = Math.max(0, t - START) + FIRST, ci = Math.floor(lt / CYCLE), c = (lt % CYCLE);
     paths.forEach((m, i) => { m.visible = i === ci % ROUTES.length; }); glows.forEach((m, i) => { m.visible = i === ci % ROUTES.length; });
     pathMat.uniforms.draw.value = t < START ? 0 : clamp(c / 2.6) * 1.01;
-    floorMat.uniforms.ring.value = c > 2.6 && c < 5.6 ? (c - 2.6) / 1.5 : 0;
-    floorMat.uniforms.wait.value = c > 3.2 ? eo((c - 3.2) / 8) * .86 : 0;
+    floorMat.uniforms.ring.value = 0;
+    floorMat.uniforms.wait.value = c > 3.2 ? eo((c - 3.2) / 8) * .62 : 0;
     const fade = t < START ? 0 : clamp(c / .4) * clamp((CYCLE - c) / .8);
-    pathMat.uniforms.fadeAll.value = phone() ? 0 : fade; floorMat.uniforms.fadeAll.value = (t < START ? clamp(t / START) : clamp((CYCLE - c) / .8) * .6 + .4) * (1 - sp * .8);
+    pathMat.uniforms.fadeAll.value = phone() ? 0 : fade; floorMat.uniforms.fadeAll.value = (phone() ? 0 : 1) * (t < START ? clamp(t / START) : clamp((CYCLE - c) / .8) * .6 + .4) * (1 - sp * .8);
 
     shadow.material.opacity = clamp(1 - tag.position.y / 80) * (1 - sp * .5);
     refit(); let d = dist;
@@ -187,7 +181,7 @@ export async function init(canvas, fallback, hero) {
       const f = B.floor; pathMat.uniforms.fadeAll.value *= f; floorMat.uniforms.fadeAll.value *= f; shadow.material.opacity *= f;
       canvas.style.opacity = B.fade;
     } else if (landing) { landing = false; canvas.style.opacity = ''; cam.near = 10; cam.far = 5000; cam.updateProjectionMatrix(); size(); }
-    renderer.render(scene, cam);
+    if (!(B && B.fade < .01)) renderer.render(scene, cam);
     requestAnimationFrame(loop);
   }
   requestAnimationFrame((n) => { loop(n); canvas.classList.add('ready'); fallback.classList.add('gone'); });
