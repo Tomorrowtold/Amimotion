@@ -14,11 +14,11 @@ For the copy-apply step. All hall stills are Sky Ground renders of the one model
 "pair":            ("/assets/home/pair", (800, 1600, 2400), 2400, 1600, "..."),
 ```
 
-Intrinsic sizes: 16:9 = 3840 x 2160; 4:3 = 2880 x 2160 (`hall-inspect-43`, `hall-back-43`, `hall-dropoff-43`, `hall-path-43`, `hall-racks-43`, every `-43` crop) except `hall-trolley-43` = 2400 x 1800; 3:2 = 3240 x 2160; `pair` = 2400 x 1600.
+Intrinsic sizes: `hall-ask-43` = 2304 x 1728 (widths 800, 1600 only); 16:9 = 3840 x 2160; 4:3 = 2880 x 2160 (`hall-inspect-43`, `hall-back-43`, `hall-dropoff-43`, `hall-path-43`, `hall-racks-43`, every `-43` crop) except `hall-trolley-43` = 2400 x 1800; 3:2 = 3240 x 2160; `pair` = 2400 x 1600.
 
 **p_*.py.** Round 08 made no edits to `site/tools/pagegen/p_*.py` (the copy-apply team owns them). The homepage's five slots are filled directly in `site/src/pages/index.html`.
 
-## Homepage (done, in index.html)
+## Homepage (wired in round 08; the homepage team now owns index.html and has replaced the hero with S1c)
 
 | Screen | Base | Ratio | Alt |
 |---|---|---|---|
