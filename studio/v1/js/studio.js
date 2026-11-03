@@ -240,8 +240,12 @@ addEventListener('load', () => idle(() => {
   if (slow || reduce) return;
   // the three parts, live from CAD, once the visitor is near them
   const knStage = kn && kn.querySelector('.kn-stage');
-  if (knStage && window.WebGLRenderingContext) { const o = new IntersectionObserver((es) => { if (es[0].isIntersecting) { o.disconnect(); idle(() => import('./products3d.js').then((m) => m.mount(knStage, kn)).catch((e) => console.warn(e)), { timeout: 1500 }); } }, { rootMargin: '120% 0px' }); o.observe(knStage); }
+  // the three parts are styled CAD stills now (Shiv, 3 Nov): one at a time, fast, no WebGL needed here (products3d.js kept for reference)
+  void knStage;
 }));
+
+/* ---------- plan, people, products: stage light and motion (js/trio.js) ---------- */
+import('./trio.js').then((m) => m.mount({ sim: $('#sim'), team: $('#team'), kn, reduce })).catch((e) => console.warn(e));
 
 /* ---------- plan your first bay: the first answer opens the real planner in a glass window ---------- */
 const simSec = $('#sim');

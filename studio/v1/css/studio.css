@@ -1174,3 +1174,171 @@ html.is-scrolling .inds-row,html.is-scrolling .bs-helix,html.is-scrolling .ctas,
   .inds-row::after{transform:none;transition:none}
   .cta-line path{stroke-dashoffset:0;transition:none}.cta-line circle{opacity:1;animation:none;transition:none}
 }
+/* ===================================================================================
+   TRIO v3 (3 Nov): plan your first bay, the team, the three parts.
+   Owned by the thread "Elevate simulator, team and products showcase". Section tokens below;
+   the site-wide grade can retune them here without touching the rules.
+   =================================================================================== */
+.trio{--t-ink:var(--g-ink,#0b1238);--t-indigo:#4b3df0;--t-blue:#1f6bff;--t-sky:#66a5fa;--t-amber:#f0a43a;--t-paper:var(--g-paper,#f7faff)}
+
+/* ---------- plan your first bay: one slim banner (Shiv, 3 Nov), deep indigo, a faint live bay plan behind ---------- */
+.trio .sim.has-bay .sim-card{border-radius:24px;
+  background:radial-gradient(90% 160% at 100% 0%,rgba(110,150,255,.35),transparent 55%),radial-gradient(60% 140% at 0% 100%,rgba(70,40,200,.45),transparent 60%),linear-gradient(100deg,#15176e 0%,#2326b4 34%,#3340e6 68%,#3f6af7 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 1px rgba(255,255,255,.06),inset 0 -1px 0 rgba(0,0,40,.25),0 34px 60px -40px rgba(30,30,150,.8),0 10px 22px -16px rgba(30,30,150,.45)}
+.trio .sim.has-bay .sim-card::after{content:"";position:absolute;left:24px;right:24px;top:0;height:1px;z-index:0;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55) 30%,rgba(255,255,255,.55) 70%,transparent)}
+.trio .sim.has-bay .sim-art,.trio .sim.has-bay .sim-orb,.trio .sim.has-bay .sim-light{display:none}
+.sim-bay{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:0;transition:opacity 1.4s var(--ease-out);
+  -webkit-mask:linear-gradient(90deg,transparent 22%,#000 55%,#000 80%,transparent 100%);mask:linear-gradient(90deg,transparent 22%,#000 55%,#000 80%,transparent 100%)}
+.sim.in .sim-bay{opacity:.3}
+.trio .sim.has-bay .sim-teaser,.trio .sim.has-bay.open .sim-teaser{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:clamp(28px,3.6vw,64px);padding:clamp(20px,2.6vh,28px) clamp(22px,2.4vw,36px) clamp(20px,2.6vh,28px) clamp(28px,3vw,48px)}
+.trio .sim.has-bay .sim-h{font-size:clamp(1.7rem,1rem + 1.5vw,2.6rem);line-height:1;letter-spacing:-.045em}
+.trio .sim.has-bay .sim-sub{margin-top:8px;font-size:1rem;color:rgba(255,255,255,.74)}
+.trio .sim.has-bay .sim-q{position:relative;background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;border-radius:0;padding:2px 0 2px clamp(28px,3vw,48px)}
+.trio .sim.has-bay .sim-q::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:1px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.35),transparent)}
+.trio .sim.has-bay .sim-qt{font:600 1.05rem/1.2 var(--display);letter-spacing:-.015em;margin-bottom:12px;color:#fff}
+.trio .sim.has-bay .sim-opts{display:flex;flex-wrap:wrap;gap:8px}
+.trio .sim.has-bay .sim-opt{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px 0 13px;border-radius:999px;font:500 .875rem/1 var(--text);letter-spacing:-.005em;color:#fff;white-space:nowrap;
+  background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
+  transition:background .22s,color .22s,border-color .22s,transform .25s var(--ease-out),box-shadow .25s}
+.trio .sim.has-bay .sim-opt::before{content:none}
+.trio .sim.has-bay .sim-opt::after{content:"";width:0;height:10px;opacity:0;margin-left:-8px;background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'%3E%3Cpath d='M1 5h9M6.5 1.5 10 5 6.5 8.5' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'%3E%3Cpath d='M1 5h9M6.5 1.5 10 5 6.5 8.5' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  transition:width .25s var(--ease-out),opacity .2s,margin .25s var(--ease-out)}
+.sim-ico{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.trio .sim.has-bay .sim-opt.sim-on{border-color:rgba(255,255,255,.55);background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.08))}
+.trio .sim.has-bay .sim-opt:hover,.trio .sim.has-bay .sim-opt:focus-visible{background:#fff;color:#2326b4;border-color:#fff;transform:translateY(-1px);box-shadow:0 10px 22px -12px rgba(5,5,60,.7)}
+.trio .sim.has-bay .sim-opt:hover::after,.trio .sim.has-bay .sim-opt:focus-visible::after{width:12px;opacity:1;margin-left:0}
+.sim-ico{transition:width .25s var(--ease-out),opacity .2s,margin .25s var(--ease-out)}
+.trio .sim.has-bay .sim-opt:hover .sim-ico,.trio .sim.has-bay .sim-opt:focus-visible .sim-ico{width:0;opacity:0;margin-right:-8px}
+.trio .sim.has-bay .sim-opt:focus-visible{outline:2px solid #f0a43a;outline-offset:2px}
+.trio .sim.has-bay .sim-opt:active{transform:translateY(0) scale(.98)}
+@media (min-width:1280px){.trio .sim.has-bay .sim-opts{flex-wrap:nowrap}}
+@media (max-width:899px){
+  .sim-bay{display:none}
+  .trio .sim.has-bay .sim-teaser,.trio .sim.has-bay.open .sim-teaser{grid-template-columns:1fr;gap:18px;padding:24px 20px 20px}
+  .trio .sim.has-bay .sim-q{padding:16px 0 0}
+  .trio .sim.has-bay .sim-q::before{left:0;right:0;top:0;bottom:auto;width:auto;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.3),transparent)}
+}
+@media (prefers-reduced-motion:reduce){.sim-bay,.trio .sim.has-bay .sim-opt,.trio .sim.has-bay .sim-opt::after{transition:none}}
+
+/* ---------- the team: portraits rise out of the card one after another; a key light follows the pointer ---------- */
+.trio .team-row{perspective:1100px}
+.trio .tm-pic{transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s var(--ease-out),box-shadow .5s}
+.trio .tm-pic img{filter:grayscale(.3) contrast(1.07) brightness(1.03) saturate(.85)}
+.trio .tm-pic::before{background:linear-gradient(180deg,rgba(120,170,255,.28) 0,rgba(156,194,255,0) 38%,rgba(75,61,240,.0) 60%,rgba(60,50,220,.55) 100%);mix-blend-mode:soft-light;opacity:.9}
+.trio .tm-pic::after{background:radial-gradient(42% 34% at var(--lx,50%) var(--ly,28%),rgba(255,255,255,.34),transparent 72%),radial-gradient(110% 85% at 50% 22%,transparent 55%,rgba(11,18,56,.22));
+  mix-blend-mode:soft-light;opacity:.55;transition:opacity .5s}
+.trio .tm-pic:hover::after,.trio .tm-pic:focus-within::after{opacity:1}
+.trio .tm-pic:hover img,.trio .tm-pic:focus-within img{filter:grayscale(0) contrast(1.03) saturate(1)}
+.trio .tm-pic:hover,.trio .tm-pic:focus-within{box-shadow:0 0 0 1px rgba(75,61,240,.14),0 30px 44px -26px rgba(40,40,160,.55)}
+/* the reveal: each frame opens from the floor up, its picture settling from a slight push-in */
+.team.team-ready:not(.team-done) .tm-pic{clip-path:inset(100% 0 0 0 round 20px)}
+.team.team-ready .tm-pic img{transform:scale(1.16) translateY(4%);transition:transform 1.6s var(--ease-out),filter .6s}
+.team.team-lit:not(.team-done) .tm-pic{clip-path:inset(0 0 0 0 round 20px);transition:clip-path 1.15s cubic-bezier(.7,0,.2,1),transform .5s var(--ease-out),box-shadow .5s}
+.team.team-lit .tm-pic img{transform:none}
+.team.team-lit .tm:nth-child(2) .tm-pic,.team.team-lit .tm:nth-child(2) .tm-pic img{transition-delay:.14s}
+.team.team-lit .tm:nth-child(3) .tm-pic,.team.team-lit .tm:nth-child(3) .tm-pic img{transition-delay:.28s}
+.team.team-ready .tm-name,.team.team-ready .tm-role{opacity:0;transform:translateY(8px);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out)}
+.team.team-lit .tm-name,.team.team-lit .tm-role{opacity:1;transform:none;transition-delay:.7s}
+.team.team-lit .tm:nth-child(2) .tm-name,.team.team-lit .tm:nth-child(2) .tm-role{transition-delay:.84s}
+.team.team-lit .tm:nth-child(3) .tm-name,.team.team-lit .tm:nth-child(3) .tm-role{transition-delay:.98s}
+.team.team-ready .team-h span{opacity:0;transform:translateY(.35em);filter:blur(6px);transition:opacity .9s var(--ease-out),transform 1.1s var(--ease-out),filter .9s var(--ease-out)}
+.team.team-lit .team-h span{opacity:1;transform:none;filter:none}
+.team.team-lit .team-h span+span{transition-delay:.15s}
+/* a fine line under the names, a located dot for each person */
+.trio .tm{position:relative}
+.trio .tm-name{position:relative;padding-top:12px}
+.trio .tm-name::before{content:"";position:absolute;left:0;right:-24px;top:0;height:1px;background:linear-gradient(90deg,rgba(11,18,56,.16),rgba(11,18,56,.06));transform-origin:0 50%;transform:scaleX(var(--ln,1));transition:transform 1.2s var(--ease-out) .6s}
+.trio .tm:last-child .tm-name::before{right:0}
+.trio .tm-name::after{content:"";position:absolute;left:0;top:-3px;width:7px;height:7px;border-radius:50%;background:var(--t-sky);box-shadow:0 0 0 3px rgba(102,165,250,.2)}
+.team.team-ready .tm-name::before{--ln:0}.team.team-lit .tm-name::before{--ln:1}
+@media (prefers-reduced-motion:reduce){.trio .tm-pic,.trio .tm-pic img{transition:none;transform:none}}
+
+/* ---------- the three parts: one stage light per part, a progress line, AmIHub's map read in ---------- */
+.kn-grade{position:absolute;inset:0;border-radius:inherit;overflow:hidden;z-index:3;pointer-events:none}
+.kn-grade i{position:absolute;inset:0;opacity:0;transition:opacity 1.1s var(--ease-out)}
+/* AmIGo: open daylight from the roof */
+.kn-grade .g0{mix-blend-mode:soft-light;background:radial-gradient(70% 55% at 50% -6%,rgba(255,255,255,.9),transparent 70%),radial-gradient(80% 50% at 50% 105%,rgba(31,107,255,.35),transparent 70%)}
+/* AmIMo: a studio spot, the room falls away to grey */
+.kn-grade .g1{background:radial-gradient(60% 66% at 50% 50%,rgba(170,180,205,0) 45%,rgba(170,180,205,.22) 78%,rgba(150,160,190,.4) 100%)}
+.kn-grade .c1{background:radial-gradient(22% 70% at 50% -14%,rgba(255,255,255,.7),rgba(255,255,255,0) 70%)}
+/* AmIHub: blue hour, a cone of blue light falling on the map */
+.kn-grade .g2{background:radial-gradient(62% 64% at 50% 50%,rgba(140,150,240,0) 46%,rgba(140,150,240,.2) 78%,rgba(120,130,235,.36) 100%)}
+.kn-grade .c2{background:radial-gradient(18% 62% at 50% -16%,rgba(110,160,255,.5),rgba(110,160,255,0) 72%),radial-gradient(40% 22% at 50% 86%,rgba(75,61,240,.16),rgba(75,61,240,0) 70%)}
+.kn-stage:not([data-on]) .g0,.kn-stage[data-on="-1"] .g0,.kn-stage[data-on="0"] .g0,.kn-stage[data-on="1"] .g1,.kn-stage[data-on="1"] .c1,.kn-stage[data-on="2"] .g2,.kn-stage[data-on="2"] .c2{opacity:1}
+.kn-stage{isolation:isolate}
+.kn-stage .kn-lab{z-index:1}
+/* AmIHub: the plant before, then the map read in from left to right, and the light it gives off */
+.kn-screen{position:relative;transition:box-shadow .9s var(--ease-out)}
+.kn-screen::before{content:"";position:absolute;inset:8px;border-radius:13px;background:#eef2fa url(../assets/scene/hall-before-1600.webp) 45% 60%/cover no-repeat}
+.kn-screen .kn-img{position:relative;z-index:1}
+.kn-scan{position:absolute;top:8px;bottom:8px;left:8px;width:2px;z-index:2;opacity:0;pointer-events:none;border-radius:2px;
+  background:linear-gradient(180deg,rgba(102,165,250,0),#cfe3ff 20%,#fff 50%,#cfe3ff 80%,rgba(102,165,250,0));box-shadow:0 0 18px 4px rgba(102,165,250,.65),0 0 60px 10px rgba(75,61,240,.25)}
+.kn-screen.read .kn-img{animation:kn-reveal 1.9s cubic-bezier(.65,0,.35,1) .45s both}
+.kn-screen.read .kn-scan{animation:kn-scanline 1.9s cubic-bezier(.65,0,.35,1) .45s both}
+@keyframes kn-reveal{from{clip-path:inset(0 100% 0 0 round 13px)}to{clip-path:inset(0 0 0 0 round 13px)}}
+@keyframes kn-scanline{0%{left:8px;opacity:0}8%{opacity:1}92%{opacity:1}100%{left:calc(100% - 10px);opacity:0}}
+.kn-stage[data-on="2"] .kn-screen{box-shadow:0 0 0 1px rgba(255,255,255,.8),0 46px 90px -34px rgba(40,50,200,.6),0 0 110px -30px rgba(102,165,250,.75)}
+/* hardware on its own light */
+.kn-stage[data-on="1"] .kn-c{border-color:#0b1238;opacity:.28}
+.kn-stage[data-on="2"] .kn-c{border-color:var(--t-indigo);opacity:.5}
+/* progress: three short segments under the stage, filled by the scroll */
+.kn-prog{position:absolute;left:50%;bottom:clamp(14px,2.4vh,22px);z-index:4;display:flex;gap:6px;transform:translateX(-50%);pointer-events:none}
+.kn-prog i{position:relative;width:34px;height:2px;border-radius:2px;background:rgba(11,18,56,.12);overflow:hidden}
+.kn-prog i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--t-indigo),var(--t-blue));transform-origin:0 50%}
+.kn-prog i:nth-child(1)::after{transform:scaleX(clamp(0,calc(var(--kp,0) / .36),1))}
+.kn-prog i:nth-child(2)::after{transform:scaleX(clamp(0,calc((var(--kp,0) - .36) / .32),1))}
+.kn-prog i:nth-child(3)::after{transform:scaleX(clamp(0,calc((var(--kp,0) - .68) / .26),1))}
+@media (prefers-reduced-motion:reduce){.kn-grade i{transition:none}.kn-screen.read .kn-img,.kn-screen.read .kn-scan{animation:none}}
+
+/* ---------- three parts v4 (3 Nov): styled CAD stills, one at a time, compact; light sweep, floor, a technical read-out per part ---------- */
+.trio .kn{height:220vh}
+.trio .kn-sticky{top:max(72px,calc(50svh - 330px));height:min(calc(100svh - 92px),660px)}
+.kn-stage{overflow:hidden}
+/* a fine ruler along the stage floor */
+.kn-lab::before{content:"";position:absolute;left:9%;right:9%;bottom:7.5%;height:7px;z-index:1;opacity:.5;
+  background:repeating-linear-gradient(90deg,rgba(11,18,56,.28) 0 1px,transparent 1px 12px),repeating-linear-gradient(90deg,rgba(11,18,56,.4) 0 1px,transparent 1px 60px);background-size:auto 4px,auto 7px;background-repeat:repeat-x;background-position:0 100%,0 100%}
+/* one at a time: the last part leaves before the next arrives */
+.kn-shot{padding:6% 8% 13%;transition:opacity .38s var(--ease-out),transform .7s var(--ease-out),filter .45s var(--ease-out)!important}
+.kn-shot.on{transition:opacity .7s var(--ease-out) .32s,transform 1.1s var(--ease-out) .32s,filter .8s var(--ease-out) .32s!important}
+.kn-obj{position:relative;z-index:2;width:min(74%,520px);line-height:0}
+.kn-anchor .kn-obj{width:min(66%,470px)}
+.kn-obj .kn-img{width:100%;height:auto;max-height:none;-webkit-mask-image:none;mask-image:none;
+  filter:drop-shadow(0 30px 26px rgba(11,18,56,.24)) drop-shadow(0 6px 6px rgba(11,18,56,.16));
+  -webkit-box-reflect:below 2px linear-gradient(transparent 72%,rgba(255,255,255,.16))}
+.kn-obj::after{content:"";position:absolute;left:8%;right:8%;bottom:-3%;height:12%;z-index:-1;border-radius:50%;background:radial-gradient(closest-side,rgba(11,18,56,.34),transparent);filter:blur(6px)}
+/* a band of light glides over the part, only where the part is */
+.kn-gloss{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;
+  background:linear-gradient(105deg,transparent 38%,rgba(210,228,255,.55) 49%,rgba(255,255,255,.75) 50%,rgba(210,228,255,.55) 51%,transparent 62%) 0 0/300% 100% no-repeat;
+  -webkit-mask:var(--src) center/100% 100% no-repeat;mask:var(--src) center/100% 100% no-repeat;opacity:0}
+.kn-tag .kn-gloss{--src:url(../assets/hw/amigo-stage-1200.webp)}
+.kn-anchor .kn-gloss{--src:url(../assets/hw/amimo-stage-1200.webp)}
+.kn-shot.on .kn-gloss{animation:kn-gloss 4.6s cubic-bezier(.5,0,.3,1) .9s infinite}
+@keyframes kn-gloss{0%{background-position:100% 0;opacity:0}8%{opacity:1}55%{background-position:0 0;opacity:1}62%,100%{background-position:0 0;opacity:0}}
+/* AmIGo: its pulse leaves along the floor */
+.kn-fx{position:absolute;left:50%;bottom:16%;z-index:1;pointer-events:none;transform:translateX(-50%)}
+.kn-pulse{width:min(80%,600px);aspect-ratio:3.4}
+.kn-pulse b{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(31,107,255,.8);box-shadow:0 0 18px -4px rgba(31,107,255,.5);opacity:0;transform:scale(.35)}
+.kn-shot.on .kn-pulse b{animation:kn-pulse 2.7s cubic-bezier(.2,.6,.3,1) infinite}
+.kn-shot.on .kn-pulse b:nth-child(2){animation-delay:.9s}.kn-shot.on .kn-pulse b:nth-child(3){animation-delay:1.8s}
+@keyframes kn-pulse{0%{transform:scale(.35);opacity:0}15%{opacity:.9}100%{transform:scale(1.15);opacity:0}}
+/* AmIMo: a protractor on the floor, the angle each pulse came from swept round it */
+.kn-aoa{width:min(84%,620px);aspect-ratio:3.2;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(11,18,56,.34) 0 .5deg,transparent .5deg 6deg);
+  -webkit-mask:radial-gradient(closest-side,transparent 86%,#000 87%,#000 96%,transparent 97%);mask:radial-gradient(closest-side,transparent 86%,#000 87%,#000 96%,transparent 97%)}
+.kn-aoa::before{content:"";position:absolute;inset:6%;border-radius:50%;border:1px solid rgba(11,18,56,.14)}
+.kn-aoa b{position:absolute;inset:-2%;border-radius:50%;background:conic-gradient(from 0deg,rgba(31,107,255,0) 0deg,rgba(31,107,255,.0) 300deg,rgba(31,107,255,.9) 360deg)}
+.kn-shot.on .kn-aoa b{animation:kn-aoa 3.2s linear infinite}
+@keyframes kn-aoa{to{transform:rotate(360deg)}}
+/* AmIHub: the plant from above, read in from left to right */
+.kn-hub{padding:7% 7% 14%}
+.kn-screen{width:96%;aspect-ratio:16 / 9;background:#0b1238;padding:6px;border-radius:18px}
+.kn-screen::before{inset:6px;border-radius:12px;background:#0b1238 url(../assets/hw/hub-top-800.webp) center/cover no-repeat;filter:grayscale(1) brightness(.45) contrast(1.1)}
+.kn-screen .kn-img{object-position:50% 50%;border-radius:12px;filter:brightness(1.16) contrast(1.05)}
+.kn-scan{top:6px;bottom:6px}
+.kn-screen::after{content:"";position:absolute;inset:6px;z-index:2;border-radius:12px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.12),transparent 30%),repeating-linear-gradient(90deg,rgba(102,165,250,.10) 0 1px,transparent 1px 64px),repeating-linear-gradient(0deg,rgba(102,165,250,.10) 0 1px,transparent 1px 64px)}
+@keyframes kn-reveal{from{clip-path:inset(0 100% 0 0 round 12px)}to{clip-path:inset(0 0 0 0 round 12px)}}
+@media (max-width:860px){.trio .kn{height:330vh}.trio .kn-sticky{top:60px;height:calc(100svh - 70px)}.kn-obj{width:72%}.kn-anchor .kn-obj{width:64%}}
+@media (prefers-reduced-motion:reduce){.kn-shot.on .kn-gloss,.kn-shot.on .kn-pulse b,.kn-shot.on .kn-aoa b{animation:none}}
