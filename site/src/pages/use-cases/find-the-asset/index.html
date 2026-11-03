@@ -1,33 +1,44 @@
 <!--
-title: Find a trolley or tool fast with UWB
-description: Find a tagged trolley, tool or bin on AmIMotion’s live map instead of walking the hall. Located down to ±10 cm in 3D. Watch the 1:10 film.
-tone: dark
+title: Find a trolley or tool from a screen
+description: Find a tagged trolley, tool or bin on AmIMotion's live map instead of walking the hall. You see where it was last seen, and when.
 crumb: Where is that trolley?
+scripts: km
+world: floor
+id: find
+look: accent cards norule
+scripts: km worlds
 -->
-<section class="page-head section dark" aria-labelledby="page-title" data-tone="dark">
-<div class="wrap">
-<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/use-cases/">Use cases</a><span aria-hidden="true">/</span><span aria-current="page">Where is that trolley?</span></nav><h1 id="page-title" class="h-hero">Where is that trolley?</h1><p class="lede">Today someone walks the hall to find it. With a tag on it, the trolley is a spot on the map.</p><p class="short-answer">With AmIMotion, every tagged trolley, tool, fixture and bin shows on one live map, located down to ±10 cm in 3D (with AmIMo anchors). Finding one starts with a search, not a walk.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Book a call</a></div><div class="head-media"><figure class="film-fig" data-reveal><div class="film"><video controls muted playsinline preload="none" poster="/assets/film/v6/film01-poster.jpg" data-name="Where is that trolley?" data-description="Find the asset: a worker searches the live map instead of walking the hall, and walks straight to the trolley." data-duration="PT1M10S" data-date="2026-10-28" aria-label="Where is that trolley?"><source src="/assets/film/v6/film01.mp4" type="video/mp4"></video><span class="film-label">Simulation</span></div><figcaption><b>Where is that trolley?</b><span>1:10</span></figcaption></figure></div>
+<div data-km class="head">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true"> / </span><a href="/use-cases/">Use cases</a><span aria-hidden="true"> / </span><span aria-current="page">Where is that trolley?</span></nav>
+<h1 id="page-title"><span>Where is that trolley?</span> <span>Look it up.</span></h1>
+<div class="words"><p class="lede">Today someone walks the hall to find it. With an AmIGo tag on it, the trolley is a place on AmIHub's map.</p><p class="short-answer">With AmIMotion, every tagged trolley, bin, tool and fixture shows on one live map in AmIHub. AmIMo anchors place each tag down to ±10 cm, depending on your floor. You see where it is, or where it was last seen and when. Finding one starts with a search, not a walk.</p><p class="more"><a href="/solutions/assets/">Tools and vehicles</a></p></div>
+<div class="head-pic"><figure class="pic fd-pic"><picture><source type="image/avif" srcset="/assets/worlds/find-hero-800.avif 800w, /assets/worlds/find-hero-1600.avif 1600w, /assets/worlds/find-hero-2400.avif 2400w" sizes="(max-width:1023px) 100vw, 58vw"><source type="image/webp" srcset="/assets/worlds/find-hero-800.webp 800w, /assets/worlds/find-hero-1600.webp 1600w, /assets/worlds/find-hero-2400.webp 2400w" sizes="(max-width:1023px) 100vw, 58vw"><img src="/assets/worlds/find-hero-1600.webp" width="2400" height="1434" fetchpriority="high" decoding="async" alt="A supervisor at a store doorway looks along the racks for a trolley."></picture></figure></div>
 </div>
+
+<section class="sec" aria-labelledby="today">
+<h2 id="today"><span>Today,</span> <span>and with AmIMotion.</span></h2>
+<ul class="points c2"><li><h3>Today.</h3><p>A worker needs one trolley. Nobody knows where it is. Someone walks the hall, calls stores and checks a clipboard. Then walks again.</p></li><li><h3>With AmIMotion.</h3><p>The worker looks it up in AmIHub. The map shows the zone, and when the trolley was last seen. The worker walks straight there.</p></li></ul>
 </section>
 
-<section class="section dark" data-tone="dark">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Today,<br><span class="soft">and with AmIMotion.</span></h2></div>
-<div class="tiles two"><div class="tile" data-reveal><p class="over">Today</p><h3>The walk</h3><p>A worker needs one trolley. Nobody knows where it is, so someone walks the hall, asks around and checks a clipboard. It happens many times a shift.</p></div><div class="tile" data-reveal><p class="over">With AmIMotion</p><h3>The map</h3><p>The worker searches the live map. It shows the zone, the bay and when the trolley was last seen. The worker walks straight there.</p></div></div>
-</div>
+<section class="sec" aria-labelledby="how-a-trolley">
+<h2 id="how-a-trolley"><span>How a trolley</span> <span>stays findable.</span></h2>
+<ol class="steps"><li><h3>It moves.</h3><p>The AmIGo tag sends a short UWB pulse as the trolley moves. Nobody scans it.</p></li><li><h3>Anchors hear it.</h3><p>AmIMo anchors on your columns record when each pulse arrives, and the angle it came from.</p></li><li><h3>AmIHub places it.</h3><p>AmIHub works out where the tag is and puts it on the live map.</p></li><li><h3>It stops.</h3><p>The tag sleeps. AmIHub keeps its last-seen place and time.</p></li></ol>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Common questions.</h2></div><div class="faq" style="margin-top:clamp(32px,4vw,56px);max-width:980px"><details><summary>Does anyone scan the trolley to find it?</summary><p>No. The anchors locate its tag whenever it moves. At rest, the map keeps its last position.</p></details><details><summary>What if a tag goes quiet?</summary><p>The map shows when it was last seen. It does not guess where the trolley is now.</p></details><details><summary>What else can carry a tag?</summary><p>Bins, kit racks, fixtures, tools, forklifts and tuggers.</p></details></div>
-</div>
+<section class="sec has-lead" aria-labelledby="measure-the-walk">
+<h2 id="measure-the-walk"><span>Measure the walk</span> <span>first.</span></h2><p class="lead">Count how long your team spends searching today. Then you can show what AmIMotion changed, in your own numbers, not ours.</p>
+<div class="fd-race" aria-hidden="true"><div class="walk"><span>Walk the hall</span><i></i></div><div class="look"><span>Look it up</span><i></i></div><p>Example. Your own times come from the count.</p></div>
+<ul class="points c3"><li><h3>Who searches.</h3><p>Supervisors, material coordinators, drivers. Count the people who go looking.</p></li><li><h3>How often.</h3><p>Count the searches in one shift, for one kind of thing: trolleys, fixtures or bins.</p></li><li><h3>How long.</h3><p>Time a few searches from the first question to the find. That is your baseline.</p></li></ul>
+<p class="more"><a href="/tools/search-time/">Time spent searching</a><span class="sep" aria-hidden="true">·</span><a href="/learn/pilot-baseline/">Measure before you claim</a></p>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Other jobs,<br><span class="soft">same tags.</span></h2></div>
-<div class="cards"><a class="pcard" href="/use-cases/amr-hand-off/" data-reveal><div class="card ratio-wide"><img src="/assets/film/v6/film02-poster.jpg" alt="" width="1600" height="900" loading="lazy" decoding="async"></div><b>The hand-off</b><span>1:17 film</span><span class="go">Watch →</span></a><a class="pcard" href="/use-cases/station-to-station/" data-reveal><div class="card ratio-wide"><img src="/assets/film/v6/film03-poster.jpg" alt="" width="1600" height="900" loading="lazy" decoding="async"></div><b>Station to station</b><span>1:25 film</span><span class="go">Watch →</span></a><a class="pcard" href="/use-cases/ask-your-plant/" data-reveal><div class="card ratio-wide"><img src="/assets/film/v6/film04-poster.jpg" alt="" width="1600" height="900" loading="lazy" decoding="async"></div><b>Ask your plant</b><span>1:24 film</span><span class="go">Watch →</span></a></div>
-</div>
+<section class="sec band surface" aria-labelledby="common-questions">
+<h2 id="common-questions"><span>Common questions.</span></h2><div class="faq"><details><summary>Does anyone scan the trolley to find it?</summary><p>No. AmIMo anchors hear its AmIGo tag whenever it moves. At rest, AmIHub keeps its last-seen place.</p></details><details><summary>What if a tag goes quiet?</summary><p>AmIHub shows where and when it was last seen. It does not guess where the trolley is now.</p></details><details><summary>What else can carry a tag?</summary><p>Bins, kit racks, fixtures, tool carts, forklifts and tuggers. Each one gets its own AmIGo tag in AmIHub.</p></details><details><summary>How close does it place the trolley?</summary><p>Down to ±10 cm with AmIMo anchors. How close depends on your floor, so the survey checks it.</p></details></div>
 </section>
 
-<section class="section dark close-cta" aria-labelledby="close-title" data-tone="dark"><div class="wrap" data-reveal><h2 id="close-title" class="h2">Diagnose your floor.</h2><p class="lede" style="margin:20px auto 0">Six questions, two minutes. See where location data would help first.</p><div class="actions"><a class="btn btn-fill" href="/diagnostic/">Diagnose your floor</a><a class="btn btn-line" href="/contact/">Book a call</a></div></div></section>
+<section class="sec" aria-labelledby="other-jobs">
+<h2 id="other-jobs"><span>Other jobs,</span> <span>same tags.</span></h2>
+<nav class="related tiles" aria-label="Related pages"><ul><li><a href="/use-cases/station-to-station/"><figure class="pic r43-pic"><picture><source type="image/avif" srcset="/assets/hall/hall-path-43-800.avif 800w, /assets/hall/hall-path-43-1600.avif 1600w, /assets/hall/hall-path-43-2400.avif 2400w" sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw"><source type="image/webp" srcset="/assets/hall/hall-path-43-800.webp 800w, /assets/hall/hall-path-43-1600.webp 1600w, /assets/hall/hall-path-43-2400.webp 2400w" sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw"><img src="/assets/hall/hall-path-43-1600.webp" width="2880" height="2160" loading="lazy" decoding="async" alt="A model floor, pale except one trolley&#x27;s blue path from a press to the inspection queue."></picture></figure><b>Station to station</b></a> <span>Every entry and exit, timed.</span></li><li><a href="/use-cases/amr-hand-off/"><figure class="pic r43-pic"><picture><source type="image/avif" srcset="/assets/hall/hall-dropoff-43-800.avif 800w, /assets/hall/hall-dropoff-43-1600.avif 1600w, /assets/hall/hall-dropoff-43-2400.avif 2400w" sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw"><source type="image/webp" srcset="/assets/hall/hall-dropoff-43-800.webp 800w, /assets/hall/hall-dropoff-43-1600.webp 1600w, /assets/hall/hall-dropoff-43-2400.webp 2400w" sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw"><img src="/assets/hall/hall-dropoff-43-1600.webp" width="2880" height="2160" loading="lazy" decoding="async" alt="A model floor, all pale except two trolleys at a drop-off point, marked amber because they are waiting."></picture></figure><b>The hand-off</b></a> <span>What the robot brought, and when.</span></li><li><a href="/use-cases/ask-your-plant/"><figure class="pic r43-pic"><picture><source type="image/avif" srcset="/assets/hall/hall-ask-43-800.avif 800w, /assets/hall/hall-ask-43-1600.avif 1600w" sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw"><source type="image/webp" srcset="/assets/hall/hall-ask-43-800.webp 800w, /assets/hall/hall-ask-43-1600.webp 1600w" sizes="(max-width:639px) 100vw, (max-width:1023px) 50vw, 31vw"><img src="/assets/hall/hall-ask-43-1600.webp" width="2880" height="2160" loading="lazy" decoding="async" alt="The same model factory floor with everything pale except three trolleys at inspection, marked amber: the ones that have waited."></picture></figure><b>Ask your floor</b></a> <span>AI assistants and MCP.</span></li></ul></nav>
+</section>
+
+<section class="close" aria-label="Next step"><p><span>What does searching cost you?</span><span class="sub">Put in your own figures. AmIMotion assumes no savings.</span><a href="/tools/search-time/">Time spent searching</a></p></section>

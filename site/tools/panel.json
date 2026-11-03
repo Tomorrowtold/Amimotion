@@ -261,7 +261,7 @@
       "page": "/technology/",
       "facts": [
         "FiRa",
-        "compliant",
+        "FiRa.*specification|built on",
         "\\bUWB\\b"
       ]
     },
@@ -343,7 +343,7 @@
       "branded": true,
       "page": "/faq/",
       "facts": [
-        "compliant",
+        "built on|specification",
         "FiRa",
         "omlox"
       ]
@@ -367,7 +367,7 @@
       "facts": [
         "10 ?cm",
         "3D",
-        "typical"
+        "typical|depends on (your|the) (floor|site)|site-dependent"
       ]
     },
     {

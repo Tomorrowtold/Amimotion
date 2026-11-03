@@ -1,0 +1,6 @@
+/* /tools/: the bench. Each tool shown as an instrument card with a small dark display. */
+.head h1{font-size:clamp(3rem,1.4rem + 4.8vw,7rem)}
+.related li{background:#122052!important;border-radius:20px!important;min-height:220px;display:flex;flex-direction:column;justify-content:flex-end}
+.related li>a{color:#fff!important;font-size:1.6rem!important}
+.related li span{color:rgba(233,238,248,.7)!important}
+.related li::before{display:none}

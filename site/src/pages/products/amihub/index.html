@@ -1,50 +1,191 @@
 <!--
-title: AmIHub RTLS software: live map, zones and APIs
-description: AmIHub is AmIMotion’s RTLS software: live 3D map, time-stamped zones, REST, MQTT, WebSocket, omlox and a built-in MCP server. On-premise or cloud.
-tone: light
+title: AmIHub software: live map, zone events and open APIs
+description: AmIHub is AmIMotion's software. It places every tagged item on your floor plan, times every zone entry and exit, and runs inside your plant with no internet needed.
 crumb: AmIHub
 type: software
 product: AmIHub
+og: /assets/products/hub-top-1600.webp
+layout: product
+world: steel
+id: amihub
+rail: AmIHub
 -->
-<section class="page-head section light product-head" aria-labelledby="page-title">
-<div class="wrap">
-<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/platform/">Platform</a><span aria-hidden="true">/</span><span aria-current="page">AmIHub</span></nav><h1 id="page-title" class="h-hero">AmIHub</h1><p class="h3">Where positions become records.</p><p class="lede">AmIHub turns timing and angle into 3D positions, and positions into events your teams can query: entered, left, idle and waiting, each with its time.</p><div class="actions"><a class="btn btn-fill" href="/contact/">See a live demo</a><a class="btn btn-line" href="#interfaces">Interfaces</a></div><div class="head-media"><div class="card ph mood-night ratio-cine"><p class="ph-brief"><b>P16</b> Over the shoulder of a production lead at a laptop: the live map of a floor with zones and a few highlighted trolleys, the real floor soft in the background. 21:9. Screen content to be supplied by AmIMotion; no partner names on screen.</p></div></div>
+<div class="p-hero hb-hero" data-tone="dark">
+<div class="p-wrap hb-hero-words">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true"> / </span><a href="/products/">Products</a><span aria-hidden="true"> / </span><span aria-current="page">AmIHub</span></nav>
+<h1 id="page-title" class="hb-h1"><span>Every move on your floor,</span> <span>on one live map.</span></h1>
+<p class="hb-lede">AmIHub is the software behind AmIMotion. It places every tagged trolley, bin and vehicle on your floor plan, times each stop, and gives your supervisors, your plant systems and your AI assistants the same answer.</p>
+<p class="hb-ctas"><a class="hb-pill" href="/contact/">See it on a call<svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg></a><a class="hb-ghost" href="/developers/">For developers</a></p>
+</div>
+
+<div class="p-wrap hb-stage">
+<div class="hb-light" aria-hidden="true"><img src="/assets/products/hub-beam.webp" width="2400" height="1150" alt="" fetchpriority="high"><i class="hb-pulse"></i></div>
+<div class="hb-app" role="img" aria-label="The AmIHub app: a live map of a factory bay seen from above, zones drawn on it, tagged trolleys moving and one wait shown in amber, with a zone table below and an event list on the right. Example data.">
+<aside class="hb-ws" aria-hidden="true">
+<div class="hb-ws-top"><span class="hb-mark"><svg viewBox="160 125 191 151"><path d="M252 125.75 227 139.72 161.39 178l-.86 1-.59 2 .79 2 1.27 1.16 27 15.5.64 1.34-25.64 14.82-3 2.21-.95 1.97.41 2 1.54 1.68 9 5.59 79 45.93 4 1.27h3l4-1.36 5-2.84 84.28-49.29 1.03-2 .04-1-1.35-2.33-28.92-16.67.17-1 27.75-15.81 1.95-2.19.31-2-1.26-1.95-2-1.37-85-48.95-5-2.21-3-.23z"/></svg></span><b>Plant 1</b><svg class="hb-chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></div>
+<div class="hb-find"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>Search tags and zones<kbd>/</kbd></div>
+<p class="hb-grp">Floor</p>
+<ul><li class="on"><svg viewBox="0 0 20 20"><path d="M3 5l4.5-2 5 2L17 3v12l-4.5 2-5-2L3 17z"/><path d="M7.5 3v12M12.5 5v12"/></svg>Live map</li><li><svg viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="3"/><path d="M3 10h14M10 3v14"/></svg>Zones</li><li><svg viewBox="0 0 20 20"><rect x="3" y="6" width="14" height="8" rx="2"/><circle cx="6.5" cy="16" r="1.5"/><circle cx="13.5" cy="16" r="1.5"/></svg>Carriers</li><li><svg viewBox="0 0 20 20"><path d="M3 14V8h7l3 3h4v3"/><circle cx="6" cy="15" r="1.6"/><circle cx="14" cy="15" r="1.6"/></svg>Vehicles</li></ul>
+<p class="hb-grp">Records</p>
+<ul><li><svg viewBox="0 0 20 20"><path d="M4 5h12M4 10h12M4 15h8"/></svg>Events<em>4</em></li><li><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>Waits<em class="w">2</em></li><li><svg viewBox="0 0 20 20"><path d="M3 15c3 0 3-8 6-8s3 5 6 5 2-3 2-3"/></svg>History</li><li><svg viewBox="0 0 20 20"><path d="M4 15V9M8 15V5M12 15v-4M16 15V7"/></svg>Reports</li></ul>
+<p class="hb-grp">Setup</p>
+<ul><li><svg viewBox="0 0 20 20"><path d="M10 3l6 3.5v7L10 17l-6-3.5v-7z"/></svg>Anchors</li><li><svg viewBox="0 0 20 20"><path d="M7 4h6M7 16h6M4 7v6M16 7v6"/><circle cx="10" cy="10" r="2"/></svg>Integrations</li><li><svg viewBox="0 0 20 20"><path d="M10 2.5l1.8 4.7 4.7 1.8-4.7 1.8L10 15.5l-1.8-4.7L3.5 9l4.7-1.8z"/></svg>Assistants</li></ul>
+<p class="hb-ws-foot"><i></i>All anchors online</p>
+</aside>
+<div class="hb-main">
+<div class="hb-head" aria-hidden="true"><p class="hb-path">Plant 1 <i>/</i> Bay 1 <i>/</i> <b>Live map</b></p><p class="hb-title">Live map</p><span class="hb-live"><i></i>Live</span></div>
+<div class="hb-tabs" aria-hidden="true"><span class="on"><svg viewBox="0 0 16 16"><path d="M2 4l4-1.6 4 1.6 4-1.6v9.6L10 13.6l-4-1.6-4 1.6z"/></svg>Map</span><span><svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12"/></svg>Zones</span><span><svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M5 7h4M5 10h6"/></svg>Timeline</span><span class="hb-filter"><svg viewBox="0 0 16 16"><path d="M2 4h12M4.5 8h7M7 12h2"/></svg>Layers</span></div>
+<div class="hb-map">
+<video data-loop muted playsinline loop autoplay preload="auto" poster="/assets/products/hub-top-1600.webp" width="1600" height="894" aria-hidden="true"><source src="/assets/products/hub-floor.mp4" type="video/mp4"></video>
+<svg class="hb-ov" viewBox="0 0 1600 894" aria-hidden="true">
+<defs><radialGradient id="hb-g" r=".5"><stop offset="0" stop-color="#4d8dff" stop-opacity=".6"/><stop offset="1" stop-color="#4d8dff" stop-opacity="0"/></radialGradient><radialGradient id="hb-a" r=".5"><stop offset="0" stop-color="#ffb020" stop-opacity=".65"/><stop offset="1" stop-color="#ffb020" stop-opacity="0"/></radialGradient></defs>
+<g class="zones"><rect x="120" y="60" width="440" height="240" rx="14"/><rect x="620" y="60" width="360" height="240" rx="14" class="wz"/><rect x="1040" y="60" width="470" height="240" rx="14"/><rect x="120" y="470" width="440" height="150" rx="14"/><rect x="1040" y="470" width="470" height="150" rx="14"/><rect x="600" y="790" width="500" height="96" rx="14"/></g>
+<g class="znames"><text x="142" y="96">Press 2</text><text x="642" y="96" class="wz">Inspection</text><text x="1062" y="96">Cell 4</text><text x="142" y="506">Staging</text><text x="1062" y="506">Paint</text><text x="622" y="826">Dock 2</text></g>
+<path id="r1" class="trail" d="M140 545 C400 545 520 540 800 545 S1200 548 1480 545"/>
+<path id="r2" class="trail" d="M1480 840 C1200 842 900 836 640 838"/>
+<path id="r3" class="trail" d="M300 250 C330 380 300 520 420 545 S700 560 760 545"/>
+<circle r="70" fill="url(#hb-a)" cx="800" cy="170" class="wglow"/>
+<g class="wait"><circle cx="800" cy="170" r="11"/><circle cx="800" cy="170" r="24" class="ring"/></g>
+<g class="tags">
+<g><circle r="44" fill="url(#hb-g)"/><circle r="9" class="dot"/><animateMotion dur="14s" repeatCount="indefinite"><mpath href="#r1"/></animateMotion></g>
+<g><circle r="44" fill="url(#hb-g)"/><circle r="9" class="dot"/><animateMotion dur="11s" repeatCount="indefinite"><mpath href="#r2"/></animateMotion></g>
+<g><circle r="44" fill="url(#hb-g)"/><circle r="9" class="dot"/><animateMotion dur="9s" repeatCount="indefinite"><mpath href="#r3"/></animateMotion></g>
+<g transform="translate(330 175)"><circle r="9" class="dot sleep"/></g><g transform="translate(1270 175)"><circle r="9" class="dot sleep"/></g><g transform="translate(1290 560)"><circle r="9" class="dot sleep"/></g>
+</g>
+<g class="anchors"><path d="M60 40l12 7v14l-12 7-12-7V47z"/><path d="M1540 40l12 7v14l-12 7-12-7V47z"/><path d="M60 830l12 7v14l-12 7-12-7v-14z"/><path d="M1540 830l12 7v14l-12 7-12-7v-14z"/><path d="M800 420l12 7v14l-12 7-12-7v-14z"/></g>
+</svg>
+<span class="hb-pin" aria-hidden="true"><b>T-114</b>Inspection<em>41 min</em></span>
+<span class="hb-scale" aria-hidden="true"><i></i>5 m</span>
+</div>
+<table class="hb-ztab" aria-hidden="true"><thead><tr><th>Zone</th><th>In zone now</th><th>Longest stay now</th><th>Status</th></tr></thead><tbody>
+<tr class="w"><td><i></i>Inspection</td><td>3</td><td>41 min · T-114</td><td><span>Waiting</span></td></tr>
+<tr><td><i></i>Staging</td><td>5</td><td>18 min · T-121</td><td><span>Moving</span></td></tr>
+<tr><td><i></i>Press 2</td><td>2</td><td>9 min · T-087</td><td><span>Moving</span></td></tr>
+<tr><td><i></i>Dock 2</td><td>1</td><td>6 min · Forklift 3</td><td><span>Moving</span></td></tr>
+</tbody></table>
+</div>
+<aside class="hb-inbox" aria-hidden="true">
+<div class="hb-ib-head"><b>Events</b><svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8"/></svg></div>
+<div class="hb-ib-tabs"><span class="on">All</span><span>Waits <em>2</em></span><span>Devices</span></div>
+<div class="hb-feed" data-feed><ol>
+<li class="wait"><i></i><b>T-114 waiting at Inspection</b><span>Over the 30 min rule<time>41 min</time></span></li>
+<li><i></i><b>T-087 left Press 2</b><span>To Staging<time>09:14</time></span></li>
+<li><i></i><b>T-114 entered Inspection</b><span>From Press 2<time>08:33</time></span></li>
+<li><i></i><b>Forklift 3 entered Dock 2</b><span>Vehicle tag<time>08:31</time></span></li>
+<li class="dev"><i></i><b>Anchor A-07 updated</b><span>Firmware, over the air<time>08:02</time></span></li></ol>
+<template><li><i></i><b>T-121 entered Staging</b><span>From Paint<time>09:15</time></span></li><li class="wait"><i></i><b>T-087 waiting at Paint</b><span>Over the 10 min rule<time>12 min</time></span></li><li><i></i><b>Fixture F-6 left Cell 4</b><span>Tool tag<time>09:16</time></span></li><li><i></i><b>T-099 entered Inspection</b><span>From Staging<time>09:17</time></span></li></template>
+</div>
+<p class="hb-ex">Example data</p>
+</aside>
+</div>
+</div>
+</div>
+
+<section class="hb-intro" data-tone="dark" aria-labelledby="amihub-in-short">
+<div class="p-wrap hb-intro-grid">
+<h2 id="amihub-in-short" class="hb-kicker rv">AmIHub, in short</h2>
+<p class="short-answer hb-intro-text rv">AmIHub is AmIMotion's software: the positioning engine and the record of where every tag has been. It works out each AmIGo tag's position from AmIMo timing and angle, keeps a live map of your floor and its zones, and notes when each item enters and leaves a zone, so you see a wait <em>while it is still a wait</em>. It runs on an industrial PC inside your plant with no internet needed, or in the cloud, and speaks REST, MQTT, WebSocket and omlox, with an MCP server built in.</p>
 </div>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="answer-tile" data-reveal><p>AmIHub in short</p><p class="short-answer">AmIHub is AmIMotion’s positioning engine and system of record. It keeps a live map of zones and tracked items, time-stamps every enter, exit, idle and dwell event, and shares them over REST, MQTT, WebSocket and an omlox hub interface. It runs on an industrial PC in your plant with no internet dependency, or in the cloud, and has a built-in MCP server for AI assistants.</p></div>
-<div class="tiles"><div class="tile" data-reveal><h3>Positioning engine</h3><p>TDoA, AoA and two-way ranging solvers. Non-line-of-sight algorithms keep positions steady around racking and metal.</p></div><div class="tile" data-reveal><h3>Live map</h3><p>Your floor as a 3D model: plan, zones, geofences and racking, with every tracked item, its trail and history.</p></div><div class="tile" data-reveal><h3>Zones and events</h3><p>Every enter, exit, idle and dwell is time-stamped and queryable, for assets, vehicles, people and work orders.</p></div><div class="tile" data-reveal><h3>History</h3><p>Trajectory, trip and dwell queries by time window. CSV and Parquet export.</p></div><div class="tile" data-reveal><h3>Devices</h3><p>Auto-discovery, health and battery monitoring and over-the-air firmware, from one console.</p></div><div class="tile" data-reveal><h3>Scale</h3><p>From one bay to many sites. Thousands of tags and hundreds of anchors per site, indicative.</p></div></div>
+<section class="p-sec hb-does" data-tone="light" aria-labelledby="what-amihub-does">
+<div class="p-wrap">
+<h2 id="what-amihub-does" class="hb-h2 rv"><span>Built around one question.</span> <span>Where is work waiting?</span></h2>
+<p class="hb-sub rv">A supervisor shouldn't have to walk the floor to find out. AmIHub keeps the answer current for every bay you tag.</p>
+<ul class="hb-bento">
+<li class="hb-card c-pos rv"><figure aria-hidden="true"><img src="/assets/products/hub-vortex-cool.webp" width="800" height="800" alt="" loading="lazy" class="hb-vortex"><svg class="hb-solve" viewBox="0 0 400 260"><g class="ray"><line x1="40" y1="40" x2="214" y2="136"/><line x1="370" y1="54" x2="214" y2="136"/><line x1="96" y1="240" x2="214" y2="136"/><line x1="350" y1="226" x2="214" y2="136"/></g><g class="an"><path d="M40 30l9 5v10l-9 5-9-5V35z"/><path d="M370 44l9 5v10l-9 5-9-5V49z"/><path d="M96 230l9 5v10l-9 5-9-5v-10z"/><path d="M350 216l9 5v10l-9 5-9-5v-10z"/></g><circle class="fix" cx="214" cy="136" r="7"/></svg><span class="hb-chip">x 21.40 · y 4.35 · z 0.92 m</span></figure><p><b>Positions to ±10 cm.</b> AmIHub solves each tag's place from AmIMo timing and angle, then checks it against your floor map. Typical, with AmIMo anchors; it depends on your floor.</p></li>
+<li class="hb-card c-dial rv"><figure aria-hidden="true"><span class="hb-dial"><b>41</b><small>min at Inspection</small></span><span class="hb-dial-tag">T-114</span></figure><p><b>Waits, while they happen.</b> Not in tomorrow's report. The clock starts the moment a carrier stops.</p></li>
+<li class="hb-card c-zone rv"><figure aria-hidden="true"><div class="hb-glass"><p class="hb-gh">Zone events<span>Bay 1</span></p><ol><li><i class="in"></i>T-114 entered Inspection<time>08:33</time></li><li><i class="out"></i>T-114 left Press 2<time>08:31</time></li><li><i class="in"></i>T-087 entered Press 2<time>08:29</time></li><li><i class="out"></i>T-121 left Paint<time>08:24</time></li></ol></div></figure><p><b>Every stop, timed.</b> Each entry and exit is time-stamped. You name the zones; AmIHub keeps the clock.</p></li>
+<li class="hb-card c-hist rv"><figure aria-hidden="true"><div class="hb-tl"><ol class="hb-hours"><li>08:00</li><li>08:30</li><li>09:00</li><li>09:30</li></ol><div class="hb-lanes"><p class="lane"><span>T-114</span><i style="--a:2%;--b:14%">Press 2</i><i class="mv" style="--a:15%;--b:18%"></i><i class="wt" style="--a:19%;--b:70%">Inspection · waiting</i></p><p class="lane"><span>T-087</span><i style="--a:0%;--b:20%">Staging</i><i class="mv" style="--a:21%;--b:26%"></i><i style="--a:27%;--b:58%">Press 2</i><i class="mv" style="--a:59%;--b:63%"></i><i style="--a:64%;--b:88%">Staging</i></p><p class="lane"><span>T-121</span><i style="--a:6%;--b:30%">Paint</i><i class="mv" style="--a:31%;--b:36%"></i><i style="--a:37%;--b:84%">Staging</i></p></div></div><span class="hb-export">Export<b>CSV</b><b>Parquet</b></span></figure><p><b>History by the hour.</b> Pull any carrier's trail, trips and waits for the window you choose, then export it to CSV or Parquet.</p></li>
+<li class="hb-card c-dev rv"><figure aria-hidden="true"><img src="/assets/products/hub-vortex.webp" width="800" height="800" alt="" loading="lazy" class="hb-vortex sm"><div class="hb-glass hb-devs"><p class="hb-gh">Anchors<span>Bay 1</span></p><ol><li><i></i>A-01<span>Online</span></li><li><i></i>A-02<span>Online</span></li><li class="up"><i></i>A-07<span>Updating</span></li><li class="off"><i></i>A-11<span>Dark · alert sent</span></li></ol></div></figure><p><b>Devices that look after themselves.</b> New anchors are found on their own, firmware updates over the air, and an anchor that goes dark raises an alert.</p></li>
+<li class="hb-card c-grow rv"><figure aria-hidden="true"><div class="hb-bays"><i class="on"><b>Bay 1</b></i><i><b>Bay 2</b></i><i><b>Bay 3</b></i><i><b>Stores</b></i><i><b>Dock</b></i><i><b>Paint</b></i></div></figure><p><b>One bay first, then the plant.</b> The same AmIHub grows site-wide without re-fitting the first bay. Thousands of tags per site, indicative.</p></li>
+</ul>
 </div>
 </section>
 
-<section class="section dark" id="interfaces" data-tone="dark">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Plug into any layer.<br><span class="soft">Your systems keep their jobs.</span></h2><p class="lede" style="margin-top:20px">Push to, or pull from, your MES, ERP, WMS, SCADA or BI. The integration contract is agreed for each site.</p></div>
-<div class="table-wrap" data-reveal><table class="compare"><thead><tr><th scope="col">Interface</th><th scope="col">What it carries</th><th scope="col">Typical use</th></tr></thead><tbody><tr><th scope="row">REST</th><td>Positions, zones, history and device state</td><td>Queries from MES, ERP and BI tools</td></tr><tr><th scope="row">MQTT</th><td>Zone entries, exits and alerts as they happen</td><td>Event streams into plant systems</td></tr><tr><th scope="row">WebSocket</th><td>Live positions</td><td>Screens and custom apps</td></tr><tr><th scope="row">omlox hub interface</th><td>Location data in the open omlox model</td><td>Mixing vendors and location technologies</td></tr><tr><th scope="row">MCP server</th><td>Positions, zones, history; actions with approval</td><td>AI assistants, shown in a live demo</td></tr></tbody></table></div>
+<section class="p-sec hb-ask" data-tone="dark" aria-labelledby="ask-your-floor">
+<div class="p-wrap">
+<h2 id="ask-your-floor" class="hb-h2 rv"><span>Ask your floor.</span> <span>Approve what changes.</span></h2>
+<p class="hb-sub rv">AmIHub has an MCP server built in. Any assistant that speaks MCP can ask the live map in plain words, and nothing changes on your floor until a person says yes.</p>
+<div class="hb-neon rv" data-askdemo>
+<div class="hb-chat" role="img" aria-label="An example conversation: a supervisor asks an AI assistant which trolleys have waited at inspection for more than 30 minutes; the assistant asks AmIHub over MCP, answers with two trolleys, then proposes a work order that waits for a person's approval.">
+<div class="hb-chat-bar" aria-hidden="true"><span class="hb-dots"><i></i><i></i><i></i></span><b>Assistant</b><span class="hb-conn"><i></i>Connected to AmIHub over MCP</span><span class="hb-scope">Read · work orders with approval</span></div>
+<div class="hb-chat-body" aria-hidden="true">
+<p class="hb-msg me"><span class="hb-type">Which trolleys have waited at inspection for more than 30 minutes?</span></p>
+<p class="hb-call"><svg viewBox="0 0 16 16"><path d="M5 4L1 8l4 4M11 4l4 4-4 4"/></svg><code>amihub · zone_waits</code><span>zone: Inspection · longer than: 30 min</span><em>read only</em></p>
+<div class="hb-msg ai"><p>Two. T-114 has been at Inspection for 41 minutes and T-121 for 33. Both came from Press 2.</p>
+<table><tr><td><i></i>T-114</td><td>Inspection</td><td>41 min</td></tr><tr><td><i></i>T-121</td><td>Inspection</td><td>33 min</td></tr></table></div>
+<p class="hb-msg me">Raise a work order to clear T-114.</p>
+<div class="hb-approve"><div><p class="hb-ap-k">Needs approval</p><p class="hb-ap-t">Raise work order: clear T-114 at Inspection</p><p class="hb-ap-s">Proposed by the assistant · approver: shift supervisor</p></div><span class="hb-ap-b"><b>Approve</b><i>Decline</i></span></div>
+<p class="hb-log"><svg viewBox="0 0 16 16"><path d="M3 2h7l3 3v9H3z"/><path d="M6 8h4M6 11h4"/></svg>Logged: who asked, what was called, what changed.</p>
+</div>
+</div>
+<p class="hb-ex">Example conversation</p>
+</div>
+<ul class="hb-feats">
+<li class="rv"><span class="hb-ico i1" aria-hidden="true"></span><h3>Asking changes nothing</h3><p>Any AI assistant that supports MCP can ask AmIHub in plain words. A question reads; it never writes.</p></li>
+<li class="rv"><span class="hb-ico i2" aria-hidden="true"></span><h3>Scoped per assistant</h3><p>Each assistant gets its own access: read-only, or only the actions you allow.</p></li>
+<li class="rv"><span class="hb-ico i3" aria-hidden="true"></span><h3>Every call logged</h3><p>Who asked, what was called and what changed, kept with the rest of AmIHub's records.</p></li>
+<li class="rv"><span class="hb-ico i4" aria-hidden="true"></span><h3>A person approves</h3><p>Any change, such as raising a work order, needs a person's approval. You can require a supervisor's.</p></li>
+<li class="rv"><span class="hb-ico i5" aria-hidden="true"></span><h3>Stays on your network</h3><p>The MCP server runs where AmIHub runs. If the assistant runs inside your network too, nothing has to leave it.</p></li>
+<li class="rv"><span class="hb-ico i6" aria-hidden="true"></span><h3>Shown live</h3><p>We run it on a call, on real AmIHub data, so you can ask your own questions.</p></li>
+</ul>
+<p class="more hb-more"><a href="/use-cases/ask-your-plant/">Ask your floor</a><span class="sep" aria-hidden="true">·</span><a href="/trust/">Trust and data</a></p>
 </div>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Ask the floor a question.<br><span class="soft">Shown in a live demo.</span></h2><button class="more" type="button" data-km="amihub-mcp"><i aria-hidden="true"></i>Know more</button></div>
-<div class="tiles"><div class="tile" data-reveal><p class="over">Ask</p><h3>Plain questions</h3><p>Any MCP-capable assistant can query positions, zones, fleets and work orders.</p></div><div class="tile" data-reveal><p class="over">Logged</p><h3>Every call recorded</h3><p>Each assistant gets its own credentials and tool scope, and every call is logged.</p></div><div class="tile" data-reveal><p class="over">Approve</p><h3>A person decides</h3><p>Write actions can wait for a supervisor’s approval. It runs where AmIHub runs.</p></div></div>
-<div class="km-src" id="km-amihub-mcp" data-h1="#8f7cf6" data-h2="#f08bbd" data-kicker="AmIHub and AI" data-title="Your floor, in plain words." data-link="/learn/mcp-location-data/"><ul><li>MCP (Model Context Protocol) is an open standard that lets AI assistants use software tools.</li><li>Ask: “What visited Cell 7 last night?”</li><li>The assistant reads only what you allow.</li><li>Shown in a live demo. The production setup is confirmed during pilot scoping.</li></ul></div>
+<section class="p-sec hb-if" id="interfaces" data-tone="light" aria-labelledby="your-systems-keep-their-jobs">
+<div class="hb-if-glow" aria-hidden="true"></div>
+<div class="p-wrap">
+<h2 id="your-systems-keep-their-jobs" class="hb-h2 rv"><span>Your systems keep their jobs.</span> <span>AmIHub adds where and when.</span></h2>
+<p class="hb-sub rv">Your MES, ERP and WMS stay in charge of jobs and status. AmIHub feeds them location over open interfaces, so nothing you rely on has to be replaced.</p>
+<div class="hb-panes rv" aria-hidden="true">
+<div class="hb-pane hb-pane-main"><p class="hb-gh">MQTT<span>Zone events, as they happen</span></p><pre><code><b>bay-1/zones/inspection</b>
+{
+  "tag": <s>"T-114"</s>,
+  "event": <s>"enter"</s>,
+  "zone": <s>"Inspection"</s>,
+  "from": <s>"Press 2"</s>,
+  "at": <s>"08:33:12"</s>
+}</code></pre><p class="hb-ex">Example event. Topics and fields are agreed for your site.</p></div>
+<div class="hb-pane hb-pane-a"><p class="hb-gh">REST<span>Positions, zones, history</span></p><p class="hb-req"><em>GET</em> /zones/inspection/waits</p></div>
+<div class="hb-pane hb-pane-b"><p class="hb-gh">WebSocket<span>Live positions</span></p><p class="hb-stream"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></p></div>
+</div>
+<ul class="hb-feats light">
+<li class="rv"><span class="hb-ico j1" aria-hidden="true"></span><h3>REST</h3><p>Positions, zones, history and device state, for queries from MES, ERP, WMS and BI tools.</p></li>
+<li class="rv"><span class="hb-ico j2" aria-hidden="true"></span><h3>MQTT</h3><p>Each zone entry and exit as it happens, pushed into plant systems.</p></li>
+<li class="rv"><span class="hb-ico j3" aria-hidden="true"></span><h3>WebSocket</h3><p>Live positions, for screens on the floor and your own apps.</p></li>
+<li class="rv"><span class="hb-ico j4" aria-hidden="true"></span><h3>omlox hub interface</h3><p>Location data in the open omlox model, so it is not tied to one vendor.</p></li>
+<li class="rv"><span class="hb-ico j5" aria-hidden="true"></span><h3>MCP server</h3><p>Positions, zones and history for AI assistants. Any change needs a person's approval.</p></li>
+<li class="rv"><span class="hb-ico j6" aria-hidden="true"></span><h3>CSV and Parquet</h3><p>Any time window, exported for your own analysis.</p></li>
+</ul>
+<p class="note">Which systems connect, and with which fields, is agreed for your site.</p>
+<p class="more"><a href="/developers/">For developers</a><span class="sep" aria-hidden="true">·</span><a href="/learn/association/">Which job is on the trolley?</a></p>
 </div>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">AmIHub, in detail.</h2></div>
-<div class="spec-wrap" data-reveal><table class="spec"><tbody><tr><th scope="row">Positioning</th><td>UL-TDoA, DL-TDoA, two-way ranging and AoA solvers; NLOS handling</td></tr><tr><th scope="row">Accuracy</th><td>Down to ±10 cm in 3D, with AmIMo anchors; site-dependent</td></tr><tr><th scope="row">Updates</th><td>Sub-second, indicative</td></tr><tr><th scope="row">Scale</th><td>Thousands of tags and hundreds of anchors per site, indicative</td></tr><tr><th scope="row">Interfaces</th><td>REST, MQTT, WebSocket, omlox hub interface, built-in MCP server</td></tr><tr><th scope="row">Hosting</th><td>On-premise industrial PC with no internet dependency, or cloud</td></tr><tr><th scope="row">Security</th><td>TLS, role-based access, API keys, audit logs, retention rules</td></tr><tr><th scope="row">Export</th><td>CSV and Parquet</td></tr><tr><th scope="row">Standards</th><td>data and device model built on the FiRa and omlox specifications</td></tr></tbody></table><p class="note">Analytics views for flow, vehicles and work orders sit on the same records. Ask for a current demo of the views that matter for your floor.</p></div>
+<section class="p-sec hb-where" data-tone="dark" aria-labelledby="inside-your-plant">
+<div class="p-wrap">
+<h2 id="inside-your-plant" class="hb-h2 rv"><span>Inside your plant.</span> <span>Or in the cloud.</span></h2>
+<ul class="hb-where-grid">
+<li class="hb-card hb-onprem rv"><figure><picture><source type="image/avif" srcset="/assets/products/hub-cabinet-800.avif 800w, /assets/products/hub-cabinet-1600.avif 1600w" sizes="(max-width:900px) 100vw, 60vw"><img src="/assets/products/hub-cabinet-1600.webp" srcset="/assets/products/hub-cabinet-800.webp 800w, /assets/products/hub-cabinet-1600.webp 1600w" sizes="(max-width:900px) 100vw, 60vw" width="1600" height="1195" loading="lazy" decoding="async" alt="A row of steel cabinets in a plant corridor, where an industrial PC would sit."></picture></figure><p><b>On-premise.</b> AmIHub runs on an industrial PC inside your plant, with no internet needed. Location data stays on site.</p></li>
+<li class="hb-card rv"><span class="hb-glyph" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M14 34h21a8 8 0 0 0 1-15.9A11 11 0 0 0 15 16.6 8.7 8.7 0 0 0 14 34z"/></svg></span><p><b>Cloud.</b> AmIHub can also run in the cloud. We'll work out on the call which fits your IT rules.</p></li>
+<li class="hb-card rv"><span class="hb-glyph" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="12" y="21" width="24" height="17" rx="4"/><path d="M17 21v-5a7 7 0 0 1 14 0v5"/></svg></span><p><b>Either way.</b> TLS on every interface, access by role, API keys, audit logs and data retention rules.</p></li>
+</ul>
 </div>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Questions teams ask first.</h2></div><div class="faq" style="margin-top:clamp(32px,4vw,56px);max-width:980px"><details><summary>What is AmIHub?</summary><p>AmIHub is AmIMotion’s RTLS software: the positioning engine, live 3D map, time-stamped zone events and open APIs (REST, MQTT, WebSocket, omlox and a built-in MCP server). It runs on-premise or in the cloud.</p></details><details><summary>Which RTLS can run on-premise without internet?</summary><p>AmIHub runs on an industrial PC inside your plant with no internet dependency. Location data stays on site. A cloud option is there if you prefer it.</p></details><details><summary>Does AmIHub replace our MES or WMS?</summary><p>No. AmIHub adds where and when. Jobs, orders and status stay in your MES, ERP or WMS, which AmIHub feeds over open interfaces.</p></details><details><summary>Does AmIHub integrate with SAP or MES over MQTT?</summary><p>AmIHub publishes zone events over MQTT and offers REST, WebSocket and an omlox hub interface. The connector for your SAP, MES or ERP is confirmed during scoping.</p></details><details><summary>Does AmIMotion have an MCP server?</summary><p>Yes, AmIHub has a built-in MCP server, so MCP-capable AI assistants can query live location data, with a person’s approval for any action. Shown in a live demo.</p></details></div>
+<section class="p-sec hb-specs" data-tone="dark" aria-labelledby="amihub-in-detail">
+<div class="p-wrap hb-doc">
+<div class="hb-doc-side"><h2 id="amihub-in-detail" class="hb-h2 sm rv"><span>AmIHub, in detail.</span></h2><p class="note">Indicative values. Ask on the call for a live demo of the views that matter on your floor.</p></div>
+<table class="spec"><tbody><tr><th scope="row">Positioning</th><td>UL-TDoA, DL-TDoA, two-way ranging and AoA solvers, filtered against the floor map</td></tr><tr><th scope="row">Accuracy</th><td>Down to ±10 cm in 3D, typical, with AmIMo anchors; depends on your floor</td></tr><tr><th scope="row">Updates</th><td>Under a second from pulse to map, indicative</td></tr><tr><th scope="row">Scale</th><td>Thousands of tags and hundreds of anchors per site, indicative</td></tr><tr><th scope="row">Records</th><td>Every entry, exit, idle and dwell, time-stamped and queryable by time window</td></tr><tr><th scope="row">Interfaces</th><td>REST, MQTT, WebSocket, omlox hub interface, built-in MCP server</td></tr><tr><th scope="row">Hosting</th><td>Industrial PC inside your plant with no internet needed, or cloud</td></tr><tr><th scope="row">Security</th><td>TLS, role-based access, API keys, audit logs, data retention rules</td></tr><tr><th scope="row">Export</th><td>CSV and Parquet</td></tr><tr><th scope="row">Devices</th><td>Anchor auto-discovery, tag health and battery, over-the-air firmware, dark-anchor alert</td></tr><tr><th scope="row">Standards</th><td>Data and device model built on the FiRa and omlox specifications</td></tr></tbody></table>
 </div>
 </section>
 
-<section class="section dark close-cta" aria-labelledby="close-title" data-tone="dark"><div class="wrap" data-reveal><h2 id="close-title" class="h2">See your floor on AmIHub.</h2><p class="lede" style="margin:20px auto 0">On the call: the live map and an AI query, on real AmIHub data.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Book a call</a><a class="btn btn-line" href="/diagnostic/">Diagnose your floor</a></div></div></section>
+<section class="p-sec hb-faq" data-tone="dark" aria-labelledby="questions-about-amihub">
+<div class="p-wrap p-faqgrid">
+<h2 id="questions-about-amihub" class="hb-h2 sm rv"><span>Questions about AmIHub.</span></h2><div class="faq"><details><summary>What is AmIHub?</summary><p>AmIHub is AmIMotion's software. It is the positioning engine, the live map of your floor and the record of every zone entry and exit. It has open APIs (REST, MQTT, WebSocket, omlox) and a built-in MCP server, and runs on-premise or in the cloud.</p></details><details><summary>Which RTLS can run on-premise without internet?</summary><p>AmIHub, AmIMotion's software, runs on an industrial PC inside your plant with no internet needed, so location data stays on site. It can also run in the cloud if your IT rules prefer that.</p></details><details><summary>Does AmIHub replace our MES or WMS?</summary><p>No. Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited, and feeds your MES, ERP or WMS over open interfaces.</p></details><details><summary>Can AmIHub send zone events to SAP or an MES over MQTT?</summary><p>AmIHub sends each zone entry and exit over MQTT, as it happens, and offers REST, WebSocket and an omlox hub interface. The connector for your SAP, MES or ERP is confirmed for your site.</p></details><details><summary>Does AmIMotion have an MCP server?</summary><p>Yes. AmIHub has an MCP server built in, so AI assistants that support MCP can ask the live map a question. Any change needs a person's approval. We show it live on a call.</p></details></div>
+</div>
+</section>
+
+<section class="close hb-close" data-tone="dark" aria-label="Next step"><div class="hb-light low" aria-hidden="true"><img src="/assets/products/hub-beam-low.webp" width="2000" height="800" alt="" loading="lazy"></div><p><span>See your own floor on AmIHub.</span><span class="sub">On the call: the live map and an AI question, on real AmIHub data.</span><a class="hb-pill" href="/contact/">Book a call<svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h18M13 1l5 5-5 5"/></svg></a></p></section>

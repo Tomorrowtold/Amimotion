@@ -40,7 +40,7 @@ class Page(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.title = ""; self.meta = {}; self.links = []; self.canonical = ""; self.jsonld = []
-        self.h = Counter(); self.imgs = []; self.blocks = []; self.heading = ""
+        self.h = Counter(); self.imgs = []; self.blocks = []; self.chrome = []; self.heading = ""
         self._stack = []; self._buf = []; self._skip = 0; self._chrome = 0; self._ld = None; self._in_title = False
 
     def handle_starttag(self, tag, a):
@@ -56,7 +56,7 @@ class Page(HTMLParser):
         if tag == "img": self.imgs.append(a.get("alt"))
         if tag == "br" and not self._skip: self._buf.append(" ")
         if tag in ("nav", "header", "footer"): self._flush()
-        if tag in ("nav", "header"): self._chrome += 1   # site chrome repeats on every page; extractors drop it
+        if tag in ("nav", "header", "footer"): self._chrome += 1   # site chrome repeats on every page; extractors drop it
         if tag in BLOCKS:
             self._flush(); self._stack.append(tag)
         if tag in ("h1", "h2", "h3", "h4"): self.h[tag] += 1
@@ -70,7 +70,7 @@ class Page(HTMLParser):
                 self._ld = None
             return
         if tag == "title": self._in_title = False
-        if tag in ("nav", "header"): self._flush(); self._chrome = max(0, self._chrome - 1); return
+        if tag in ("nav", "header", "footer"): self._flush(); self._chrome = max(0, self._chrome - 1); return
         if tag in BLOCKS:
             kind = self._stack.pop() if self._stack else tag
             txt = self._flush()
@@ -86,6 +86,8 @@ class Page(HTMLParser):
         txt = re.sub(r"\s+", " ", "".join(self._buf)).strip(); self._buf = []
         if txt and not self._chrome:
             self.blocks.append((self.heading, txt))
+        elif txt:
+            self.chrome.append(txt)
         return txt
 
     def close(self):
@@ -94,6 +96,11 @@ class Page(HTMLParser):
     @property
     def text(self):
         return " ".join(t for _, t in self.blocks)
+
+    @property
+    def all_text(self):
+        """Body and site chrome (bar, footer): what the entity and barred-claim checks read."""
+        return self.text + " " + " ".join(self.chrome)
 
 
 def route_of(f, dist):
@@ -166,16 +173,16 @@ def crawler_checks(pages, dist):
 def entity_checks(pages, dist, panel, canonical):
     norm = lambda s: re.sub(r"\s+", " ", s).strip()
     must = ["/", "/what-is-amimotion/", "/company/"]
-    present = {r: (norm(canonical) in norm(pages[r].text) if r in pages else None) for r in must}
+    present = {r: (norm(canonical) in norm(pages[r].all_text) if r in pages else None) for r in must}
     llms = dist / "llms.txt"
     present["llms.txt"] = norm(canonical) in norm(llms.read_text()) if llms.exists() else None
-    misspelt = {r: sorted(set(MISSPELT.findall(p.text))) for r, p in pages.items() if MISSPELT.search(p.text)}
+    misspelt = {r: sorted(set(MISSPELT.findall(p.all_text))) for r, p in pages.items() if MISSPELT.search(p.all_text)}
     bad = re.compile("|".join(f"(?:{x})" for x in panel["forbidden"]), re.I)
     barred = {}
     for r, p in pages.items():
-        hits = [m.group(0) for m in bad.finditer(p.text)]
+        hits = [m.group(0) for m in bad.finditer(p.all_text)]
         # "never certified" style sentences are the register's own wording; only flag a bare claim
-        hits = [h for h in hits if not re.search(r"(not|never|n't)\s+(\w+\s+){0,3}" + re.escape(h), p.text, re.I)]
+        hits = [h for h in hits if not re.search(r"(not|never|n't)\s+(\w+\s+){0,3}" + re.escape(h), p.all_text, re.I)]
         if hits: barred[r] = sorted(set(hits))
     return {"canonical description present": present, "misspelt brand": misspelt, "barred claims": barred}
 

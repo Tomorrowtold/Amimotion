@@ -1,0 +1,37 @@
+/* /start/: one bay lights up. The hall stays grey; one bay comes into colour as you scroll, and the plant grows from it. */
+.head h1{font-size:clamp(3rem,1.4rem + 5vw,7.2rem)}
+.head .words{display:block;grid-column:1 / span 7}
+.head-pic{grid-column:1 / -1;margin:var(--s-7) calc(-1 * var(--margin)) 0!important}
+.st-bay{position:relative;margin:0}
+.st-bay>picture img{width:100%;aspect-ratio:16/8;object-fit:cover;filter:grayscale(1) brightness(1.08) contrast(.85)}
+.st-lit{position:absolute;inset:0;clip-path:inset(18% 34% 10% 34% round 18px)}
+.st-lit img{width:100%;height:100%;object-fit:cover}
+.st-bay::after{content:"";position:absolute;inset:18% 34% 10% 34%;border-radius:18px;box-shadow:0 0 0 3px var(--w-accent);pointer-events:none}
+@supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
+  .st-lit{animation:st-grow linear both;animation-timeline:view();animation-range:cover 35% cover 85%}
+  .st-bay::after{animation:st-ring linear both;animation-timeline:view();animation-range:cover 35% cover 85%}
+  @keyframes st-grow{to{clip-path:inset(0 0 0 0 round 0)}}
+  @keyframes st-ring{to{inset:0;opacity:0}}
+}}
+
+/* Three ways in: each way's link sits on its own card, and the whole card is that link. The cards and the link row
+   join the section's grid (display:contents), so every link takes the cell of the card it names; the dots between
+   links are not needed once each link has its own card. */
+.sec>.points.c3:has(+.more),.sec>.points.c3+.more{display:contents}
+.sec>.points.c3+.more .sep{display:none}
+.sec>.points.c3:has(+.more)>li{grid-row:2;align-self:stretch;padding-bottom:calc(var(--s-6) + 2.4em);border-radius:18px;transform:none!important;margin-bottom:var(--s-3)}
+.sec>.points.c3+.more>a{grid-row:2;align-self:stretch;display:flex;flex-wrap:wrap;align-content:flex-end;align-items:center;padding:0 var(--s-5) var(--s-6);margin-bottom:var(--s-3);border-radius:18px;transition:box-shadow .3s var(--ease-ds)}
+.sec>.points.c3+.more>a:hover{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--action) 45%,transparent),0 30px 50px -36px rgba(11,18,56,.4)}
+.sec>.points.c3+.more>a:focus-visible{outline-offset:2px}
+.sec>.points.c3:has(+.more)>li:nth-child(1),.sec>.points.c3+.more>a:nth-of-type(1){grid-column:1 / span 4}
+.sec>.points.c3:has(+.more)>li:nth-child(2),.sec>.points.c3+.more>a:nth-of-type(2){grid-column:5 / span 4}
+.sec>.points.c3:has(+.more)>li:nth-child(3),.sec>.points.c3+.more>a:nth-of-type(3){grid-column:9 / span 4}
+@media (max-width:1023px){
+  .sec>.points.c3:has(+.more)>li:nth-child(n),.sec>.points.c3+.more>a:nth-of-type(n){grid-column:1 / -1}
+  .sec>.points.c3:has(+.more)>li:nth-child(1),.sec>.points.c3+.more>a:nth-of-type(1){grid-row:3}
+  .sec>.points.c3:has(+.more)>li:nth-child(2),.sec>.points.c3+.more>a:nth-of-type(2){grid-row:4}
+  .sec>.points.c3:has(+.more)>li:nth-child(3),.sec>.points.c3+.more>a:nth-of-type(3){grid-row:5}
+}
+@media (prefers-reduced-motion:reduce){.sec>.points.c3+.more>a{transition:none}}
+/* the moment of decision: the way into the diagnostic is the one filled button in the head; any second link stays a quiet text link beside it */
+.head .more:has(>.cta){display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3) var(--s-6)}.head .more:has(>.cta) .sep{display:none}

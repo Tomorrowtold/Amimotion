@@ -1,0 +1,20 @@
+/* /industrial-spatial-intelligence/: the category essay. A serif title on one axis, then one wide photograph that
+   gains its three layers (where things are, where they went, where they wait) as it comes into view. */
+.head{justify-items:center;text-align:center}
+.head h1{grid-column:2 / span 10;font-size:clamp(3rem,1.2rem + 5.6vw,7.8rem)!important;max-width:12em}
+.head .words{grid-column:3 / span 8;display:block}.head .lede{margin-inline:auto}.head .short-answer{text-align:left;margin-inline:auto}
+.head-pic{grid-column:1 / -1;margin:var(--s-8) calc(-1 * var(--margin)) 0!important}
+.isi-pano{position:relative;margin:0}
+.isi-pano img{width:100%;aspect-ratio:2.3/1;object-fit:cover}
+.isi-ov{position:absolute;inset:0;width:100%;height:100%}
+.isi-ov .l1 circle{fill:var(--located);stroke:#fff;stroke-width:5}
+.isi-ov .l2 path{fill:none;stroke:var(--located);stroke-width:7;stroke-linecap:round;stroke-dasharray:14 12}
+.isi-ov .l3 circle{fill:var(--waiting);stroke:#fff;stroke-width:5}
+.isi-ov .l3 text{font:600 44px var(--font-text);fill:#fff;paint-order:stroke;stroke:rgba(11,18,56,.6);stroke-width:8px}
+@supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
+  .isi-ov g{animation:isi-in linear both;animation-timeline:view()}
+  .isi-ov .l1{animation-range:entry 40% cover 45%}.isi-ov .l2{animation-range:cover 40% cover 55%}.isi-ov .l3{animation-range:cover 50% cover 62%}
+  @keyframes isi-in{from{opacity:0}to{opacity:1}}
+}}
+.compare thead th{font-family:var(--font-serif);font-style:italic;font-size:1.3rem;color:var(--ink)!important}
+.points>li{border-top:3px solid var(--w-accent);padding-top:var(--s-5)}
