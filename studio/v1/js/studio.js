@@ -299,93 +299,159 @@ if (simSec) {
   });
 })();
 
-/* ---------- guides: Shiv's film plays 6 s full frame, settles into the first card, then scroll turns the spiral one guide at a time ---------- */
+/* ---------- guides v3: Shiv's film fills the padded screen; on the first scroll (or after a second) it rises into the spiral.
+   Then one scroll = one guide: a flick, a swipe or a key glides to the next guide and the trackpad's momentum is absorbed,
+   the spiral lands on a spring, the rail mark pulses and phones tick. Listeners are armed only while the guides are on screen. ---------- */
 (() => {
   const sec = $('.bs'); if (!sec) return;
   const stage = $('.bs-stage', sec), intro = $('.bs-intro', sec), iv = $('video', intro), helix = $('.bs-helix', sec);
   const cards = $$('.bs-card', sec), posts = $$('.bs-post', sec), ticks = $$('.bs-rail i', sec);
-  const N = cards.length, STEP = 50 * Math.PI / 180, HOLD = 6, MORPH = 1.25;
+  const N = cards.length, STEP = 50 * Math.PI / 180, WAIT = 1, MORPH = 1.15;
   const lowData = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
   const still = /[?&]still/.test(location.search), fm = location.search.match(/[?&]bs=([\d.]+)/), fixed = fm ? +fm[1] : null;
-  const ease = (x) => 1 - Math.pow(1 - x, 4);
+  const easeIO = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2, easeX = (x) => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
   const hold = (t) => { const i = Math.floor(t), f = t - i, g = clamp((f - .22) / .56); return i + g * g * (3 - 2 * g); };
-  let p = 0, cur = -1, active = -1, seen = false, cw = 0, ch = 0, last = 0;
-  // intro: 0 waiting, 1 playing, 2 morphing, 3 done
-  let phase = (reduce || lowData || still || fixed != null) ? 3 : 0, t0 = 0, m = 0;
+  let p = 0, v = 0, cur = -1, active = -1, seen = false, cw = 0, ch = 0, last = 0, gi = 0, fan = 1, rk = 0, pinnedAt = 0, doneAt = 0;
+  // intro: 0 waiting, 1 showing, 2 rising, 3 done
+  let phase = (reduce || lowData || still || fixed != null) ? 3 : 0, t0 = 0;
   if (phase === 3) sec.classList.add('done');
-  const measure = () => { cw = cards[0].offsetWidth; ch = cards[0].offsetHeight; sec.style.setProperty('--ch', ch + 'px'); };
-  // progress from the cached position: no layout read in the scroll frame
-  const progress = () => { const r = pinP(sec), seg = (r.h - innerHeight) / N;
-    return { t: clamp(-r.top / seg, 0, N), pinned: r.top <= 2 && r.top + r.h >= innerHeight - 2 }; };
-  // the two frames of the opening film, measured once per size; the move itself is a transform (no layout shift)
-  let A = null, B = null, lastK = -1;
+  const measure = () => { cw = cards[0].offsetWidth; ch = cards[0].offsetHeight; sec.style.setProperty('--ch', ch + 'px'); sec.style.setProperty('--cw', cw + 'px'); A = null; };
+  const geom = () => { const r = pinP(sec); return { top: r.top, seg: (r.h - innerHeight) / N, h: r.h }; };
+  const progress = () => { const g = geom(); return { t: clamp(-g.top / g.seg, 0, N), pinned: g.top <= 2 && g.top + g.h >= innerHeight - 2 }; };
+  const posOf = (k) => { const g = geom(); return Math.round(scrollY + g.top + (1 + k) * g.seg); };   // page position where guide k rests
+
+  /* haptics: Android vibrates; iOS 18 Safari ticks when a switch control toggles inside a touch */
+  const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  let sw = null;
+  const haptic = () => {
+    if (reduce) return;
+    try { if (navigator.vibrate) { navigator.vibrate(9); return; } } catch (e) {}
+    if (!ios) return;
+    if (!sw) { sw = document.createElement('label'); sw.className = 'bs-haptic'; sw.setAttribute('aria-hidden', 'true'); sw.innerHTML = '<input type="checkbox" switch tabindex="-1">'; stage.appendChild(sw); }
+    try { sw.click(); } catch (e) {}
+  };
+  const land = () => { const el = ticks[gi]; if (!el) return; el.classList.remove('land'); void el.offsetWidth; el.classList.add('land'); };
+
+  /* the opening film: frame A fills the padded screen, frame B is card one; the move is a transform plus a clip */
+  let A = null;
   const frames = () => {
-    const s = stage.getBoundingClientRect(), h = helix.getBoundingClientRect(), pad = parseFloat(getComputedStyle(sec).getPropertyValue('--pad')) || 16;
-    A = { l: pad + 10, t: pad + 10, w: s.width - 2 * pad - 20, h: s.height - 2 * pad - 20, r: 26 };
-    B = { l: h.left - s.left - cw / 2 + 8, t: h.top - s.top - ch / 2 + 8, w: cw - 16, h: ch - 16, r: 15 };
-    lastK = -1;
+    const s = stage.getBoundingClientRect(), h = helix.getBoundingClientRect(), pad = parseFloat(getComputedStyle(sec).getPropertyValue('--pad')) || 12;
+    const a = { l: pad + 8, t: pad + 8, w: s.width - 2 * pad - 16, h: s.height - 2 * pad - 16 };
+    const b = { l: h.left - s.left - cw / 2 + 7, t: h.top - s.top - ch / 2 + 7, w: cw - 14, h: ch - 14 };
+    A = { a, b }; intro.style.setProperty('--iw', a.w + 'px'); intro.style.setProperty('--ih', a.h + 'px');
   };
-  const setIntro = (k) => {   // k: 0 = fills the padded screen, 1 = sits exactly on card 1
-    if (!A) frames(); if (k === lastK) return; lastK = k;
-    const L = (x, y) => x + (y - x) * k;
-    intro.style.setProperty('--il', L(A.l, B.l) + 'px'); intro.style.setProperty('--it', L(A.t, B.t) + 'px');
-    intro.style.setProperty('--iw', L(A.w, B.w) + 'px'); intro.style.setProperty('--ih', L(A.h, B.h) + 'px'); intro.style.setProperty('--ir', L(A.r, B.r) + 'px');
+  const setIntro = (k) => {   // k 0..1 along the rise
+    if (!A) frames(); const { a, b } = A;
+    const s = 1 + (b.w / a.w - 1) * k;                   // scale to the card's width
+    const hv = b.h / s, cut = Math.max(0, (a.h - hv) / 2) * k; // clip the height to the card's shape, centred
+    const arc = -Math.sin(Math.PI * Math.min(1, k * 1.1)) * a.h * .07;  // it rises a little before it settles: the film goes up
+    const x = a.l + (b.l - a.l) * k, y = a.t + (b.t - a.t - cut * s) * k + arc;
+    intro.style.setProperty('--ix', x.toFixed(1) + 'px'); intro.style.setProperty('--iy', y.toFixed(1) + 'px'); intro.style.setProperty('--is', s.toFixed(4));
+    intro.style.setProperty('--ict', cut.toFixed(1) + 'px'); intro.style.setProperty('--icb', cut.toFixed(1) + 'px');
+    intro.style.setProperty('--icr', (22 / s * (1 - k) + 14 / s * k).toFixed(1) + 'px');
+    intro.style.setProperty('--ishade', (1 - k).toFixed(3)); intro.style.setProperty('--io', clamp((1 - k) / .12).toFixed(3));
   };
+
   const place = () => {
-    const phone = innerWidth <= 860, R = cw * (phone ? .62 : .82), DY = ch * (phone ? .5 : .46);
+    const phone = innerWidth <= 860, R = cw * (phone ? .6 : .8), DY = ch * (phone ? .52 : .46);
     cards.forEach((c, i) => {
-      const d = i - p, a = d * STEP, ad = Math.abs(d), front = (Math.cos(a) + 1) / 2;
+      const d = i - p + fan * (i ? 1.6 : 0), a = d * STEP, ad = Math.abs(d), front = (Math.cos(a) + 1) / 2;
       c.style.setProperty('--x', (R * Math.sin(a)).toFixed(1) + 'px'); c.style.setProperty('--y', (d * DY).toFixed(1) + 'px');
       c.style.setProperty('--z', (R * (Math.cos(a) - 1) - ad * 30).toFixed(1) + 'px');
       c.style.setProperty('--a', (a * .3 * 180 / Math.PI).toFixed(2) + 'deg');
-      c.style.setProperty('--o', (clamp(.34 + .66 * front) * clamp(1.9 - ad * .28)).toFixed(3));
+      c.style.setProperty('--o', (clamp(.34 + .66 * front) * clamp(1.9 - ad * .28) * (i ? 1 - fan : (phase === 3 ? 1 : clamp((rk - .86) / .1)))).toFixed(3));
       c.style.setProperty('--d', clamp((1 - front) * .55 + Math.min(ad, 1) * .2, 0, .75).toFixed(3));
       c.style.zIndex = String(Math.round(front * 100) + (ad < .5 ? 50 : 0));
       c.style.pointerEvents = ad < .3 ? 'auto' : 'none';
     });
-    const k = Math.round(p);
+    const k = clamp(Math.round(p), 0, N - 1);
     if (k !== active) {
       active = k;
-      if (cur >= 0 && phase === 3 && !reduce) { try { navigator.vibrate && navigator.vibrate(6); } catch (e) {} }   // a light tick per guide on phones that vibrate
       posts.forEach((el, i) => el.classList.toggle('on', i === k));
       ticks.forEach((el, i) => el.classList.toggle('on', i === k));
       cards.forEach((c, i) => {
-        const v = c.querySelector('video'), img = c.querySelector('img'), near = Math.abs(i - k);
+        const vid = c.querySelector('video'), img = c.querySelector('img'), near = Math.abs(i - k);
         if (img) c.style.setProperty('--kb', near === 0 ? '1.12' : '1.04');
-        if (!v || lowData || reduce) return;
-        if (near <= 1 && !v.src && seen) { v.src = v.dataset.src; v.load(); }
-        if (near === 0 && seen && phase === 3) { const pr = v.play(); if (pr) pr.catch(() => {}); } else if (v.src) v.pause();
+        if (!vid || lowData || reduce) return;
+        if (near <= 1 && !vid.src && seen) { vid.src = vid.dataset.src; vid.preload = near ? 'metadata' : 'auto'; }
+        if (near === 0 && seen && phase === 3) { const pr = vid.play(); if (pr) pr.catch(() => {}); } else if (vid.src && !vid.paused) vid.pause();
       });
     }
   };
   const finish = () => {
-    phase = 3; sec.classList.add('done'); sec.style.setProperty('--pool', 1);
-    const v = cards[0].querySelector('video');
-    if (v) { if (!v.src) { v.src = v.dataset.src; } try { v.currentTime = iv.currentTime % (v.duration || 6); } catch (e) {} const pr = v.play(); if (pr) pr.catch(() => {}); }
+    phase = 3; fan = 0; doneAt = performance.now(); sec.classList.add('done'); sec.style.setProperty('--pool', 1);
+    const vid = cards[0].querySelector('video');
+    if (vid) { if (!vid.src) vid.src = vid.dataset.src; try { vid.currentTime = iv.currentTime % (vid.duration || 6); } catch (e) {} const pr = vid.play(); if (pr) pr.catch(() => {}); }
     iv.pause(); active = -1; cur = -1;
   };
+  const rise = () => { if (phase > 1) return; if (phase === 0) { if (!iv.src) iv.src = iv.dataset.src; } phase = 2; t0 = performance.now(); measure(); frames(); };
+
   const tick = (now) => {
-    const dt = Math.min(.1, last ? (now - last) / 1000 : .016); last = now;
+    const dt = Math.min(.05, last ? (now - last) / 1000 : .016); last = now;
     const { t, pinned } = progress();
-    if (phase === 0 && t > 1.05) { measure(); finish(); }
-    if (phase === 0 && pinned) { phase = 1; t0 = now; if (!iv.src) iv.src = iv.dataset.src; iv.currentTime = 0; const pr = iv.play(); if (pr) pr.catch(() => {}); }
-    if (phase === 1 && (now - t0) / 1000 >= HOLD) { phase = 2; t0 = now; measure(); frames(); }
-    if (phase === 2) { m = clamp((now - t0) / 1000 / MORPH); setIntro(ease(m)); if (m >= 1) finish(); }
+    if (phase === 0 && t > 1.2) { measure(); finish(); }
+    if (phase === 0 && pinned) { phase = 1; t0 = now; pinnedAt = now; if (!iv.src) iv.src = iv.dataset.src; const pr = iv.play(); if (pr) pr.catch(() => {}); }
+    if (phase === 1 && (now - t0) / 1000 >= WAIT) rise();
+    if (phase === 2) {
+      const m = clamp((now - t0) / 1000 / MORPH), e = easeX(m);
+      rk = e; setIntro(e); fan = 1 - easeX(clamp((m - .25) / .75)); cur = -1;
+      if (m >= 1) finish();
+    }
     if (phase < 2) setIntro(0);
+    // the spiral follows the page on a spring: it carries a touch past each guide and settles back, so the landing is felt
+    if (!glide.on && phase === 3) gi = clamp(Math.round(hold(clamp(t - 1, 0, N - 1))), 0, N - 1);
     const target = fixed != null ? fixed : (phase === 3 ? hold(clamp(t - 1, 0, N - 1)) : 0);
-    p = (reduce || still) ? target : lerp(p, target, 1 - Math.exp(-dt * 7.5));
-    if (Math.abs(p - target) < .0005) p = target;
-    if (p !== cur) { cur = p; place(); }
+    if (reduce || still) { p = target; v = 0; }
+    else { const w = 13, z = .68; v += (w * w * (target - p) - 2 * z * w * v) * dt; p += v * dt; if (Math.abs(target - p) < .0004 && Math.abs(v) < .002) { p = target; v = 0; } }
+    if (p !== cur || phase === 2) { cur = p; place(); }
     if (seen) requestAnimationFrame(tick);
   };
-  iv.addEventListener('playing', () => { if (phase === 1) t0 = performance.now(); }, { once: true });   // the 6 s count from the first frame actually shown
+
+  /* one scroll, one guide: armed only while the guides fill the screen */
+  if (!reduce && !STILL && fixed == null) {
+    let lastWheel = 0, lastMag = 0, lastStep = 0;
+    const inBand = () => { const g = geom(); return g.top <= 4 && g.top + g.h >= innerHeight - 4; };
+    const go = (dir) => {   // true when the guides took the gesture
+      if (phase < 3 || performance.now() - doneAt < 450) { if (dir < 0 && phase < 3) return false; rise(); if (phase < 3 && scrollY < posOf(0) - 2) glideTo(posOf(0), 900); lastStep = performance.now(); return true; }
+      const next = gi + dir; if (next < 0 || next > N - 1) return false;   // past the first or last guide the page scrolls on as usual
+      gi = next; lastStep = performance.now(); glideTo(posOf(next), 720); haptic(); land(); return true;
+    };
+    let stream = 0, pinSeen = 0;   // the gesture under way: once it has moved a guide, the rest of it (and its momentum) is absorbed
+    const onWheel = (e) => {
+      const now = performance.now(), gap = now - lastWheel, mag = Math.abs(e.deltaY), prev = lastMag; lastWheel = now; lastMag = mag;
+      if (gap > 450) stream = 0;
+      if (pinnedAt !== pinSeen) { pinSeen = pinnedAt; if (gap <= 450) { stream = 1; lastStep = pinnedAt; } }   // the flick that brought the page here is not a request
+      if (e.ctrlKey || !inBand()) return;
+      if (glide.on || stream) { e.preventDefault(); return; }
+      if (now - lastStep < 2500 && mag <= prev * 1.2 + 2) { e.preventDefault(); return; }   // a slow device's momentum, still dying away
+      if (mag < 3) { e.preventDefault(); return; }
+      if (go(Math.sign(e.deltaY))) { stream = 1; e.preventDefault(); }
+    };
+    let ty = null;
+    const onTouchStart = (e) => { ty = e.touches[0].clientY; };
+    const onTouchMove = (e) => {
+      if (!inBand()) return; if (glide.on) { e.preventDefault(); return; } if (ty == null) { e.preventDefault(); return; }
+      const dy = ty - e.touches[0].clientY; if (Math.abs(dy) < 14) { e.preventDefault(); return; }
+      const dir = Math.sign(dy); if (go(dir)) { e.preventDefault(); ty = null; }
+    };
+    const onKey = (e) => {
+      const dir = ['ArrowDown', 'PageDown', ' '].includes(e.key) ? 1 : ['ArrowUp', 'PageUp'].includes(e.key) ? -1 : 0;
+      if (!dir || !inBand() || e.target.closest('input,textarea,select,button,[contenteditable]')) return;
+      if (glide.on || go(dir)) e.preventDefault();
+    };
+    let armed = false;
+    const arm = (want) => { if (want === armed) return; armed = want; const f = want ? addEventListener : removeEventListener;
+      f('wheel', onWheel, { passive: false }); f('touchstart', onTouchStart, { passive: true }); f('touchmove', onTouchMove, { passive: false }); f('keydown', onKey); };
+    new IntersectionObserver((es) => arm(es[0].isIntersecting), { rootMargin: '0px 0px -40% 0px' }).observe(sec);
+  }
+
   measure(); place(); setIntro(0); if (phase === 3) sec.style.setProperty('--pool', 1);
-  addEventListener('resize', () => { measure(); A = null; cur = -1; active = -1; place(); if (phase < 2) setIntro(0); });
+  addEventListener('resize', () => { measure(); cur = -1; active = -1; place(); if (phase < 2) setIntro(0); });
   new IntersectionObserver((es) => {
     const was = seen; seen = es[0].isIntersecting;
-    if (seen && !was) { active = -1; last = 0; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.load(); } active = -1; requestAnimationFrame(tick); }
-    if (!seen) { cards.forEach((c) => { const v = c.querySelector('video'); if (v && v.src) v.pause(); }); if (phase === 1) { iv.pause(); phase = 0; } }
-  }, { rootMargin: '300px' }).observe(sec);
+    if (seen && !was) { active = -1; last = 0; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.preload = 'auto'; } requestAnimationFrame(tick); }
+    if (!seen) { cards.forEach((c) => { const vid = c.querySelector('video'); if (vid && vid.src && !vid.paused) vid.pause(); }); if (phase === 1) { iv.pause(); phase = 0; } }
+  }, { rootMargin: '400px' }).observe(sec);
 })();
 
 /* ---------- the sections after the products arrive once, as they come into view ---------- */
