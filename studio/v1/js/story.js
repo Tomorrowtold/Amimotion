@@ -303,18 +303,18 @@ export function story(section, canvas) {
     return true;
   };
   // a new gesture is a wheel event after a quiet gap, or one clearly stronger than the momentum still arriving
-  let lastAbs = 0, lastT = 0, armed = false, used = false;
+  let lastAbs = 0, lastT = 0, armed = false, used = false, stepT = 0;
   const onWheel = (e) => {
     const g = G(); if (!inside(g) || e.ctrlKey) return;
     const dir = Math.sign(e.deltaY); if (!dir) return;
     const cur = nearest(g); if ((dir < 0 && cur === 0 && scrollY <= restY(0, g) + 2) || (dir > 0 && cur === NB - 1 && scrollY >= restY(NB - 1, g) - 2)) return;
     e.preventDefault();
-    const now = performance.now(), ab = Math.abs(e.deltaY), fresh = now - lastT > 260 || (ab > lastAbs * 1.6 && ab > 14);
+    const now = performance.now(), ab = Math.abs(e.deltaY), fresh = now - lastT > 260 || (ab > lastAbs * 1.6 && ab > 14) || (!anim && now - stepT > 750 && ab >= lastAbs * .9);   // a wheel still spinning after the landing is a new turn, not momentum
     lastAbs = ab; lastT = now;
     if (fresh) { used = false; acc = 0; }
     if (anim || used) return;            // during the move, and the rest of the same gesture: absorbed
     acc += e.deltaY;
-    if (Math.abs(acc) > 24) { used = true; stepBy(dir); }
+    if (Math.abs(acc) > 24) { used = true; stepT = now; stepBy(dir); }
   };
   let ty = null;
   const onTS = (e) => { ty = inside(G()) ? e.touches[0].clientY : null; };
