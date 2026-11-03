@@ -89,36 +89,41 @@ export async function mount(stage, kn) {
     const st = step(), r = kn.getBoundingClientRect(), p = clamp(-r.top / Math.max(1, r.height - innerHeight));
     const g1 = st >= 1 ? 1 : 0, g2 = st >= 2 ? 1 : 0;
     S.s1 += (g1 - S.s1) * (1 - Math.exp(-dt * 3.2)); S.s2 += (g2 - S.s2) * (1 - Math.exp(-dt * 3.2));
-    const e1 = ease(S.s1), e2 = ease(S.s2);
+    const e2 = ease(S.s2);
     px = lerp(px, tx, .05); py = lerp(py, ty, .05);
     const phone = innerWidth < 900;
 
-    // AmIGo: alone at the centre, turning with the scroll; then it steps forward-left to make room
-    amigo.position.set(lerp(0, -74, e1), 0, lerp(0, 46, e1));
-    amigo.rotation.y = .62 + p * 1.6 + Math.sin(t * .35) * .05 + px * .5;
-    amigo.scale.setScalar(lerp(1.18, .86, e1));
-    // AmIMo: comes down onto the slab behind-right, as if set down by a hand
-    const drop = 1 - e1; amimo.visible = S.s1 > .002;
-    amimo.position.set(76, drop * 160, lerp(-110, -40, e1));
-    amimo.rotation.y = 1.6 + (1 - e1) * .6 + p * .8 + px * .4; amimo.scale.setScalar(lerp(.9, .98, e1));
+    // one part on the stage at a time (Shiv, 3 Nov): AmIGo leaves before AmIMo arrives, and AmIHub stands alone
+    const out = ease(clamp(S.s1 * 2)), inn = ease(clamp(S.s1 * 2 - 1));
+    // AmIGo: alone at the centre, turning with the scroll; it sinks away and slips off left
+    amigo.visible = out < .999;
+    amigo.position.set(lerp(0, -150, out), lerp(0, -40, out), lerp(0, 30, out));
+    amigo.rotation.y = .62 + p * 1.6 + Math.sin(t * .35) * .05 + px * .5 - out * .8;
+    amigo.scale.setScalar(lerp(1.18, .7, out));
+    // AmIMo: comes down onto the empty slab at the centre, as if set down by a hand
+    amimo.visible = inn > .001;
+    amimo.position.set(lerp(40, 0, inn), (1 - inn) * 170, 0);
+    amimo.rotation.y = 1.9 + (1 - inn) * .6 + (p - .36) * .9 + px * .4; amimo.scale.setScalar(lerp(.95, 1.22, inn));
 
-    // the pulse, every 1.8 s, once both are on the slab
-    const pc = (t % 1.8) / 1.8, pa = clamp((S.s1 - .7) / .3) * (1 - e2 * .6);
+    // AmIGo's pulse: rings leave the tag while it is on its own; no thread to a second part
+    const pc = (t % 1.8) / 1.8, pa = (1 - out) * clamp((t - .6) / .6);
     ring.position.set(amigo.position.x, .3, amigo.position.z); ringMat.uniforms.r.value = 20 + pc * 150; ringMat.uniforms.a.value = pa * (1 - pc) * .8;
     amigo.updateMatrixWorld(true); amimo.updateMatrixWorld(true);
     P0.set(amigo.position.x, 26 * amigo.scale.x, amigo.position.z); P1.set(amimo.position.x, 34 * amimo.scale.x, amimo.position.z);
-    beamMat.uniforms.head.value = ease(clamp(pc * 1.6)) * 1.05; beamMat.uniforms.a.value = pa * (1 - clamp((pc - .7) / .3));
+    beamMat.uniforms.a.value = 0;
 
-    // camera: a slow orbit; it pulls back for two, and lifts for AmIHub, where the hardware rests out of focus
-    const fitW = Math.max(1, 1 / cam.aspect); const d = lerp(lerp(560, 860, e1) * Math.max(1, fitW * .95), 900, e2);
-    const az = .1 + px * .12 + p * .12, el = lerp(.5, .78, e2) - py * .06;
+    // camera: a slow orbit, framed for one part; the anchor is a little bigger, so it eases back a touch
+    const fitW = Math.max(1, 1 / cam.aspect); const d = lerp(560, 600, inn) * Math.max(1, fitW * .95);
+    const az = .1 + px * .12 + p * .12, el = .5 - py * .06;
     cam.position.set(Math.sin(az) * d * Math.cos(el), Math.sin(el) * d + 10, Math.cos(az) * d * Math.cos(el));
-    cam.lookAt(lerp(0, 0, e1), lerp(14, 16, e1), lerp(0, 2, e1));
+    cam.lookAt(0, lerp(14, 18, inn), 0);
     setBeam(P0, P1, 46);
-    ground.material.uniforms.t.value = t; ground.material.uniforms.lightC.value.set(lerp(0, 0, e1), lerp(0, -10, e1), lerp(170, 300, e1));
-    canvas.style.filter = e2 > .02 ? `blur(${(e2 * 7).toFixed(1)}px) saturate(${1 - e2 * .3})` : '';
-    canvas.style.opacity = (1 - e2 * .35).toFixed(3);
-    renderer.render(scene, cam);
+    ground.material.uniforms.fadeAll.value = lerp(.95, .85, inn); catcher.material.opacity = lerp(.22, .3, inn);
+    ground.material.uniforms.t.value = t; ground.material.uniforms.lightC.value.set(0, 0, 170);
+    // AmIHub: the hardware leaves the stage completely, the map is the only thing on it
+    canvas.style.filter = e2 > .02 && e2 < .98 ? `blur(${(e2 * 8).toFixed(1)}px)` : '';
+    canvas.style.opacity = (1 - e2).toFixed(3);
+    if (e2 < .999) renderer.render(scene, cam);
     canvas.classList.add('ready');
     requestAnimationFrame(loop);
   }
