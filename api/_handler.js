@@ -13,7 +13,7 @@ const ASSETS = {
     catch { return fetch(url); }
   },
 };
-// vercel.json rewrites /api/<route> to /api/handler?route=<route>; rebuild the URL the server expects (no trailing slash)
+// each api/<route>.js re-exports this; rebuild the URL the server expects (no trailing slash)
 async function original(request) {
   const u = new URL(request.url);
   const route = (u.searchParams.get('route') || u.pathname.replace(/^\/api\/?/, '')).replace(/^\/+|\/+$/g, '');

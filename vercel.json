@@ -6,7 +6,7 @@
   "outputDirectory": "studio/out",
   "trailingSlash": true,
   "functions": {
-    "api/handler.js": {
+    "api/*.js": {
       "includeFiles": "studio/out/assets/agent/kb.json",
       "maxDuration": 60
     }
@@ -137,12 +137,6 @@
       "source": "/:path*/index.html",
       "destination": "/:path*/",
       "permanent": true
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/:route*",
-      "destination": "/api/handler?route=:route*"
     }
   ]
 }
