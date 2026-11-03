@@ -1102,12 +1102,12 @@ html.is-scrolling .inds-row,html.is-scrolling .bs-helix,html.is-scrolling .ctas,
 
 /* ---- seams: the dark floors rise as a sheet over the light products; the light start rises over the dark guides ---- */
 .trio{padding-bottom:clamp(40px,7vh,88px)}
-.inds{--sheet:clamp(26px,3vw,44px);background:radial-gradient(80% 60% at 50% -10%,#15130f 0,transparent 60%),#030303;border-radius:var(--sheet) var(--sheet) 0 0;padding-top:clamp(64px,10vh,120px);
+.inds{--sheet:clamp(26px,3vw,44px);background:radial-gradient(80% 60% at 50% -10%,#15130f 0,transparent 60%),#05060d;border-radius:var(--sheet) var(--sheet) 0 0;padding-top:clamp(64px,10vh,120px);
   box-shadow:0 -30px 60px -40px rgba(11,18,56,.35)}
 .inds::before{top:-10%;opacity:.8}
-.bs,.bs-stage{background:#030303}
+.bs,.bs-stage{background:#05060d}
 .start{--sheet:clamp(26px,3vw,44px);margin-top:calc(var(--sheet) * -1);padding:clamp(88px,9vw,170px) 0 clamp(56px,6vw,110px);border-radius:var(--sheet) var(--sheet) 0 0;background:var(--ground);z-index:4;
-  box-shadow:0 -24px 60px -30px rgba(0,0,0,.6)}
+  box-shadow:0 -24px 60px -30px rgb(5 6 13 / .6)}
 .bs{padding-bottom:var(--sheet-gap,clamp(26px,3vw,44px))}
 
 /* ---- floors: the three floors arrive one after another, like doors opening ---- */
@@ -1167,7 +1167,7 @@ html.is-scrolling .inds-row,html.is-scrolling .bs-helix,html.is-scrolling .ctas,
 @media (max-width:900px){
   .start-row{margin-top:8px}.start-row .big{margin-bottom:18px}
   .start .cta{min-height:240px}
-  .cta-line{width:86%;height:52%}
+  .cta-line{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   .inds-h,.inds-row .ind,.inds-more{opacity:1;translate:none;clip-path:none;transition:none}
