@@ -8,3 +8,4 @@ studio/out/
 .claude/
 node_modules/
 server/.leads/
+.wrangler/
