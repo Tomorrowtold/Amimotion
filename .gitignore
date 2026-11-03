@@ -4,3 +4,8 @@ site/reports/
 __pycache__/
 .DS_Store
 site/tools/private_names.txt
+studio/out/
+.claude/
+node_modules/
+server/.leads/
+.wrangler/

@@ -1,0 +1,7 @@
+/* /faq/: the questions themselves set large in the serif; one narrow column. */
+.faq{grid-column:2 / span 9!important}
+.faq details{background:transparent!important;padding:0!important;box-shadow:0 -1px 0 color-mix(in srgb,var(--ink) 14%,transparent);margin:0!important}
+.faq summary{font:400 clamp(1.4rem,1.1rem + .8vw,1.9rem)/1.2 var(--font-serif)!important;padding-block:var(--s-5)!important}
+.faq details[open] summary{color:var(--w-accent)}
+.faq details p{max-width:40em;font-size:1.06rem}
+.sec.band{background:transparent!important}

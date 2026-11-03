@@ -1,0 +1,432 @@
+{
+ "about": "The one nav tree (round 3 nav, thread 'Perfect the site navigation', 2 Nov 2026). Five doors, each one of the inner-page worlds: Products (steel), Solutions (shift and floor), Start small (morning), Resources (paper), Company (studio). One label per URL: build.py renders the capsule, its panels, Ask, the phone sheet, the footer columns, BreadcrumbList JSON-LD, llms.txt and assets/ask.json from this file. 'groups' splits each section's items in order: [group name, how many items, how they show: plinths (CAD on clay), photos (the graded still the page opens on), feature (one big still), list, shelf (every field guide as a spine in its cover colour, read from the pages)]. 'hub' is the overview link at the foot of the panel. 'pictures' gives a still to an item: a bare key is assets/nav/<key>-640.webp, 'w:<name>' is assets/worlds/<name>-800.webp.",
+ "sections": [
+  {
+   "label": "Products",
+   "url": "/platform/",
+   "hub": "How it works",
+   "world": "steel",
+   "groups": [
+    [
+     "The system",
+     4,
+     "plinths"
+    ],
+    [
+     "For the technical review",
+     4,
+     "list"
+    ]
+   ],
+   "items": [
+    [
+     "AmIGo tag",
+     "/products/amigo/",
+     "Rides on what moves"
+    ],
+    [
+     "AmIMo anchor",
+     "/products/amimo/",
+     "Hears every tag"
+    ],
+    [
+     "AmIHub",
+     "/products/amihub/",
+     "One live map"
+    ],
+    [
+     "Ask your floor",
+     "/use-cases/ask-your-plant/",
+     "AI assistants and MCP"
+    ],
+    [
+     "How it locates a tag",
+     "/technology/",
+     "Steel, racking, signal and outages"
+    ],
+    [
+     "When a tag goes quiet",
+     "/learn/location-data-quality/",
+     "Last seen, sleep and gaps"
+    ],
+    [
+     "Specifications",
+     "/specs/",
+     "Every figure and its condition"
+    ],
+    [
+     "For developers",
+     "/developers/",
+     "API and MCP docs"
+    ]
+   ]
+  },
+  {
+   "label": "Solutions",
+   "url": "/solutions/",
+   "hub": "Where it helps",
+   "world": "shift",
+   "groups": [
+    [
+     "By industry",
+     3,
+     "photos"
+    ],
+    [
+     "By problem",
+     3,
+     "list"
+    ],
+    [
+     "Four jobs",
+     3,
+     "list"
+    ]
+   ],
+   "items": [
+    [
+     "Manufacturing",
+     "/industries/manufacturing/",
+     "Bays, lines and inspection"
+    ],
+    [
+     "Warehousing",
+     "/industries/warehousing/",
+     "Pallets, staging lanes, docks"
+    ],
+    [
+     "Robotics and AMRs",
+     "/industries/robotics/",
+     "Robots and carriers on one map"
+    ],
+    [
+     "Work in progress",
+     "/solutions/wip/",
+     "See where work waits"
+    ],
+    [
+     "Tools and vehicles",
+     "/solutions/assets/",
+     "Fixtures, forklifts, AMRs"
+    ],
+    [
+     "Which job is on the trolley?",
+     "/learn/association/",
+     "Linking trolleys to jobs"
+    ],
+    [
+     "Where is that trolley?",
+     "/use-cases/find-the-asset/",
+     "Find it from a screen"
+    ],
+    [
+     "The robot brings a trolley.",
+     "/use-cases/amr-hand-off/",
+     "AmIHub records the arrival."
+    ],
+    [
+     "Each station is a zone.",
+     "/use-cases/station-to-station/",
+     "Each move gets a time."
+    ]
+   ]
+  },
+  {
+   "label": "Start small",
+   "url": "/start/",
+   "hub": "Start small",
+   "world": "morning",
+   "groups": [
+    [
+     "Plan your first bay",
+     1,
+     "feature"
+    ],
+    [
+     "Your first steps",
+     3,
+     "list"
+    ],
+    [
+     "Your numbers",
+     3,
+     "list"
+    ]
+   ],
+   "items": [
+    [
+     "Plan your first bay",
+     "/diagnostic/",
+     "Six questions, a plan back"
+    ],
+    [
+     "How a pilot runs",
+     "/pilot/",
+     "One flow, one bay"
+    ],
+    [
+     "How to buy",
+     "/how-to-buy/",
+     "Call, NDA pack, survey, pilot"
+    ],
+    [
+     "Measure before you claim",
+     "/learn/pilot-baseline/",
+     "Set a baseline first"
+    ],
+    [
+     "How many anchors you need",
+     "/tools/anchors/",
+     "A first estimate, before the survey"
+    ],
+    [
+     "Time spent searching",
+     "/tools/search-time/",
+     "Your own numbers"
+    ],
+    [
+     "Your pilot on one page",
+     "/tools/pilot/",
+     "To share with your team"
+    ]
+   ]
+  },
+  {
+   "label": "Resources",
+   "url": "/resources/",
+   "hub": "Resources",
+   "world": "paper",
+   "groups": [
+    [
+     "Field guides",
+     1,
+     "shelf"
+    ],
+    [
+     "Answers",
+     3,
+     "list"
+    ]
+   ],
+   "items": [
+    [
+     "Field guides",
+     "/learn/",
+     "Plain answers, one per page"
+    ],
+    [
+     "Films",
+     "/films/",
+     "The video hub"
+    ],
+    [
+     "Questions",
+     "/faq/",
+     "Short answers"
+    ],
+    [
+     "Glossary",
+     "/glossary/",
+     "Floor words and tech words"
+    ]
+   ]
+  },
+  {
+   "label": "Company",
+   "url": "/company/",
+   "hub": "About us",
+   "world": "studio",
+   "groups": [
+    [
+     "The category",
+     1,
+     "feature"
+    ],
+    [
+     "The company",
+     4,
+     "list"
+    ]
+   ],
+   "items": [
+    [
+     "What is spatial intelligence?",
+     "/industrial-spatial-intelligence/",
+     "The category"
+    ],
+    [
+     "What is AmIMotion?",
+     "/what-is-amimotion/",
+     "The company in one page"
+    ],
+    [
+     "Trust and data",
+     "/trust/",
+     "Where your data lives"
+    ],
+    [
+     "People and privacy",
+     "/trust/people/",
+     "What a pilot tags, and why"
+    ],
+    [
+     "Book a call",
+     "/contact/",
+     "Talk to the team"
+    ]
+   ]
+  }
+ ],
+ "pictures": {
+  "/products/amigo/": "amigo",
+  "/products/amimo/": "amimo",
+  "/products/amihub/": "hub",
+  "/use-cases/ask-your-plant/": "ask",
+  "/industries/manufacturing/": "w:mfg-hero",
+  "/industries/warehousing/": "w:wh-hero",
+  "/industries/robotics/": "w:rob-hero",
+  "/diagnostic/": "w:start-hero",
+  "/industrial-spatial-intelligence/": "w:isi-hero"
+ },
+ "roles": [
+  [
+   "Plant heads",
+   [
+    [
+     "How a pilot runs",
+     "/pilot/"
+    ]
+   ]
+  ],
+  [
+   "Production and planning",
+   [
+    [
+     "Work in progress",
+     "/solutions/wip/"
+    ],
+    [
+     "Which job is on the trolley?",
+     "/learn/association/"
+    ]
+   ]
+  ],
+  [
+   "Shift supervisors",
+   [
+    [
+     "Where is that trolley?",
+     "/use-cases/find-the-asset/"
+    ]
+   ]
+  ],
+  [
+   "Lean and IE leads",
+   [
+    [
+     "How waits are timed",
+     "/learn/dwell-time/"
+    ]
+   ]
+  ],
+  [
+   "Maintenance and OT",
+   [
+    [
+     "How it locates a tag",
+     "/technology/"
+    ]
+   ]
+  ],
+  [
+   "MES and ERP owners",
+   [
+    [
+     "Which job is on the trolley?",
+     "/learn/association/"
+    ]
+   ]
+  ],
+  [
+   "IT and security",
+   [
+    [
+     "Trust and data",
+     "/trust/"
+    ]
+   ]
+  ],
+  [
+   "Group operations and digital",
+   [
+    [
+     "How to buy",
+     "/how-to-buy/"
+    ]
+   ]
+  ],
+  [
+   "Procurement and finance",
+   [
+    [
+     "How to buy",
+     "/how-to-buy/"
+    ]
+   ]
+  ],
+  [
+   "Owners and MDs",
+   [
+    [
+     "Company",
+     "/company/"
+    ]
+   ]
+  ],
+  [
+   "Safety and EHS",
+   [
+    [
+     "People and privacy",
+     "/trust/people/"
+    ]
+   ]
+  ],
+  [
+   "Developers and integrators",
+   [
+    [
+     "For developers",
+     "/developers/"
+    ]
+   ]
+  ]
+ ],
+ "ask_roles": [
+  [
+   "A plant head",
+   "How a pilot runs",
+   "/pilot/"
+  ],
+  [
+   "A warehouse lead",
+   "Warehousing",
+   "/industries/warehousing/"
+  ],
+  [
+   "A robotics lead",
+   "Robotics and AMRs",
+   "/industries/robotics/"
+  ],
+  [
+   "A technical reviewer",
+   "Specifications",
+   "/specs/"
+  ],
+  [
+   "An investor",
+   "What is AmIMotion?",
+   "/what-is-amimotion/"
+  ]
+ ]
+}

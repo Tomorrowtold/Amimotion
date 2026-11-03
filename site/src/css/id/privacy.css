@@ -1,0 +1,3 @@
+/* /privacy/: a legal sheet. One white page on the paper ground, narrow measure. */
+main>.sec{background:var(--surface);border-radius:6px;padding:var(--s-8) var(--s-7)!important;margin-top:var(--s-6)}
+.prose{max-width:40em}

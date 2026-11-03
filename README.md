@@ -14,4 +14,5 @@ Codex reads `AGENTS.md` first, so it already knows the company, the claims rules
 - `AGENTS.md` the standing brief.
 - `docs/skills/` design and review playbooks. The private fact base and claims register stay out of this public repo.
 - `extras/` version 9 (photographs and motion) and the scripts behind it.
+- `server/`, `functions/`, `site/src/js/agent*.js`, `magnets.js`, `site/src/desk/` the inbound agent: Ask AmIMotion, the inner-page magnets and the founders' lead desk. Setup: `docs/inbound-agent.md`.
 - `./publish-build.sh` makes the launch build in `site/dist` (check with the founders before it goes live).

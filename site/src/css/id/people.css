@@ -1,0 +1,13 @@
+/* /trust/people/: the trolley, never the person. The overlay draws only the trolley in the photograph. */
+@media (min-width:1024px){
+  .head{grid-template-rows:auto auto 1fr;align-items:start}
+  .head .crumbs,.head h1,.head .words{grid-column:1 / span 6}
+  .head h1{grid-row:2;font-size:clamp(2.8rem,1.4rem + 3.8vw,5.8rem)}
+  .head .words{grid-row:3;display:block}
+  .head-pic{grid-column:7 / -1;grid-row:1 / span 3;margin:0!important}
+}
+.pp-pic{position:relative;margin:0}
+.pp-pic img{border-radius:24px}
+.pp-ov{position:absolute;inset:0;width:100%;height:100%}
+.pp-ov rect{fill:none;stroke:var(--located);stroke-width:8;stroke-dasharray:28 18}
+.pp-ov circle{fill:var(--located);stroke:#fff;stroke-width:6}

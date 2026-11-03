@@ -1,0 +1,22 @@
+/* /industries/: three floors. A headline that fills the width, then three tall photographs, one per kind of floor. */
+.head h1{grid-column:1 / -1;max-width:none}
+.head .words{grid-column:1 / span 7;display:block}
+.parts.c3{gap:var(--s-3)!important}
+.parts.c3>li{position:relative;border-radius:22px;overflow:hidden;min-height:min(70svh,640px);display:flex;flex-direction:column;justify-content:flex-end;padding:var(--s-6);color:#fff}
+.parts.c3>li .pic{position:absolute!important;inset:0;margin:0!important}
+.parts.c3>li .pic img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--k-ease)}
+.parts.c3>li::before{content:"";position:absolute;inset:40% 0 0;background:linear-gradient(to top,rgba(20,26,46,.9),transparent);z-index:1}
+.parts.c3>li>*:not(.pic){position:relative;z-index:2}
+.parts.c3 h3 a{color:#fff!important;font-size:clamp(1.8rem,1.2rem + 1.4vw,2.6rem)}
+.parts.c3 h3 a::after{content:"";position:absolute;inset:0;z-index:3}
+.parts.c3 p{color:rgba(255,255,255,.8)!important}
+.parts.c3>li:hover .pic img{transform:scale(1.05)}
+/* The photograph fills the whole card: the shared lineup rule gives .pic a 4:3 box, which left a white strip above
+   each photo and a grey wash below it. */
+.parts.c3>li .pic{aspect-ratio:auto;display:block;background:none}
+.parts.c3>li .pic picture{display:block;height:100%}
+.parts.c3>li::before{inset:35% 0 0;background:linear-gradient(to top,rgba(14,19,38,.88),rgba(14,19,38,.45) 55%,transparent)}
+/* the moment of decision: the way into the diagnostic is the one filled button in the head; any second link stays a quiet text link beside it */
+.head .more:has(>.cta){display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3) var(--s-6)}.head .more:has(>.cta) .sep{display:none}
+/* inline headings: a heading part that wraps to two lines is revealed as one box, so its rising mask no longer cuts off the second line */
+.look-inline .sec>h2 .km-r{display:inline-block;max-width:100%}

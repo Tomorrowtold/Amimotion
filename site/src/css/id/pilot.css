@@ -1,0 +1,11 @@
+/* /pilot/: the offer as a ticket. One flow, one bay, set on a card that tears along its middle; then the steps as a rail. */
+.head.offer{background:var(--surface);border-radius:28px;padding:var(--s-8) var(--s-7)!important;margin-top:var(--s-4);position:relative;overflow:hidden}
+.head.offer::after{content:"";position:absolute;top:var(--s-6);bottom:var(--s-6);left:58.3%;border-left:2px dashed color-mix(in srgb,var(--ink) 18%,transparent)}
+.head.offer h1{font-size:clamp(2.8rem,1.4rem + 3.8vw,5.8rem)!important}
+.head.offer .head-pic img{mix-blend-mode:multiply}
+.steps{grid-template-columns:minmax(0,1fr)!important;row-gap:0!important}
+.steps li{display:grid;grid-template-columns:120px 1fr;column-gap:var(--gutter);padding:var(--s-6) 0;box-shadow:0 -1px 0 color-mix(in srgb,var(--ink) 12%,transparent)}
+.steps li::before{grid-row:1 / span 2;font:400 clamp(3rem,2rem + 2.4vw,5rem)/.9 var(--font-serif)!important;color:var(--w-accent)}
+@media (max-width:1023px){.head.offer::after{display:none}.steps li{grid-template-columns:64px 1fr}}
+/* the moment of decision: the way into the diagnostic is the one filled button in the head; any second link stays a quiet text link beside it */
+.head .more:has(>.cta){display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3) var(--s-6)}.head .more:has(>.cta) .sep{display:none}
