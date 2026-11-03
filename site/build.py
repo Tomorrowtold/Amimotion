@@ -227,6 +227,7 @@ def head(meta, url, body, titles):
 <link rel="image_src" href="{og}">
 <link rel="icon" href="/assets/img/AmIMotion_Icon.svg" type="image/svg+xml">
 <link rel="alternate" type="text/plain" title="AmIMotion for AI assistants" href="/llms.txt">
+<link rel="alternate" type="text/plain" title="AmIMotion, the full site as text" href="/llms-full.txt">
 {styles(meta)}
 <script>(()=>{{const h=document.documentElement;h.classList.replace('no-js','js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/[?&]still\\b/.test(location.search))h.classList.add('motion')}})()</script>
 <script>{OPEN_AT_TOP}</script>
@@ -636,8 +637,9 @@ def build():
     # robots: search engines and AI answer engines named and welcomed on a public build (decision D2)
     bots = ["Googlebot", "Bingbot", "OAI-SearchBot", "ChatGPT-User", "GPTBot", "ClaudeBot", "Claude-SearchBot", "Claude-User",
             "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot", "Applebot-Extended", "DuckAssistBot", "meta-externalagent"]
-    robots = ("".join(f"User-agent: {b}\nAllow: /\n\n" for b in bots) + "User-agent: *\nAllow: /\n") if args.indexable else "User-agent: *\nDisallow: /\n"
-    (DIST / "robots.txt").write_text(robots + f"\nSitemap: {SITE}/sitemap.xml\n")
+    keep_out = "Disallow: /desk/\nDisallow: /api/\n"   # founders' lead desk and the agent's endpoints are not pages
+    robots = ("".join(f"User-agent: {b}\nAllow: /\n{keep_out}\n" for b in bots) + f"User-agent: *\nAllow: /\n{keep_out}") if args.indexable else "User-agent: *\nDisallow: /\n"
+    (DIST / "robots.txt").write_text(robots + f"\nSitemap: {SITE}/sitemap.xml\n" + (f"\n# For AI assistants: {SITE}/llms.txt (the site in brief) and {SITE}/llms-full.txt (every page as text)\n" if args.indexable else ""))
 
     # llms.txt (index of the site) and llms-full.txt (every page as plain text) for AI assistants
     facts = "\n".join(f"- {x}" for x in ENTITY["facts"])
