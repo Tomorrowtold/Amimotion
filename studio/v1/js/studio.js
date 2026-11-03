@@ -17,34 +17,68 @@ requestAnimationFrame(() => setTimeout(() => { $('#h1').classList.add('in'); $$(
 const mb = $('#menuBtn'), sheet = $('#sheet') || { hidden: true };
 if (mb) mb.addEventListener('click', () => { const o = mb.getAttribute('aria-expanded') !== 'true'; mb.setAttribute('aria-expanded', o); sheet.hidden = !o; });
 
-/* ---------- scroll: the browser's own, everywhere. One exception: the first scroll in the hero glides straight into the film ---------- */
+/* ---------- scroll: the browser's own, everywhere. One exception: the first scroll in the hero glides straight into the film ----------
+   The glide needs non-passive wheel/touch listeners, and a non-passive listener on the window makes every scroll on the page wait for
+   JavaScript (the compositor cannot scroll on its own). So they are attached only while the page is in the hero, and taken off after. */
 let wheeling = false; const STILL = /[?&]still\b/.test(location.search); // screenshots: no glide
-const glide = { on: false, to: 0 };
+const glide = { on: false, to: 0, end: 0 };
 const filmStart = () => { const s = storySec; if (!s) return 0; const top = s.getBoundingClientRect().top + scrollY, len = s.offsetHeight - innerHeight, nb = +s.dataset.beats || 19; return Math.round(top + len * (.78 / nb)); };
+let fsCache = 0; const fsNow = () => fsCache || (fsCache = filmStart());
+addEventListener('resize', () => { fsCache = 0; }); addEventListener('load', () => { fsCache = 0; });
 const glideTo = (to, ms = 1050) => {
   if (glide.on) return; glide.on = true; const from = scrollY, t0 = performance.now(); document.documentElement.classList.add('gliding');
   const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-  const step = (now) => { const k = Math.min(1, (now - t0) / ms); scrollTo(0, from + (to - from) * ease(k)); if (k < 1) requestAnimationFrame(step); else { glide.on = false; document.documentElement.classList.remove('gliding'); } };
+  const step = (now) => { const k = Math.min(1, (now - t0) / ms); scrollTo(0, from + (to - from) * ease(k)); if (k < 1) requestAnimationFrame(step); else { glide.on = false; glide.end = performance.now(); document.documentElement.classList.remove('gliding'); } };
   requestAnimationFrame(step);
 };
-const inHero = (dir) => { const fs = filmStart(); return dir > 0 ? scrollY < fs - 4 : scrollY > 4 && scrollY <= fs + 4; };
+const inHero = (dir) => { const fs = fsNow(); return dir > 0 ? scrollY < fs - 4 : scrollY > 4 && scrollY <= fs + 4; };
 if (!reduce && !STILL) {
-  addEventListener('wheel', (e) => {
+  // a trackpad keeps sending wheel events for a second or two after the fingers lift; after a glide those belong to the same
+  // gesture, so they are held until the stream pauses (a new gesture), instead of flinging the visitor past the film's first beats
+  let lastWheel = 0, lastMag = 0;
+  const onWheel = (e) => {
+    const now = performance.now(), gap = now - lastWheel, mag = Math.abs(e.deltaY), prev = lastMag; lastWheel = now; lastMag = mag;
     if (e.ctrlKey || document.documentElement.classList.contains('sim-lock')) return;
     if (glide.on) { e.preventDefault(); return; }
+    // still the same flick: no pause, and the deltas are dying away rather than a fresh push
+    if (gap < 110 && now - glide.end < 2600 && mag <= prev * 1.15 + 1) { e.preventDefault(); return; }
     const dir = Math.sign(e.deltaY); if (!dir || !inHero(dir)) return;
-    e.preventDefault(); glideTo(dir > 0 ? filmStart() : 0, dir > 0 ? 1050 : 800);
-  }, { passive: false });
+    e.preventDefault(); glideTo(dir > 0 ? fsNow() : 0, dir > 0 ? 1050 : 800);
+  };
+  let ty0 = null;
+  const onTouchStart = (e) => { ty0 = e.touches[0].clientY; };
+  const onTouchMove = (e) => { if (glide.on) { e.preventDefault(); return; } if (ty0 == null) return; const dy = ty0 - e.touches[0].clientY; if (Math.abs(dy) < 12) return; const dir = Math.sign(dy); if (inHero(dir)) { e.preventDefault(); ty0 = null; glideTo(dir > 0 ? fsNow() : 0, 900); } };
+  let armed = false;
+  const arm = () => {
+    const want = glide.on || scrollY <= fsNow() + innerHeight * .5 || performance.now() - glide.end < 2600;
+    if (want === armed) return; armed = want;
+    const f = want ? addEventListener : removeEventListener;
+    f('wheel', onWheel, { passive: false }); f('touchmove', onTouchMove, { passive: false }); f('touchstart', onTouchStart, { passive: true });
+  };
+  addEventListener('scroll', arm, { passive: true }); queueMicrotask(arm);
   addEventListener('keydown', (e) => {
     const dir = ['ArrowDown', 'PageDown', ' '].includes(e.key) ? 1 : ['ArrowUp', 'PageUp'].includes(e.key) ? -1 : 0;
     if (!dir || e.target.closest('input,textarea,select,button,[contenteditable]')) return;
     if (glide.on) { e.preventDefault(); return; }
-    if (inHero(dir)) { e.preventDefault(); glideTo(dir > 0 ? filmStart() : 0); }
+    if (inHero(dir)) { e.preventDefault(); glideTo(dir > 0 ? fsNow() : 0); }
   });
-  let ty0 = null;
-  addEventListener('touchstart', (e) => { ty0 = e.touches[0].clientY; }, { passive: true });
-  addEventListener('touchmove', (e) => { if (glide.on) { e.preventDefault(); return; } if (ty0 == null) return; const dy = ty0 - e.touches[0].clientY; if (Math.abs(dy) < 12) return; const dir = Math.sign(dy); if (inHero(dir)) { e.preventDefault(); ty0 = null; glideTo(dir > 0 ? filmStart() : 0, 900); } }, { passive: false });
 }
+
+/* ---------- while the page is moving, nothing under a still cursor reacts (cards would grow and relayout mid-scroll) ---------- */
+{
+  const html = document.documentElement; let st = 0;
+  addEventListener('scroll', () => { if (!st) html.classList.add('is-scrolling'); clearTimeout(st); st = setTimeout(() => { st = 0; html.classList.remove('is-scrolling'); }, 180); }, { passive: true });
+}
+
+/* ---------- where things are: measured once (and when the page changes size), so scroll frames never force a layout ---------- */
+const geo = new Map();
+const measure = () => { geo.forEach((g, el) => { const r = el.getBoundingClientRect(); g.top = r.top + scrollY; g.h = el.offsetHeight; }); };
+const track = (el) => { if (el && !geo.has(el)) { geo.set(el, { top: 0, h: 0 }); const r = el.getBoundingClientRect(); geo.get(el).top = r.top + scrollY; geo.get(el).h = el.offsetHeight; } return geo.get(el); };
+let mq = 0; const remeasure = () => { if (mq) return; mq = requestAnimationFrame(() => { mq = 0; measure(); fsCache = 0; }); };
+addEventListener('resize', remeasure); addEventListener('load', remeasure);
+if (window.ResizeObserver) new ResizeObserver(remeasure).observe(document.body);
+// progress through a pinned section, from the scroll position alone
+const pinP = (el) => { const g = geo.get(el) || track(el); return { top: g.top - scrollY, h: g.h }; };
 
 /* ---------- cursor ---------- */
 const cursor = $('#cursor');
@@ -95,13 +129,14 @@ const knSet = (st) => {
   kn.classList.toggle('lit', st >= 0);
   if (st >= 0 && knSweep && !reduce) { knSweep.classList.remove('go'); void knSweep.offsetWidth; knSweep.classList.add('go'); }
 };
+let knNear = false, knF = '';
+if (kn) new IntersectionObserver((es) => { knNear = es[0].isIntersecting; }, { rootMargin: '100px 0px' }).observe(kn);
 const knFrame = () => {
-  if (!kn || reduce) return;
-  const sc = kn;
-  const r = sc.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
-  const p = clamp(-r.top / (r.height - innerHeight));
+  if (!kn || reduce || !knNear) return;
+  const r = pinP(kn); if (r.top + r.h < 0 || r.top > innerHeight) return;
+  const p = clamp(-r.top / (r.h - innerHeight));
   knSet(p < KN_AT[0] ? -1 : p < KN_AT[1] ? 0 : p < KN_AT[2] ? 1 : 2);
-  kn.style.setProperty('--f', sm(.84, .94, p).toFixed(3));
+  const f = sm(.84, .94, p).toFixed(3); if (f !== knF) { knF = f; kn.style.setProperty('--f', f); }
 };
 if (kn) kn.querySelectorAll('.kn-go').forEach((b) => b.addEventListener('click', () => {
   const sc = kn, i = +b.dataset.i, top = sc.getBoundingClientRect().top + scrollY, span = sc.offsetHeight - innerHeight;
@@ -170,24 +205,23 @@ if (pv) new IntersectionObserver((es) => es.forEach((e) => {
 }), { rootMargin: '200px' }).observe(pro);
 
 /* ---------- bar ---------- */
-const bar = $('#bar') || document.createElement('i'); let lastY = 0;
+const bar = $('#bar') || document.createElement('i'); let lastY = 0, barS = null, barH = null;
 
 /* ---------- main loop ---------- */
 function frame(t) {
   const y = scrollY;
-  bar.classList.toggle('scrolled', y > 20);
-  bar.classList.toggle('hide', y > innerHeight * 1.2 && y > lastY + 2 && sheet.hidden);
+  const bs = y > 20, bh = y > innerHeight * 1.2 && y > lastY + 2 && sheet.hidden;
+  if (bs !== barS) { barS = bs; bar.classList.toggle('scrolled', bs); } if (bh !== barH) { barH = bh; bar.classList.toggle('hide', bh); }
   if (Math.abs(y - lastY) > 2) lastY = y;
 
-  cx = lerp(cx, mx, .2); cy = lerp(cy, my, .2);
-  cursor && (cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`);
+  if (cursor) { cx = lerp(cx, mx, .2); cy = lerp(cy, my, .2); cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`; }
 
   if (drawBridge) drawBridge(t);
   if (drawStory && storyOn) drawStory(t);
   knFrame();
   if (pf && !reduce) { const r = pro.getBoundingClientRect(); const k = clamp(-r.top / (r.height - innerHeight) * 1.25 + .15); const e = 1 - Math.pow(1 - k, 3);
     pf.style.setProperty('--pi', `${(1 - e) * 18}%`); pf.style.setProperty('--pj', `${(1 - e) * 22}%`); pf.style.setProperty('--pr', `${(1 - e) * 28}px`); pf.style.setProperty('--ps', `${1.18 - e * .18}`); }
-  if (!reduce) for (const el of pics) { const r = el.parentElement.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue; const k = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; el.style.setProperty('--py', `${k * -5}%`); }
+  if (!reduce && pics.length) for (const el of pics) { const r = el.parentElement.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue; const k = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; el.style.setProperty('--py', `${k * -5}%`); }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
@@ -206,7 +240,7 @@ addEventListener('load', () => idle(() => {
   if (slow || reduce) return;
   // the three parts, live from CAD, once the visitor is near them
   const knStage = kn && kn.querySelector('.kn-stage');
-  if (knStage && window.WebGLRenderingContext) { const o = new IntersectionObserver((es) => { if (es[0].isIntersecting) { o.disconnect(); import('./products3d.js').then((m) => m.mount(knStage, kn)).catch((e) => console.warn(e)); } }, { rootMargin: '120% 0px' }); o.observe(knStage); }
+  if (knStage && window.WebGLRenderingContext) { const o = new IntersectionObserver((es) => { if (es[0].isIntersecting) { o.disconnect(); idle(() => import('./products3d.js').then((m) => m.mount(knStage, kn)).catch((e) => console.warn(e)), { timeout: 1500 }); } }, { rootMargin: '120% 0px' }); o.observe(knStage); }
 }));
 
 /* ---------- plan your first bay: the first answer opens the real planner in a glass window ---------- */
@@ -270,15 +304,22 @@ if (simSec) {
   let phase = (reduce || lowData || still || fixed != null) ? 3 : 0, t0 = 0, m = 0;
   if (phase === 3) sec.classList.add('done');
   const measure = () => { cw = cards[0].offsetWidth; ch = cards[0].offsetHeight; sec.style.setProperty('--ch', ch + 'px'); };
-  const progress = () => { const r = sec.getBoundingClientRect(), seg = (sec.offsetHeight - innerHeight) / N;
-    return { t: clamp(-r.top / seg, 0, N), pinned: r.top <= 2 && r.bottom >= innerHeight - 2 }; };
-  const setIntro = (k) => {   // k: 0 = fills the padded screen, 1 = sits exactly on card 1
+  // progress from the cached position: no layout read in the scroll frame
+  const progress = () => { const r = pinP(sec), seg = (r.h - innerHeight) / N;
+    return { t: clamp(-r.top / seg, 0, N), pinned: r.top <= 2 && r.top + r.h >= innerHeight - 2 }; };
+  // the two frames of the opening film, measured once per size; the move itself is a transform (no layout shift)
+  let A = null, B = null, lastK = -1;
+  const frames = () => {
     const s = stage.getBoundingClientRect(), h = helix.getBoundingClientRect(), pad = parseFloat(getComputedStyle(sec).getPropertyValue('--pad')) || 16;
-    const a = { l: pad + 10, t: pad + 10, w: s.width - 2 * pad - 20, h: s.height - 2 * pad - 20, r: 26 };
-    const b = { l: h.left - s.left - cw / 2 + 8, t: h.top - s.top - ch / 2 + 8, w: cw - 16, h: ch - 16, r: 15 };
+    A = { l: pad + 10, t: pad + 10, w: s.width - 2 * pad - 20, h: s.height - 2 * pad - 20, r: 26 };
+    B = { l: h.left - s.left - cw / 2 + 8, t: h.top - s.top - ch / 2 + 8, w: cw - 16, h: ch - 16, r: 15 };
+    lastK = -1;
+  };
+  const setIntro = (k) => {   // k: 0 = fills the padded screen, 1 = sits exactly on card 1
+    if (!A) frames(); if (k === lastK) return; lastK = k;
     const L = (x, y) => x + (y - x) * k;
-    intro.style.setProperty('--il', L(a.l, b.l) + 'px'); intro.style.setProperty('--it', L(a.t, b.t) + 'px');
-    intro.style.setProperty('--iw', L(a.w, b.w) + 'px'); intro.style.setProperty('--ih', L(a.h, b.h) + 'px'); intro.style.setProperty('--ir', L(a.r, b.r) + 'px');
+    intro.style.setProperty('--il', L(A.l, B.l) + 'px'); intro.style.setProperty('--it', L(A.t, B.t) + 'px');
+    intro.style.setProperty('--iw', L(A.w, B.w) + 'px'); intro.style.setProperty('--ih', L(A.h, B.h) + 'px'); intro.style.setProperty('--ir', L(A.r, B.r) + 'px');
   };
   const place = () => {
     const phone = innerWidth <= 860, R = cw * (phone ? .62 : .82), DY = ch * (phone ? .5 : .46);
@@ -317,7 +358,7 @@ if (simSec) {
     const { t, pinned } = progress();
     if (phase === 0 && t > 1.05) { measure(); finish(); }
     if (phase === 0 && pinned) { phase = 1; t0 = now; if (!iv.src) iv.src = iv.dataset.src; iv.currentTime = 0; const pr = iv.play(); if (pr) pr.catch(() => {}); }
-    if (phase === 1 && (now - t0) / 1000 >= HOLD) { phase = 2; t0 = now; measure(); }
+    if (phase === 1 && (now - t0) / 1000 >= HOLD) { phase = 2; t0 = now; measure(); frames(); }
     if (phase === 2) { m = clamp((now - t0) / 1000 / MORPH); setIntro(ease(m)); if (m >= 1) finish(); }
     if (phase < 2) setIntro(0);
     const target = fixed != null ? fixed : (phase === 3 ? hold(clamp(t - 1, 0, N - 1)) : 0);
@@ -328,10 +369,17 @@ if (simSec) {
   };
   iv.addEventListener('playing', () => { if (phase === 1) t0 = performance.now(); }, { once: true });   // the 6 s count from the first frame actually shown
   measure(); place(); setIntro(0); if (phase === 3) sec.style.setProperty('--pool', 1);
-  addEventListener('resize', () => { measure(); cur = -1; active = -1; place(); if (phase < 2) setIntro(0); });
+  addEventListener('resize', () => { measure(); A = null; cur = -1; active = -1; place(); if (phase < 2) setIntro(0); });
   new IntersectionObserver((es) => {
     const was = seen; seen = es[0].isIntersecting;
     if (seen && !was) { active = -1; last = 0; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.load(); } active = -1; requestAnimationFrame(tick); }
     if (!seen) { cards.forEach((c) => { const v = c.querySelector('video'); if (v && v.src) v.pause(); }); if (phase === 1) { iv.pause(); phase = 0; } }
   }, { rootMargin: '300px' }).observe(sec);
+})();
+
+/* ---------- the sections after the products arrive once, as they come into view ---------- */
+(() => {
+  const on = (sel, cls, ratio) => { const el = $(sel); if (!el) return; if (reduce) { el.classList.add(cls); return; }
+    const o = new IntersectionObserver((es) => { if (es[0].isIntersecting) { el.classList.add(cls); o.disconnect(); } }, { threshold: ratio }); o.observe(el); };
+  on('.inds', 'in-view', .22); on('.start .ctas', 'in', .35);
 })();

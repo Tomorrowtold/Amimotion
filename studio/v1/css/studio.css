@@ -1088,3 +1088,89 @@ html.tag-live .tag-fallback{opacity:0!important;transition:none}
 .hero .lede.k-fade{opacity:1;transition:transform 1.2s var(--ease-out)}
 /* single-paragraph explainer lines and the question rest at AA contrast (4.8:1); the line being read is full ink */
 .cap p[data-b]:not(.now),.cap .q-big:not(.lit){color:#646b88}
+
+/* ===== scroll and the sections after the products (3 Nov): smooth by construction, one family of sheets ===== */
+/* the guides' opening film moves by transform (no layout shift); only its size eases */
+.bs-intro{left:0;top:0;transform:translate3d(var(--il,0px),var(--it,0px),0)}
+/* film grain over the guides: a plain overlay, no blend mode (a blended full-screen layer recomposited every frame) */
+.bs-stage::after{mix-blend-mode:normal;opacity:.045}
+/* while the page moves, a still cursor wakes nothing up */
+html.is-scrolling .inds-row,html.is-scrolling .bs-helix,html.is-scrolling .ctas,html.is-scrolling .bs-list{pointer-events:none}
+/* shorter pinned run for the guides: each guide still holds, the section asks for less scrolling */
+.bs{--seg:60svh}
+@media (max-width:860px){.bs{--seg:56svh}}
+
+/* ---- seams: the dark floors rise as a sheet over the light products; the light start rises over the dark guides ---- */
+.trio{padding-bottom:clamp(40px,7vh,88px)}
+.inds{--sheet:clamp(26px,3vw,44px);background:radial-gradient(80% 60% at 50% -10%,#15130f 0,transparent 60%),#030303;border-radius:var(--sheet) var(--sheet) 0 0;padding-top:clamp(64px,10vh,120px);
+  box-shadow:0 -30px 60px -40px rgba(11,18,56,.35)}
+.inds::before{top:-10%;opacity:.8}
+.bs,.bs-stage{background:#030303}
+.start{--sheet:clamp(26px,3vw,44px);margin-top:calc(var(--sheet) * -1);padding:clamp(88px,9vw,170px) 0 clamp(56px,6vw,110px);border-radius:var(--sheet) var(--sheet) 0 0;background:var(--ground);z-index:4;
+  box-shadow:0 -24px 60px -30px rgba(0,0,0,.6)}
+.bs{padding-bottom:var(--sheet-gap,clamp(26px,3vw,44px))}
+
+/* ---- floors: the three floors arrive one after another, like doors opening ---- */
+.inds-h{opacity:0;translate:0 24px;transition:opacity .9s var(--ease),translate 1.1s var(--ease-out)}
+.inds.in-view .inds-h{opacity:1;translate:none}
+.inds-row .ind{opacity:0;translate:0 48px;clip-path:inset(18% 0 0 0 round 28px);
+  transition:flex-grow .9s cubic-bezier(.16,1,.3,1),box-shadow .5s,transform .6s cubic-bezier(.16,1,.3,1),filter .6s,
+    opacity .9s var(--ease),translate 1.3s var(--ease-out),clip-path 1.3s var(--ease-out)}
+.inds.in-view .ind{opacity:1;translate:none;clip-path:inset(0 0 0 0 round 28px)}
+.inds.in-view .ind:nth-child(2){transition-delay:0s,0s,0s,0s,.12s,.12s,.12s}
+.inds.in-view .ind:nth-child(3){transition-delay:0s,0s,0s,0s,.24s,.24s,.24s}
+.inds-more{opacity:0;transition:opacity .8s .3s var(--ease),background .3s,box-shadow .4s,color .3s}
+.inds.in-view .inds-more{opacity:1}
+/* a hairline of the located blue runs across the row once the floors are in: one map under all three */
+.inds-row::after{content:"";position:absolute;left:0;right:0;bottom:calc(clamp(12px,2vh,22px) * -1);height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(102,165,250,.55) 20%,rgba(102,165,250,.55) 80%,transparent);transform:scaleX(0);transform-origin:0 50%;transition:transform 1.6s .45s var(--ease-out)}
+.inds.in-view .inds-row::after{transform:scaleX(1)}
+@media (max-width:860px){.inds-row .ind{clip-path:inset(12% 0 0 0 round 24px)}.inds.in-view .ind{clip-path:inset(0 0 0 0 round 24px)}.inds-row::after{display:none}}
+
+/* ---- start with one bay: the words on one line of thought, the two doors as one pair ---- */
+@media (min-width:901px){
+  .start .wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);column-gap:clamp(40px,6vw,120px);align-items:end}
+  .start .mega{grid-column:1;margin-bottom:0}
+  .start-row{grid-column:2;display:block;padding-bottom:.6em}
+  .start-row .big{max-width:22em;margin-bottom:clamp(18px,2.4vw,30px)}
+  .start .ctas{grid-column:1 / -1}
+}
+/* the two "read more" lines become one list of hairline rows, not two pills adrift */
+.start-row details{margin:0;border-top:1px solid var(--line)}
+.start-row details:last-of-type{border-bottom:1px solid var(--line)}
+.start-row summary{display:flex;width:100%;justify-content:space-between;flex-direction:row-reverse;padding:18px 2px;border-radius:0;box-shadow:none;background:none;font:500 clamp(1rem,.95rem + .2vw,1.15rem)/1.2 var(--text)}
+.start-row summary:hover{background:none;box-shadow:none;color:var(--action)}
+.start-row summary::before{width:28px;height:28px;background-size:11px 11px;background-color:var(--ink);transition:transform .45s var(--ease),background-color .3s}
+.start-row summary:hover::before{background-color:var(--action)}
+.start-row details .more{padding:0 2px 20px}
+.start-row details .more p{color:var(--ink-soft);max-width:36em}
+/* the doors: one raised pair, a little shorter, each with the floor's own fine line */
+.start .ctas{gap:clamp(14px,1.4vw,22px)}
+.start .cta{min-height:clamp(260px,24vw,380px);border-radius:30px;isolation:isolate;transition:transform .6s var(--ease-out),box-shadow .6s var(--ease-out)}
+.start .cta::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;opacity:.9;
+  background:linear-gradient(rgba(11,18,56,.045) 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,rgba(11,18,56,.045) 1px,transparent 1px) 0 0/44px 44px;
+  -webkit-mask:radial-gradient(70% 90% at 100% 100%,#000,transparent 75%);mask:radial-gradient(70% 90% at 100% 100%,#000,transparent 75%)}
+.start .cta-call::before{background:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px) 0 0/44px 44px}
+.start .cta-plan{background:linear-gradient(165deg,#fff 0,#f7f9ff 100%);box-shadow:inset 0 0 0 1px var(--line),0 1px 0 #fff,0 30px 60px -40px rgba(31,60,160,.35)}
+.start .cta-call{background:radial-gradient(90% 120% at 100% 0%,#1d2a7a 0,rgba(29,42,122,0) 60%),var(--ink);box-shadow:0 30px 60px -36px rgba(11,18,56,.7)}
+.start .cta:hover{transform:translateY(-4px)}
+.start .cta-plan:hover{box-shadow:inset 0 0 0 1px #c3d3f2,0 40px 70px -40px rgba(31,60,160,.45)}
+/* one tagged path crosses each door and ends on its point: blue where it went, amber where it waits */
+.cta-line{position:absolute;right:0;bottom:0;width:56%;height:64%;z-index:-1;pointer-events:none;overflow:visible}
+.cta-line path{fill:none;stroke:var(--located);stroke-width:1.5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;opacity:.55;transition:stroke-dashoffset 2.2s .2s cubic-bezier(.65,0,.35,1)}
+.cta-call .cta-line path{stroke:var(--sky);opacity:.7}
+.cta-line circle{fill:var(--waiting);opacity:0;transform-box:fill-box;transform-origin:center;transition:opacity .5s 2.2s}
+.cta-plan .cta-line circle{fill:var(--located)}
+.ctas.in .cta-line path{stroke-dashoffset:0}
+.ctas.in .cta-line circle{opacity:1;animation:ctaPing 2.4s 2.4s ease-out infinite}
+@keyframes ctaPing{0%{transform:scale(1)}30%{transform:scale(1.6)}60%,100%{transform:scale(1)}}
+@media (max-width:900px){
+  .start-row{margin-top:8px}.start-row .big{margin-bottom:18px}
+  .start .cta{min-height:240px}
+  .cta-line{width:86%;height:52%}
+}
+@media (prefers-reduced-motion:reduce){
+  .inds-h,.inds-row .ind,.inds-more{opacity:1;translate:none;clip-path:none;transition:none}
+  .inds-row::after{transform:none;transition:none}
+  .cta-line path{stroke-dashoffset:0;transition:none}.cta-line circle{opacity:1;animation:none;transition:none}
+}
