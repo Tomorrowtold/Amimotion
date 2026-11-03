@@ -951,7 +951,7 @@ html.sim-lock{overflow:hidden}
 .bs-stage::after{content:"";position:absolute;inset:0;z-index:9;pointer-events:none;opacity:.04;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .88 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
 /* warm light pooling under the guide in front */
-.bs-pool{position:absolute;z-index:1;left:var(--hx,60%);top:calc(var(--hy,50%) + var(--ch,300px) * .52);width:calc(var(--cw,600px) * 1.5);height:200px;transform:translate(-50%,-35%);pointer-events:none;
+.bs-pool{position:absolute;z-index:1;left:var(--hx,61%);top:calc(var(--hy,50%) + var(--ch,300px) * .52);width:calc(var(--cw,600px) * 1.5);height:200px;transform:translate(-50%,-35%);pointer-events:none;
   background:radial-gradient(50% 50% at 50% 50%,rgba(255,206,150,.11),transparent 70%);opacity:var(--pool,0);transition:opacity .9s}
 /* the opening film: fills the padded screen; moved only by transform and clip (no layout), then hands over to the first card */
 .bs-intro{position:absolute;z-index:7;left:0;top:0;width:var(--iw,100%);height:var(--ih,100%);transform-origin:0 0;will-change:transform,clip-path,opacity;
@@ -961,8 +961,8 @@ html.sim-lock{overflow:hidden}
   background:linear-gradient(90deg,rgba(0,0,0,.72) 0,rgba(0,0,0,.35) 32%,transparent 55%),radial-gradient(130% 100% at 50% 50%,transparent 60%,rgba(0,0,0,.5))}
 .bs.done .bs-intro{visibility:hidden}
 /* the spiral */
-.bs-helix{--cw:min(50vw,980px,calc((100svh - 2 * var(--pad) - 150px) * 1.6));--ch:calc(var(--cw) * .5625);
-  position:absolute;left:var(--hx,60%);top:var(--hy,50%);width:0;height:0;perspective:1900px;perspective-origin:0 0;z-index:3}
+.bs-helix{--cw:min(53vw,1040px,calc((100svh - 2 * var(--pad) - 140px) * 1.6));--ch:calc(var(--cw) * .5625);
+  position:absolute;left:var(--hx,61%);top:var(--hy,50%);width:0;height:0;perspective:1900px;perspective-origin:0 0;z-index:3}
 .bs-card{position:absolute;left:calc(var(--cw) / -2);top:calc(var(--ch) / -2);width:var(--cw);height:var(--ch);border-radius:20px;overflow:hidden;display:block;
   transform:translate3d(var(--x,0px),var(--y,0px),var(--z,0px)) rotateY(var(--a,0deg));opacity:var(--o,1);will-change:transform,opacity;
   background:linear-gradient(155deg,#151517 0,#0b0b0c 60%,#070707 100%);

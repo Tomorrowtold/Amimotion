@@ -301,7 +301,7 @@ if (simSec) {
   const still = /[?&]still/.test(location.search), fm = location.search.match(/[?&]bs=([\d.]+)/), fixed = fm ? +fm[1] : null;
   const easeIO = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2, easeX = (x) => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
   const hold = (t) => { const i = Math.floor(t), f = t - i, g = clamp((f - .22) / .56); return i + g * g * (3 - 2 * g); };
-  let p = 0, v = 0, cur = -1, active = -1, seen = false, cw = 0, ch = 0, last = 0, gi = 0, fan = 1, rk = 0, pinnedAt = 0;
+  let p = 0, v = 0, cur = -1, active = -1, seen = false, cw = 0, ch = 0, last = 0, gi = 0, fan = 1, rk = 0, pinnedAt = 0, doneAt = 0;
   // intro: 0 waiting, 1 showing, 2 rising, 3 done
   let phase = (reduce || lowData || still || fixed != null) ? 3 : 0, t0 = 0;
   if (phase === 3) sec.classList.add('done');
@@ -369,7 +369,7 @@ if (simSec) {
     }
   };
   const finish = () => {
-    phase = 3; fan = 0; sec.classList.add('done'); sec.style.setProperty('--pool', 1);
+    phase = 3; fan = 0; doneAt = performance.now(); sec.classList.add('done'); sec.style.setProperty('--pool', 1);
     const vid = cards[0].querySelector('video');
     if (vid) { if (!vid.src) vid.src = vid.dataset.src; try { vid.currentTime = iv.currentTime % (vid.duration || 6); } catch (e) {} const pr = vid.play(); if (pr) pr.catch(() => {}); }
     iv.pause(); active = -1; cur = -1;
@@ -402,17 +402,20 @@ if (simSec) {
     let lastWheel = 0, lastMag = 0, lastStep = 0;
     const inBand = () => { const g = geom(); return g.top <= 4 && g.top + g.h >= innerHeight - 4; };
     const go = (dir) => {   // true when the guides took the gesture
-      if (phase < 3) { if (dir < 0) return false; rise(); if (scrollY < posOf(0) - 2) glideTo(posOf(0), 900); lastStep = performance.now(); return true; }
+      if (phase < 3 || performance.now() - doneAt < 450) { if (dir < 0 && phase < 3) return false; rise(); if (phase < 3 && scrollY < posOf(0) - 2) glideTo(posOf(0), 900); lastStep = performance.now(); return true; }
       const next = gi + dir; if (next < 0 || next > N - 1) return false;   // past the first or last guide the page scrolls on as usual
       gi = next; lastStep = performance.now(); glideTo(posOf(next), 720); haptic(); land(); return true;
     };
+    let stream = 0, pinSeen = 0;   // the gesture under way: once it has moved a guide, the rest of it (and its momentum) is absorbed
     const onWheel = (e) => {
       const now = performance.now(), gap = now - lastWheel, mag = Math.abs(e.deltaY), prev = lastMag; lastWheel = now; lastMag = mag;
+      if (gap > 450) stream = 0;
+      if (pinnedAt !== pinSeen) { pinSeen = pinnedAt; if (gap <= 450) { stream = 1; lastStep = pinnedAt; } }   // the flick that brought the page here is not a request
       if (e.ctrlKey || !inBand()) return;
-      if (glide.on) { e.preventDefault(); return; }
-      if (gap < 120 && now - Math.max(lastStep, pinnedAt) < 1800 && mag <= prev * 1.2 + 2) { e.preventDefault(); return; }   // the same flick still dying away (also the one that brought the page here)
+      if (glide.on || stream) { e.preventDefault(); return; }
+      if (now - lastStep < 2500 && mag <= prev * 1.2 + 2) { e.preventDefault(); return; }   // a slow device's momentum, still dying away
       if (mag < 3) { e.preventDefault(); return; }
-      if (go(Math.sign(e.deltaY))) e.preventDefault();
+      if (go(Math.sign(e.deltaY))) { stream = 1; e.preventDefault(); }
     };
     let ty = null;
     const onTouchStart = (e) => { ty = e.touches[0].clientY; };
