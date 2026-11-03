@@ -23,12 +23,12 @@ if (mb) mb.addEventListener('click', () => { const o = mb.getAttribute('aria-exp
    The glide needs non-passive wheel/touch listeners, and a non-passive listener on the window makes every scroll on the page wait for
    JavaScript (the compositor cannot scroll on its own). So they are attached only while the page is in the hero, and taken off after. */
 let wheeling = false; const STILL = /[?&]still\b/.test(location.search); // screenshots: no glide
-const glide = { on: false, to: 0, end: 0 };
+const glide = { on: false, to: 0, end: 0, hero: false };   // hero: the glide is the hero's own (other sections reuse glideTo)
 const filmStart = () => { const s = storySec; if (!s) return 0; const top = s.getBoundingClientRect().top + scrollY, len = s.offsetHeight - innerHeight, nb = +s.dataset.beats || 19; return Math.round(top + len * (.78 / nb)); };
 let fsCache = 0; const fsNow = () => fsCache || (fsCache = filmStart());
 addEventListener('resize', () => { fsCache = 0; }); addEventListener('load', () => { fsCache = 0; });
-const glideTo = (to, ms = 1050) => {
-  if (glide.on) return; glide.on = true; const from = scrollY, t0 = performance.now(); document.documentElement.classList.add('gliding');
+const glideTo = (to, ms = 1050, hero = false) => {
+  if (glide.on) return; glide.on = true; glide.hero = hero; const from = scrollY, t0 = performance.now(); document.documentElement.classList.add('gliding');
   const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
   const step = (now) => { const k = Math.min(1, (now - t0) / ms); scrollTo(0, from + (to - from) * ease(k)); if (k < 1) requestAnimationFrame(step); else { glide.on = false; glide.end = performance.now(); document.documentElement.classList.remove('gliding'); } };
   requestAnimationFrame(step);
@@ -42,18 +42,19 @@ if (!reduce && !STILL) {
     const now = performance.now(), gap = now - lastWheel, mag = Math.abs(e.deltaY), prev = lastMag; lastWheel = now; lastMag = mag;
     if (e.ctrlKey || document.documentElement.classList.contains('sim-lock')) return;
     // what this handler takes, nothing after it sees (the explainer's beat stepper must not step on the hero's momentum)
-    if (glide.on) { e.preventDefault(); e.stopImmediatePropagation(); return; }
+    const mine = glide.hero;   // a glide started by another section (guides) is that section's to manage
+    if (glide.on && mine) { e.preventDefault(); e.stopImmediatePropagation(); return; }
     // still the same flick: no pause, and the deltas are dying away rather than a fresh push
-    if (gap < 110 && now - glide.end < 2600 && mag <= prev * 1.15 + 1) { e.preventDefault(); e.stopImmediatePropagation(); return; }
+    if (mine && !glide.on && gap < 110 && now - glide.end < 2600 && mag <= prev * 1.15 + 1) { e.preventDefault(); e.stopImmediatePropagation(); return; }
     const dir = Math.sign(e.deltaY); if (!dir || !inHero(dir)) return;
-    e.preventDefault(); e.stopImmediatePropagation(); glideTo(dir > 0 ? (fsCache = filmStart()) : 0, dir > 0 ? 1050 : 800);
+    e.preventDefault(); e.stopImmediatePropagation(); glideTo(dir > 0 ? (fsCache = filmStart()) : 0, dir > 0 ? 1050 : 800, true);
   };
   let ty0 = null;
   const onTouchStart = (e) => { ty0 = e.touches[0].clientY; };
-  const onTouchMove = (e) => { if (glide.on) { e.preventDefault(); e.stopImmediatePropagation(); return; } if (ty0 == null) return; const dy = ty0 - e.touches[0].clientY; if (Math.abs(dy) < 12) return; const dir = Math.sign(dy); if (inHero(dir)) { e.preventDefault(); e.stopImmediatePropagation(); ty0 = null; glideTo(dir > 0 ? (fsCache = filmStart()) : 0, 900); } };
+  const onTouchMove = (e) => { if (glide.on && glide.hero) { e.preventDefault(); e.stopImmediatePropagation(); return; } if (ty0 == null) return; const dy = ty0 - e.touches[0].clientY; if (Math.abs(dy) < 12) return; const dir = Math.sign(dy); if (inHero(dir)) { e.preventDefault(); e.stopImmediatePropagation(); ty0 = null; glideTo(dir > 0 ? (fsCache = filmStart()) : 0, 900, true); } };
   let armed = false;
   const arm = () => {
-    const want = glide.on || scrollY <= fsNow() + innerHeight * .5 || performance.now() - glide.end < 2600;
+    const want = scrollY <= fsNow() + innerHeight * .5 || (glide.hero && (glide.on || performance.now() - glide.end < 2600));
     if (want === armed) return; armed = want;
     const f = want ? addEventListener : removeEventListener;
     // capture phase: the hero always decides first, whatever was attached later
@@ -64,8 +65,8 @@ if (!reduce && !STILL) {
     if (!armed) return;
     const dir = ['ArrowDown', 'PageDown', ' '].includes(e.key) ? 1 : ['ArrowUp', 'PageUp'].includes(e.key) ? -1 : 0;
     if (!dir || e.target.closest('input,textarea,select,button,[contenteditable]')) return;
-    if (glide.on) { e.preventDefault(); e.stopImmediatePropagation(); return; }
-    if (inHero(dir)) { e.preventDefault(); e.stopImmediatePropagation(); glideTo(dir > 0 ? (fsCache = filmStart()) : 0); }
+    if (glide.on && glide.hero) { e.preventDefault(); e.stopImmediatePropagation(); return; }
+    if (inHero(dir)) { e.preventDefault(); e.stopImmediatePropagation(); glideTo(dir > 0 ? (fsCache = filmStart()) : 0, 1050, true); }
   }, true);
 }
 
@@ -420,10 +421,13 @@ if (simSec) {
     const onWheel = (e) => {
       const now = performance.now(), gap = now - lastWheel, mag = Math.abs(e.deltaY), prev = lastMag; lastWheel = now; lastMag = mag;
       if (gap > 450) stream = 0;
+      // scroll audit: a mouse wheel spun on keeps sending even notches (no decay) — once the guide has landed, that is the next request, not momentum
+      else if (stream && !glide.on && now - lastStep > 750 && gap > 30 && mag > 8 && mag >= prev) stream = 0;
       if (pinnedAt !== pinSeen) { pinSeen = pinnedAt; if (gap <= 450) { stream = 1; lastStep = pinnedAt; } }   // the flick that brought the page here is not a request
-      if (e.ctrlKey || !inBand()) return;
+      // scroll audit: the last guide rests exactly where the band unpins, so the flick that landed it must stay absorbed there too
+      if (e.ctrlKey || (!inBand() && !(stream && now - lastStep < 1500))) return;
       if (glide.on || stream) { e.preventDefault(); return; }
-      if (now - lastStep < 2500 && mag <= prev * 1.2 + 2) { e.preventDefault(); return; }   // a slow device's momentum, still dying away
+      if (now - lastStep < 2500 && gap < 200 && mag <= prev * 1.2 + 2) { e.preventDefault(); return; }   // (only a close stream is momentum: a separate notch after a pause is a new step)   // a slow device's momentum, still dying away
       if (mag < 3) { e.preventDefault(); return; }
       if (go(Math.sign(e.deltaY))) { stream = 1; e.preventDefault(); }
     };
