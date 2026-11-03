@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Lead desk · AmIMotion</title>
+<style>
+:root{--ground:#f0f6ff;--surface:#fff;--pressed:#e3eeff;--ink:#0b1238;--soft:#3d4870;--action:#4b3df0;--located:#1f6bff;--waiting:#ffb020;--line:rgba(11,18,56,.1);font:400 15px/1.5 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--ground)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh}
+header{display:flex;align-items:center;gap:12px;padding:14px 20px;background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+header h1{margin:0;font-size:17px;font-weight:600;flex:1}header h1 span{font-weight:400;color:var(--soft);font-size:14px;margin-left:8px}
+button,select,input,textarea{font:inherit;color:inherit}
+.btn{border:0;height:36px;padding:0 14px;border-radius:999px;background:var(--ink);color:#fff;cursor:pointer;font-weight:500;font-size:14px}.btn.alt{background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}.btn:hover{opacity:.9}
+main{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 65px)}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+#list{border-right:1px solid var(--line);background:var(--surface);overflow:auto;max-height:calc(100vh - 65px)}
+#list button{display:grid;grid-template-columns:34px 1fr;gap:4px 12px;width:100%;text-align:left;padding:14px 18px;border:0;border-bottom:1px solid var(--line);background:none;cursor:pointer}
+#list button[aria-current=true]{background:var(--pressed)}#list b{font-weight:600}#list small{grid-column:2;color:var(--soft);font-size:12.5px}
+.g{grid-row:span 2;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:700;color:#fff;background:var(--soft)}.g.A{background:#0f7b4a}.g.B{background:var(--located)}.g.C{background:#8a6d1f}.g.D{background:#8b8fa6}
+#view{padding:24px clamp(16px,3vw,40px);overflow:auto;max-height:calc(100vh - 65px)}
+.empty{max-width:560px;margin:10vh auto;text-align:center;color:var(--soft)}
+.top{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.top h2{margin:0;font-size:26px;letter-spacing:-.01em}.top p{margin:4px 0 0;color:var(--soft)}
+.scores{display:flex;gap:10px}.sc{background:var(--surface);border-radius:14px;padding:10px 16px;min-width:96px;box-shadow:0 0 0 1px var(--line)}.sc b{display:block;font-size:26px;line-height:1.1}.sc span{font-size:12px;color:var(--soft)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.box{background:var(--surface);border-radius:16px;padding:16px 18px;box-shadow:0 0 0 1px var(--line)}.box h3{margin:0 0 8px;font-size:13px;color:var(--soft);font-weight:600}
+.box ul{margin:0;padding-left:18px}.box li{margin:3px 0}.box.wide{grid-column:1/-1}
+.next{background:var(--ink);color:#fff}.next h3{color:rgba(255,255,255,.7)}
+dl{margin:0;display:grid;grid-template-columns:130px 1fr;gap:4px 10px}dt{color:var(--soft);font-size:13.5px}dd{margin:0}
+textarea{width:100%;min-height:240px;border:1px solid var(--line);border-radius:12px;padding:12px;line-height:1.5;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.flag li{color:#8f5c00}
+.tr p{margin:6px 0;padding:8px 12px;border-radius:12px;background:var(--ground);max-width:85%}.tr p.v{background:var(--ink);color:#fff;margin-left:auto}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--waiting);margin-left:8px;vertical-align:3px}
+#gate{max-width:420px;margin:12vh auto;background:var(--surface);padding:28px;border-radius:20px;box-shadow:0 0 0 1px var(--line)}#gate input{width:100%;height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;margin:10px 0}
+</style>
+</head>
+<body>
+<header><h1>Lead desk <span>AmIMotion · inbound</span></h1><button class="btn alt" id="sample" type="button">Show a sample lead</button><button class="btn alt" id="refresh" type="button">Refresh</button></header>
+<div id="gate" hidden><h2 style="margin:0 0 6px;font-size:20px">Open the lead desk</h2><p style="margin:0;color:var(--soft)">Enter the desk key (DESK_TOKEN, set where the site is hosted).</p><form id="gf"><input id="tok" type="password" autocomplete="current-password" aria-label="Desk key"><button class="btn" type="submit">Open</button></form><p id="gerr" style="color:#b3261e"></p></div>
+<main id="app" hidden><nav id="list" aria-label="Leads"></nav><section id="view"><div class="empty"><p>No lead selected.</p></div></section></main>
+<script type="module">
+// The founders' lead desk. Reads leads from /api/desk (KV store) with the desk key; in the private preview it reads the
+// preview's own store. Every lead arrives scored (fit and intent, from the ICP in the founders' kit), with a summary,
+// what the visitor did on the site, objections and the honest answer, questions for the first call, and a reply draft.
+// Nothing is ever sent to a visitor from here without a founder pressing "Open in email".
+const R = document.documentElement.dataset.root || (location.pathname.includes('/desk/') ? location.pathname.replace(/desk\/.*$/, '') : '/');
+const core = await import(R + 'assets/js/agent-core.js');
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+let LEADS = [], cur = null, mode = 'api', db = null;
+const tok = () => sessionStorage.getItem('desk.tok') || '';
+async function load() {
+  try {
+    const r = await fetch(R + 'api/desk', { headers: { authorization: 'Bearer ' + tok() } });
+    if (r.status === 401) { gate(); return; }
+    if (!r.ok || !(r.headers.get('content-type') || '').includes('json')) throw new Error('no api');
+    const j = await r.json(); LEADS = j.leads || []; mode = 'api'; show();
+  } catch (e) {
+    // the private preview: leads sent from the preview's pages sit in its own store
+    db = window.claude && window.claude.use ? await Promise.race([window.claude.use('db'), new Promise((r) => setTimeout(() => r(null), 5000))]).catch(() => null) : null;
+    if (db) { mode = 'preview'; const s = await db.collection('leads').get(); LEADS = (s.docs || s).map((x) => (x.data ? x.data() : x)).sort((a, b) => (b.at || '').localeCompare(a.at || '')); }
+    else mode = 'none';
+    show();
+  }
+}
+function gate() { document.getElementById('gate').hidden = false; document.getElementById('app').hidden = true; }
+document.getElementById('gf').addEventListener('submit', (e) => { e.preventDefault(); sessionStorage.setItem('desk.tok', document.getElementById('tok').value.trim()); document.getElementById('gate').hidden = true; load(); });
+function show() {
+  document.getElementById('app').hidden = false;
+  const list = document.getElementById('list');
+  list.innerHTML = LEADS.length ? LEADS.map((l, i) => `<button type="button" data-i="${i}" aria-current="${cur === i}"><span class="g ${l.score.grade}">${l.score.grade}</span><b>${esc(l.contact.company || l.contact.name || 'Lead')}${l.sample ? '<span class="badge">Sample</span>' : ''}</b><small>${esc(l.contact.name || '')}${l.contact.role ? ' · ' + esc(l.contact.role) : ''} · ${new Date(l.at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })} · ${esc(l.status || 'new')}</small></button>`).join('')
+    : `<div class="empty" style="margin:30px 18px;text-align:left"><p>${mode === 'none' ? 'No lead store is connected here. On the live site, leads also arrive by email, webhook or HubSpot.' : 'No leads yet.'}</p></div>`;
+  list.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { cur = +b.dataset.i; show(); }));
+  if (cur != null && LEADS[cur]) view(LEADS[cur]);
+}
+function view(l) {
+  const s = l.score, mail = `mailto:${encodeURIComponent(l.contact.email || '')}?subject=${encodeURIComponent((l.reply.match(/^Subject:\s*(.*)$/m) || [, 'Your floor'])[1])}&body=`;
+  document.getElementById('view').innerHTML = `<div class="top"><div><h2>${esc(l.contact.name || 'Lead')}${l.sample ? '<span class="badge">Sample</span>' : ''}</h2><p>${[l.contact.role, l.contact.company, l.contact.site].filter(Boolean).map(esc).join(' · ')}${l.contact.email ? ` · <a href="mailto:${esc(l.contact.email)}">${esc(l.contact.email)}</a>` : ''}${l.contact.phone ? ' · ' + esc(l.contact.phone) : ''}</p></div>
+    <div class="scores"><div class="sc"><b>${s.grade}</b><span>grade</span></div><div class="sc"><b>${s.fit}</b><span>fit / 100</span></div><div class="sc"><b>${s.intent}</b><span>intent / 100</span></div></div></div>
+    <div class="grid">
+      <div class="box next wide"><h3>Next</h3><p style="margin:0">${esc(s.next)}</p>${l.summary ? `<p style="margin:8px 0 0;opacity:.85">${esc(l.summary)}</p>` : ''}</div>
+      <div class="box"><h3>Why this grade</h3><ul>${s.reasons.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>${s.flags.length ? `<h3 style="margin-top:12px">Watch</h3><ul class="flag">${s.flags.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}${s.gaps.length ? `<h3 style="margin-top:12px">Still unknown</h3><ul>${s.gaps.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}</div>
+      <div class="box"><h3>Their floor</h3><dl>${Object.entries(l.floor).filter(([, v]) => v).map(([k, v]) => `<dt>${esc(k.replace('_', ' '))}</dt><dd>${esc(v)}</dd>`).join('') || '<dd>Not told yet</dd>'}</dl>${l.did.length ? `<h3 style="margin-top:12px">On the site</h3><ul>${l.did.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}</div>
+      <div class="box"><h3>Ask on the first call</h3><ul>${l.discovery.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>${l.objections.length ? `<h3 style="margin-top:12px">Objections they raised</h3><ul>${l.objections.map((o) => `<li><b>${esc(o.said)}.</b> ${esc(o.answer)}</li>`).join('')}</ul>` : ''}</div>
+      <div class="box"><h3>Who else will need to agree</h3><ul>${l.committee.slice(0, 6).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>
+      <div class="box wide"><h3>Reply draft ${l.desk === 'claude' ? '(written by the desk, check before sending)' : '(template, check before sending)'}</h3><textarea id="reply">${esc(l.reply)}</textarea>
+        <div class="row"><a class="btn" id="send" href="#">Open in email</a><button class="btn alt" id="copy" type="button">Copy</button><label>Status <select id="status">${['new', 'replied', 'meeting booked', 'pilot talks', 'not a fit'].map((x) => `<option${x === (l.status || 'new') ? ' selected' : ''}>${x}</option>`).join('')}</select></label></div></div>
+      ${l.transcript.length ? `<div class="box wide tr"><h3>Conversation with the site guide</h3>${l.transcript.map((m) => `<p class="${m.role === 'user' ? 'v' : ''}">${esc(m.content)}</p>`).join('')}</div>` : ''}
+      <div class="box wide"><h3>Record</h3><p style="margin:0;font-size:13px;color:var(--soft)">Lead ${esc(l.id || '')} · source ${esc(l.source)} · page ${esc(l.page || '')} · consent: reply${l.consent && l.consent.updates ? ' and updates' : ' only'}${l.consent && l.consent.at ? ' · ' + esc(l.consent.at) : ''}</p></div>
+    </div>`;
+  const ta = document.getElementById('reply');
+  document.getElementById('send').addEventListener('click', (e) => { e.preventDefault(); const body = ta.value.replace(/^Subject:.*\n+/, ''); location.href = mail + encodeURIComponent(body); });
+  document.getElementById('copy').addEventListener('click', async (e) => { await navigator.clipboard.writeText(ta.value); e.target.textContent = 'Copied'; setTimeout(() => (e.target.textContent = 'Copy'), 1500); });
+  document.getElementById('status').addEventListener('change', async (e) => {
+    l.status = e.target.value;
+    if (l.sample) return show();
+    if (mode === 'api') await fetch(R + 'api/desk', { method: 'POST', headers: { authorization: 'Bearer ' + tok(), 'content-type': 'application/json' }, body: JSON.stringify({ id: l.id, status: l.status }) });
+    else if (mode === 'preview' && db) await db.collection('leads').doc(l.id).update({ status: l.status });
+    show();
+  });
+}
+// a made-up lead, clearly marked, so the desk can be seen before the first real one arrives
+document.getElementById('sample').addEventListener('click', () => {
+  const d = core.dossier({ id: 'sample', source: 'agent', page: '/industries/manufacturing/', profile: { name: 'Sample Lead', email: 'name@example.com', company: 'Sample Components Pvt Ltd', role: 'Production manager', site: 'Pune', carriers: 'trolleys, bins', waits_at: 'before inspection', found_today: 'someone walks the floor', link: 'scan', start: 'bay', industry: 'automotive components', timing: 'before the next budget', tool_anchors: '120×60 m' },
+    signals: { pages: ['/industries/manufacturing/', '/pilot/', '/how-to-buy/', '/tools/anchors/'], tools: ['Anchor estimate', 'Flow plan'], visits: 2 },
+    transcript: [{ role: 'user', content: 'We already scan barcodes at each station. Why would we need this?' }, { role: 'assistant', content: 'Scans record an event at a point. The gap is between them: where a trolley sits, and for how long, after its last scan. A first bay shows that gap with a baseline you set.' }, { role: 'user', content: 'Will it talk to SAP? And how much does it cost?' }, { role: 'assistant', content: 'AmIHub speaks REST, MQTT, WebSocket and an omlox hub interface; the SAP connector is validated for your site. Prices are in the NDA pack after the first call.' }],
+    cards: [core.estimateAnchors({ length_m: 120, width_m: 60 }), core.planFlow({ stations: ['Machining', 'Buffer', 'Inspection', 'Assembly'], waits_at: 'Inspection' })] });
+  d.sample = true; d.status = 'new'; LEADS = [d, ...LEADS.filter((x) => !x.sample)]; cur = 0; show();
+});
+document.getElementById('refresh').addEventListener('click', load);
+load();
+</script>
+</body>
+</html>

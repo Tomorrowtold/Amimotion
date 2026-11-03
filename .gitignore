@@ -6,3 +6,5 @@ __pycache__/
 site/tools/private_names.txt
 studio/out/
 .claude/
+node_modules/
+server/.leads/
