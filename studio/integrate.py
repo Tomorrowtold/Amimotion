@@ -59,8 +59,14 @@ def scope(css):
                 res.append(f".studio{{{body}}}")
             else:
                 parts = [p.strip() for p in sel.split(",")]
-                keep = [p for p in parts if not DROP.match(p)]
-                if keep: res.append(",".join(".studio " + p for p in keep) + f"{{{body}}}")
+                # html.state selectors (html.tag-live, html.sim-lock) stay on <html>; what follows is scoped under .studio
+                def sc(p):
+                    if re.match(r"html[.:\[]", p):
+                        h, _, rest = p.partition(" ")
+                        return h + (" .studio " + rest if rest else "")
+                    return ".studio " + p
+                keep = [p for p in parts if re.match(r"html[.:\[]", p) or not DROP.match(p)]
+                if keep: res.append(",".join(sc(p) for p in keep) + f"{{{body}}}")
             j = m
         return "\n".join(res)
     return block(re.sub(r"/\*.*?\*/", "", css, flags=re.S))
