@@ -11,7 +11,9 @@ const slow = conn.saveData || /(^|-)2g/.test(conn.effectiveType || '');
 /* ---------- reveal on view ---------- */
 const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -12% 0px' });
 $$('.k-lines,.k-fade,.k-pic,.k-rise,.wordmark').forEach((el) => { if (!el.closest('.hero')) io.observe(el); });
-requestAnimationFrame(() => setTimeout(() => { $('#h1').classList.add('in'); $$('.hero .k-fade').forEach((e, i) => setTimeout(() => e.classList.add('in'), 380 + i * 160)); }, 120));
+// the hero's words arrive with the tag: one choreography from the first frame (or on their own if the 3D cannot start soon)
+{ let shown = false; const show = () => { if (shown) return; shown = true; requestAnimationFrame(() => setTimeout(() => { $('#h1').classList.add('in'); $$('.hero .k-fade').forEach((e, i) => setTimeout(() => e.classList.add('in'), 380 + i * 160)); }, 140)); };
+  if (document.documentElement.classList.contains('tag-live')) { addEventListener('tag:ready', show, { once: true }); setTimeout(show, 1400); } else show(); }
 
 /* ---------- menu ---------- */
 const mb = $('#menuBtn'), sheet = $('#sheet') || { hidden: true };
