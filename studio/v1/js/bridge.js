@@ -3,7 +3,7 @@
 // Then one wave of light runs out from that tag across the whole floor: every path, every wait and every other tag
 // lights up as it passes, while the camera pulls back to the whole plant and the frame folds into the film's panel.
 // The film opens on that exact frame (story.js S0) and only then lets the colour drain.
-import { VS, FS, T, LAND_Z, WIDE, plateSize, MOVERS, moverDist, drawLanding, plateTex } from './story.js';
+import { VS, FS, T, LAND_Z, WIDE, plateSize, MOVERS, moverDist, drawLanding, plateTex, loadDepth } from './story.js';
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, k) => a + (b - a) * k;
@@ -20,12 +20,14 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
   const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'dof', 'sky'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
+  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'dof', 'sky', 'tD', 'tN', 'dOn', 'foc', 'relit', 'par'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
   gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
   const big = plateSize();
   const tex = (src, unit) => new Promise((res) => { const im = new Image(); im.decoding = 'async'; im.onload = () => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im); for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v); res(); }; im.src = src; });
   let ready = false;
-  Promise.all([plateTex(gl, `assets/scene/hall-after-${big}.webp`, 0), plateTex(gl, `assets/scene/hall-before-${big}.webp`, 1), plateTex(gl, `assets/scene/hall-masks-${big}.png`, 2, false)]).then(() => {
+  Promise.all([plateTex(gl, `assets/scene/hall-after-${big}.webp`, 0), plateTex(gl, `assets/scene/hall-before-${big}.webp`, 1), plateTex(gl, `assets/scene/hall-masks-${big}.png`, 2, false), loadDepth(gl, 3)]).then(([, , , at]) => {
+    // the same lit set as the film (depth, light on the shapes), so the hand-off has no seam
+    gl.uniform1i(U.tD, 3); gl.uniform1i(U.tN, 4); gl.uniform1f(U.dOn, at ? 1 : 0); gl.uniform1f(U.relit, 2.2); gl.uniform2f(U.foc, .5, 0); gl.uniform3f(U.par, 0, 0, .5);
     gl.uniform1f(U.sky, 1); gl.uniform1f(U.dof, 0);
     gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); ready = true; requestAnimationFrame(() => { gl.viewport(0, 0, canvas.width, canvas.height); gl.uniform3f(U.cam, .5, .5, 1); gl.drawArrays(gl.TRIANGLES, 0, 3); });
   });
