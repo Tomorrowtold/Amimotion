@@ -7,25 +7,31 @@ const eo = (x) => 1 - Math.pow(1 - clamp(x), 3);
 const sm = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
 
 export const VS = `attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}`;
+// The plant as a lit 2.5D set: the render, a depth map of the same frame (depth, height above the floor, contact shadow),
+// and the masks. The camera orbits on the depth (parallax), the lens pulls focus on real depth, a low mist lies on the floor
+// at the height of the trolleys, and the light lands on the shapes (normals from depth), not on a flat picture.
 export const FS = `precision highp float;varying vec2 v;
-uniform sampler2D tA,tB,tM;uniform vec2 res,span,tagPos,bayC,waveC;uniform vec3 cam;uniform vec4 vr;
-uniform float draw,dash,amber,onlyQ,hidePaths,bay,tagOn,time,grey,wave,dof,sky;
+uniform sampler2D tA,tB,tM,tD,tN;uniform vec2 res,span,tagPos,bayC,waveC,foc,fog;uniform vec3 cam,par,clr;uniform vec4 vr;
+uniform float draw,dash,amber,onlyQ,hidePaths,bay,tagOn,time,grey,wave,dof,sky,dOn,glow,warm,relit,lat;
 uniform vec4 spot,lpos;uniform vec3 ltgt;
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+1.),f.x),f.y);}
+float fbm(vec2 p){float a=.5,s=0.;for(int i=0;i<4;i++){s+=a*n2(p);p=p*2.03+vec2(17.,9.);a*=.5;}return s;}
+float lineAt(vec2 q){vec3 m=texture2D(tM,q).rgb;return step(.004,m.g)*m.r*(1.-smoothstep(draw-.015,draw+.015,m.g));}
 void main(){
   vec2 uv=vec2(v.x,1.-v.y);
   vec2 iu=cam.xy+(uv-.5)*span/cam.z;
-  // a lens on a model: sharp through the middle of the frame, falling softly out of focus toward its edges
+  // the orbit: find the point of the plant this moved camera sees here (the near things move more than the far)
+  if(dOn>.5){vec2 s0=iu;for(int i=0;i<6;i++){float d=texture2D(tD,iu).r;iu=s0-par.xy*(d-par.z);}}
+  vec3 G=dOn>.5?texture2D(tD,iu).rgb:vec3(.5,0.,1.);
   vec2 fu=(uv-vr.xy)/vr.zw; float tilt=smoothstep(.2,.56,abs(fu.y-.5))*1.6+smoothstep(.3,.62,abs(fu.x-.5))*.7;
-  // the focus: one place on the floor in light, the rest falls back, softer and quieter
   float sd0=length((iu-spot.xy)*vec2(.8,1.));float out0=smoothstep(spot.z,spot.z*1.9+.02,sd0)*spot.w;
-  // the loupe: a lens over the render itself, magnifying one thing on the floor
   vec2 ld=(uv-lpos.xy)*res/res.y;float lr=length(ld);float inL=(1.-smoothstep(lpos.z-.0015,lpos.z,lr))*step(.001,lpos.w);
   vec2 liu=ltgt.xy+(uv-lpos.xy)*span/(cam.z*ltgt.z);
   iu=mix(iu,liu,inL);
-  float lb=mix(tilt*dof+out0*1.6,0.,inL);
+  // the lens on real depth: what is nearer or farther than the focus goes soft
+  float dz=abs(G.r-foc.x);float lb=mix(dOn>.5?clamp(dz*foc.y-.15,0.,2.4)+out0*1.1:tilt*dof+out0*1.6,0.,inL);
   vec3 A=texture2D(tA,iu,lb).rgb,B=texture2D(tB,iu,lb).rgb,M=texture2D(tM,iu).rgb;
-  // the landing's reveal: inside the wave the plant is already known
   float wd=length((iu-waveC)*vec2(.8,1.));
   float inW=(1.-smoothstep(wave-.05,wave,wd))*step(.001,wave);
   float onPath=step(.004,M.g)*M.r;
@@ -34,36 +40,69 @@ void main(){
   float am=step(.02,M.b)*max(amber,inW)*(onlyQ>.5?step(iu.x,.62):1.);
   float k=max(max(line,scans),am);
   vec3 col=mix(B,A,k);
-  // the front of each drawing path glows
   float front=onPath*exp(-pow((M.g-draw)/.02,2.))*(1.-hidePaths)*step(.01,draw)*step(draw,1.02);
   col=mix(col,vec3(.35,.62,1.),front*.8);
-  // the wave's edge: a soft band of light passing over the floor
   float band=exp(-pow((wd-wave)/.018,2.))*step(.001,wave)*(1.-smoothstep(1.,1.25,wave));
   col=mix(col,vec3(.86,.92,1.),band*.55);col=mix(col,vec3(.3,.55,1.),band*onPath*.6);
-  // one bay in colour
   vec2 bd=(iu-bayC)*vec2(.8,1.25);float bl=length(bd);
   float inBay=(1.-smoothstep(bay-.035,bay+.02,bl))*step(.001,bay);
   col=mix(col,A,inBay);
-  // the tag, located
   vec2 tp=(tagPos-cam.xy)/span*cam.z+.5; vec2 dp=(uv-tp)*res; float dd=length(dp)/(res.y*.001);
   float pulse=fract(time*.55);
   col=mix(col,vec3(.12,.42,1.),tagOn*(1.-smoothstep(8.,9.5,dd)));
   col=mix(col,vec3(.12,.42,1.),tagOn*(1.-smoothstep(0.,2.,abs(dd-(12.+pulse*60.))))*(1.-pulse)*.6);
-  // daylight through the roof: soft panes drift across the plant; outside them the light is cooler and lower
-  vec2 fl=mat2(.72,.69,-.62,.79)*(iu*vec2(1.,1.25));   // the floor's own axes in the render
+  // light on the shapes: normals from the depth map; a high key from the roof, turning slowly with the film
+  if(dOn>.5){
+    vec3 N=normalize(texture2D(tN,iu).rgb*2.-1.);
+    vec3 L=normalize(vec3(cos(relit)*.7,sin(relit)*.5-.35,.8));
+    float df=clamp(dot(N,L),0.,1.),rim=pow(1.-clamp(N.z,0.,1.),2.);
+    float lit=clamp(df*(.55+.45*G.b),0.,1.);
+    // coloured light, like a studio model: sky-blue fill in the shade, a clean warm key on the faces turned to the roof
+    vec3 shadeT=mix(vec3(.78,.84,1.),vec3(.86,.89,.97),grey),keyT=vec3(1.035,1.012,.985);
+    col*=mix(shadeT,keyT,smoothstep(.15,.95,lit));col+=vec3(.75,.85,1.)*rim*.05*(1.-grey*.5);
+    // Sky Ground: the floor takes a pale sky, the things standing on it stay white, so every shape stands out
+    float up=smoothstep(.015,.11,G.g);col*=mix(mix(vec3(.885,.925,1.02),vec3(.93,.945,.985),grey),vec3(1.012,1.008,1.),up);
+    // where the tag is known, a soft pool of located blue lies on the floor around it
+    float pd=length((iu-tagPos)*vec2(.8,1.));float pool=step(.001,clr.z)*smoothstep(0.,.25,clr.z)*exp(-pow(pd/.06,2.))*(1.-up*.6);col=mix(col,col*vec3(.78,.87,1.12),pool*.7);
+    // the plate's own contact shadows, a little deeper and cool: things sit on the floor
+    col*=mix(vec3(.6,.66,.86),vec3(1.),.35+.65*G.b);
+    // the focus light is a real light: it lands on the tops and faces turned to it
+    float ins=1.-smoothstep(spot.z*.6,spot.z*1.3+.02,sd0);col+=vec3(1.,.97,.92)*ins*spot.w*(.03+.06*df)*(1.-inL);
+  }
+  // daylight through the roof: soft panes drift across the plant
+  vec2 fl=mat2(.72,.69,-.62,.79)*(iu*vec2(1.,1.25));
   vec2 sq=fl+vec2(time*.004,time*.0012); vec2 sc=vec2(.3,.22); vec2 sl=mod(sq+sc*.5,sc)-sc*.5;
   vec2 sd=abs(sl)-vec2(.085,.03)+.03; float pane=1.-smoothstep(-.03,.05,length(max(sd,0.))+min(max(sd.x,sd.y),0.)-.03);
   col*=mix(vec3(1.),mix(vec3(.955,.968,1.0),vec3(1.025,1.012,.985),pane),sky);
+  // the plant made legible: a fine coordinate lattice on the floor, spreading from the tag
+  if(lat>.001&&dOn>.5){vec2 gq=.5-abs(fract(fl*42.)-.5);float th=.03*cam.z;float ln=1.-smoothstep(0.,th,gq.x)*smoothstep(0.,th,gq.y);
+    float fd=length((iu-tagPos)*vec2(.8,1.)),reach=lat*1.4,onF=1.-smoothstep(.015,.06,G.g);
+    float a=ln*onF*(1.-smoothstep(reach-.08,reach,fd))*(.2+.55*exp(-pow((fd-reach+.03)/.03,2.)));
+    vec2 cq=.5-abs(fract(fl*42.)-.5);float node=(1.-smoothstep(0.,th*2.2,length(cq)))*onF*(1.-smoothstep(reach-.08,reach,fd));
+    col=mix(col,vec3(.18,.42,1.),a*.7+node*.5);}
+  // the paths are light: a soft bloom around each drawn line, its front brightest
+  if(glow>.001){float gs=0.;for(int i=0;i<8;i++){float a=float(i)*.785+.39;vec2 o=vec2(cos(a),sin(a));gs+=lineAt(iu+o*.0035)+lineAt(iu+o*.008)*.6;}
+    gs/=12.8;col+=vec3(.16,.38,1.)*gs*glow*.42*(1.-line*.6);col+=vec3(.3,.55,1.)*front*glow*.25;}
+  // what waits glows warm on the floor and on the trolleys beside it
+  if(warm>.001){float ws=0.;for(int i=0;i<8;i++){float a=float(i)*.785;vec2 o=vec2(cos(a),sin(a)*1.2);ws+=step(.02,texture2D(tM,iu+o*.012).b)+step(.02,texture2D(tM,iu+o*.026).b)*.7;}
+    ws/=13.6;float wm=onlyQ>.5?step(iu.x,.62):1.;col=mix(col,col*vec3(1.08,.97,.84)+vec3(.06,.03,0.),ws*warm*wm*(.6+.4*G.g));}
   // cooler, quieter grade for "before"
   float g=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(g),col,.2)*vec3(.97,.985,1.02),grey*(1.-k)*(1.-inBay)*.6);
-  // outside the focus: a pale, cool haze
+  // a low mist lies on the floor at the height of the trolleys; the tag clears it from where it is
+  if(fog.x>.001){
+    float mist=fbm(iu*vec2(7.,9.)+vec2(time*.035,-time*.02))*.6+fbm(iu*vec2(19.,23.)-vec2(time*.05,0.))*.4;
+    float lvl=fog.y*(.75+.5*mist);float f=fog.x*(1.-smoothstep(lvl*.35,lvl,G.g));
+    float cd=length((iu-clr.xy)*vec2(.8,1.));f*=smoothstep(clr.z-.06,clr.z+.04,cd)+step(clr.z,.001);
+    col=mix(col,mix(vec3(.84,.88,.97),vec3(.96,.97,1.),mist),clamp(f*(.55+.6*mist),0.,.86));
+    float edge=exp(-pow((cd-clr.z)/.025,2.))*step(.001,clr.z)*fog.x;col=mix(col,vec3(.55,.68,1.),edge*.35);
+  }
   float gq=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(gq),col,.25)*.42+vec3(.93,.95,.99)*.58,out0*(1.-inL)*.9);
-  col=mix(col,col*col*(3.-2.*col),.14);
-  // the lens itself: a slight lift inside, a soft falloff at its rim, and its shadow on the floor
+  // the grade: a gentle S, cool in the shade, clean in the light
+  col=mix(col,col*col*(3.-2.*col),.2);float lu=dot(col,vec3(.299,.587,.114));col*=mix(vec3(.93,.95,1.05),vec3(1.012,1.004,.99),smoothstep(.35,.85,lu));
   col=mix(col,col*1.03,inL);col*=1.-inL*smoothstep(lpos.z*.7,lpos.z,lr)*.07;
   float lsh=(1.-inL)*exp(-pow(max(0.,lr-lpos.z)/(.03),2.))*step(.001,lpos.w)*lpos.w;col*=1.-lsh*.12;
-  vec2 pu=(uv-vr.xy)/vr.zw;float vg=smoothstep(.5,1.2,length((pu-.5)*vec2(1.2,1.)));col*=mix(vec3(1.),vec3(.955,.965,.995),vg);col+=vec3(.014,.016,.02)*(1.-smoothstep(0.,.9,length((pu-vec2(.18,.08))*vec2(1.,1.2))));
-  col+=(h(floor(uv*res))-.5)*.012;
+  vec2 pu=(uv-vr.xy)/vr.zw;float vg=smoothstep(.5,1.2,length((pu-.5)*vec2(1.2,1.)));col*=mix(vec3(1.),vec3(.94,.955,.995),vg);col+=vec3(.014,.016,.02)*(1.-smoothstep(0.,.9,length((pu-vec2(.18,.08))*vec2(1.,1.2))));
+  col+=(h(floor(uv*res)+fract(time)*7.)-.5)*.014;
   gl_FragColor=vec4(col,1.);}`;
 
 // ---------- the floor: everything found in the render itself ----------
@@ -88,6 +127,31 @@ export function plateTex(gl, src, unit, mip = true) {
     im.src = src;
   });
 }
+// the depth of the same frame: r = depth (near is bright), g = height above the floor, b = contact shadow.
+// One image feeds the GPU (parallax, focus, mist, light) and the HUD (so every mark sits on the moved floor).
+let depthP = null;
+export function loadDepth(gl, unit) {
+  if (!depthP) depthP = new Promise((res) => {
+    const im = new Image(); im.decoding = 'async';
+    im.onload = () => {
+      const c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0);
+      const px = x.getImageData(0, 0, c.width, c.height).data, W = c.width, H = c.height;
+      const at = (u, v) => { const X = Math.max(0, Math.min(W - 1, Math.round(u * W - .5))), Y = Math.max(0, Math.min(H - 1, Math.round(v * H - .5))), i = (Y * W + X) * 4; return px[i] / 255; };
+      res({ im, at });
+    };
+    im.onerror = () => res(null);
+    im.src = `assets/scene/hall-depth-${innerWidth > 900 ? 1024 : 512}.png`;
+  });
+  return depthP.then((d) => {
+    if (!d) return null;
+    const tx = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tx);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, d.im);
+    for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
+    return new Promise((ok) => { const n = new Image(); n.decoding = 'async'; n.onload = () => { const tn = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit + 1); gl.bindTexture(gl.TEXTURE_2D, tn); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, n);
+      for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v); ok(d.at); };
+      n.onerror = () => ok(null); n.src = `assets/scene/hall-normal-${innerWidth > 900 ? 1024 : 512}.png`; });
+  });
+}
 // every tag rendered on the floor (dark AmIGo pixels found in the plate): the trolley first, then bin, tool and the rest
 export const MOVERS = [[.4792, .4848], [.2375, .3206], [.1945, .4275], [.7213, .2755], [.8975, .6083], [.1871, .6205], [.5101, .7342], [.3728, .7992], [.2201, .8717], [.8857, .7407]];
 export const moverDist = (m) => Math.hypot((m[0] - T[0]) * .8, m[1] - T[1]);
@@ -103,36 +167,38 @@ const LOOK1 = [[.8, .67, 3], [.71, .44, 5]], LOOK2 = [[.33, .37, 2], [.12, .5, 4
 
 // ---------- the beats: one picture per scroll; each plays on its own clock once you reach it, then holds ----------
 // sp = where the light falls [u, v, radius], sk = how far the rest falls back, lz = the lens on, lt = what it magnifies
-const S0 = { cam: WIDE, draw: 1.03, dash: 0, amber: 1, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 0, sp: [T[0], T[1], .5], sk: 0, lz: 0, lt: [T[0], T[1]] };
-const st = (o) => Object.assign({ draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1, sp: [.5, .5, .6], sk: 0, lz: 0, lt: [T[0], T[1]] }, o);
+// orbit = how the camera swings on the depth [x, y]; fd = what the lens focuses on; ap = how shallow the focus is;
+// fog = the mist on the floor [amount, height]; clr = how far the tag has cleared it; glow = paths as light; warm = waits as light
+const S0 = { cam: WIDE, draw: 1.03, dash: 0, amber: 1, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 0, sp: [T[0], T[1], .5], sk: 0, lz: 0, lt: [T[0], T[1]], orbit: [0, 0], fd: [T[0], T[1]], ap: 0, fog: [0, .2], clr: 0, glow: 0, warm: 0, lat: 0 };
+const st = (o) => Object.assign({ draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1, sp: [.5, .5, .6], sk: 0, lz: 0, lt: [T[0], T[1]], orbit: [0, 0], fd: [T[0], T[1]], ap: 2.2, fog: [.3, .2], clr: 0, glow: 0, warm: 0, lat: 0 }, o);
 const WC = [.44, .82];
 export const BEATS = [
-  st({ ch: 0, cam: [.52, .55, 1.06], hide: 1, sp: [T[0], T[1], .09], sk: .55 }),         // Think of the last time someone went looking for a trolley.
-  st({ ch: 0, cam: [.66, .6, 1.16], sp: [.8, .7, .14], sk: .5 }),                          // The walk.
-  st({ ch: 0, cam: [.6, .4, 1.16], sp: [.65, .3, .17], sk: .5 }),                          // The calls to stores.
-  st({ ch: 0, cam: [.4, .5, 1.12], sp: [.3, .5, .15], sk: .5 }),                           // The second walk.
-  st({ ch: 1, cam: [.36, .3, 1.4], sp: [.29, .26, .17], sk: .45 }),                        // A scan tells you where it last passed.
-  st({ ch: 1, cam: [.4, .38, 1.3], sp: [.29, .26, .13], sk: .92 }),                        // Between scans ... out of sight.
-  st({ ch: 2, cam: [.48, .5, 1.9], sp: [T[0], T[1], .05], sk: .6, lz: 1, lt: T }),        // A small tag rides on each trolley,
-  st({ ch: 2, cam: [.34, .46, 1.5], sp: [BIN[0], BIN[1], .05], sk: .6, lz: 1, lt: BIN }), // bin
-  st({ ch: 2, cam: [.58, .36, 1.4], sp: [TOOL[0], TOOL[1], .05], sk: .6, lz: 1, lt: TOOL }), // and tool.
-  st({ ch: 2, cam: [.6, .24, 1.3], sp: [.6, .17, .2], sk: .35, lz: 1, lt: [.8745, .2287] }), // Anchors on your columns
-  st({ ch: 2, cam: [.52, .3, 1.12], sp: [.55, .3, .3], sk: .3 }),                          // hear its signal.
-  st({ ch: 3, cam: [.5, .5, 1.3], sp: [T[0], T[1], .07], sk: .6 }),                        // A tag tells you where it stopped.
-  st({ ch: 3, cam: [.5, .5, 1.0], draw: 1.03, grey: 0, sp: [.5, .5, .7], sk: 0 }),         // One live map shows where it went
-  st({ ch: 3, cam: [.48, .5, 1.36], draw: 1.03, grey: 0, sp: [T[0], T[1], .09], sk: .4 }), // and how long it has waited.
-  st({ ch: 4, cam: [.55, .74, 1.3], draw: 1.03, amber: 1, grey: 0, sp: [WC[0], WC[1], .3], sk: .35 }),  // See where work waits.
-  st({ ch: 4, cam: [.55, .74, 1.3], draw: 1.03, amber: 1, grey: 0, sp: [WC[0], WC[1], .3], sk: .35 }),  // You see how long each one has waited,
-  st({ ch: 4, cam: [.55, .74, 1.36], draw: 1.03, amber: 1, grey: 0, sp: [WC[0], WC[1], .3], sk: .35 }), // while it is still waiting.
-  st({ ch: 5, cam: [.48, .74, 1.2], draw: 1.03, amber: 1, onlyQ: 1, hide: 1, sp: [.41, .84, .17], sk: .85 }), // Ask your floor a question.
-  st({ ch: 5, cam: [.48, .74, 1.2], draw: 1.03, amber: 1, onlyQ: 1, hide: 1, sp: [.41, .84, .17], sk: .85 }), // Which trolleys ...?
+  st({ ch: 0, cam: [.52, .55, 1.06], hide: 1, sp: [T[0], T[1], .09], sk: .55, orbit: [0.018, -0.007], ap: 2.4, fog: [.14, .2] }),          // Think of the last time someone went looking for a trolley.
+  st({ ch: 0, cam: [.66, .6, 1.16], sp: [.8, .7, .14], sk: .5, orbit: [-0.021, -0.004], ap: 2.8, fog: [.16, .22] }),                     // The walk.
+  st({ ch: 0, cam: [.6, .4, 1.16], sp: [.65, .3, .17], sk: .5, orbit: [0.000, 0.018], fd: STORES, ap: 3.2, fog: [.16, .22] }),              // The calls to stores.
+  st({ ch: 0, cam: [.4, .5, 1.12], sp: [.3, .5, .15], sk: .5, orbit: [0.021, -0.006], ap: 2.8, fog: [.18, .22] }),                       // The second walk.
+  st({ ch: 1, cam: [.36, .3, 1.4], sp: [.29, .26, .17], sk: .45, orbit: [-0.015, 0.011], fd: GATES[1], ap: 2.6, fog: [.22, .24] }),      // A scan tells you where it last passed.
+  st({ ch: 1, cam: [.4, .38, 1.3], sp: [.29, .26, .13], sk: .6, orbit: [0.012, 0.015], fd: GATES[1], ap: 1.6, fog: [.96, .46] }),        // Between scans ... out of sight.
+  st({ ch: 2, cam: [.48, .5, 1.9], sp: [T[0], T[1], .05], sk: .6, lz: 1, lt: T, orbit: [-0.011, -0.007], ap: 3, fog: [.96, .46], clr: .17 }),  // A small tag rides on each trolley,
+  st({ ch: 2, cam: [.34, .46, 1.5], sp: [BIN[0], BIN[1], .05], sk: .6, lz: 1, lt: BIN, orbit: [0.013, -0.006], fd: BIN, ap: 3, fog: [.96, .46], clr: .32 }), // bin
+  st({ ch: 2, cam: [.58, .36, 1.4], sp: [TOOL[0], TOOL[1], .05], sk: .6, lz: 1, lt: TOOL, orbit: [-0.012, 0.008], fd: TOOL, ap: 3, fog: [.96, .46], clr: .5 }), // and tool.
+  st({ ch: 2, cam: [.6, .24, 1.3], sp: [.6, .17, .2], sk: .35, lz: 1, lt: [.8745, .2287], orbit: [0.024, 0.018], fd: [.8745, .2287], ap: 3.6, fog: [.96, .46], clr: .8, lat: .35 }), // Anchors on your columns
+  st({ ch: 2, cam: [.52, .3, 1.12], sp: [.55, .3, .3], sk: .3, orbit: [0.000, 0.007], ap: 1.4, fog: [.96, .46], clr: 1.4, lat: 1 }),             // hear its signal.
+  st({ ch: 3, cam: [.5, .5, 1.3], sp: [T[0], T[1], .07], sk: .6, orbit: [-0.014, -0.007], ap: 2.6, fog: [0, .46], clr: 1.4, lat: 1 }),         // A tag tells you where it stopped.
+  st({ ch: 3, cam: [.5, .5, 1.0], draw: 1.03, grey: 0, sp: [.5, .5, .7], sk: 0, orbit: [0.021, 0.000], ap: .8, fog: [0, .2], glow: 1 }),  // One live map shows where it went
+  st({ ch: 3, cam: [.48, .5, 1.36], draw: 1.03, grey: 0, sp: [T[0], T[1], .09], sk: .4, orbit: [-0.012, -0.009], ap: 2.2, fog: [0, .2], glow: 1 }), // and how long it has waited.
+  st({ ch: 4, cam: [.55, .74, 1.3], draw: 1.03, amber: 1, grey: 0, sp: [WC[0], WC[1], .3], sk: .35, orbit: [0.018, -0.006], fd: WC, ap: 1.8, fog: [0, .2], glow: .5, warm: 1 }),  // See where work waits.
+  st({ ch: 4, cam: [.55, .74, 1.3], draw: 1.03, amber: 1, grey: 0, sp: [WC[0], WC[1], .3], sk: .35, orbit: [-0.015, -0.010], fd: WC, ap: 2.2, fog: [0, .2], glow: .5, warm: 1 }),  // You see how long each one has waited,
+  st({ ch: 4, cam: [.55, .74, 1.36], draw: 1.03, amber: 1, grey: 0, sp: [WC[0], WC[1], .3], sk: .35, orbit: [0.006, -0.014], fd: WC, ap: 2.4, fog: [0, .2], glow: .5, warm: 1 }), // while it is still waiting.
+  st({ ch: 5, cam: [.48, .74, 1.2], draw: 1.03, amber: 1, onlyQ: 1, hide: 1, sp: [.41, .84, .17], sk: .85, orbit: [-0.018, -0.006], fd: [.42, .825], ap: 2.4, fog: [0, .2], warm: 1 }), // Ask your floor a question.
+  st({ ch: 5, cam: [.48, .74, 1.2], draw: 1.03, amber: 1, onlyQ: 1, hide: 1, sp: [.41, .84, .17], sk: .85, orbit: [0.012, -0.011], fd: [.42, .825], ap: 2.4, fog: [0, .2], warm: 1 }), // Which trolleys ...?
 ];
 export const NB = BEATS.length;
 const SNAP = /[?&]still\b/.test(location.search); // screenshots: no easing lag
 const PLAY = .92;
 export const REST = BEATS.map((_, i) => (i + .78) / NB);
 export const CH_FIRST = [0, 1, 2, 3, 4, 5].map((c) => BEATS.findIndex((b) => b.ch === c));
-const KEYS = ['cam', 'draw', 'dash', 'amber', 'onlyQ', 'hide', 'bay', 'dot', 'grey', 'sp', 'sk', 'lz', 'lt'];
+const KEYS = ['cam', 'draw', 'dash', 'amber', 'onlyQ', 'hide', 'bay', 'dot', 'grey', 'sp', 'sk', 'lz', 'lt', 'orbit', 'fd', 'ap', 'fog', 'clr', 'glow', 'warm', 'lat'];
 
 function sample(bf) {
   const b = Math.min(NB - 1, Math.floor(bf)), u = clamp(bf - b), a = b ? BEATS[b - 1] : S0, z = BEATS[b], k = sm(0, 1, u / PLAY);
@@ -140,7 +206,9 @@ function sample(bf) {
   if (b === 12) o.draw = clamp(u / PLAY) * 1.03;    // the paths draw on a steady clock so their fronts read
   if (b === 0) { o.draw = 1.03; o.hide = sm(0, PLAY * .7, u); }
   // the light walks with the person
-  if (b === 1 || b === 3) { const w = along(b === 1 ? WALK1 : WALK2, clamp(u / PLAY)); o.sp = [lerp(o.sp[0], w[0], k), lerp(o.sp[1], w[1], k), o.sp[2]]; }
+  if (b === 1 || b === 3) { const w = along(b === 1 ? WALK1 : WALK2, clamp(u / PLAY)); o.sp = [lerp(o.sp[0], w[0], k), lerp(o.sp[1], w[1], k), o.sp[2]]; o.fd = [lerp(o.fd[0], w[0], k), lerp(o.fd[1], w[1], k)]; }
+  // the mist rises slowly between the scans, and the tag clears it in one widening ring
+  if (b === 5) o.fog = [lerp(a.fog[0], z.fog[0], sm(0, 1, u / PLAY * .9)), lerp(a.fog[1], z.fog[1], sm(0, 1, u / PLAY))];
   return o;
 }
 // what each beat's words point at on the floor
@@ -162,16 +230,19 @@ export function story(section, canvas) {
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
   const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'dof', 'sky', 'spot', 'lpos', 'ltgt'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
+  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'dof', 'sky', 'spot', 'lpos', 'ltgt', 'tD', 'tN', 'par', 'foc', 'fog', 'clr', 'dOn', 'glow', 'warm', 'relit', 'lat'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
   gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
   const big = plateSize();
-  let ready = false;
-  Promise.all([plateTex(gl, `assets/scene/hall-after-${big}.webp`, 0), plateTex(gl, `assets/scene/hall-before-${big}.webp`, 1), plateTex(gl, `assets/scene/hall-masks-${big}.png`, 2, false)]).then(() => {
+  let ready = false, depthAt = null;
+  Promise.all([plateTex(gl, `assets/scene/hall-after-${big}.webp`, 0), plateTex(gl, `assets/scene/hall-before-${big}.webp`, 1), plateTex(gl, `assets/scene/hall-masks-${big}.png`, 2, false), loadDepth(gl, 3).then((f) => { depthAt = f; })]).then(() => {
+    gl.uniform1i(U.tD, 3); gl.uniform1i(U.tN, 4); gl.uniform1f(U.dOn, depthAt ? 1 : 0);
     gl.uniform1f(U.sky, 1); gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); gl.uniform4f(U.vr, 0, 0, 1, 1); gl.uniform1f(U.wave, 0); gl.uniform2f(U.waveC, T[0], T[1]); ready = true; canvas.classList.add('ready');
   });
   let span = [1, 1];
   const hud = section.querySelector('#storyHUD'), hctx = hud && hud.getContext('2d');
-  const size = () => { const d = Math.min(devicePixelRatio, 1.75); canvas.width = canvas.clientWidth * d; canvas.height = canvas.clientHeight * d; gl.viewport(0, 0, canvas.width, canvas.height); const ra = canvas.width / canvas.height, ia = .8; span = ra > ia ? [1, ia / ra] : [ra / ia, 1]; if (hud) { hud.width = canvas.width; hud.height = canvas.height; } };
+  // the film fills the screen on a desk: the light work is soft, so the GPU draws it a little under device resolution; the HUD stays sharp
+  const size = () => { const d = Math.min(devicePixelRatio, innerWidth > 900 ? 1.3 : 1.75), dh = Math.min(devicePixelRatio, 2); canvas.width = canvas.clientWidth * d; canvas.height = canvas.clientHeight * d; gl.viewport(0, 0, canvas.width, canvas.height); const ra = canvas.width / canvas.height, ia = .8; span = ra > ia ? [1, ia / ra] : [ra / ia, 1]; if (hud) { hud.width = canvas.clientWidth * dh; hud.height = canvas.clientHeight * dh; } };
+  section.classList.add('x3');   // the full-screen stage: set before the first measure, so the canvas is sized to it
   size(); addEventListener('resize', size);
   section.dataset.beats = NB;
 
@@ -195,7 +266,7 @@ export function story(section, canvas) {
     const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight)), sf = Math.min(NB - .0001, p * NB), pinned = r.top <= 1 || section.classList.contains('pre-on');
     // the scroll only chooses the moment; once a moment is reached it plays out on its own clock and then stops
     const sb = Math.floor(sf), target = Math.min(NB - .0001, sb + clamp((sf - sb) / .1) * .999);
-    if (SNAP || !pinned) disp = target; else { const dd = target - disp, rate = Math.max(.85, Math.abs(dd) * 2.4); disp += Math.sign(dd) * Math.min(Math.abs(dd), rate * dt); }
+    if (SNAP || !pinned) disp = target; else { const dd = target - disp, rate = Math.max(.45, Math.abs(dd) * 1.5); disp += Math.sign(dd) * Math.min(Math.abs(dd), rate * dt); }
     const bf = disp, bNow = Math.floor(bf), ch = BEATS[bNow].ch;
     // the words: the chapter shows, and its words light up as their picture starts
     const lb = pinned ? bNow : -1;
@@ -208,13 +279,20 @@ export function story(section, canvas) {
     links.forEach((a, i) => { const f0 = CH_FIRST[i], f1 = i + 1 < CH_FIRST.length ? CH_FIRST[i + 1] : NB; a.style.setProperty('--f', clamp((bf - f0) / (f1 - f0)).toFixed(3)); });
     if (!ready) return;
     const s = sample(bf);
-    if (!smooth || SNAP) smooth = JSON.parse(JSON.stringify(s)); else for (const k in s) smooth[k] = Array.isArray(s[k]) ? s[k].map((x, j) => lerp(smooth[k][j], x, .1)) : lerp(smooth[k], s[k], .1);
-    const z = smooth.cam[2], hx = span[0] / z / 2, hy = span[1] / z / 2;
+    if (!smooth || SNAP) smooth = JSON.parse(JSON.stringify(s)); else for (const k in s) smooth[k] = Array.isArray(s[k]) ? s[k].map((x, j) => lerp(smooth[k][j], x, .065)) : lerp(smooth[k], s[k], .065);
+    const desk = innerWidth > 900, full = desk && section.classList.contains('x3');
+    // a full screen is wider than the old panel: the camera comes in closer so each beat frames the same thing
+    const z = smooth.cam[2] * (full ? lerp(1, 1.12, sm(0, .7, bf)) : 1), hx = span[0] / z / 2, hy = span[1] / z / 2;
     const pk = clamp(bf / .5); qx = lerp(qx, mx * pk, .05); qy = lerp(qy, my * pk, .05);
-    const cx = clamp(smooth.cam[0] + qx * .012 / z, hx, 1 - hx), cy = clamp(smooth.cam[1] + qy * .012 / z, hy, 1 - hy);
-    const desk = innerWidth > 900;
+    // on a desk the film fills the screen and the words sit on the left: the subject is framed right of centre
+    const FX = full ? .15 * sm(0, .7, bf) : 0;
+    const cx = clamp(smooth.cam[0] - FX * span[0] / z + qx * .008 / z, hx, 1 - hx), cy = clamp(smooth.cam[1] + qy * .008 / z, hy, 1 - hy);
+    // the orbit: the camera swings on the plant's depth around what it looks at; it breathes, and leans with the hand
+    const pz = depthAt ? depthAt(smooth.fd[0], smooth.fd[1]) : .5;
+    const ox = smooth.orbit[0] * sm(0, .6, bf) + Math.sin(t * .00023) * .006 + qx * .03, oy = smooth.orbit[1] * sm(0, .6, bf) + Math.cos(t * .00019) * .004 + qy * .02;
+    const pj = (u, v) => { const dz = depthAt ? depthAt(u, v) - pz : 0; return [(u + ox * dz - cx) * z / span[0] + .5, (v + oy * dz - cy) * z / span[1] + .5]; };
     // the lens: it sits in the emptier side of the frame, away from what it magnifies
-    const toUV = (u, v) => [(u - cx) * z / span[0] + .5, (v - cy) * z / span[1] + .5];
+    const toUV = pj;
     const [lu, lv] = toUV(...smooth.lt), asp = canvas.width / canvas.height, LR = desk ? .15 : .13;
     const LP = [clamp(lu + (lu > .5 ? -.3 : .3) / asp * 1.25, LR / asp + .04, 1 - LR / asp - .04), clamp(lv + (lv > .45 ? -.26 : .26), LR + .05, 1 - LR - .05)];
     const lzk = sm(.05, .95, smooth.lz);
@@ -224,12 +302,15 @@ export function story(section, canvas) {
     gl.uniform1f(U.hidePaths, smooth.hide); gl.uniform1f(U.bay, 0); gl.uniform1f(U.tagOn, 0); gl.uniform1f(U.grey, smooth.grey); gl.uniform1f(U.time, t * .001); gl.uniform1f(U.dof, desk ? 1 : .6);
     gl.uniform4f(U.spot, smooth.sp[0], smooth.sp[1], smooth.sp[2], smooth.sk);
     gl.uniform4f(U.lpos, LP[0], LP[1], LR * eo(lzk), lzk); gl.uniform3f(U.ltgt, smooth.lt[0], smooth.lt[1], 2.4);
+    gl.uniform3f(U.par, ox, oy, pz); gl.uniform2f(U.foc, pz, smooth.ap * (desk ? 1 : .7) * 2.6);
+    gl.uniform2f(U.fog, smooth.fog[0], smooth.fog[1]); gl.uniform3f(U.clr, T[0], T[1], smooth.clr);
+    gl.uniform1f(U.lat, smooth.lat); gl.uniform1f(U.glow, smooth.glow); gl.uniform1f(U.warm, smooth.warm); gl.uniform1f(U.relit, 2.2 + bf * .09 + Math.sin(t * .0002) * .15);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
-    if (hctx) drawHUD(hctx, bf, t * .001, cx, cy, z, span, { lp: LP, lr: LR * eo(lzk), lz: lzk, lt: smooth.lt, sp: smooth.sp });
+    if (hctx) drawHUD(hctx, bf, t * .001, cx, cy, z, span, { lp: LP, lr: LR * eo(lzk), lz: lzk, lt: smooth.lt, sp: smooth.sp }, pj);
 
     // the thread from the words to the floor
     const cr = canvas.getBoundingClientRect(), sr = sticky.getBoundingClientRect(), sc = cr.width / canvas.width;
-    const Pc = (u, v) => [((u - cx) * z / span[0] + .5) * canvas.width * sc + cr.left - sr.left, ((v - cy) * z / span[1] + .5) * canvas.height * sc + cr.top - sr.top];
+    const Pc = (u, v) => { const q = pj(u, v); return [q[0] * canvas.width * sc + cr.left - sr.left, q[1] * canvas.height * sc + cr.top - sr.top]; };
     const u0 = clamp(bf - bNow), tg = desk && pinned ? targetOf(bNow, clamp(u0 / PLAY)) : null, el = tg && fragAt(lb);
     if (bNow !== wb) { wb = bNow; wk = 0; }
     wk = SNAP ? 1 : Math.min(1, wk + dt / .7);
@@ -320,9 +401,31 @@ function waitRing(x, X, Y, R, w, s, a, t, live, i) {
   x.restore();
 }
 
-function drawHUD(x, bf, t, cx, cy, z, span, L) {
+// how long it has waited, as a structure: a column of amber glass rising from the floor where the work stands,
+// its height the time, fine ticks up its edge, a lit cap that keeps creeping while the work still waits
+function pillar(x, X, Y, h, s, a, t, live, i) {
+  if (a <= 0) return; const w = 22 * s, H = Math.max(2 * s, h); x.save(); x.globalAlpha = a;
+  const g0 = x.createRadialGradient(X, Y, 0, X, Y, w * 2.6); g0.addColorStop(0, `rgba(${AMB},.34)`); g0.addColorStop(1, `rgba(${AMB},0)`);
+  x.fillStyle = g0; x.beginPath(); x.ellipse(X, Y, w * 2.6, w * 1.4, 0, 0, 7); x.fill();
+  // two faces of the column, lit from the roof: the left a touch brighter
+  const gl = x.createLinearGradient(0, Y, 0, Y - H); gl.addColorStop(0, `rgba(${AMB},.62)`); gl.addColorStop(.7, `rgba(${AMB},.22)`); gl.addColorStop(1, `rgba(${AMB},.08)`);
+  const gr = x.createLinearGradient(0, Y, 0, Y - H); gr.addColorStop(0, 'rgba(232,140,10,.55)'); gr.addColorStop(.7, 'rgba(232,140,10,.18)'); gr.addColorStop(1, 'rgba(232,140,10,.06)');
+  x.fillStyle = gl; x.beginPath(); x.moveTo(X - w, Y - w * .5); x.lineTo(X, Y); x.lineTo(X, Y - H); x.lineTo(X - w, Y - H - w * .5); x.closePath(); x.fill();
+  x.fillStyle = gr; x.beginPath(); x.moveTo(X, Y); x.lineTo(X + w, Y - w * .5); x.lineTo(X + w, Y - H - w * .5); x.lineTo(X, Y - H); x.closePath(); x.fill();
+  // the cap: a lit lozenge
+  x.fillStyle = 'rgba(255,236,190,.95)'; x.beginPath(); x.moveTo(X - w, Y - H - w * .5); x.lineTo(X, Y - H); x.lineTo(X + w, Y - H - w * .5); x.lineTo(X, Y - H - w); x.closePath(); x.fill();
+  x.strokeStyle = `rgb(${AMB})`; x.lineWidth = 1 * s; x.stroke();
+  // edges and the time scale
+  x.strokeStyle = 'rgba(214,128,0,.7)'; x.lineWidth = .9 * s; x.beginPath(); x.moveTo(X, Y); x.lineTo(X, Y - H); x.moveTo(X - w, Y - w * .5); x.lineTo(X - w, Y - H - w * .5); x.moveTo(X + w, Y - w * .5); x.lineTo(X + w, Y - H - w * .5); x.stroke();
+  x.strokeStyle = 'rgba(214,128,0,.55)'; for (let k = 10 * s, j = 1; k < H; k += 10 * s, j++) { const L = (j % 6 ? 3 : 7) * s; x.beginPath(); x.moveTo(X - w, Y - k - w * .5); x.lineTo(X - w - L, Y - k - w * .5 + L * .5); x.stroke(); }
+  // still waiting: the cap breathes
+  if (live > 0) { x.globalAlpha = a * live * (.35 + .35 * Math.sin(t * 2.4 + i)); x.strokeStyle = `rgb(${AMB})`; x.lineWidth = 1 * s; x.beginPath(); x.ellipse(X, Y - H - w * .5, w * 1.6, w * .8, 0, 0, 7); x.stroke(); }
+  x.restore();
+}
+
+function drawHUD(x, bf, t, cx, cy, z, span, L, pj) {
   const W = x.canvas.width, H = x.canvas.height, d = W / Math.max(1, x.canvas.clientWidth), s = Math.min(Math.max(H / 760, .8), 2.2) * (W < 700 ? .9 : 1);
-  const P = (u, v) => [((u - cx) * z / span[0] + .5) * W, ((v - cy) * z / span[1] + .5) * H];
+  const P = pj ? (u, v) => { const q = pj(u, v); return [q[0] * W, q[1] * H]; } : (u, v) => [((u - cx) * z / span[0] + .5) * W, ((v - cy) * z / span[1] + .5) * H];
   const lp = (i) => clamp((bf - i) / PLAY);
   const win = (a, b, f = .25) => clamp((bf - a) / f) * clamp((b - bf) / f);
   x.clearRect(0, 0, W, H); x.lineCap = 'round'; x.lineJoin = 'round';
@@ -443,7 +546,7 @@ function drawHUD(x, bf, t, cx, cy, z, span, L) {
     x.restore();
     reticle(x, TX, TY, 15, k, s, RED, a * (1 - lp(12) * .5), 0);
     point(x, TX, TY, clamp(k * 1.4), s, RED, a, 1.15);
-    const k13 = lp(13); if (k13 > 0) waitRing(x, TX, TY, 34 * s, .42 * eo(k13), s, a * eo(k13 * 2), t, sm(.5, 1, k13), 9);
+    const k13 = lp(13); if (k13 > 0 && bf < 14.2) pillar(x, TX, TY, 110 * s * eo(k13), s, a * eo(k13 * 2) * (1 - sm(13.9, 14.2, bf)), t, sm(.5, 1, k13), 9);
   }
 
   // ---- Waits: fine amber rings on the floor, filling, then creeping on while the work still waits ----
@@ -451,7 +554,7 @@ function drawHUD(x, bf, t, cx, cy, z, span, L) {
   WAITS.forEach(([u, v, w], i) => {
     const k = eo((lp(14) - i * .12) / .5); if (a * k <= 0) return; const [X, Y] = P(u, v);
     const ask = bf > 17 ? (i < 3 ? 1 : .2) : 1, grow = eo(lp(15));
-    waitRing(x, X, Y, 30 * s, w * k * (.55 + .45 * grow) + lp(16) * ((t * .006) % .05), s, a * ask, t, lp(16), i);
+    pillar(x, X, Y, 260 * s * (w * k * (.55 + .45 * grow) + lp(16) * ((t * .004) % .06)), s, a * ask, t, lp(16), i);
   });
   // the answer: a reticle settles on each of the three that match
   a = win(18, 19.2, .3);
