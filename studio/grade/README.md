@@ -10,7 +10,7 @@ shadows lean into the ink indigo of the type (#0B1238), highlights roll into the
 - **Colours:** use the tokens in `studio/grade/grade.css` (loaded last on every page), not new hex values:
   `--g-paper #f7faff` (brightest), `--g-ground #f0f6ff` (page), `--g-plate #e4ebf6`, `--g-ink #0b1238`,
   `--g-night #0c1430` (dark bands), `--g-black #05060d` (house black, never #000), shadows `rgb(var(--g-shadow) / a)` = ink-tinted.
-  Elevation: `--g-elev-1/2/3` (one key light above, contact + ambient layer). Signals unchanged: action #4b3df0, located #1f6bff, sky #66a5fa, waiting #ffb020.
+  Elevation: `--g-elev-1/2/3` (one key light above, contact + ambient layer). Signals: action #4b3df0, located #1f6bff (moving / known), waiting #ffb020 (idle in a queue), stopped #ef3b4f (work halted; text #b81f33; shader vec3(.937,.231,.310)), each with a --g-*-glow for atmosphere (a pool of coloured light around the object, never a full-frame wash). The grade never desaturates reds, amber or blue.
 - **WebGL / shaders:** clear colour = page ground #f0f6ff; shadow tint = ink #0b1238 at low strength; key light cool white #f7faff; no pure black.
 - **New Higgsfield or Blender output:** apply `amimotion-sky-ground.cube` (this folder) in Resolve/ffmpeg if you want to judge it graded before the build: `ffmpeg -i in.mp4 -vf lut3d=amimotion-sky-ground.cube out.mp4`. The build adds a per-file white balance first, so the cube alone is the look without the balance.
 

@@ -18,6 +18,11 @@
   --g-elev-3:0 2px 4px rgb(11 18 56 / .06),0 30px 60px -28px rgb(11 18 56 / .38);
   /* signals (unchanged meaning) */
   --g-action:#4b3df0; --g-located:#1f6bff; --g-sky:#66a5fa; --g-waiting:#ffb020;
+  /* stopped: work has halted (Shiv, 3 Nov). A crimson that leans cool so it sits with the indigo, distinct from amber waiting */
+  --g-stopped:#ef3b4f;          /* fills, rings, the stopped object: shader vec3(.937,.231,.310) */
+  --g-stopped-ink:#b81f33;      /* as text on the light page (AA 5.6:1 on #f0f6ff) */
+  --g-stopped-glow:rgb(239 59 79 / .32);   /* atmosphere: a red pool of light under / around what stopped, never a full-frame wash */
+  --g-located-glow:rgb(31 107 255 / .28); --g-waiting-glow:rgb(255 176 32 / .30);
 }
 /* the six page worlds keep their character but share one daylight white point and one ink-indigo night */
 .ds[data-world="steel"]{--w-ground:#eef3fb;--w-band:#0c1430;--w-plate:#dde6f4}
