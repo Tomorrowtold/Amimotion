@@ -12,7 +12,7 @@ export const VS = `attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Posi
 // at the height of the trolleys, and the light lands on the shapes (normals from depth), not on a flat picture.
 export const FS = `precision highp float;varying vec2 v;
 uniform sampler2D tA,tB,tM,tD,tN;uniform vec2 res,span,tagPos,bayC,waveC,foc,fog;uniform vec3 cam,par,clr;uniform vec4 vr;
-uniform float draw,dash,amber,onlyQ,hidePaths,bay,tagOn,time,grey,wave,dof,sky,dOn,glow,warm,relit,lat;
+uniform float draw,dash,amber,onlyQ,hidePaths,bay,tagOn,time,grey,wave,dof,sky,dOn,glow,warm,relit,lat,stop;
 uniform vec4 spot,lpos;uniform vec3 ltgt;
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+1.),f.x),f.y);}
@@ -32,6 +32,8 @@ void main(){
   // the lens on real depth: what is nearer or farther than the focus goes soft
   float dz=abs(G.r-foc.x);float lb=mix(dOn>.5?clamp(dz*foc.y-.15,0.,2.4)+out0*1.1:tilt*dof+out0*1.6,0.,inL);
   vec3 A=texture2D(tA,iu,lb).rgb,B=texture2D(tB,iu,lb).rgb,M=texture2D(tM,iu).rgb;
+  // crisp: where the lens is sharp, lift the plate's own fine detail (an unsharp mask against its softer mip)
+  float shp=(1.-clamp(lb,0.,1.))*.55;A+=(A-texture2D(tA,iu,1.6).rgb)*shp;B+=(B-texture2D(tB,iu,1.6).rgb)*shp;
   float wd=length((iu-waveC)*vec2(.8,1.));
   float inW=(1.-smoothstep(wave-.05,wave,wd))*step(.001,wave);
   float onPath=step(.004,M.g)*M.r;
@@ -96,11 +98,19 @@ void main(){
     col=mix(col,mix(vec3(.84,.88,.97),vec3(.96,.97,1.),mist),clamp(f*(.55+.6*mist),0.,.86));
     float edge=exp(-pow((cd-clr.z)/.025,2.))*step(.001,clr.z)*fog.x;col=mix(col,vec3(.55,.68,1.),edge*.35);
   }
+  // it stopped: the plant goes still and cool, one warm-red light falls on the trolley that stopped
+  if(stop>.001){float sd=length((iu-tagPos)*vec2(.8,1.));float sp=exp(-pow(sd/.075,2.));float lum=dot(col,vec3(.299,.587,.114));
+    col=mix(col,mix(vec3(lum),col,.35)*vec3(.9,.93,1.)*.94,stop*(1.-sp)*.75);
+    col=mix(col,col*vec3(1.16,.8,.82)+vec3(.05,0.,0.),stop*sp*.8);
+    float rr=exp(-pow((sd-.05-fract(time*.45)*.09)/.006,2.))*(1.-fract(time*.45));col=mix(col,vec3(.937,.231,.31),rr*stop*.5);}
+  // waiting work warms the whole air a little
+  col*=mix(vec3(1.),vec3(1.02,1.0,.965),warm*.6);
   float gq=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(gq),col,.25)*.42+vec3(.93,.95,.99)*.58,out0*(1.-inL)*.9);
   // the grade: a gentle S, cool in the shade, clean in the light
   col=mix(col,col*col*(3.-2.*col),.2);float lu=dot(col,vec3(.299,.587,.114));col*=mix(vec3(.93,.95,1.05),vec3(1.012,1.004,.99),smoothstep(.35,.85,lu));
   col=mix(col,col*1.03,inL);col*=1.-inL*smoothstep(lpos.z*.7,lpos.z,lr)*.07;
   float lsh=(1.-inL)*exp(-pow(max(0.,lr-lpos.z)/(.03),2.))*step(.001,lpos.w)*lpos.w;col*=1.-lsh*.12;
+  col=mix(col,vec3(.93,.955,1.),smoothstep(.01,-.06,iu.y));
   vec2 pu=(uv-vr.xy)/vr.zw;float vg=smoothstep(.5,1.2,length((pu-.5)*vec2(1.2,1.)));col*=mix(vec3(1.),vec3(.94,.955,.995),vg);col+=vec3(.014,.016,.02)*(1.-smoothstep(0.,.9,length((pu-vec2(.18,.08))*vec2(1.,1.2))));
   col+=(h(floor(uv*res)+fract(time)*7.)-.5)*.014;
   gl_FragColor=vec4(col,1.);}`;
@@ -174,8 +184,8 @@ const LOOK1 = [[.8, .67, 3], [.71, .44, 5]], LOOK2 = [[.33, .37, 2], [.12, .5, 4
 // sp = where the light falls [u, v, radius], sk = how far the rest falls back, lz = the lens on, lt = what it magnifies
 // orbit = how the camera swings on the depth [x, y]; fd = what the lens focuses on; ap = how shallow the focus is;
 // fog = the mist on the floor [amount, height]; clr = how far the tag has cleared it; glow = paths as light; warm = waits as light
-const S0 = { cam: WIDE, draw: 1.03, dash: 0, amber: 1, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 0, sp: [T[0], T[1], .5], sk: 0, lz: 0, lt: [T[0], T[1]], orbit: [0, 0], fd: [T[0], T[1]], ap: 0, fog: [0, .2], clr: 0, glow: 0, warm: 0, lat: 0 };
-const st = (o) => Object.assign({ draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1, sp: [.5, .5, .6], sk: 0, lz: 0, lt: [T[0], T[1]], orbit: [0, 0], fd: [T[0], T[1]], ap: 2.2, fog: [.3, .2], clr: 0, glow: 0, warm: 0, lat: 0 }, o);
+const S0 = { cam: WIDE, draw: 1.03, dash: 0, amber: 1, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 0, sp: [T[0], T[1], .5], sk: 0, lz: 0, lt: [T[0], T[1]], orbit: [0, 0], fd: [T[0], T[1]], ap: 0, fog: [0, .2], clr: 0, glow: 0, warm: 0, lat: 0, stop: 0, lift: 0 };
+const st = (o) => Object.assign({ draw: 0, dash: 0, amber: 0, onlyQ: 0, hide: 0, bay: 0, dot: 0, grey: 1, sp: [.5, .5, .6], sk: 0, lz: 0, lt: [T[0], T[1]], orbit: [0, 0], fd: [T[0], T[1]], ap: 2.2, fog: [.3, .2], clr: 0, glow: 0, warm: 0, lat: 0, stop: 0, lift: 0 }, o);
 const WC = [.44, .82];
 export const BEATS = [
   st({ ch: 0, cam: [.52, .55, 1.06], hide: 1, sp: [T[0], T[1], .09], sk: .55, orbit: [0.018, -0.007], ap: 2.4, fog: [.14, .2] }),          // Think of the last time someone went looking for a trolley.
@@ -187,9 +197,9 @@ export const BEATS = [
   st({ ch: 2, cam: [.48, .5, 1.9], sp: [T[0], T[1], .05], sk: .6, lz: 1, lt: T, orbit: [-0.011, -0.007], ap: 3, fog: [.96, .46], clr: .17 }),  // A small tag rides on each trolley,
   st({ ch: 2, cam: [.34, .46, 1.5], sp: [BIN[0], BIN[1], .05], sk: .6, lz: 1, lt: BIN, orbit: [0.013, -0.006], fd: BIN, ap: 3, fog: [.96, .46], clr: .32 }), // bin
   st({ ch: 2, cam: [.58, .36, 1.4], sp: [TOOL[0], TOOL[1], .05], sk: .6, lz: 1, lt: TOOL, orbit: [-0.012, 0.008], fd: TOOL, ap: 3, fog: [.96, .46], clr: .5 }), // and tool.
-  st({ ch: 2, cam: [.6, .24, 1.3], sp: [.6, .17, .2], sk: .35, lz: 1, lt: [.8745, .2287], orbit: [0.024, 0.018], fd: [.8745, .2287], ap: 3.6, fog: [.96, .46], clr: .8, lat: .35 }), // Anchors on your columns
-  st({ ch: 2, cam: [.52, .3, 1.12], sp: [.55, .3, .3], sk: .3, orbit: [0.000, 0.007], ap: 1.4, fog: [.96, .46], clr: 1.4, lat: 1 }),             // hear its signal.
-  st({ ch: 3, cam: [.5, .5, 1.3], sp: [T[0], T[1], .07], sk: .6, orbit: [-0.014, -0.007], ap: 2.6, fog: [0, .46], clr: 1.4, lat: 1 }),         // A tag tells you where it stopped.
+  st({ ch: 2, lift: 1, cam: [.56, .28, .82], sp: [.6, .17, .2], sk: .35, lz: 1, lt: [.8745, .2287], orbit: [0.012, 0.006], fd: [.8745, .2287], ap: 1.2, fog: [.96, .46], clr: .8, lat: .35 }), // Anchors on your columns
+  st({ ch: 2, lift: 1, cam: [.55, .29, .8], sp: [.55, .3, .3], sk: .3, orbit: [0.000, 0.007], ap: .7, fog: [.96, .46], clr: 1.4, lat: 1 }),             // hear its signal.
+  st({ ch: 3, cam: [.5, .5, 1.3], sp: [T[0], T[1], .07], sk: .6, orbit: [-0.014, -0.007], ap: 2.2, fog: [0, .46], clr: 1.4, lat: .5, stop: 1 }),         // A tag tells you where it stopped.
   st({ ch: 3, cam: [.5, .5, 1.0], draw: 1.03, grey: 0, sp: [.5, .5, .7], sk: 0, orbit: [0.021, 0.000], ap: .8, fog: [0, .2], glow: 1 }),  // One live map shows where it went
   st({ ch: 3, cam: [.48, .5, 1.36], draw: 1.03, grey: 0, sp: [T[0], T[1], .09], sk: .4, orbit: [-0.012, -0.009], ap: 2.2, fog: [0, .2], glow: 1 }), // and how long it has waited.
   st({ ch: 4, cam: [.55, .74, 1.3], draw: 1.03, amber: 1, grey: 0, sp: [WC[0], WC[1], .3], sk: .35, orbit: [0.018, -0.006], fd: WC, ap: 1.8, fog: [0, .2], glow: .5, warm: 1 }),  // See where work waits.
@@ -204,7 +214,7 @@ const FILM = /[?&]film\b/.test(location.search);  // recordings: the scroll posi
 const PLAY = .92;
 export const REST = BEATS.map((_, i) => (i + .78) / NB);
 export const CH_FIRST = [0, 1, 2, 3, 4, 5].map((c) => BEATS.findIndex((b) => b.ch === c));
-const KEYS = ['cam', 'draw', 'dash', 'amber', 'onlyQ', 'hide', 'bay', 'dot', 'grey', 'sp', 'sk', 'lz', 'lt', 'orbit', 'fd', 'ap', 'fog', 'clr', 'glow', 'warm', 'lat'];
+const KEYS = ['cam', 'draw', 'dash', 'amber', 'onlyQ', 'hide', 'bay', 'dot', 'grey', 'sp', 'sk', 'lz', 'lt', 'orbit', 'fd', 'ap', 'fog', 'clr', 'glow', 'warm', 'lat', 'stop', 'lift'];
 
 function sample(bf) {
   const b = Math.min(NB - 1, Math.floor(bf)), u = clamp(bf - b), a = b ? BEATS[b - 1] : S0, z = BEATS[b], k = sm(0, 1, u / PLAY);
@@ -236,7 +246,7 @@ export function story(section, canvas) {
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
   const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'dof', 'sky', 'spot', 'lpos', 'ltgt', 'tD', 'tN', 'par', 'foc', 'fog', 'clr', 'dOn', 'glow', 'warm', 'relit', 'lat'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
+  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'dof', 'sky', 'spot', 'lpos', 'ltgt', 'tD', 'tN', 'par', 'foc', 'fog', 'clr', 'dOn', 'glow', 'warm', 'relit', 'lat', 'stop'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
   gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
   const big = plateSize();
   let ready = false, depthAt = null;
@@ -247,7 +257,7 @@ export function story(section, canvas) {
   let span = [1, 1];
   const hud = section.querySelector('#storyHUD'), hctx = hud && hud.getContext('2d');
   // the film fills the screen on a desk: the light work is soft, so the GPU draws it a little under device resolution; the HUD stays sharp
-  const size = () => { const d = Math.min(devicePixelRatio, innerWidth > 900 ? 1.3 : 1.75), dh = Math.min(devicePixelRatio, 2); canvas.width = canvas.clientWidth * d; canvas.height = canvas.clientHeight * d; gl.viewport(0, 0, canvas.width, canvas.height); const ra = canvas.width / canvas.height, ia = .8; span = ra > ia ? [1, ia / ra] : [ra / ia, 1]; if (hud) { hud.width = canvas.clientWidth * dh; hud.height = canvas.clientHeight * dh; } };
+  const size = () => { const d = Math.min(devicePixelRatio, 2), dh = Math.min(devicePixelRatio, 2); canvas.width = canvas.clientWidth * d; canvas.height = canvas.clientHeight * d; gl.viewport(0, 0, canvas.width, canvas.height); const ra = canvas.width / canvas.height, ia = .8; span = ra > ia ? [1, ia / ra] : [ra / ia, 1]; if (hud) { hud.width = canvas.clientWidth * dh; hud.height = canvas.clientHeight * dh; } };
   section.classList.add('x3');   // the full-screen stage: set before the first measure, so the canvas is sized to it
   size(); addEventListener('resize', size);
   section.dataset.beats = NB;
@@ -263,6 +273,9 @@ export function story(section, canvas) {
   wire.append(wp, wd, ws); sticky.appendChild(wire);
   const caps = [...section.querySelectorAll('.cap')], links = [...section.querySelectorAll('.rail a')];
   const frags = [...section.querySelectorAll('[data-b]')].map((el) => [el, +el.dataset.b]);
+  // each line of words carries a small key in the colour and shape of what it names on the floor
+  const KEYS_OF = ['ink', 'ink', 'ink', 'ink', 'scan', 'scan', 'tag', 'tag', 'tag', 'anchor', 'tag', 'stop', 'map', 'wait', 'wait', 'wait', 'wait', 'wait', 'wait'];
+  frags.forEach(([el, i]) => { el.dataset.k = KEYS_OF[i] || 'ink'; });
   const fragAt = (i) => { let el = null; for (const [e, j] of frags) if (j === i) el = e; return el; };
   links.forEach((a, i) => a.addEventListener('click', (e) => { e.preventDefault(); const top = section.getBoundingClientRect().top + scrollY + (section.offsetHeight - innerHeight) * REST[CH_FIRST[i]]; scrollTo({ top, behavior: 'smooth' }); }));
   let smooth = null, mx = 0, my = 0, qx = 0, qy = 0, beat = -1, lit = -1, disp = 0, last = 0, wk = 0, wb = -1;
@@ -292,7 +305,7 @@ export function story(section, canvas) {
     const pk = clamp(bf / .5); qx = lerp(qx, mx * pk, .05); qy = lerp(qy, my * pk, .05);
     // on a desk the film fills the screen and the words sit on the left: the subject is framed right of centre
     const FX = full ? .15 * sm(0, .7, bf) : 0;
-    const cx = clamp(smooth.cam[0] - FX * span[0] / z + qx * .008 / z, hx, 1 - hx), cy = clamp(smooth.cam[1] + qy * .008 / z, hy, 1 - hy);
+    const cx = clamp(smooth.cam[0] - FX * span[0] / z + qx * .008 / z, hx, 1 - hx), cy = clamp(smooth.cam[1] + qy * .008 / z, hy - .1 * smooth.lift, 1 - hy);
     // the orbit: the camera swings on the plant's depth around what it looks at; it breathes, and leans with the hand
     const pz = depthAt ? depthAt(smooth.fd[0], smooth.fd[1]) : .5;
     const ox = smooth.orbit[0] * sm(0, .6, bf) + Math.sin(t * .00023) * .006 + qx * .03, oy = smooth.orbit[1] * sm(0, .6, bf) + Math.cos(t * .00019) * .004 + qy * .02;
@@ -308,9 +321,9 @@ export function story(section, canvas) {
     gl.uniform1f(U.hidePaths, smooth.hide); gl.uniform1f(U.bay, 0); gl.uniform1f(U.tagOn, 0); gl.uniform1f(U.grey, smooth.grey); gl.uniform1f(U.time, t * .001); gl.uniform1f(U.dof, desk ? 1 : .6);
     gl.uniform4f(U.spot, smooth.sp[0], smooth.sp[1], smooth.sp[2], smooth.sk);
     gl.uniform4f(U.lpos, LP[0], LP[1], LR * eo(lzk), lzk); gl.uniform3f(U.ltgt, smooth.lt[0], smooth.lt[1], 2.4);
-    gl.uniform3f(U.par, ox, oy, pz); gl.uniform2f(U.foc, pz, smooth.ap * (desk ? 1 : .7) * 2.6);
+    gl.uniform3f(U.par, ox, oy, pz); gl.uniform2f(U.foc, pz, smooth.ap * (desk ? 1 : .7) * 1.8);
     gl.uniform2f(U.fog, smooth.fog[0], smooth.fog[1]); gl.uniform3f(U.clr, T[0], T[1], smooth.clr);
-    gl.uniform1f(U.lat, smooth.lat); gl.uniform1f(U.glow, smooth.glow); gl.uniform1f(U.warm, smooth.warm); gl.uniform1f(U.relit, 2.2 + bf * .09 + Math.sin(t * .0002) * .15);
+    gl.uniform1f(U.lat, smooth.lat); gl.uniform1f(U.stop, smooth.stop); gl.uniform1f(U.glow, smooth.glow); gl.uniform1f(U.warm, smooth.warm); gl.uniform1f(U.relit, 2.2 + bf * .09 + Math.sin(t * .0002) * .15);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     if (hctx) drawHUD(hctx, bf, t * .001, cx, cy, z, span, { lp: LP, lr: LR * eo(lzk), lz: lzk, lt: smooth.lt, sp: smooth.sp }, pj);
 
@@ -344,7 +357,7 @@ export function story(section, canvas) {
 }
 
 /* ---------- shared with the landing: every tag located, and the lock on the trolley ---------- */
-const RED = '31,107,255', INDIGO = '75,61,240', INK = '11,18,56', BLUE = '31,107,255', AMB = '255,176,32';
+const RED = '239,59,79', INDIGO = '75,61,240', INK = '11,18,56', BLUE = '31,107,255', AMB = '255,176,32';
 // x: 2D context; P: plate -> device px; d: device pixels per CSS pixel; seen(i): 0..1 since the wave reached mover i; lockA: lock alpha
 export function drawLanding(x, P, d, seen, lockA, lockGrow = 0) {
   x.save(); x.lineCap = 'round';
@@ -527,21 +540,69 @@ function drawHUD(x, bf, t, cx, cy, z, span, L, pj) {
     const tagged = [[T, k6], [BIN, k7], [TOOL, k8]];
     tagged.forEach(([m, k], i) => { const [X, Y] = P(...m), cur = Math.floor(bf) === 6 + i; reticle(x, X, Y, 13, k, s, INDIGO, a * (cur ? 1 : .0), t * .2); point(x, X, Y, k * 1.2, s, INDIGO, a); });
     if (k8 > .4) MOVERS.slice(4).forEach((m, i) => point(x, ...P(...m), clamp((k8 - .4) * 2.4 - i * .1), s * .8, INDIGO, a * .8));
-    // anchors: a small square mark on each column, and the column's line of sight
-    AP.forEach(([X, Y], i) => { const on = eo((k9 - i * .15) / .4); if (on <= 0) return; x.save(); x.globalAlpha = a * on; x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 1.2 * s; brackets(x, X, Y, (7 + (1 - on) * 10) * s, 4, s); x.fillStyle = `rgb(${BLUE})`; x.beginPath(); x.arc(X, Y, 2.2 * s, 0, 7); x.fill(); x.restore(); });
-    // the signal: a fine pulse out from the tag, each anchor answers on its beam, then the lock closes
+    // ---- the anchors and the tag, step by step ----
+    // 1. the anchors: a small device high on each column, a plumb line to the floor so you see it hangs up there, listening
+    const AF = AP.map(([X, Y]) => [X, Y + 64 * s]);   // where its column meets the floor, on screen
+    AP.forEach(([X, Y], i) => {
+      const on = eo((k9 - i * .18) / .45); if (on <= 0) return; const [FX, FY] = AF[i];
+      x.save(); x.globalAlpha = a * on;
+      const pl = x.createLinearGradient(X, Y, FX, FY); pl.addColorStop(0, `rgba(${INDIGO},.5)`); pl.addColorStop(1, `rgba(${INDIGO},0)`);
+      x.strokeStyle = pl; x.lineWidth = 1 * s; x.setLineDash([2 * s, 3 * s]); x.beginPath(); x.moveTo(X, Y + 9 * s); x.lineTo(FX, FY * on + Y * (1 - on)); x.stroke(); x.setLineDash([]);
+      x.globalAlpha = a * on * .5; x.fillStyle = `rgb(${INDIGO})`; x.beginPath(); x.ellipse(FX, FY, 9 * s, 4 * s, 0, 0, 7); x.fill();
+      // the device: a dark rounded body with a lit indigo face and a status light
+      x.globalAlpha = a * on; const w = 22 * s, h = 15 * s;
+      x.shadowColor = 'rgba(11,18,56,.35)'; x.shadowBlur = 10 * s; x.shadowOffsetY = 3 * s;
+      x.fillStyle = '#1b2036'; x.beginPath(); x.roundRect(X - w / 2, Y - h / 2, w, h, 4 * s); x.fill(); x.shadowColor = 'transparent';
+      const fg = x.createLinearGradient(X, Y - h / 2, X, Y + h / 2); fg.addColorStop(0, 'rgba(255,255,255,.22)'); fg.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = fg; x.beginPath(); x.roundRect(X - w / 2 + 1.5 * s, Y - h / 2 + 1.5 * s, w - 3 * s, h * .45, 3 * s); x.fill();
+      const blink = .55 + .45 * Math.sin(t * 3 + i * 2);
+      x.fillStyle = `rgba(${BLUE},${blink})`; x.beginPath(); x.arc(X + w / 2 - 5 * s, Y + h / 2 - 5 * s, 1.8 * s, 0, 7); x.fill();
+      // listening: a slow, faint arc opening downward toward the floor
+      for (let j = 0; j < 2; j++) { const ph = (t * .35 + j / 2 + i * .3) % 1; x.globalAlpha = a * on * (1 - ph) * .4; x.strokeStyle = `rgb(${INDIGO})`; x.lineWidth = 1 * s; x.beginPath(); x.arc(X, Y, (14 + ph * 26) * s, .35, 2.8); x.stroke(); }
+      x.restore();
+    });
+    // 2. the tag sends one short pulse; it spreads as a sphere of light; it reaches the nearest anchor first
     if (k10 > 0) {
-      x.save(); x.globalAlpha = a * sm(0, .2, k10);
-      for (let j = 0; j < 3; j++) { const ph = (t * .4 + j / 3) % 1; x.strokeStyle = `rgba(${INDIGO},${.4 * (1 - ph)})`; x.lineWidth = 1 * s; floorRing(x, TX, TY, 8 + ph * 60, s); x.stroke(); }
+      const D = AP.map(([X, Y]) => Math.hypot(X - TX, Y - TY)), Dm = Math.max(...D);
+      // a sequence that plays once as you arrive, then repeats slowly while you stay: pulse, answers, ranges, the fix
+      const cyc = k10 < 1 ? k10 : 1 + ((t * .16) % 1), q = cyc % 1 || (cyc >= 1 ? 1 : 0), first = k10 < 1;
+      const R = (first ? sm(.02, .42, k10) : sm(0, .4, q)) * Dm * 1.08;
+      x.save();
+      if (R > 0 && R < Dm * 1.07) {
+        x.globalAlpha = a * (1 - R / (Dm * 1.1)) * .9;
+        const rg = x.createRadialGradient(TX, TY, Math.max(0, R - 26 * s), TX, TY, R); rg.addColorStop(0, `rgba(${BLUE},0)`); rg.addColorStop(1, `rgba(${BLUE},.16)`);
+        x.fillStyle = rg; x.beginPath(); x.arc(TX, TY, R, 0, 7); x.fill();
+        x.strokeStyle = `rgba(${BLUE},.75)`; x.lineWidth = 1.3 * s; x.beginPath(); x.arc(TX, TY, R, 0, 7); x.stroke();
+        x.globalAlpha = a * .7; x.strokeStyle = `rgba(${BLUE},.6)`; floorRing(x, TX, TY, Math.min(R / s * .5, 60), s); x.stroke();
+      }
+      // 3. each anchor hears it the moment the sphere arrives: it lights, and the line between them is drawn
       AP.forEach(([X, Y], i) => {
-        const on = eo((k10 - i * .1) / .3); if (on <= 0) return;
-        const gr = x.createLinearGradient(TX, TY, X, Y); gr.addColorStop(0, `rgba(${INDIGO},.5)`); gr.addColorStop(1, `rgba(${BLUE},.15)`);
-        x.strokeStyle = gr; x.lineWidth = 1 * s; x.beginPath(); x.moveTo(TX, TY); x.lineTo(lerp(TX, X, on), lerp(TY, Y, on)); x.stroke();
-        const f = (t * .45 + i * .27) % 1, px = lerp(TX, X, f), py = lerp(TY, Y, f);
-        x.fillStyle = `rgba(${INDIGO},${Math.sin(f * 3.14)})`; x.beginPath(); x.arc(px, py, 1.8 * s, 0, 7); x.fill();
-        const hit = Math.max(0, 1 - Math.abs(f - .97) * 14); if (hit > 0) { x.strokeStyle = `rgba(${BLUE},${.6 * hit})`; x.lineWidth = 1 * s; x.beginPath(); x.arc(X, Y, (8 + (1 - hit) * 14) * s, 0, 7); x.stroke(); }
+        const hitR = D[i] / (Dm * 1.08), hk = first ? sm(.02, .42, k10) : sm(0, .4, q), heard = hk >= hitR, since = heard ? (hk - hitR) : 0;
+        const lineK = first ? clamp((k10 - .1 - hitR * .4) / .25) : (cyc >= 1 ? 1 : 0);
+        if (lineK > 0) {
+          const gr = x.createLinearGradient(TX, TY, X, Y); gr.addColorStop(0, `rgba(${BLUE},.85)`); gr.addColorStop(1, `rgba(${INDIGO},.85)`);
+          x.globalAlpha = a; x.strokeStyle = gr; x.lineWidth = 1.4 * s; x.beginPath(); x.moveTo(TX, TY); x.lineTo(lerp(TX, X, eo(lineK)), lerp(TY, Y, eo(lineK))); x.stroke();
+          // the time of flight, as fine ticks along the line: farther anchor, more ticks
+          const n = Math.round(D[i] / (26 * s)); x.lineWidth = 1 * s; x.strokeStyle = `rgba(${INDIGO},.55)`;
+          const nx = -(Y - TY) / D[i], ny = (X - TX) / D[i];
+          for (let j = 1; j < n * eo(lineK); j++) { const f = j / n, px = lerp(TX, X, f), py = lerp(TY, Y, f), L = (j % 5 ? 2.5 : 5) * s; x.beginPath(); x.moveTo(px - nx * L, py - ny * L); x.lineTo(px + nx * L, py + ny * L); x.stroke(); }
+        }
+        if (heard && since < .25) { x.globalAlpha = a * (1 - since / .25); x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 2 * s; x.beginPath(); x.arc(X, Y, (12 + since * 120) * s, 0, 7); x.stroke(); }
       });
-      const lock = eo((k10 - .4) / .45); x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 1.4 * s; x.globalAlpha = a * lock; brackets(x, TX, TY, (54 - lock * 36) * s, 6, s);
+      // 4. three distances, three arcs: where they cross, the tag is; the fix closes on it
+      const ak = first ? sm(.5, .78, k10) : 1;
+      if (ak > 0) AP.forEach(([X, Y], i) => {
+        const an = Math.atan2(TY - Y, TX - X), sp = Math.min(.3, 70 * s / D[i]) * ak;
+        x.globalAlpha = a * .85; x.strokeStyle = `rgba(${INDIGO},.75)`; x.lineWidth = 1.2 * s;
+        x.beginPath(); x.arc(X, Y, D[i], an - sp, an + sp); x.stroke();
+        x.globalAlpha = a * .25; x.lineWidth = 6 * s; x.strokeStyle = `rgba(${BLUE},.5)`; x.beginPath(); x.arc(X, Y, D[i], an - sp * .5, an + sp * .5); x.stroke();
+      });
+      const fix = first ? eo((k10 - .78) / .2) : 1;
+      if (fix > 0) {
+        x.globalAlpha = a * fix; x.strokeStyle = `rgb(${BLUE})`; x.lineWidth = 1.8 * s; brackets(x, TX, TY, (40 - fix * 24) * s, 6, s);
+        const g = x.createRadialGradient(TX, TY, 0, TX, TY, 22 * s); g.addColorStop(0, `rgba(${BLUE},.45)`); g.addColorStop(1, `rgba(${BLUE},0)`); x.fillStyle = g; x.beginPath(); x.arc(TX, TY, 22 * s, 0, 7); x.fill();
+        point(x, TX, TY, 1, s, BLUE, a * fix, 1.3);
+      }
       x.restore();
     }
   }
@@ -563,7 +624,7 @@ function drawHUD(x, bf, t, cx, cy, z, span, L, pj) {
     x.save(); x.globalAlpha = a;
     if (land > 0) for (let j = 0; j < 2; j++) { const ph = ((t * .4 + j / 2) % 1); x.strokeStyle = `rgba(${RED},${.45 * (1 - ph) * land * (1 - lp(12) * .7)})`; x.lineWidth = 1 * s; floorRing(x, TX, TY, 10 + ph * 50, s); x.stroke(); }
     x.restore();
-    reticle(x, TX, TY, 15, k, s, RED, a * (1 - lp(12) * .5), 0);
+    reticle(x, TX, TY, 22, k, s, RED, a * (1 - lp(12) * .5), 0);
     point(x, TX, TY, clamp(k * 1.4), s, RED, a, 1.15);
     const k13 = lp(13); if (k13 > 0 && bf < 14.2) pillar(x, TX, TY, 110 * s * eo(k13), s, a * eo(k13 * 2) * (1 - sm(13.9, 14.2, bf)), t, sm(.5, 1, k13), 9);
   }
