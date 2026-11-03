@@ -74,19 +74,24 @@ export const plateSize = () => { const px = Math.max(innerWidth, innerHeight * .
 export const LOCK = { r: 15, len: 6, w: 2 };
 // the plates, loaded to power-of-two sizes with mipmaps so the lens can soften them; the masks stay exact
 export function plateTex(gl, src, unit, mip = true) {
-  return new Promise((res) => {
+  // decode and resize off the main thread (createImageBitmap), then upload one plate per frame, so the scroll never stalls
+  const P2 = (n) => Math.min(4096, Math.pow(2, Math.round(Math.log2(n))));
+  const upload = (el) => new Promise((res) => requestAnimationFrame(() => {
+    const tx = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tx);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, el);
+    if (mip) gl.generateMipmap(gl.TEXTURE_2D);
+    for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, mip ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
+    if (el.close) el.close(); res();
+  }));
+  const viaImage = () => new Promise((res) => {
     const im = new Image(); im.decoding = 'async'; im.crossOrigin = 'anonymous';
-    im.onload = () => {
-      let srcEl = im;
-      if (mip) { const P2 = (n) => Math.pow(2, Math.round(Math.log2(n))); const c = document.createElement('canvas'); c.width = Math.min(4096, P2(im.naturalWidth)); c.height = Math.min(4096, P2(im.naturalHeight)); const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(im, 0, 0, c.width, c.height); srcEl = c; }
-      const tx = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tx);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, srcEl);
-      if (mip) gl.generateMipmap(gl.TEXTURE_2D);
-      for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, mip ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
-      res();
-    };
+    im.onload = () => { let el = im; if (mip) { const c = document.createElement('canvas'); c.width = P2(im.naturalWidth); c.height = P2(im.naturalHeight); const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(im, 0, 0, c.width, c.height); el = c; } upload(el).then(res); };
     im.src = src;
   });
+  if (!globalThis.createImageBitmap) return viaImage();
+  return fetch(src).then((r) => r.blob()).then((b) => createImageBitmap(b, { colorSpaceConversion: 'none' }).then((bm) => mip && (bm.width !== P2(bm.width) || bm.height !== P2(bm.height))
+    ? createImageBitmap(b, { resizeWidth: P2(bm.width), resizeHeight: P2(bm.height), resizeQuality: 'high', colorSpaceConversion: 'none' }).then((r2) => { bm.close(); return r2; })
+    : bm)).then(upload).catch(viaImage);
 }
 // every tag rendered on the floor (dark AmIGo pixels found in the plate): the trolley first, then bin, tool and the rest
 export const MOVERS = [[.4792, .4848], [.2375, .3206], [.1945, .4275], [.7213, .2755], [.8975, .6083], [.1871, .6205], [.5101, .7342], [.3728, .7992], [.2201, .8717], [.8857, .7407]];
@@ -167,7 +172,7 @@ export function story(section, canvas) {
   const big = plateSize();
   let ready = false;
   Promise.all([plateTex(gl, `assets/scene/hall-after-${big}.webp`, 0), plateTex(gl, `assets/scene/hall-before-${big}.webp`, 1), plateTex(gl, `assets/scene/hall-masks-${big}.png`, 2, false)]).then(() => {
-    gl.uniform1f(U.sky, 1); gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); gl.uniform4f(U.vr, 0, 0, 1, 1); gl.uniform1f(U.wave, 0); gl.uniform2f(U.waveC, T[0], T[1]); ready = true; canvas.classList.add('ready');
+    gl.uniform1f(U.sky, 1); gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); gl.uniform4f(U.vr, 0, 0, 1, 1); gl.uniform1f(U.wave, 0); gl.uniform2f(U.waveC, T[0], T[1]); ready = true; canvas.classList.add('ready'); requestAnimationFrame(() => { gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform2f(U.span, span[0], span[1]); gl.uniform3f(U.cam, .5, .5, 1); gl.drawArrays(gl.TRIANGLES, 0, 3); });
   });
   let span = [1, 1];
   const hud = section.querySelector('#storyHUD'), hctx = hud && hud.getContext('2d');
