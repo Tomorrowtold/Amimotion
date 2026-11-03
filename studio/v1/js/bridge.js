@@ -29,7 +29,7 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
     // the same lit set as the film (depth, light on the shapes), so the hand-off has no seam
     gl.uniform1i(U.tD, 3); gl.uniform1i(U.tN, 4); gl.uniform1f(U.dOn, at ? 1 : 0); gl.uniform1f(U.relit, 2.2); gl.uniform2f(U.foc, .5, 0); gl.uniform3f(U.par, 0, 0, .5);
     gl.uniform1f(U.sky, 1); gl.uniform1f(U.dof, 0);
-    gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); ready = true;
+    gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); ready = true; requestAnimationFrame(() => { gl.viewport(0, 0, canvas.width, canvas.height); gl.uniform3f(U.cam, .5, .5, 1); gl.drawArrays(gl.TRIANGLES, 0, 3); });
   });
   const hx = hudEl.getContext('2d');
   const dist = MOVERS.map(moverDist);
