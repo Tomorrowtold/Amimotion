@@ -72,7 +72,7 @@ export const BARRED = [
   [/tracks every part|eliminates searching|real-time wip tracking of every/i, 'overclaim'],
   [/\b(maruti|suzuki|volvo|marmon|nati motors|ati motors|sherpa|zensomy|nxp demo)\b/i, 'name'],
   [/\b(deployed at|trusted by|customers include)\b/i, 'deployment claim'],
-  [/fleet manager (is|now) (live|available)|spatial ai (is|now) (live|available)/i, 'roadmap as live'],
+  [/\b(fleet manager|spatial ai)\b[^.]{0,30}\b(available|live|shipping|ships|launched|in production)\b/i, 'roadmap as live'],
   [/(₹|rs\.?|inr|\$|usd)\s?\d[\d,.]*\s*(lakh|crore|k|per (tag|anchor|month|year))/i, 'price'],
   [/\bbarcodes? (fail|don'?t work)|rfid (fails|doesn'?t work)/i, 'competitor knock'],
   [/healthcare|apparel|posture/i, 'off-scope'],
@@ -436,7 +436,7 @@ export function localTurn({ message = '', profile = {}, page = '', index = null,
   if (car && !/how long|battery|batteries/.test(low)) patch.carriers = [...new Set(car)].join(', ');
   const role = personaOf(low); if (/\b(i am|i'm|im|as a|my role)\b/.test(low) && role) patch.role = PEOPLE[role].name;
   const wait = low.match(/waits? (?:at|in|before) ([a-z ]{3,30})/); if (wait) patch.waits_at = wait[1].trim();
-  if (/\bsap|oracle|mes\b|erp|wms/.test(low)) patch.systems = (low.match(/\b(sap|oracle|mes|erp|wms|tally)\b/g) || []).join(', ');
+  if (/\bsap|oracle|mes\b|erp|wms/.test(low)) patch.systems = [...new Set(low.match(/\b(sap|oracle|mes|erp|wms|tally)\b/g) || [])].map((x) => (x === 'tally' ? 'Tally' : x === 'oracle' ? 'Oracle' : x.toUpperCase())).join(', ');
 
   const dims = m.match(/(\d+(?:\.\d+)?)\s*(?:m|metres?|meters?)?\s*(?:x|×|by|\*)\s*(\d+(?:\.\d+)?)/i);
   const plantId = m.match(/\b([ctbk]-\d{2,3}|j-\d{3})\b/i);
@@ -447,7 +447,7 @@ export function localTurn({ message = '', profile = {}, page = '', index = null,
     const z = PLANT.zones.find((x) => low.includes(x[0].toLowerCase()));
     const r = plantId ? askSamplePlant({ op: 'locate', id: plantId[1] }) : z ? askSamplePlant({ op: 'waiting', zone: z[0], min_minutes: n[0] || 0 }) : askSamplePlant({ op: 'exceptions' });
     cards.push(r);
-    text = r.rows.length ? `In the sample plant (a simulation), ${r.rows.length === 1 ? `${r.rows[0].id}${r.rows[0].job ? ` with job ${r.rows[0].job}` : ''} was last observed in ${r.rows[0].zone} at ${r.rows[0].last_observed}, after ${r.rows[0].dwell_min} minutes there${r.rows[0].over_rule ? `, past the ${r.rows[0].rule_min}-minute rule. ${r.rows[0].owner} decides what happens next` : ''}.` : `${r.rows.length} carriers match. The longest wait is ${r.rows[0].id} in ${r.rows[0].zone}, ${r.rows[0].dwell_min} minutes.`} This is how an assistant reads AmIHub over MCP; any action still waits for a person.` : 'Nothing in the sample plant matches that. Try C-014, J-208 or "what is past its rule".';
+    text = r.rows.length ? `In the sample plant (a simulation), ${r.rows.length === 1 ? `${r.rows[0].id}${r.rows[0].job ? ` with job ${r.rows[0].job}` : ''} was last observed in ${r.rows[0].zone} at ${r.rows[0].last_observed}, after ${r.rows[0].dwell_min} minutes there${r.rows[0].over_rule ? `, past the ${r.rows[0].rule_min}-minute rule. ${r.rows[0].owner} decides what happens next` : ''}.` : `${r.rows.length} carriers match. The longest wait is ${r.rows[0].id} in ${r.rows[0].zone}, ${r.rows[0].dwell_min} minutes.`} This is the kind of question an assistant can ask AmIHub over its MCP server (shown in a demo on request); any action still waits for a person.` : 'Nothing in the sample plant matches that. Try C-014, J-208 or "what is past its rule".';
   } else if (dims || /how many anchors|anchor count|anchors (do|would) i need/.test(low)) {
     const L = dims ? +dims[1] : n[0] || 100, W = dims ? +dims[2] : n[1] || 50;
     const H = (m.match(/(\d+(?:\.\d+)?)\s*m(?:etres?)?\s*(?:high|ceiling|tall)/i) || [])[1];

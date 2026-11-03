@@ -79,7 +79,7 @@ async function claudeTurn(env, turns, profile, page, ix, kbText, visitorWords, u
     const uses = res.content.filter((b) => b.type === 'tool_use');
     if (res.stop_reason !== 'tool_use' || !uses.length) {
       let text = res.content.filter((b) => b.type === 'text').map((b) => b.text).join('\n').trim();
-      const src = text.match(/\n?Source:\s*(.+)\s*$/i); if (src) { text = text.slice(0, src.index).trim(); const hit = ix.kb.pages.find(([, l]) => l.toLowerCase() === src[1].trim().toLowerCase()); if (hit) source = { page: hit[1], url: hit[0] }; }
+      const src = text.match(/\n?Source:\s*(.+)\s*$/i); if (src) { text = text.slice(0, src.index).trim(); const want = src[1].trim().toLowerCase().replace(/^\[|\]$/g, ''); const hit = ix.kb.pages.find(([u, l]) => l.toLowerCase() === want || u === want || want.includes(u)); if (hit) source = { page: hit[1], url: hit[0] }; }
       const g = gate(text, visitorWords);
       if (!g.ok) {
         // one correction round, then the local engine
