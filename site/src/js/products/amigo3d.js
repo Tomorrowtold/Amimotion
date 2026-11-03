@@ -1,7 +1,7 @@
 // products/amigo3d.js: the AmIGo tag from the founders' CAD, the same render as the homepage hero (studio tag.js),
 // set centre stage on the AmIGo page. It wakes (rings), a path arrives, then the amber dial counts a wait.
 // Pointer moves the light; scrolling lifts the top cover a little. Fallback: the CAD still under the canvas.
-import * as THREE from '../../vendor/three.module.min.js';
+let THREE;   // three.js loads only when the stage wakes (after the page has painted), never in the first round trip
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, k) => a + (b - a) * k;
@@ -88,15 +88,21 @@ const ROUTES = [
 const stage = document.querySelector('[data-amigo3d]');
 const canvas = stage && stage.querySelector('canvas'), fallback = stage && stage.querySelector('.ag-fallback');
 const ok = (() => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch { return false; } })();
-if (stage && ok && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { io.disconnect(); init().catch(() => {}); } }, { rootMargin: '200px' }).observe(stage);
+// the CAD still is the first paint; the live tag wakes once the page has loaded and the main thread is idle, and stays a
+// still on Save-Data, 2G/3G or a low-memory phone (the still is the same render)
+const net = navigator.connection || {}, lean = net.saveData || /(^|-)(2g|3g)$/.test(net.effectiveType || '') || (navigator.deviceMemory || 8) <= 2;
+if (stage && ok && !lean && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const idle = (f) => ('requestIdleCallback' in window ? requestIdleCallback(f, { timeout: 2500 }) : setTimeout(f, 600));
+  const wake = () => idle(() => new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { io.disconnect(); init().catch(() => {}); } }, { rootMargin: '200px' }).observe(stage));
+  if (document.readyState === 'complete') wake(); else addEventListener('load', wake, { once: true });
 }
 async function init() {
+  THREE = await import('../../vendor/three.module.min.js');
   const meta = await (await fetch(new URL('../../locate/cad/mesh.json', import.meta.url))).json();
   meta.top_cover = meta.tag_top; meta.bottom_cover = meta.tag_bottom;
   const [gTop, gBot] = await Promise.all([mesh('tag_top', meta), mesh('tag_bottom', meta)]);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 640 ? 1.5 : 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene(); scene.environment = studioEnv(renderer); scene.environmentIntensity = 1.0;

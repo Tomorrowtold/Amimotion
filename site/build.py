@@ -257,9 +257,21 @@ OPEN_AT_TOP = ("(()=>{const w=window,d=document;if(location.hash)return;const n=
                "f();d.addEventListener('DOMContentLoaded',f);addEventListener('load',f);if(d.prerendering)d.addEventListener('prerenderingchange',f)})()")
 
 
+# Phones pick a picture for about twice their width, not three times: on a 2.6x-3x screen a full-width photo comes from
+# the 1080 file instead of the 1440/1600 one (40-50% fewer bytes on the picture that paints first; no visible change at
+# phone size). Only pictures that fill the phone's width are touched; each gets two leading entries for dense screens.
+def phone_dpr_cap(page):
+    def fix(m):
+        s = m.group(1)
+        if s == "100vw" or re.match(r"\(max-width:\s*(639|900|1023)px\)\s*100vw", s):
+            s = "(max-width:639px) and (min-resolution:2.75dppx) 67vw, (max-width:639px) and (min-resolution:2.25dppx) 80vw, " + s
+        return f'sizes="{s}"'
+    return re.sub(r'sizes="([^"]+)"', fix, page)
+
+
 # Inner pages: the next page is prerendered when a visitor's pointer rests on a link, and the headline of the page you
 # open grows out of the link you chose (cross-document view transitions; browsers without them just navigate).
-KIT_HEAD = """<script type="speculationrules">{"prerender":[{"where":{"and":[{"selector_matches":"main a[href], header a[href]"},{"not":{"selector_matches":"[href^='http'], [href*='#']"}}]},"eagerness":"moderate"}]}</script>
+KIT_HEAD = """<script type="speculationrules">{"prerender":[{"where":{"and":[{"selector_matches":"main a[href], header a[href]"},{"not":{"selector_matches":"[href^='http'], [href*='#'], .logo, [href='/'], [href='./index.html'], [href$='../index.html']"}}]},"eagerness":"moderate"}]}</script>
 <script>addEventListener('pageswap',e=>{if(!e.viewTransition||!e.activation)return;const u=e.activation.entry.url,a=[...document.querySelectorAll('main a[href]')].find(x=>x.href===u);const h=document.querySelector('.head h1');if(h)h.style.viewTransitionName='';if(a&&a.getBoundingClientRect().bottom>0&&a.getBoundingClientRect().top<innerHeight)(a.querySelector('b')||a).style.viewTransitionName='k-title'});addEventListener('pagereveal',e=>{if(!e.viewTransition)return;const h=document.querySelector('.head h1');if(!h)return;h.style.viewTransitionName='k-title';e.viewTransition.finished.finally(()=>h.style.viewTransitionName='')})</script>"""
 
 
@@ -579,6 +591,7 @@ def build():
     for url, (meta, body) in pages.items():
         header = header_html(url, meta.get("world"), over_photo(meta, body))
         page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main" tabindex="-1">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
+        page = phone_dpr_cap(page)
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
         out.parent.mkdir(parents=True, exist_ok=True); out.write_text(page)
