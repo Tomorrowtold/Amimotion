@@ -146,6 +146,8 @@ def walk(f):
                 for g in base.parent.glob(base.name + "*"): keep.add(g)
                 continue
             p = ((dist / u.lstrip("/")) if u.startswith("/") else (f.parent / u)).resolve()
+            if not p.is_file() and u.startswith(("assets/", "./assets/")):   # runtime fetches built from the site root (nav.js: root + 'assets/ask.json')
+                p = (dist / u.lstrip("./")).resolve()
             if p.is_file() and p not in keep:
                 keep.add(p)
                 if p.suffix in (".css", ".js"): walk(p)
