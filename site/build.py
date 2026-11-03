@@ -229,6 +229,7 @@ def head(meta, url, body, titles):
 <link rel="alternate" type="text/plain" title="AmIMotion for AI assistants" href="/llms.txt">
 {styles(meta)}
 <script>(()=>{{const h=document.documentElement;h.classList.replace('no-js','js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/[?&]still\\b/.test(location.search))h.classList.add('motion')}})()</script>
+<script>{OPEN_AT_TOP}</script>
 <script type="application/ld+json">{page_schema(meta, url, body, titles)}</script>{KIT_HEAD if meta.get("world") else ''}
 </head>
 <body class="{body_class(meta)}"{(' data-rail="' + e(meta["rail"]) + '"') if meta.get("rail") else ''}{(' data-world="' + e(meta["world"]) + '"') if meta.get("world") else ''}{(' style="--cv:' + e(meta["cover"]) + '"') if meta.get("cover") else ''}>{'<div class="k-progress" aria-hidden="true"></div>' if 'progress' in meta.get('look','').split() else ''}"""
@@ -243,6 +244,17 @@ def css_min(css):
 def body_class(meta):
     """The shared class plus the page's looks (front matter look: serif sidehead cards ...): kit.css restyles by them."""
     return " ".join(["ds"] + (["pl", "site-" + meta["id"]] if meta.get("layout") == "product" else []) + ["look-" + x for x in meta.get("look", "").split()])
+
+
+# Every page opens at its top when a link is followed (a link to a section, Back/Forward and reload keep the browser's own
+# position). In a frame that grows with its page (a preview host), the host keeps its scroll from the previous page, so the
+# page also brings its own top into view when it opens clipped. Stops the moment the visitor scrolls, taps or types.
+OPEN_AT_TOP = ("(()=>{const w=window,d=document;if(location.hash)return;const n=performance.getEntriesByType&&performance.getEntriesByType('navigation')[0];"
+               "if(n&&n.type!=='navigate')return;let m=0;['wheel','touchstart','keydown','pointerdown'].forEach(e=>addEventListener(e,()=>{m=1},{once:true,passive:true,capture:true}));"
+               "const f=()=>{if(m||d.prerendering)return;if(w.scrollY)w.scrollTo({top:0,left:0,behavior:'instant'});"
+               "if(w.top!==w&&d.body&&'IntersectionObserver'in w){const o=new IntersectionObserver(([x])=>{o.disconnect();"
+               "if(!m&&x.intersectionRect.top>x.boundingClientRect.top+2)try{d.body.scrollIntoView({block:'start',behavior:'instant'})}catch(_){}});o.observe(d.body)}};"
+               "f();d.addEventListener('DOMContentLoaded',f);addEventListener('load',f);if(d.prerendering)d.addEventListener('prerenderingchange',f)})()")
 
 
 # Inner pages: the next page is prerendered when a visitor's pointer rests on a link, and the headline of the page you

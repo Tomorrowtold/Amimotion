@@ -14,7 +14,7 @@
       es.forEach(x => x.isIntersecting ? seen.add(x.target) : seen.delete(x.target));
       const top = [...map.keys()].filter(t => seen.has(t)).sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top)[0];
       links.forEach(a => a.removeAttribute('aria-current'));
-      if (top) { const a = map.get(top); a.setAttribute('aria-current', 'true'); a.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+      if (top) { const a = map.get(top); a.setAttribute('aria-current', 'true'); const ul = a.closest('ul'); if (ul && ul.scrollWidth > ul.clientWidth) { const r = a.getBoundingClientRect(), u = ul.getBoundingClientRect(); ul.scrollTo({ left: ul.scrollLeft + r.left - u.left - (u.width - r.width) / 2 }); } }
     }, { rootMargin: '-60px 0px -55% 0px' });
     map.forEach((_, t) => io.observe(t));
   }
