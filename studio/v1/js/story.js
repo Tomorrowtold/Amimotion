@@ -12,7 +12,7 @@ export const VS = `attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Posi
 // at the height of the trolleys, and the light lands on the shapes (normals from depth), not on a flat picture.
 export const FS = `precision highp float;varying vec2 v;
 uniform sampler2D tA,tB,tM,tD,tN;uniform vec2 res,span,tagPos,bayC,waveC,foc,fog;uniform vec3 cam,par,clr;uniform vec4 vr;
-uniform float draw,dash,amber,onlyQ,hidePaths,bay,tagOn,time,grey,wave,dof,sky,dOn,glow,warm,relit,lat,stop;
+uniform float draw,dash,amber,onlyQ,hidePaths,bay,tagOn,time,grey,wave,dof,sky,dOn,glow,warm,relit,lat,stop,mv,swp;
 uniform vec4 spot,lpos;uniform vec3 ltgt;
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+1.),f.x),f.y);}
@@ -30,7 +30,7 @@ void main(){
   vec2 liu=ltgt.xy+(uv-lpos.xy)*span/(cam.z*ltgt.z);
   iu=mix(iu,liu,inL);
   // the lens on real depth: what is nearer or farther than the focus goes soft
-  float dz=abs(G.r-foc.x);float lb=mix(dOn>.5?clamp(dz*foc.y-.15,0.,2.4)+out0*1.1:tilt*dof+out0*1.6,0.,inL);
+  float dz=abs(G.r-foc.x);float lb=mix(dOn>.5?clamp(dz*foc.y-.15,0.,2.4)+out0*1.1+mv*(.5+dz*1.5):tilt*dof+out0*1.6,0.,inL);
   vec3 A=texture2D(tA,iu,lb).rgb,B=texture2D(tB,iu,lb).rgb,M=texture2D(tM,iu).rgb;
   // crisp: where the lens is sharp, lift the plate's own fine detail (an unsharp mask against its softer mip)
   float shp=(1.-clamp(lb,0.,1.))*.55;A+=(A-texture2D(tA,iu,1.6).rgb)*shp;B+=(B-texture2D(tB,iu,1.6).rgb)*shp;
@@ -103,6 +103,8 @@ void main(){
     col=mix(col,mix(vec3(lum),col,.35)*vec3(.9,.93,1.)*.94,stop*(1.-sp)*.75);
     col=mix(col,col*vec3(1.16,.8,.82)+vec3(.05,0.,0.),stop*sp*.8);
     float rr=exp(-pow((sd-.05-fract(time*.45)*.09)/.006,2.))*(1.-fract(time*.45));col=mix(col,vec3(.937,.231,.31),rr*stop*.5);}
+  // the sheet of light that travels with each move, across the floor's own axis, catching the tops of things
+  if(mv>.001){float bx=fl.x*1.15-mix(-.35,1.25,swp);float sh=exp(-bx*bx/.012)*mv;col+=vec3(.07,.09,.14)*sh*(.6+.8*G.g);}
   // waiting work warms the whole air a little
   col*=mix(vec3(1.),vec3(1.02,1.0,.965),warm*.6);
   float gq=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(gq),col,.25)*.42+vec3(.93,.95,.99)*.58,out0*(1.-inL)*.9);
@@ -246,7 +248,7 @@ export function story(section, canvas) {
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
   const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'dof', 'sky', 'spot', 'lpos', 'ltgt', 'tD', 'tN', 'par', 'foc', 'fog', 'clr', 'dOn', 'glow', 'warm', 'relit', 'lat', 'stop'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
+  const U = {}; ['vr', 'tA', 'tB', 'tM', 'res', 'span', 'tagPos', 'bayC', 'waveC', 'cam', 'draw', 'dash', 'amber', 'onlyQ', 'hidePaths', 'bay', 'tagOn', 'time', 'grey', 'wave', 'dof', 'sky', 'spot', 'lpos', 'ltgt', 'tD', 'tN', 'par', 'foc', 'fog', 'clr', 'dOn', 'glow', 'warm', 'relit', 'lat', 'stop', 'mv', 'swp'].forEach((k) => U[k] = gl.getUniformLocation(pr, k));
   gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
   const big = plateSize();
   let ready = false, depthAt = null;
@@ -280,12 +282,57 @@ export function story(section, canvas) {
   links.forEach((a, i) => a.addEventListener('click', (e) => { e.preventDefault(); const top = section.getBoundingClientRect().top + scrollY + (section.offsetHeight - innerHeight) * REST[CH_FIRST[i]]; scrollTo({ top, behavior: 'smooth' }); }));
   let smooth = null, mx = 0, my = 0, qx = 0, qy = 0, beat = -1, lit = -1, disp = 0, last = 0, wk = 0, wb = -1;
   addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
+  // ---- the haptic scroll: one gesture is one beat. A flick, a wheel notch, a swipe or a key moves the film exactly one
+  // moment on, with a weighted ease (fast away, long soft landing); the momentum after it is absorbed so the film never
+  // skips a moment. A short tick on phones that can feel it. At either end the page scrolls on natively.
+  const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let anim = null, hold = 0, acc = 0, accT = 0;
+  let geoC = null; const geo = () => { const top = section.getBoundingClientRect().top + scrollY; return (geoC = { top, len: section.offsetHeight - innerHeight }); };
+  const G = () => geoC || geo(); addEventListener('resize', () => { geoC = null; }); if (document.fonts) document.fonts.ready.then(() => { geoC = null; });
+  const restY = (i, g) => Math.round(g.top + g.len * REST[i]);
+  const nearest = (g) => { const y = scrollY; let bi = 0, bd = 1e9; REST.forEach((_, i) => { const d = Math.abs(restY(i, g) - y); if (d < bd) { bd = d; bi = i; } }); return bi; };
+  const inside = (g) => scrollY >= g.top - 2 && scrollY <= g.top + g.len + 2;
+  const easeW = (x) => { const e = (1 - Math.pow(2, -8.5 * x)) / (1 - Math.pow(2, -8.5)); return e * (1 - Math.pow(1 - Math.min(1, x / .12), 2) * .0) * Math.min(1, .55 + x * 4.5) + (1 - Math.min(1, .55 + x * 4.5)) * e * e; };   // fast away, a long soft landing
+  const glide = (y0, y1, ms) => { const t0 = performance.now(); anim = { y1 }; const tick = (now) => { if (!anim) return; const k = Math.min(1, (now - t0) / ms); scrollTo({ top: y0 + (y1 - y0) * easeW(k), behavior: 'instant' }); if (k < 1) requestAnimationFrame(tick); else { anim = null; hold = performance.now() + 260; } }; requestAnimationFrame(tick); };
+  const stepBy = (dir) => {
+    const g = G(), cur = anim ? REST.findIndex((_, i) => restY(i, g) === anim.y1) : nearest(g), nx = cur + dir;
+    if (nx < 0 || nx >= NB) return false;   // the ends: let the page carry on
+    const y0 = scrollY, y1 = restY(nx, g);
+    glide(y0, y1, Math.min(1500, 900 + Math.abs(y1 - y0) * .35));
+    if (navigator.vibrate) try { navigator.vibrate(9); } catch (e) {}
+    return true;
+  };
+  // a new gesture is a wheel event after a quiet gap, or one clearly stronger than the momentum still arriving
+  let lastAbs = 0, lastT = 0, armed = false, used = false;
+  const onWheel = (e) => {
+    const g = G(); if (!inside(g) || e.ctrlKey) return;
+    const dir = Math.sign(e.deltaY); if (!dir) return;
+    const cur = nearest(g); if ((dir < 0 && cur === 0 && scrollY <= restY(0, g) + 2) || (dir > 0 && cur === NB - 1 && scrollY >= restY(NB - 1, g) - 2)) return;
+    e.preventDefault();
+    const now = performance.now(), ab = Math.abs(e.deltaY), fresh = now - lastT > 260 || (ab > lastAbs * 1.6 && ab > 14);
+    lastAbs = ab; lastT = now;
+    if (fresh) { used = false; acc = 0; }
+    if (anim || used) return;            // during the move, and the rest of the same gesture: absorbed
+    acc += e.deltaY;
+    if (Math.abs(acc) > 24) { used = true; stepBy(dir); }
+  };
+  let ty = null;
+  const onTS = (e) => { ty = inside(G()) ? e.touches[0].clientY : null; };
+  const onTM = (e) => { if (ty === null) return; const g = G(), dy = ty - e.touches[0].clientY, cur = nearest(g); if ((dy < 0 && cur === 0) || (dy > 0 && cur === NB - 1)) { ty = null; return; } e.preventDefault(); };
+  const onTE = (e) => { if (ty === null) return; const dy = ty - (e.changedTouches[0] || {}).clientY; ty = null; if (Math.abs(dy) > 28 && !anim) stepBy(Math.sign(dy)); };
+  const onKey = (e) => { const g = G(); if (!inside(g) || anim || e.target.closest('input,textarea,select')) return; const dir = ['ArrowDown', 'PageDown', ' '].includes(e.key) ? (e.shiftKey && e.key === ' ' ? -1 : 1) : ['ArrowUp', 'PageUp'].includes(e.key) ? -1 : 0; if (dir && stepBy(dir)) e.preventDefault(); };
+  // the listeners that can hold the page are attached only while the film is on screen, so the rest of the page scrolls free
+  const arm = (on) => {
+    if (on === armed || REDUCE || SNAP || FILM) return; armed = on; const f = on ? addEventListener : removeEventListener;
+    f('wheel', onWheel, { passive: false }); f('touchstart', onTS, { passive: true }); f('touchmove', onTM, { passive: false }); f('touchend', onTE); f('keydown', onKey);
+  };
   return (t) => {
     const dt = Math.min(.1, last ? (t - last) / 1000 : 0); last = t;
     const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight)), sf = Math.min(NB - .0001, p * NB), pinned = r.top <= 1 || section.classList.contains('pre-on');
     // the scroll only chooses the moment; once a moment is reached it plays out on its own clock and then stops
     const sb = Math.floor(sf), target = Math.min(NB - .0001, sb + clamp((sf - sb) / .1) * .999);
     if (FILM) disp = Math.max(0, Math.min(NB - .0001, sf)); else if (SNAP || !pinned) disp = target; else { const dd = target - disp, rate = Math.max(.45, Math.abs(dd) * 1.5); disp += Math.sign(dd) * Math.min(Math.abs(dd), rate * dt); }
+    arm(r.top < innerHeight * .5 && r.bottom > innerHeight * .5);
     const bf = disp, bNow = Math.floor(bf), ch = BEATS[bNow].ch;
     // the words: the chapter shows, and its words light up as their picture starts
     const lb = pinned ? bNow : -1;
@@ -301,14 +348,17 @@ export function story(section, canvas) {
     if (!smooth || SNAP) smooth = JSON.parse(JSON.stringify(s)); else for (const k in s) smooth[k] = Array.isArray(s[k]) ? s[k].map((x, j) => lerp(smooth[k][j], x, .065)) : lerp(smooth[k], s[k], .065);
     const desk = innerWidth > 900, full = desk && section.classList.contains('x3');
     // a full screen is wider than the old panel: the camera comes in closer so each beat frames the same thing
-    const z = smooth.cam[2] * (full ? lerp(1, 1.12, sm(0, .7, bf)) : 1), hx = span[0] / z / 2, hy = span[1] / z / 2;
+    // every move between two moments is one camera move with weight: it swings on the depth, breathes out and back in,
+    // softens while it travels and lands sharp; a sheet of light crosses the floor with it
+    const kk = clamp((bf - Math.floor(bf)) / PLAY), swing = bf > .5 ? Math.sin(Math.PI * sm(0, 1, kk)) : 0, sdir = Math.floor(bf) % 2 ? 1 : -1;
+    const z = smooth.cam[2] * (full ? lerp(1, 1.12, sm(0, .7, bf)) : 1) * (1 - .075 * swing), hx = span[0] / z / 2, hy = span[1] / z / 2;
     const pk = clamp(bf / .5); qx = lerp(qx, mx * pk, .05); qy = lerp(qy, my * pk, .05);
     // on a desk the film fills the screen and the words sit on the left: the subject is framed right of centre
     const FX = full ? .15 * sm(0, .7, bf) : 0;
     const cx = clamp(smooth.cam[0] - FX * span[0] / z + qx * .008 / z, hx, 1 - hx), cy = clamp(smooth.cam[1] + qy * .008 / z, hy - .1 * smooth.lift, 1 - hy);
     // the orbit: the camera swings on the plant's depth around what it looks at; it breathes, and leans with the hand
     const pz = depthAt ? depthAt(smooth.fd[0], smooth.fd[1]) : .5;
-    const ox = smooth.orbit[0] * sm(0, .6, bf) + Math.sin(t * .00023) * .006 + qx * .03, oy = smooth.orbit[1] * sm(0, .6, bf) + Math.cos(t * .00019) * .004 + qy * .02;
+    const ox = sdir * .032 * swing + smooth.orbit[0] * sm(0, .6, bf) + Math.sin(t * .00023) * .006 + qx * .03, oy = .014 * swing + smooth.orbit[1] * sm(0, .6, bf) + Math.cos(t * .00019) * .004 + qy * .02;
     const pj = (u, v) => { const dz = depthAt ? depthAt(u, v) - pz : 0; return [(u + ox * dz - cx) * z / span[0] + .5, (v + oy * dz - cy) * z / span[1] + .5]; };
     // the lens: it sits in the emptier side of the frame, away from what it magnifies
     const toUV = pj;
@@ -323,7 +373,7 @@ export function story(section, canvas) {
     gl.uniform4f(U.lpos, LP[0], LP[1], LR * eo(lzk), lzk); gl.uniform3f(U.ltgt, smooth.lt[0], smooth.lt[1], 2.4);
     gl.uniform3f(U.par, ox, oy, pz); gl.uniform2f(U.foc, pz, smooth.ap * (desk ? 1 : .7) * 1.8);
     gl.uniform2f(U.fog, smooth.fog[0], smooth.fog[1]); gl.uniform3f(U.clr, T[0], T[1], smooth.clr);
-    gl.uniform1f(U.lat, smooth.lat); gl.uniform1f(U.stop, smooth.stop); gl.uniform1f(U.glow, smooth.glow); gl.uniform1f(U.warm, smooth.warm); gl.uniform1f(U.relit, 2.2 + bf * .09 + Math.sin(t * .0002) * .15);
+    gl.uniform1f(U.lat, smooth.lat); gl.uniform1f(U.stop, smooth.stop); gl.uniform1f(U.mv, swing); gl.uniform1f(U.swp, sm(0, 1, kk)); gl.uniform1f(U.glow, smooth.glow); gl.uniform1f(U.warm, smooth.warm); gl.uniform1f(U.relit, 2.2 + bf * .09 + Math.sin(t * .0002) * .15);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     if (hctx) drawHUD(hctx, bf, t * .001, cx, cy, z, span, { lp: LP, lr: LR * eo(lzk), lz: lzk, lt: smooth.lt, sp: smooth.sp }, pj);
 
