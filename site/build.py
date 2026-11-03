@@ -253,7 +253,7 @@ OPEN_AT_TOP = ("(()=>{const w=window,d=document;if(location.hash)return;const n=
                "if(n&&n.type!=='navigate')return;let m=0;['wheel','touchstart','keydown','pointerdown'].forEach(e=>addEventListener(e,()=>{m=1},{once:true,passive:true,capture:true}));"
                "const f=()=>{if(m||d.prerendering)return;if(w.scrollY)w.scrollTo({top:0,left:0,behavior:'instant'});"
                "if(w.top!==w&&d.body&&'IntersectionObserver'in w){const o=new IntersectionObserver(([x])=>{o.disconnect();"
-               "if(!m&&x.intersectionRect.top>x.boundingClientRect.top+2)try{d.body.scrollIntoView({block:'start',behavior:'instant'})}catch(_){}});o.observe(d.body)}};"
+               "if(!m&&(!x.isIntersecting||x.intersectionRect.top>x.boundingClientRect.top+2))try{d.body.scrollIntoView({block:'start',behavior:'instant'})}catch(_){}});o.observe(d.body)}};"
                "f();d.addEventListener('DOMContentLoaded',f);addEventListener('load',f);if(d.prerendering)d.addEventListener('prerenderingchange',f)})()")
 
 
