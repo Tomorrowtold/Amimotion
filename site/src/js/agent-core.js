@@ -449,11 +449,14 @@ export function localTurn({ message = '', profile = {}, page = '', index = null,
     cards.push(r);
     text = r.rows.length ? `In the sample plant (a simulation), ${r.rows.length === 1 ? `${r.rows[0].id}${r.rows[0].job ? ` with job ${r.rows[0].job}` : ''} was last observed in ${r.rows[0].zone} at ${r.rows[0].last_observed}, after ${r.rows[0].dwell_min} minutes there${r.rows[0].over_rule ? `, past the ${r.rows[0].rule_min}-minute rule. ${r.rows[0].owner} decides what happens next` : ''}.` : `${r.rows.length} carriers match. The longest wait is ${r.rows[0].id} in ${r.rows[0].zone}, ${r.rows[0].dwell_min} minutes.`} This is the kind of question an assistant can ask AmIHub over its MCP server (shown in a demo on request); any action still waits for a person.` : 'Nothing in the sample plant matches that. Try C-014, J-208 or "what is past its rule".';
   } else if (dims || /how many anchors|anchor count|anchors (do|would) i need/.test(low)) {
-    const L = dims ? +dims[1] : n[0] || 100, W = dims ? +dims[2] : n[1] || 50;
+    // a floor given as an area ("5000 m2", "5,000 sq m", "50000 sq ft") is planned as a square of that area
+    const area = m.replace(/(\d),(\d{3})/g, '$1$2').match(/(\d+(?:\.\d+)?)\s*(m2|m²|sq\.?\s*m(?:etres?|eters?)?\b|square\s*m(?:etres?|eters?)|sqm|sq\.?\s*f(?:ee)?t|square\s*f(?:ee|oo)t|sft)/i);
+    const sqm = !dims && area ? +area[1] * (/f/i.test(area[2]) ? 0.0929 : 1) : 0, side = sqm ? Math.max(1, Math.round(Math.sqrt(sqm))) : 0;
+    const L = dims ? +dims[1] : side || n[0] || 100, W = dims ? +dims[2] : side || n[1] || 50;
     const H = (m.match(/(\d+(?:\.\d+)?)\s*m(?:etres?)?\s*(?:high|ceiling|tall)/i) || [])[1];
     const r = estimateAnchors({ length_m: L, width_m: W, ceiling_m: H ? +H : 9, floor: /dense|high rack/.test(low) ? 'dense' : /open/.test(low) ? 'open' : 'mixed', position: /2d/.test(low) ? '2d' : '3d' });
     cards.push(r); patch.tool_anchors = `${L}×${W} m`;
-    text = `For a ${L} × ${W} m floor, the planning grid gives a first range of ${r.low} to ${r.high} AmIMo anchors. It is a planning estimate, not a quote: the survey sets the count, and dense racking can mean more.`;
+    text = `For ${sqm ? `about ${fmt(Math.round(sqm))} m² of floor (planned as ${L} × ${W} m)` : `a ${L} × ${W} m floor`}, the planning grid gives a first range of ${r.low} to ${r.high} AmIMo anchors. It is a planning estimate, not a quote: the survey sets the count, and dense racking can mean more.`;
   } else if (/search|looking for|hours|time (lost|spent)|minutes per/.test(low) && n.length >= 2) {
     const r = costOfSearching({ people: n[0], searches_per_shift: n[1], minutes_per_search: n[2] || 8, shifts: n[3] || 2 });
     cards.push(r); patch.tool_search = `${fmt(r.hours_year)} h/yr`;
