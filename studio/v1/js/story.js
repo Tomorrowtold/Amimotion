@@ -87,7 +87,7 @@ void main(){
   if(warm>.001){float ws=0.;for(int i=0;i<8;i++){float a=float(i)*.785;vec2 o=vec2(cos(a),sin(a)*1.2);ws+=step(.02,texture2D(tM,iu+o*.012).b)+step(.02,texture2D(tM,iu+o*.026).b)*.7;}
     ws/=13.6;float wm=onlyQ>.5?step(iu.x,.62):1.;col=mix(col,col*vec3(1.08,.97,.84)+vec3(.06,.03,0.),ws*warm*wm*(.6+.4*G.g));}
   // cooler, quieter grade for "before"
-  float g=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(g),col,.2)*vec3(.97,.985,1.02),grey*(1.-k)*(1.-inBay)*.6);
+  float g=dot(col,vec3(.299,.587,.114));col=mix(col,mix(vec3(g),col,.2)*vec3(.94,.955,.99),grey*(1.-k)*(1.-inBay)*.7);
   // a low mist lies on the floor at the height of the trolleys; the tag clears it from where it is
   if(fog.x>.001){
     float mist=fbm(iu*vec2(7.,9.)+vec2(time*.035,-time*.02))*.6+fbm(iu*vec2(19.,23.)-vec2(time*.05,0.))*.4;
@@ -182,8 +182,8 @@ export const BEATS = [
   st({ ch: 0, cam: [.66, .6, 1.16], sp: [.8, .7, .14], sk: .5, orbit: [-0.021, -0.004], ap: 2.8, fog: [.16, .22] }),                     // The walk.
   st({ ch: 0, cam: [.6, .4, 1.16], sp: [.65, .3, .17], sk: .5, orbit: [0.000, 0.018], fd: STORES, ap: 3.2, fog: [.16, .22] }),              // The calls to stores.
   st({ ch: 0, cam: [.4, .5, 1.12], sp: [.3, .5, .15], sk: .5, orbit: [0.021, -0.006], ap: 2.8, fog: [.18, .22] }),                       // The second walk.
-  st({ ch: 1, cam: [.36, .3, 1.4], sp: [.29, .26, .17], sk: .45, orbit: [-0.015, 0.011], fd: GATES[1], ap: 2.6, fog: [.22, .24] }),      // A scan tells you where it last passed.
-  st({ ch: 1, cam: [.4, .38, 1.3], sp: [.29, .26, .13], sk: .6, orbit: [0.012, 0.015], fd: GATES[1], ap: 1.6, fog: [.96, .46] }),        // Between scans ... out of sight.
+  st({ ch: 1, cam: [.4, .36, 1.22], sp: [.29, .26, .17], sk: .45, orbit: [-0.015, 0.011], fd: GATES[1], ap: 2.6, fog: [.22, .24] }),      // A scan tells you where it last passed.
+  st({ ch: 1, cam: [.44, .42, 1.3], sp: [.29, .26, .13], sk: .6, orbit: [0.012, 0.015], fd: GATES[1], ap: 1.6, fog: [.96, .46] }),        // Between scans ... out of sight.
   st({ ch: 2, cam: [.48, .5, 1.9], sp: [T[0], T[1], .05], sk: .6, lz: 1, lt: T, orbit: [-0.011, -0.007], ap: 3, fog: [.96, .46], clr: .17 }),  // A small tag rides on each trolley,
   st({ ch: 2, cam: [.34, .46, 1.5], sp: [BIN[0], BIN[1], .05], sk: .6, lz: 1, lt: BIN, orbit: [0.013, -0.006], fd: BIN, ap: 3, fog: [.96, .46], clr: .32 }), // bin
   st({ ch: 2, cam: [.58, .36, 1.4], sp: [TOOL[0], TOOL[1], .05], sk: .6, lz: 1, lt: TOOL, orbit: [-0.012, 0.008], fd: TOOL, ap: 3, fog: [.96, .46], clr: .5 }), // and tool.
@@ -398,6 +398,15 @@ function comet(x, P, path, k, s, a, col, tail = .4) {
   x.fillStyle = '#fff'; x.beginPath(); x.arc(HX, HY, 4.4 * s, 0, 7); x.fill(); x.fillStyle = `rgb(${col})`; x.beginPath(); x.arc(HX, HY, 2.8 * s, 0, 7); x.fill();
   x.restore();
 }
+// a person looking: a soft fan of sight on the floor that sweeps once across the aisle and finds nothing
+function gaze(x, X, Y, dir, k, s, a, col) {
+  if (k <= 0 || k >= 1 || a <= 0) return; const R = 90 * s * eo(k * 1.6), sw = .55, an = dir + Math.sin(k * 6.283) * .9;
+  x.save(); x.globalAlpha = a * Math.sin(k * 3.1416) * .8;
+  const g = x.createRadialGradient(X, Y, 0, X, Y, R); g.addColorStop(0, `rgba(${col},.28)`); g.addColorStop(1, `rgba(${col},0)`);
+  x.fillStyle = g; x.beginPath(); x.moveTo(X, Y); x.ellipse(X, Y, R, R * .62, 0, an - sw, an + sw); x.closePath(); x.fill();
+  x.strokeStyle = `rgba(${col},.35)`; x.lineWidth = 1 * s; x.beginPath(); x.ellipse(X, Y, R, R * .62, 0, an - sw, an + sw); x.stroke();
+  x.restore();
+}
 // waiting: a fine amber ring on the floor, its arc filling with the time
 function waitRing(x, X, Y, R, w, s, a, t, live, i) {
   if (a <= 0) return; x.save(); x.globalAlpha = a;
@@ -455,7 +464,7 @@ function drawHUD(x, bf, t, cx, cy, z, span, L, pj) {
     if (k1 > 0 && k3 <= 0) comet(x, P, WALK1, k1, s, a * (1 - sm(1.85, 2.2, bf) * .6), INK, .35);
     if (k3 > 0) comet(x, P, WALK2, k3, s, a, INK, .3);
     // where they stop and look: a quick hairline ripple, nothing found
-    [[LOOK1, k1, WALK1, 2.1], [LOOK2, k3, WALK2, 4.1]].forEach(([Lk, k, path, end]) => { if (bf > end) return; Lk.forEach(([u, v, at]) => { const kk = k * (path.length - 1) - at; if (kk < 0 || kk > 1.6) return; const [X, Y] = P(u, v); x.save(); x.globalAlpha = a * (1 - kk / 1.6) * .6; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1 * s; floorRing(x, X, Y, 10 + eo(kk / 1.6) * 30, s); x.stroke(); x.restore(); }); });
+    [[LOOK1, k1, WALK1, 2.1], [LOOK2, k3, WALK2, 4.1]].forEach(([Lk, k, path, end]) => { if (bf > end) return; Lk.forEach(([u, v, at]) => { const kk = k * (path.length - 1) - at; if (kk < 0 || kk > 1.6) return; const [X, Y] = P(u, v); const [NX, NY] = P(...path[Math.min(path.length - 1, at + 1)]); gaze(x, X, Y, Math.atan2(NY - Y, NX - X) + 1.2, kk / 1.6, s, a, INK); x.save(); x.globalAlpha = a * (1 - kk / 1.6) * .6; x.strokeStyle = `rgb(${INK})`; x.lineWidth = 1 * s; floorRing(x, X, Y, 10 + eo(kk / 1.6) * 30, s); x.stroke(); x.restore(); }); });
     // the calls to stores: a fine arc out, rings at the racks, nothing comes back
     const k2 = lp(2), [WX, WY] = P(...WALK1[WALK1.length - 1]), [SX, SY] = P(...STORES);
     if (k2 > 0 && bf < 3.8) {
