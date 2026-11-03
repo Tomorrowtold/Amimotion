@@ -454,9 +454,12 @@ export function localTurn({ message = '', profile = {}, page = '', index = null,
     const sqm = !dims && area ? +area[1] * (/f/i.test(area[2]) ? 0.0929 : 1) : 0, side = sqm ? Math.max(1, Math.round(Math.sqrt(sqm))) : 0;
     const L = dims ? +dims[1] : side || n[0] || 100, W = dims ? +dims[2] : side || n[1] || 50;
     const H = (m.match(/(\d+(?:\.\d+)?)\s*m(?:etres?)?\s*(?:high|ceiling|tall)/i) || [])[1];
-    const r = estimateAnchors({ length_m: L, width_m: W, ceiling_m: H ? +H : 9, floor: /dense|high rack/.test(low) ? 'dense' : /open/.test(low) ? 'open' : 'mixed', position: /2d/.test(low) ? '2d' : '3d' });
+    const fl = /dense|high rack/.test(low) ? 'dense' : /open/.test(low) ? 'open' : 'mixed', base = { length_m: L, width_m: W, ceiling_m: H ? +H : 9, position: /2d/.test(low) ? '2d' : '3d' };
+    const r = estimateAnchors({ ...base, floor: fl });
+    // floor type not given: lead with the open-hall figure the anchor-planning guide uses, then what racking adds
+    const op = !/dense|high rack|open|mixed|rack/.test(low) ? estimateAnchors({ ...base, floor: 'open' }) : null;
     cards.push(r); patch.tool_anchors = `${L}×${W} m`;
-    text = `For ${sqm ? `about ${fmt(Math.round(sqm))} m² of floor (planned as ${L} × ${W} m)` : `a ${L} × ${W} m floor`}, the planning grid gives a first range of ${r.low} to ${r.high} AmIMo anchors. It is a planning estimate, not a quote: the survey sets the count, and dense racking can mean more.`;
+    text = `For ${sqm ? `about ${fmt(Math.round(sqm))} m² of floor (planned as ${L} × ${W} m)` : `a ${L} × ${W} m floor`}, the planning grid gives a first range of ${op ? `${op.low} to ${op.high} AmIMo anchors if the hall is open, or ${r.low} to ${r.high} with some racking` : `${r.low} to ${r.high} AmIMo anchors`}. It is a planning estimate, not a quote: the survey sets the count, and dense racking can mean more.`;
   } else if (/search|looking for|hours|time (lost|spent)|minutes per/.test(low) && n.length >= 2) {
     const r = costOfSearching({ people: n[0], searches_per_shift: n[1], minutes_per_search: n[2] || 8, shifts: n[3] || 2 });
     cards.push(r); patch.tool_search = `${fmt(r.hours_year)} h/yr`;
