@@ -326,6 +326,8 @@ export function story(section, canvas) {
     if (on === armed || REDUCE || SNAP || FILM) return; armed = on; const f = on ? addEventListener : removeEventListener;
     f('wheel', onWheel, { passive: false }); f('touchstart', onTS, { passive: true }); f('touchmove', onTM, { passive: false }); f('touchend', onTE); f('keydown', onKey);
   };
+  // a jump past the film (End key, a link) stops the frame loop before it can disarm: release the page here too
+  new IntersectionObserver((es) => { if (!es[0].isIntersecting) arm(false); }).observe(section);
   return (t) => {
     const dt = Math.min(.1, last ? (t - last) / 1000 : 0); last = t;
     const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight)), sf = Math.min(NB - .0001, p * NB), pinned = r.top <= 1 || section.classList.contains('pre-on');
