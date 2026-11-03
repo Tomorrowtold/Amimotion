@@ -336,6 +336,7 @@ if (simSec) {
     const k = Math.round(p);
     if (k !== active) {
       active = k;
+      if (cur >= 0 && phase === 3 && !reduce) { try { navigator.vibrate && navigator.vibrate(6); } catch (e) {} }   // a light tick per guide on phones that vibrate
       posts.forEach((el, i) => el.classList.toggle('on', i === k));
       ticks.forEach((el, i) => el.classList.toggle('on', i === k));
       cards.forEach((c, i) => {
