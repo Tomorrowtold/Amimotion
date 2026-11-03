@@ -201,7 +201,7 @@ export async function init(canvas, fallback, hero) {
     const r = hero.getBoundingClientRect(); const sp = clamp(-r.top / r.height);
     px = lerp(px, tx, .04); py = lerp(py, ty, .04);
 
-    const intro = eo(clamp(t / DOWN)), ia = eo(clamp(t / .35));
+    const intro = eo(clamp(t / DOWN)), ia = 1; // solid from its first frame: the drop is the entrance, never a fade through grey
     lift = lerp(lift, sp * 30, .12);
     tag.position.y = (1 - intro) * 38 + sp * 14;
     tag.rotation.y = 0.98 + (1 - intro) * .7 + Math.sin(t * .28) * .06 * intro + px * .4 + sp * 1.3;
@@ -259,5 +259,5 @@ export async function init(canvas, fallback, hero) {
   }
   // compile everything before the first visible frame, so the first frame the visitor sees is the finished picture
   renderer.compile(scene, cam);
-  requestAnimationFrame((n) => { t0 = n; late = !document.documentElement.classList.contains('tag-live'); if (late) { WAIT_AT = REST + 1.6; fallback.style.transition = 'opacity 1.6s ease'; } loop(n); canvas.classList.add('ready'); fallback.classList.add('gone'); hero.classList.add('tag-in'); dispatchEvent(new Event('tag:ready')); });
+  requestAnimationFrame((n) => { t0 = n; late = FREEZE < 0 && !document.documentElement.classList.contains('tag-live'); if (late) { WAIT_AT = REST + 1.6; fallback.style.transition = 'opacity 1.6s ease'; } else canvas.style.transition = 'none'; loop(n); canvas.classList.add('ready'); fallback.classList.add('gone'); hero.classList.add('tag-in'); dispatchEvent(new Event('tag:ready')); });
 }
