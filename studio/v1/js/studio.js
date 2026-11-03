@@ -307,7 +307,9 @@ if (simSec) {
   const sec = $('.bs'); if (!sec) return;
   const stage = $('.bs-stage', sec), intro = $('.bs-intro', sec), iv = $('video', intro), helix = $('.bs-helix', sec);
   const cards = $$('.bs-card', sec), posts = $$('.bs-post', sec), ticks = $$('.bs-rail i', sec);
-  const N = cards.length, STEP = 50 * Math.PI / 180, WAIT = 1, MORPH = 1.15;
+  const N = cards.length, STEP = 50 * Math.PI / 180, MORPH = 1.15;
+  // the opening film is held until her big smile (peak 3.4-4.0 s, the cut to her back is at 4.125 s); the rise then plays it slowed, so the smile carries into the spiral
+  const SMILE = 3.7, SLOW = .3;
   const lowData = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
   const still = /[?&]still/.test(location.search), fm = location.search.match(/[?&]bs=([\d.]+)/), fixed = fm ? +fm[1] : null;
   const easeIO = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2, easeX = (x) => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
@@ -383,16 +385,18 @@ if (simSec) {
     phase = 3; fan = 0; doneAt = performance.now(); sec.classList.add('done'); sec.style.setProperty('--pool', 1);
     const vid = cards[0].querySelector('video');
     if (vid) { if (!vid.src) vid.src = vid.dataset.src; try { vid.currentTime = iv.currentTime % (vid.duration || 6); } catch (e) {} const pr = vid.play(); if (pr) pr.catch(() => {}); }
-    iv.pause(); active = -1; cur = -1;
+    iv.pause(); try { iv.playbackRate = 1; } catch (e) {} active = -1; cur = -1;
   };
-  const rise = () => { if (phase > 1) return; if (phase === 0) { if (!iv.src) iv.src = iv.dataset.src; } phase = 2; t0 = performance.now(); measure(); frames(); };
+  const rise = () => { if (phase > 1) return; if (phase === 0) { if (!iv.src) iv.src = iv.dataset.src; } phase = 2; t0 = performance.now(); try { iv.playbackRate = SLOW; } catch (e) {} measure(); frames(); };
+  // a scroll before the smile asks for the rise; it comes when the smile has played
+  const smiled = (now) => iv.ended || iv.currentTime >= SMILE || (now - t0) / 1000 >= SMILE + 2.5;
 
   const tick = (now) => {
     const dt = Math.min(.05, last ? (now - last) / 1000 : .016); last = now;
     const { t, pinned } = progress();
     if (phase === 0 && t > 1.2) { measure(); finish(); }
     if (phase === 0 && pinned) { phase = 1; t0 = now; pinnedAt = now; if (!iv.src) iv.src = iv.dataset.src; const pr = iv.play(); if (pr) pr.catch(() => {}); }
-    if (phase === 1 && (now - t0) / 1000 >= WAIT) rise();
+    if (phase === 1 && smiled(now)) rise();
     if (phase === 2) {
       const m = clamp((now - t0) / 1000 / MORPH), e = easeX(m);
       rk = e; setIntro(e); fan = 1 - easeX(clamp((m - .25) / .75)); cur = -1;
@@ -413,7 +417,7 @@ if (simSec) {
     let lastWheel = 0, lastMag = 0, lastStep = 0;
     const inBand = () => { const g = geom(); return g.top <= 4 && g.top + g.h >= innerHeight - 4; };
     const go = (dir) => {   // true when the guides took the gesture
-      if (phase < 3 || performance.now() - doneAt < 450) { if (dir < 0 && phase < 3) return false; rise(); if (phase < 3 && scrollY < posOf(0) - 2) glideTo(posOf(0), 900); lastStep = performance.now(); return true; }
+      if (phase < 3 || performance.now() - doneAt < 450) { if (dir < 0 && phase < 3) return false; if (phase === 1 && smiled(performance.now())) rise(); if (phase < 3 && scrollY < posOf(0) - 2) glideTo(posOf(0), 900); lastStep = performance.now(); return true; }
       const next = gi + dir; if (next < 0 || next > N - 1) return false;   // past the first or last guide the page scrolls on as usual
       gi = next; lastStep = performance.now(); glideTo(posOf(next), 720); haptic(); land(); return true;
     };
