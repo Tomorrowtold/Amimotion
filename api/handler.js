@@ -13,5 +13,13 @@ const ASSETS = {
     catch { return fetch(url); }
   },
 };
-const run = (request) => handle(request, { ...process.env, ASSETS }, {});
+// vercel.json rewrites /api/<route> to /api/handler?route=<route>; rebuild the URL the server expects (no trailing slash)
+async function original(request) {
+  const u = new URL(request.url);
+  const route = (u.searchParams.get('route') || u.pathname.replace(/^\/api\/?/, '')).replace(/^\/+|\/+$/g, '');
+  u.searchParams.delete('route'); u.pathname = '/api/' + route;
+  const body = ['GET', 'HEAD'].includes(request.method) ? undefined : await request.arrayBuffer();
+  return new Request(u, { method: request.method, headers: request.headers, body });
+}
+const run = async (request) => handle(await original(request), { ...process.env, ASSETS }, {});
 export const GET = run, POST = run, OPTIONS = run;

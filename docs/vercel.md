@@ -1,7 +1,7 @@
 # Put the site on Vercel
 
 The repo is ready for Vercel: `vercel.json` sets the build (`bash vercel-build.sh`, output `studio/out`),
-the security headers and the agent API (`api/[...path].js`, the same server as Cloudflare and Netlify).
+the security headers and the agent API (`api/handler.js`, the same server as Cloudflare and Netlify).
 
 1. vercel.com > Add New > Project > Import `tomorrowtold/amimotion`. Leave every setting as it is (Framework: Other). Deploy.
 2. Every push to `main` updates the live address (`amimotion.vercel.app` or similar). Other branches get preview links.
