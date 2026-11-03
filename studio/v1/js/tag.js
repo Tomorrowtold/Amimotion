@@ -71,42 +71,40 @@ const SIG_VS = `varying vec2 vP;varying vec3 vW;void main(){vP=position.xy;vec4 
 const SIG_FS = `precision highp float;varying vec2 vP;varying vec3 vW;
 uniform float t,ring,lock,wait,fadeAll,leftFade,grid;uniform vec2 res;uniform vec3 heard;uniform vec2 A0,A1,A2;uniform vec2 pool;
 const float PI=3.14159265;
-float line(float d,float px){float w=fwidth(d);return 1.-smoothstep(px*w*.5,px*w*.5+w,abs(d));}
-float dotm(vec2 p,vec2 c,float r){return 1.-smoothstep(r*.6,r,length(p-c));}
+float gridL(vec2 p,float s,float w){vec2 q=p/s;vec2 g=abs(fract(q-.5)-.5)/fwidth(q);return 1.-clamp(min(g.x,g.y)/w,0.,1.);}
+float ringL(float d,float w){float f=fwidth(d);return 1.-clamp(abs(d)/(f*w),0.,1.);}
 void main(){
   vec2 p=vec2(vW.x,vW.z); float r=length(p);
-  vec3 col=vec3(.925,.948,.985); float a=0.;
-  // light pool under the tag: the slab is a touch darker than the page, so the light reads as light
-  float lp=exp(-pow(length((p-pool)*vec2(1.,1.3))/360.,2.));
-  col=mix(col,vec3(.995,.997,1.),lp*.9);
-  float base=(1.-smoothstep(260.,980.,r));
-  a=base*.92;
-  // engineering grid: 20 mm minor, 100 mm major, drawn at one device pixel, fading out with distance
-  vec2 g1=mod(p+10.,20.)-10., g2=mod(p+50.,100.)-50.;
-  float gm=max(line(g1.x,.8),line(g1.y,.8)), gM=max(line(g2.x,1.),line(g2.y,1.));
-  float gf=(1.-smoothstep(120.,700.,r))*grid;
-  col=mix(col,vec3(.70,.77,.90),gm*.20*gf); col=mix(col,vec3(.55,.64,.84),gM*.30*gf);
-  // the pulse: a fine wavefront with a soft trailing glow, running out from the tag
-  if(ring>0.){float rr=58.+ring*720.;float f=pow(1.-ring,1.6);
-    float front=line(r-rr,1.4)*f; float trail=exp(-pow(max(0.,rr-r)/38.,1.))*step(r,rr)*.10*f*(1.-smoothstep(0.,.25,ring)*.0);
-    float second=line(r-(rr-14.),.9)*f*.45;
-    vec3 bc=vec3(.12,.42,1.); col=mix(col,bc,clamp(front*.85+second+trail,0.,1.)); a=max(a,(front*.9+second*.6+trail)*1.);}
-  // anchors on the far floor: three points that light as the pulse reaches them
-  vec3 hb=heard; vec2 As[3]; As[0]=A0;As[1]=A1;As[2]=A2;
-  for(int i=0;i<3;i++){vec2 c=As[i]; float h=i==0?hb.x:(i==1?hb.y:hb.z);
-    float d=dotm(p,c,5.); float halo=exp(-pow(length(p-c)/(18.+h*26.),2.))*h;
-    float ringA=line(length(p-c)-9.-h*10.,1.)*h*.7;
-    vec3 ac=vec3(.12,.42,1.); col=mix(col,ac,clamp(d*(.45+h*.55)+halo*.5+ringA,0.,1.)); a=max(a,(d*.75+halo*.5+ringA)*(1.-smoothstep(500.,900.,length(c))*.0));}
-  // the fix locking on: four fine corner brackets around the tag
-  if(lock>0.){float s=mix(1.5,1.,lock); vec2 q=abs(p)/s; float H=78.,L=16.;
-    float bx=line(q.x-H,1.2)*step(H-L,q.y)*step(q.y,H); float by=line(q.y-H,1.2)*step(H-L,q.x)*step(q.x,H);
-    float br=max(bx,by)*lock; col=mix(col,vec3(.12,.42,1.),br); a=max(a,br);}
-  // waiting: a thin amber arc fills around the tag
-  if(wait>0.){float ang=atan(p.x,-p.y);float u=fract(ang/(2.*PI)+1.);float ra=104.;
-    float track=line(r-ra,1.)*.16; float arc=line(r-ra,1.8)*step(u,wait);
-    float head=exp(-pow((u-wait)*180.,2.))*exp(-pow((r-ra)/3.,2.));
-    vec3 wc=vec3(.96,.62,.08); float w=max(track,max(arc,head)); col=mix(col,wc,w); a=max(a,w);}
-  vec2 s=gl_FragCoord.xy/res; a*=mix(1.,smoothstep(.06,.46,s.x),leftFade);
+  vec3 col=vec3(.93,.952,.988); float a=0.;
+  // a pool of soft light under the tag; the floor dissolves into the page around it
+  float lp=exp(-pow(length((p-pool)*vec2(1.,1.25))/150.,2.));
+  col=mix(col,vec3(1.),lp*.85);
+  a=(1.-smoothstep(90.,420.,r))*.9;
+  // calibration grid: 10 mm minor, 50 mm major, one device pixel, only around the tag
+  float gf=(1.-smoothstep(40.,230.,r))*grid;
+  float gm=gridL(p,10.,1.), gM=gridL(p+25.,50.,1.2);
+  col=mix(col,vec3(.62,.70,.88),gm*.16*gf); col=mix(col,vec3(.42,.52,.80),gM*.26*gf);
+  a=max(a,(gm*.16+gM*.26)*gf);
+  // the pulse: a fine wavefront and a faint echo, running out from the tag
+  vec3 bc=vec3(.12,.42,1.);
+  if(ring>0.){float rr=46.+ring*330.;float f=pow(1.-ring,1.4)*smoothstep(0.,.04,ring);
+    float front=ringL(r-rr,1.3)*f, echo=ringL(r-rr+9.,1.)*f*.4;
+    float glow=exp(-max(0.,rr-r)/22.)*step(r,rr)*.07*f;
+    float w=clamp(front+echo+glow,0.,1.); col=mix(col,bc,w); a=max(a,w);}
+  // anchors that hear it: three points on the far floor brighten as the pulse reaches them
+  vec2 As[3]; As[0]=A0;As[1]=A1;As[2]=A2; float hs[3]; hs[0]=heard.x;hs[1]=heard.y;hs[2]=heard.z;
+  for(int i=0;i<3;i++){float d=length(p-As[i]); float h=hs[i];
+    float core=1.-smoothstep(1.3,2.1,d); float halo=exp(-pow(d/(4.+h*7.),2.))*h*.5; float rg=ringL(d-4.-h*5.,1.)*h*.75;
+    float w=clamp(core*(.35+.65*h)+halo+rg,0.,1.); col=mix(col,bc,w); a=max(a,w);}
+  // the fix locking on: four fine corner brackets close in around the tag
+  if(lock>0.){float s=mix(1.6,1.,lock); vec2 q=abs(p)/s; float H=60.,L=10.;
+    float bx=ringL(q.x-H,1.1)*step(H-L,q.y)*step(q.y,H+.5), by=ringL(q.y-H,1.1)*step(H-L,q.x)*step(q.x,H+.5);
+    float w=max(bx,by)*lock; col=mix(col,bc,w); a=max(a,w);}
+  // waiting: a thin amber arc fills around the tag, a soft head leading it
+  if(wait>0.){float ang=atan(p.x,-p.y);float u=fract(ang/(2.*PI)+1.);float ra=64.;
+    float track=ringL(r-ra,1.)*.14, arc=ringL(r-ra,1.6)*step(u,wait), head=exp(-pow((u-wait)*120.,2.))*exp(-pow((r-ra)/2.2,2.))*.9;
+    vec3 wc=vec3(.97,.63,.1); float w=clamp(max(track,arc)+head,0.,1.); col=mix(col,wc,w); a=max(a,w);}
+  vec2 sc=gl_FragCoord.xy/res; a*=mix(1.,smoothstep(.38,.58,sc.x),leftFade);
   gl_FragColor=vec4(col,a*fadeAll);}`;
 
 export async function init(canvas, fallback, hero) {
@@ -121,9 +119,9 @@ export async function init(canvas, fallback, hero) {
   const cam = new THREE.PerspectiveCamera(18, 1, 10, 6000);
 
   // the founders' dark grey shell, satin, with a clear coat that holds one long highlight
-  const shell = (c, r, cc, ccr) => new THREE.MeshPhysicalMaterial({ color: c, roughness: r, metalness: 0, clearcoat: cc, clearcoatRoughness: ccr, sheen: .25, sheenRoughness: .6, sheenColor: new THREE.Color(0x8fb0ff) });
+  const shell = (c, r, cc, ccr) => new THREE.MeshPhysicalMaterial({ color: c, roughness: r, metalness: 0, clearcoat: cc, clearcoatRoughness: ccr });
   const top = new THREE.Group(), bot = new THREE.Group();
-  const mTop = shell(0x3a3c41, .44, .3, .28), mBot = shell(0x2b2c31, .5, .25, .32);
+  const mTop = shell(0x3a3c41, .4, .45, .18), mBot = shell(0x2b2c31, .5, .25, .32);
   top.add(new THREE.Mesh(gTop, mTop)); bot.add(new THREE.Mesh(gBot, mBot));
   const inner = new THREE.Group(); inner.add(top, bot); inner.position.set(-61.77, -65.98, 1.0);
   const mid = new THREE.Group(); mid.add(inner); mid.rotation.x = Math.PI / 2;
@@ -133,7 +131,7 @@ export async function init(canvas, fallback, hero) {
   // its reflection in the polished floor: the same shell mirrored under the floor, fading with depth
   const reflMat = (m) => { const r = m.clone(); r.transparent = true; r.depthWrite = false; r.side = THREE.DoubleSide;
     r.onBeforeCompile = (sh) => { sh.uniforms.reflA = reflA; sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying float vWy;').replace('#include <project_vertex>', '#include <project_vertex>\nvWy=(modelMatrix*vec4(transformed,1.)).y;');
-      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vWy;uniform float reflA;').replace('#include <dithering_fragment>', `#include <dithering_fragment>\ngl_FragColor.a*=reflA*exp(-max(0.,${FLOOR_Y.toFixed(1)}-vWy)/7.);`); };
+      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vWy;uniform float reflA;').replace('#include <dithering_fragment>', `#include <dithering_fragment>\ngl_FragColor.a*=reflA*exp(-max(0.,${FLOOR_Y.toFixed(1)}-vWy)/3.2);`); };
     return r; };
   const reflA = { value: 0 };
   const rTop = new THREE.Group(), rBot = new THREE.Group();
@@ -145,7 +143,7 @@ export async function init(canvas, fallback, hero) {
   const MIR = new THREE.Matrix4().makeTranslation(0, FLOOR_Y, 0).multiply(new THREE.Matrix4().makeScale(1, -1, 1)).multiply(new THREE.Matrix4().makeTranslation(0, -FLOOR_Y, 0));
 
   // the floor
-  const ANCH = [new THREE.Vector2(-430, -300), new THREE.Vector2(470, -250), new THREE.Vector2(380, 360)];
+  const ANCH = [new THREE.Vector2(-70, -150), new THREE.Vector2(80, -125), new THREE.Vector2(92, 58)];
   const sigMat = new THREE.ShaderMaterial({ vertexShader: SIG_VS, fragmentShader: SIG_FS, transparent: true, depthWrite: false, extensions: { derivatives: true },
     uniforms: { t: { value: 0 }, ring: { value: 0 }, lock: { value: 0 }, wait: { value: 0 }, fadeAll: { value: 0 }, leftFade: { value: 1 }, grid: { value: 1 }, res: { value: new THREE.Vector2(1, 1) }, heard: { value: new THREE.Vector3() }, A0: { value: ANCH[0] }, A1: { value: ANCH[1] }, A2: { value: ANCH[2] }, pool: { value: new THREE.Vector2(-20, 10) } } });
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(2400, 2400), sigMat); floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_Y; floor.renderOrder = 0; scene.add(floor);
@@ -153,8 +151,8 @@ export async function init(canvas, fallback, hero) {
   // contact shadow: a tight core and a wide soft skirt
   const shadowTex = (stops) => { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); stops.forEach(([o, a]) => g.addColorStop(o, `rgba(11,18,56,${a})`)); x.fillStyle = g; x.fillRect(0, 0, 256, 256); const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; return tx; };
   const mkShadow = (w, h, stops) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: shadowTex(stops), transparent: true, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.y = FLOOR_Y + .15; m.renderOrder = 2; scene.add(m); return m; };
-  const core = mkShadow(96, 118, [[0, .62], [.35, .38], [.7, .06], [1, 0]]);
-  const skirt = mkShadow(260, 290, [[0, .22], [.4, .09], [1, 0]]);
+  const core = mkShadow(84, 108, [[0, .62], [.35, .38], [.7, .06], [1, 0]]);
+  const skirt = mkShadow(200, 220, [[0, .22], [.4, .09], [1, 0]]);
 
   // light: a long softbox overhead-left for the lid, a cool rim behind for the edges, a warm low fill so the black keeps its form
   const key = new THREE.DirectionalLight(0xffffff, 1.5); key.position.set(-200, 280, 120); scene.add(key);
@@ -164,7 +162,8 @@ export async function init(canvas, fallback, hero) {
   const phone = () => innerWidth < 900;
   // fit: put the tag where the composition wants it, at the size the composition wants
   const box = new THREE.Box3(), V = new THREE.Vector3();
-  const projW = (d, w, h) => { cam.position.set(Math.sin(.15) * d, d * .58, Math.cos(.15) * d); cam.lookAt(0, -6, 0); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+  const EYE = .44;
+  const projW = (d, w, h) => { cam.position.set(Math.sin(.15) * d, d * EYE, Math.cos(.15) * d); cam.lookAt(0, -6, 0); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
     tag.updateMatrixWorld(true); box.setFromObject(tag); let x0 = 1e9, x1 = -1e9;
     for (let i = 0; i < 8; i++) { V.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).project(cam); x0 = Math.min(x0, V.x); x1 = Math.max(x1, V.x); }
     return Math.max(1, (x1 - x0) * w / 2); };
@@ -174,7 +173,7 @@ export async function init(canvas, fallback, hero) {
     let fx = .7, fy = .53;
     if (phone()) { const cr = canvas.getBoundingClientRect(), a = hero.querySelector('h1').getBoundingClientRect(), b = hero.querySelector('p').getBoundingClientRect(); fx = .5; fy = clamp(((a.bottom + b.top) / 2 - cr.top) / h, .3, .7); }
     cam.setViewOffset(w, h, -(fx - .5) * w, -(fy - .5) * h, w, h);
-    const want = phone() ? Math.min(w * .56, h * .3) : Math.min(w * .3, 560, h * .5);
+    const want = phone() ? Math.min(w * .56, h * .3) : Math.min(w * .32, 600, h * .52);
     const ty = tag.position.y, rx = tag.rotation.x, ry = tag.rotation.y; tag.position.y = 0; tag.rotation.set(0, .98, 0);
     const d0 = 700; dist = d0 * projW(d0, w, h) / want;
     tag.position.y = ty; tag.rotation.x = rx; tag.rotation.y = ry;
@@ -184,32 +183,36 @@ export async function init(canvas, fallback, hero) {
   let lastBox = '';
   const refit = () => { const b = canvas.clientWidth + 'x' + canvas.clientHeight; if (b !== lastBox) { lastBox = b; size(); } };
 
-  let landing = false, px = 0, py = 0, tx = 0, ty = 0, on = true, t0 = 0, lift = 0;
+  let landing = false, px = 0, py = 0, tx = 0, ty = 0, on = true, t0 = 0, lift = 0, late = false;
   addEventListener('pointermove', (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, { passive: true });
   new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on) requestAnimationFrame(loop); }).observe(hero);
 
   // timeline (seconds from the first frame): the tag comes down out of soft focus, the highlight crosses the lid,
   // it touches down, is heard (the pulse reaches the anchors), the fix locks on, then the wait begins. The pulse repeats.
-  const DOWN = 1.2, PULSE = 2.6, EVERY = 4.2, WAIT_AT = 3.4, WAIT_LEN = 9, CYC = 14;
+  const DOWN = 1.2, PULSE = 2.6, EVERY = 4.2, WAIT_LEN = 9, CYC = 14, REST = 3.85;
+  // late (the 3D arrived after the still was already showing): start from the resting frame the still was made from, and cross-fade
+  let WAIT_AT = 4;
   const ANCR = ANCH.map((a) => a.length());
+  // ?hero=1.2 holds the hero at that second (for stills and review)
+  const FREEZE = (() => { const m = /[?&]hero=([\d.]+)/.exec(location.search); return m ? +m[1] : -1; })();
   function loop(now) {
     if (!on) return;
-    const t = (now - t0) / 1000;
+    const t = FREEZE >= 0 ? FREEZE : (now - t0) / 1000 + (late ? REST : 0);
     const r = hero.getBoundingClientRect(); const sp = clamp(-r.top / r.height);
     px = lerp(px, tx, .04); py = lerp(py, ty, .04);
 
-    const intro = eo(clamp(t / DOWN)), ia = clamp(t / .45);
+    const intro = eo(clamp(t / DOWN)), ia = eo(clamp(t / .35));
     lift = lerp(lift, sp * 30, .12);
     tag.position.y = (1 - intro) * 38 + sp * 14;
     tag.rotation.y = 0.98 + (1 - intro) * .7 + Math.sin(t * .28) * .06 * intro + px * .4 + sp * 1.3;
     tag.rotation.x = py * .14 - sp * .22 + (1 - intro) * .12;
     tag.rotation.z = (1 - intro) * -.06;
     top.position.z = -lift;
-    if (!landing) { canvas.style.opacity = ia.toFixed(3); const bl = (1 - eo(clamp(t / .85))) * 14; canvas.style.filter = bl > .05 ? `blur(${bl.toFixed(2)}px)` : ''; }
+    if (!landing) canvas.style.opacity = ia.toFixed(3);
 
     // the highlight: the key softbox sweeps once across the lid as it comes down, then follows the hand
     const sw = sm(.15, 1.6, t);
-    key.position.set(-200 + px * 300 - (1 - sw) * 1100, 280 - py * 120, 120 + py * 100); key.intensity = 1.5 + Math.sin(sw * Math.PI) * 1.4;
+    key.position.set(-200 + px * 300 - (1 - sw) * 1100, 280 - py * 120, 120 + py * 100); key.intensity = 1.8 + Math.sin(sw * Math.PI) * 1.6;
     rim.intensity = 2.4 + Math.sin(t * .6) * .2;
     scene.environmentRotation.y = t * .03 + px * .45;
 
@@ -218,8 +221,8 @@ export async function init(canvas, fallback, hero) {
     const pt = t - DOWN; // since touchdown
     let ring = 0; if (pt > 0) { const k = pt % EVERY; ring = k < PULSE ? k / PULSE : 0; }
     u.ring.value = ring;
-    const rr = 58 + ring * 720;
-    for (let i = 0; i < 3; i++) { const h = ring > 0 ? Math.exp(-Math.pow((rr - ANCR[i]) / 60, 2)) : 0; const key2 = 'xyz'[i]; u.heard.value[key2] = Math.max(h, u.heard.value[key2] * .955); }
+    const rr = 46 + ring * 330;
+    for (let i = 0; i < 3; i++) { const h = ring > 0 ? Math.exp(-Math.pow((rr - ANCR[i]) / 26, 2)) : 0; const key2 = 'xyz'[i]; const since = ring > 0 ? (rr - ANCR[i]) / 330 * PULSE : 9; u.heard.value[key2] = ring > 0 && rr > ANCR[i] ? Math.max(h, Math.exp(-since / .9)) : h; }
     u.lock.value = pt > .05 ? eo(clamp((pt - .05) / .55)) : 0;
     const wt = t - WAIT_AT; let wv = 0; if (wt > 0) { const c = wt % CYC; wv = c < WAIT_LEN ? eo(c / WAIT_LEN) * .62 : c < CYC - 1 ? .62 : .62 * (CYC - c); }
     u.wait.value = wv; hero.style.setProperty('--wait', (wv / .62).toFixed(3));
@@ -229,10 +232,10 @@ export async function init(canvas, fallback, hero) {
     const ground = clamp(1 - tag.position.y / 40);
     core.material.opacity = ground * ground * ia * (1 - sp * .5); core.scale.setScalar(1.35 - .35 * intro);
     skirt.material.opacity = ground * ia * (1 - sp * .5);
-    reflA.value = .16 * ground * ia * (1 - sp);
+    reflA.value = .1 * ground * ia * (1 - sp);
 
     refit(); let d = dist;
-    cam.position.set(Math.sin(.15 + px * .05) * d, d * .58, Math.cos(.15 + px * .05) * d); cam.lookAt(0, -6, 0);
+    cam.position.set(Math.sin(.15 + px * .05) * d, d * (EYE - py * .04), Math.cos(.15 + px * .05) * d); cam.lookAt(0, -6, 0);
 
     // the landing (bridge.js): the tag falls onto its own trolley in the plant, to the size of the rendered tag on its deck
     const B = globalThis.__bridge;
@@ -245,7 +248,7 @@ export async function init(canvas, fallback, hero) {
       let x0 = 1e9, x1 = -1e9; for (let i = 0; i < 8; i++) { V.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).project(cam); x0 = Math.min(x0, V.x); x1 = Math.max(x1, V.x); }
       const natPx = Math.max(1, (x1 - x0) * w / 2), want = Math.exp(lerp(Math.log(natPx), Math.log(Math.max(2, B.px * 1.35)), k));
       d = d * natPx / want;
-      cam.position.set(Math.sin(.15) * d, d * .58, Math.cos(.15) * d); cam.lookAt(0, -6, 0);
+      cam.position.set(Math.sin(.15) * d, d * lerp(EYE, .58, k), Math.cos(.15) * d); cam.lookAt(0, -6, 0);
       cam.far = d * 4; cam.near = Math.max(1, d / 40); cam.updateProjectionMatrix();
       const f = B.floor; u.fadeAll.value *= f; core.material.opacity *= f; skirt.material.opacity *= f; reflA.value *= f;
       canvas.style.opacity = B.fade;
@@ -256,5 +259,5 @@ export async function init(canvas, fallback, hero) {
   }
   // compile everything before the first visible frame, so the first frame the visitor sees is the finished picture
   renderer.compile(scene, cam);
-  requestAnimationFrame((n) => { t0 = n; loop(n); canvas.classList.add('ready'); fallback.classList.add('gone'); hero.classList.add('tag-in'); dispatchEvent(new Event('tag:ready')); });
+  requestAnimationFrame((n) => { t0 = n; late = !document.documentElement.classList.contains('tag-live'); if (late) { WAIT_AT = REST + 1.6; fallback.style.transition = 'opacity 1.6s ease'; } loop(n); canvas.classList.add('ready'); fallback.classList.add('gone'); hero.classList.add('tag-in'); dispatchEvent(new Event('tag:ready')); });
 }

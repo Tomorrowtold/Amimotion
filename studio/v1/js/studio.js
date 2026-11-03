@@ -13,7 +13,7 @@ const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersec
 $$('.k-lines,.k-fade,.k-pic,.k-rise,.wordmark').forEach((el) => { if (!el.closest('.hero')) io.observe(el); });
 // the hero's words arrive with the tag: one choreography from the first frame (or on their own if the 3D cannot start soon)
 { let shown = false; const show = () => { if (shown) return; shown = true; requestAnimationFrame(() => setTimeout(() => { $('#h1').classList.add('in'); $$('.hero .k-fade').forEach((e, i) => setTimeout(() => e.classList.add('in'), 380 + i * 160)); }, 140)); };
-  if (document.documentElement.classList.contains('tag-live')) { addEventListener('tag:ready', show, { once: true }); setTimeout(show, 1400); } else show(); }
+  if (document.documentElement.classList.contains('tag-live')) { addEventListener("tag:ready", show, { once: true }); setTimeout(show, 900); } else show(); }
 
 /* ---------- menu ---------- */
 const mb = $('#menuBtn'), sheet = $('#sheet') || { hidden: true };
@@ -195,13 +195,14 @@ function frame(t) {
 requestAnimationFrame(frame);
 
 /* ---------- progressive 3D: after first paint and idle ---------- */
-const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
+// a busy main thread (the hero renders every frame) can starve idle callbacks forever: cap the wait
+const idle = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 1200 }) : (f) => setTimeout(f, 200);
 // the hero's tag starts at once, so it is there on the very first visit; the fallback picture only shows if it cannot run
 const tagFb = $('#tagFallback');
 if (!slow && !reduce && window.WebGLRenderingContext) {
   document.documentElement.classList.add('tag-live');
   import('./tag.js').then((m) => m.init($('#tagGL'), tagFb, $('#hero'))).catch(() => document.documentElement.classList.remove('tag-live'));
-  setTimeout(() => { if (!$('#tagGL').classList.contains('ready')) document.documentElement.classList.remove('tag-live'); }, 4000);
+  setTimeout(() => { if (!$('#tagGL').classList.contains('ready')) document.documentElement.classList.remove('tag-live'); }, 3000);
 }
 addEventListener('load', () => idle(() => {
   startGL();

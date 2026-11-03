@@ -1088,3 +1088,13 @@ html.tag-live .tag-fallback{opacity:0!important;transition:none}
 .hero .lede.k-fade{opacity:1;transition:transform 1.2s var(--ease-out)}
 /* single-paragraph explainer lines and the question rest at AA contrast (4.8:1); the line being read is full ink */
 .cap p[data-b]:not(.now),.cap .q-big:not(.lit){color:#646b88}
+/* hero, first visit: the lede waits with the headline for the tag (at most 0.9 s), so the three arrive as one */
+html.tag-live .hero .lede.k-fade:not(.in){opacity:0;transform:translateY(18px)}
+html.tag-live .hero .lede.k-fade{transition:opacity .9s var(--ease),transform 1.2s var(--ease-out)}
+
+/* the stand-in is the 3D hero's own resting frame, placed exactly where the 3D tag rests (tag.js size()),
+   so a visitor without 3D sees the same hero, and a late 3D cross-fades in over it without a jump */
+.hero-stage{container-type:size}
+.hero-stage .tag-fallback{inset:0!important;left:0!important;padding:0!important;display:block!important}
+.hero-stage .tag-fallback img{position:absolute;left:70%;top:53%;width:calc(2.6 * min(32cqw, 600px, 52cqh))!important;max-width:none;max-height:none!important;height:auto;transform:translate(-50%,-50%);animation:none}
+@media (max-width:900px){.hero-stage .tag-fallback img{left:50%;top:40.3%;width:100cqw!important}}

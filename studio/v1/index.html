@@ -44,7 +44,8 @@
 <section class="hero" id="hero">
   <div class="hero-stage" aria-hidden="true">
     <picture class="tag-fallback" id="tagFallback">
-      <img src="assets/home/amigo-side-1500.webp" alt="" width="1500" height="1000" fetchpriority="low">
+      <source media="(max-width: 900px)" srcset="assets/home/hero-rest-m-780.webp">
+      <img src="assets/home/hero-rest-1140.webp" srcset="assets/home/hero-rest-1140.webp 1140w, assets/home/hero-rest-2280.webp 2280w" sizes="min(84vw, 1560px)" alt="" width="1140" height="657" fetchpriority="low">
     </picture>
     <canvas class="bridge-gl" id="bridgeGL"></canvas>
     <canvas class="bridge-hud" id="bridgeHUD"></canvas>
