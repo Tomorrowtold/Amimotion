@@ -1,0 +1,37 @@
+/* AmIMotion house grade "Sky Ground" (3 Nov 2026). Loaded last on every page. One light, one shadow, one white.
+   Pictures and films are graded at build time by studio/grade/grade.py with the same two colours used here:
+   shadows lean into the ink indigo of the type, highlights roll into the cool paper white of the page.
+   Tokens for every thread: use these instead of new hex values. */
+:root{
+  /* light */
+  --g-paper:#f7faff;            /* the key light's white: brightest a picture or surface gets */
+  --g-ground:#f0f6ff;           /* the page */
+  --g-plate:#e4ebf6;            /* behind a picture while it loads, empty plates */
+  /* shadow */
+  --g-ink:#0b1238;              /* type, and the colour every shadow leans into */
+  --g-night:#0c1430;            /* dark bands */
+  --g-black:#05060d;            /* the house black: replaces #000 (AmIMo, films, overlays) */
+  --g-shadow:11 18 56;          /* rgb for shadows: rgb(var(--g-shadow) / .2) */
+  /* elevation: one key light above, slightly in front; two layers (contact + ambient), always ink-tinted */
+  --g-elev-1:0 1px 1px rgb(11 18 56 / .06),0 2px 6px -2px rgb(11 18 56 / .10);
+  --g-elev-2:0 1px 2px rgb(11 18 56 / .06),0 12px 28px -14px rgb(11 18 56 / .28);
+  --g-elev-3:0 2px 4px rgb(11 18 56 / .06),0 30px 60px -28px rgb(11 18 56 / .38);
+  /* signals (unchanged meaning) */
+  --g-action:#4b3df0; --g-located:#1f6bff; --g-sky:#66a5fa; --g-waiting:#ffb020;
+}
+/* the six page worlds keep their character but share one daylight white point and one ink-indigo night */
+.ds[data-world="steel"]{--w-ground:#eef3fb;--w-band:#0c1430;--w-plate:#dde6f4}
+.ds[data-world="shift"]{--w-ground:#f2f5f9;--w-band:#111836;--w-plate:#e3e6ec}
+.ds[data-world="floor"]{--w-ground:#eef3f7;--w-band:#0c1630;--w-plate:#dee5ec}
+.ds[data-world="paper"]{--w-ground:#f6f5f2;--w-band:#151831;--w-plate:#e8e6e1}
+.ds[data-world="morning"]{--w-ground:#f0f6ff;--w-band:#0f1c4a;--w-plate:#e2ecfb}
+.ds[data-world="studio"]{--w-ground:#f5f5f4;--w-band:#141631;--w-plate:#e7e5e3}
+/* product looks: same rule, their identity kept */
+.site-isi{--p-bg:#f5f7fa}
+.site-amimo{--p-card:#f3f4f6}
+.site-amimo [data-tone=dark]{--p-bg:var(--g-black);--p-on-accent:var(--g-black);background:var(--g-black)}
+.site-amihub{--p-bg:#06080f;--p-card:#10131b}
+/* pictures sit on the plate colour while they load, never on a white or black hole */
+main img:not([src$=".svg"]),main video{background-color:var(--g-plate)}
+.site-amimo [data-tone=dark] img,.site-amimo [data-tone=dark] video,.site-amihub img,.site-amihub video,main img[src*="-cad"],main img[src*="/hw/"],main img[src*="/nav/"],main img[src*="amigo-"],main img[src*="amimo-"],main img[src*="pair"],main img[src*="family"]{background-color:transparent}
+::selection{background:rgb(75 61 240 / .18);color:inherit}

@@ -158,5 +158,20 @@ for f in keep:
     f = Path(f).resolve()
     if not f.is_file(): continue
     r = f.relative_to(dist.resolve()); d = OUT / r; d.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(f, d); n += 1
+# 6. house grade ("Sky Ground"): every picture and film, the house black in every stylesheet, grade.css last on every page
+if os.environ.get("NO_GRADE") != "1":
+    sys.path.insert(0, str(REPO / "studio" / "grade")); import grade as G
+    G.grade_tree(OUT)
+    for f in OUT.rglob("*.css"):
+        t = f.read_text()
+        t = re.sub(r"#000(?:000)?(?![0-9a-fA-F\w-])", "#05060d", t)
+        t = re.sub(r"(rgba?\()\s*0\s*,\s*0\s*,\s*0\s*(?=[,)])", r"\g<1>5,6,13", t)
+        t = re.sub(r"(rgba?\()0 0 0(?= ?[/)])", r"\g<1>5 6 13", t)
+        f.write_text(t)
+    shutil.copyfile(REPO / "studio" / "grade" / "grade.css", OUT / "assets" / "studio" / "grade.css")
+    for f in OUT.rglob("*.html"):
+        pre = "./" if f.parent == OUT else "../" * len(f.relative_to(OUT).parent.parts)
+        t = f.read_text()
+        if "studio/grade.css" not in t: f.write_text(t.replace("</head>", f'<link rel="stylesheet" href="{pre}assets/studio/grade.css">\n</head>', 1))
 (OUT / "BUILD.txt").write_text(f"main site {rev} + studio\n")
 print(f"studio site: {n} files from main {rev} -> {OUT}")
