@@ -59,8 +59,14 @@ def scope(css):
                 res.append(f".studio{{{body}}}")
             else:
                 parts = [p.strip() for p in sel.split(",")]
-                keep = [p for p in parts if not DROP.match(p)]
-                if keep: res.append(",".join(".studio " + p for p in keep) + f"{{{body}}}")
+                # html.state selectors (html.tag-live, html.sim-lock) stay on <html>; what follows is scoped under .studio
+                def sc(p):
+                    if re.match(r"html[.:\[]", p):
+                        h, _, rest = p.partition(" ")
+                        return h + (" .studio " + rest if rest else "")
+                    return ".studio " + p
+                keep = [p for p in parts if re.match(r"html[.:\[]", p) or not DROP.match(p)]
+                if keep: res.append(",".join(sc(p) for p in keep) + f"{{{body}}}")
             j = m
         return "\n".join(res)
     return block(re.sub(r"/\*.*?\*/", "", css, flags=re.S))
@@ -83,6 +89,7 @@ def rel(m):
     return f'href="./{u.strip("/")}/index.html"' if u != "/" else 'href="./index.html"'
 main = re.sub(r'href="(/[^"#]*)"', rel, main)
 main = main.replace('src="assets/', 'src="./assets/studio/assets/').replace('poster="assets/', 'poster="./assets/studio/assets/')
+main = re.sub(r'srcset="([^"]+)"', lambda m: 'srcset="' + re.sub(r'(^|,\s*)assets/', r'\1./assets/studio/assets/', m.group(1)) + '"', main)
 # rename studio classes that the main site's own stylesheet also uses, so neither side bleeds into the other
 CLS = ['hero','hero-stage','hero-copy','system','start','start-row','stage','stage-pics','stage-side','stage-floor','cards','card','card-pic','cta','ctas','cta-h','cta-p','cta-plan','cta-call','btn','btn-primary','btn-secondary','links','lead','panel','tabs','tab-ink','big','copy','two','screen','mega','display','lede','lede-lead','h2','h3','small','strong','more','caps','cap','rail','story','story-sticky','floor-media','floor-poster','floor-gl','floor-hud','wire','wire-line','wire-glow','world-gl','spec-line','arrow-link','magnet','tilt','ideas','sp','sp-hub','vh','q-big','tag-fallback','tag-shadow','scroll-cue','hero-foot','hero-part','wrap']
 CRE = re.compile(r'\.(' + '|'.join(sorted(map(re.escape, CLS), key=len, reverse=True)) + r')(?![\w-])')
@@ -91,7 +98,7 @@ main = re.sub(r'class="([^"]*)"', cls_attr, main)
 cursor = '<div class="cursor" id="cursor" aria-hidden="true"><i class="c-ring"></i><i class="c-dot"></i><i class="c-h"></i><i class="c-v"></i></div>'
 a, z = home.index("<main"), home.index("</main>") + 7
 home = home[:a] + main + home[z:]   # the normal system cursor (Shiv, 2 Nov): no custom cursor
-home = home.replace("</head>", '<link rel="stylesheet" href="./assets/studio/css/studio.css">\n<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("tag-live")</script>\n</head>', 1)
+home = home.replace("</head>", '<link rel="stylesheet" href="./assets/studio/css/studio.css">\n<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("tag-live")</script>\n<link rel="modulepreload" href="./assets/studio/js/tag.js">\n<link rel="modulepreload" href="./assets/studio/assets/vendor/three.module.min.js">\n<link rel="preload" href="./assets/studio/assets/cad/mesh.json" as="fetch" crossorigin="anonymous">\n<link rel="preload" href="./assets/studio/assets/cad/top_cover.mesh" as="fetch" crossorigin="anonymous">\n<link rel="preload" href="./assets/studio/assets/cad/bottom_cover.mesh" as="fetch" crossorigin="anonymous">\n</head>', 1)
 home = home.replace("</body>", '<script type="module" src="./assets/studio/js/studio.js"></script>\n</body>', 1)
 (dist / "index.html").write_text(home)
 

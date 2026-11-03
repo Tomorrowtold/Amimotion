@@ -1,0 +1,16 @@
+/* /industries/manufacturing/: a framed print. The photograph sits on a wide mat; the headline is set on a plate that
+   overlaps its lower edge. */
+.head-pic{grid-column:1 / -1;grid-row:1;margin:0 0 0!important;background:var(--surface);padding:clamp(16px,2.4vw,40px);border-radius:6px}
+.head-pic img{width:100%;aspect-ratio:2.39/1;object-fit:cover}
+@media (min-width:1024px){
+  /* The breadcrumb sits above the print, so the headline plate that overlaps the print's lower edge no longer covers it. */
+  .head-pic{grid-row:2}
+  .head .crumbs{grid-row:1;margin:var(--s-2) 0 var(--s-4)}
+  .head h1{grid-row:3;grid-column:1 / span 8;background:var(--w-ground);padding:var(--s-5) var(--s-6) 0 0;margin-top:calc(-1 * var(--s-9,96px));position:relative;z-index:2}
+  .head .words{grid-row:4;display:block;grid-column:1 / span 7}
+}
+.figures dt{color:var(--w-accent)}
+/* the moment of decision: the way into the diagnostic is the one filled button in the head; any second link stays a quiet text link beside it */
+.head .more:has(>.cta){display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3) var(--s-6)}.head .more:has(>.cta) .sep{display:none}
+/* the print is cropped a little wider on desktop so the whole headline lands in the first screen; the people and the trolley rows stay in frame */
+@media (min-width:1024px){.head-pic img{aspect-ratio:3/1;object-position:50% 45%}}

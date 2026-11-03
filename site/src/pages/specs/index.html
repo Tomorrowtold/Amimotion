@@ -1,57 +1,50 @@
 <!--
 title: AmIMotion specifications: AmIGo, AmIMo and AmIHub
-description: Public specifications for AmIGo tags, AmIMo anchors and AmIHub software: radio, positioning modes, accuracy, update rate, power, interfaces and hosting.
-tone: light
+description: Every published figure for AmIGo tags, AmIMo anchors and AmIHub software, each with its condition: radio, accuracy, battery, power, interfaces, hosting.
 crumb: Specifications
+type: article
+scripts: km
+world: steel
+id: specs
+look: quiet norule
 -->
-<section class="page-head section light" aria-labelledby="page-title">
-<div class="wrap">
-<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/platform/">Platform</a><span aria-hidden="true">/</span><span aria-current="page">Specifications</span></nav><h1 id="page-title" class="h-hero">Specifications.<br><span class="soft">Everything we publish, on one page.</span></h1><p class="lede">The figures below come from AmIMotion’s published brochure and are indicative. Where a figure is not public yet, the table says where to get it.</p><p class="short-answer">AmIMotion is an ultra-wideband (UWB) location system built on IEEE 802.15.4z HRP and on the FiRa and omlox specifications. AmIGo tags report 0.1 to 10 times a second, AmIMo anchors combine time difference of arrival with 3D angle of arrival, and AmIHub locates tags down to ±10 cm in 3D, on-premise or in the cloud.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Ask for the detailed pack</a><a class="btn btn-line" href="/technology/">How it works</a></div>
+<div data-km class="head has-still">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true"> / </span><a href="/platform/">How it works</a><span aria-hidden="true"> / </span><span aria-current="page">Specifications</span></nav>
+<h1 id="page-title"><span>Specifications.</span> <span>Every figure, with its condition.</span></h1>
+<div class="words"><p class="lede">These are AmIMotion's published figures. Each one carries what it depends on. The final datasheets come under NDA after the first call.</p><p class="short-answer">AmIMotion is a UWB location system in three parts. AmIGo tags use IEEE 802.15.4z HRP radio on channels 5 and 9 and report 0.1 to 10 times a second. AmIMo anchors time each pulse, read its 3D angle of arrival and need only DC or PoE power. AmIHub places tags down to ±10 cm in 3D with AmIMo anchors, depending on your floor, and runs inside your plant or in the cloud. AmIMotion is built on the FiRa and omlox specifications.</p><p class="more"><a href="/technology/">How it locates a tag</a><span class="sep" aria-hidden="true">·</span><a href="/developers/">For developers</a></p></div>
+<div class="head-pic"><figure class="pic still"><picture><source type="image/avif" srcset="/assets/worlds/pair-dk-800.avif 800w, /assets/worlds/pair-dk-1600.avif 1600w" sizes="(max-width:1023px) 100vw, 56vw"><source type="image/webp" srcset="/assets/worlds/pair-dk-800.webp 800w, /assets/worlds/pair-dk-1600.webp 1600w" sizes="(max-width:1023px) 100vw, 56vw"><img src="/assets/worlds/pair-dk-1600.webp" width="1703" height="818" fetchpriority="high" decoding="async" alt="The AmIGo tag and the AmIMo anchor side by side, both dark grey with amimotion on the cover."></picture><div class="sp-lead" aria-hidden="true"><svg viewBox="0 0 1703 818"><circle cx="520" cy="420" r="9"/><path d="M520 420 L420 880 H200"/><text x="200" y="930" style="font-size:40px">AmIMo</text><circle cx="1290" cy="520" r="9"/><path d="M1290 520 L1380 880 H1600"/><text x="1600" y="930" text-anchor="end" style="font-size:40px">AmIGo</text></svg></div></figure></div>
 </div>
+
+<section class="sec band surface" aria-labelledby="the-system">
+<h2 id="the-system"><span>The system.</span></h2>
+<table class="spec"><tbody><tr><th scope="row">Radio</th><td>Ultra-wideband, IEEE 802.15.4z HRP, channels 5 and 9</td></tr><tr><th scope="row">Positioning modes</th><td>UL-TDoA, DL-TDoA, two-way ranging and 3D angle of arrival, chosen per zone in AmIHub</td></tr><tr><th scope="row">Accuracy</th><td>Down to ±10 cm in 3D, typical, with AmIMo anchors. Depends on your floor; you measure it in the pilot</td></tr><tr><th scope="row">Update rate</th><td>0.1 to 10 Hz, set per tag group; tags send when they move</td></tr><tr><th scope="row">Latency</th><td>Under a second from pulse to map, indicative</td></tr><tr><th scope="row">Additional ranging</th><td>BLE ranging and Wi-Fi FTM (IEEE 802.11mc) on the same anchors. Device support confirmed per site</td></tr><tr><th scope="row">Silicon</th><td>NXP Trimension UWB</td></tr><tr><th scope="row">Standards</th><td>Built on the FiRa and omlox specifications. No certification claimed</td></tr></tbody></table>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">How a position is solved.</h2></div>
-<div class="spec-wrap" data-reveal><table class="spec"><tbody><tr><th scope="row">Radio</th><td>Ultra-wideband, IEEE 802.15.4z HRP, channels 5 and 9</td></tr><tr><th scope="row">Positioning modes</th><td>UL-TDoA (tags send, anchors time), DL-TDoA (anchors send, the device solves its own position), two-way ranging and 3D angle of arrival. Chosen per zone.</td></tr><tr><th scope="row">Accuracy</th><td>Down to ±10 cm in 3D, with AmIMo anchors. Site-dependent: a pilot measures it on your floor.</td></tr><tr><th scope="row">Update rate</th><td>0.1 to 10 Hz, set per tag group; tags send more when they move</td></tr><tr><th scope="row">Latency</th><td>Sub-second from pulse to position, indicative</td></tr><tr><th scope="row">Additional ranging</th><td>BLE-based ranging and Wi-Fi FTM (IEEE 802.11mc) on the same anchors. Device support confirmed per site.</td></tr><tr><th scope="row">Standards</th><td>Built on the FiRa and omlox specifications. Not a certification claim.</td></tr></tbody></table></div>
-</div>
+<section class="sec band surface" aria-labelledby="amigo-tag">
+<h2 id="amigo-tag"><span>AmIGo tag.</span></h2>
+<table class="spec"><tbody><tr><th scope="row">Forms</th><td>Asset tag, vehicle tag, personnel badge</td></tr><tr><th scope="row">Positioning modes</th><td>Several UWB modes; the modes for your hardware revision are in the datasheet</td></tr><tr><th scope="row">Battery</th><td>1 to 3 years, typical, depending on use; vehicle-powered option</td></tr><tr><th scope="row">Sensor</th><td>3-axis accelerometer: motion wake, tilt and impact events</td></tr><tr><th scope="row">Operating temperature</th><td>−20 °C to +60 °C, typical</td></tr><tr><th scope="row">Mounting</th><td>Adhesive, screw, lanyard or helmet, vehicle cradle</td></tr><tr><th scope="row">Housing</th><td>Compact and low profile</td></tr><tr><th scope="row">Size, weight, ingress rating</th><td>In the datasheet, under NDA</td></tr></tbody></table>
+<p class="more"><a href="/products/amigo/">AmIGo tag</a></p>
 </section>
 
-<section class="section light" style="padding-top:0">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">AmIGo tag.</h2></div>
-<div class="spec-wrap" data-reveal><table class="spec"><tbody><tr><th scope="row">Forms</th><td>Asset tag, vehicle tag, personnel badge</td></tr><tr><th scope="row">Battery</th><td>1 to 3 years, typical and usage-dependent; vehicle-powered option</td></tr><tr><th scope="row">Sensors</th><td>3-axis accelerometer: motion wake, tilt and impact events</td></tr><tr><th scope="row">Operating temperature</th><td>−20 °C to +60 °C, typical</td></tr><tr><th scope="row">Mounting</th><td>Adhesive, screw, lanyard or helmet, vehicle cradle</td></tr><tr><th scope="row">Size, weight and ingress rating</th><td>In the detailed pack</td></tr></tbody></table></div>
-<div class="link-row" style="margin-top:clamp(44px,5vw,72px)"><a class="link-card" href="/products/amigo/" data-reveal><b>AmIGo in full</b><span>What it rides on and how it lasts.</span></a></div>
-</div>
+<section class="sec band surface" aria-labelledby="amimo-anchor">
+<h2 id="amimo-anchor"><span>AmIMo anchor.</span></h2>
+<table class="spec"><tbody><tr><th scope="row">Antenna</th><td>3D angle-of-arrival array</td></tr><tr><th scope="row">Coverage</th><td>About 50 m line-of-sight radius, indicative and site-dependent; the count comes from a site survey</td></tr><tr><th scope="row">Synchronisation</th><td>Over the air; no sync cable</td></tr><tr><th scope="row">Backhaul</th><td>Wi-Fi 2.4 / 5 GHz to AmIHub; Ethernet option</td></tr><tr><th scope="row">Power</th><td>DC adapter or PoE</td></tr><tr><th scope="row">Mounting height</th><td>3 to 8 m recommended; wall, column, ceiling and pole brackets</td></tr><tr><th scope="row">Tag capacity</th><td>Hundreds of active tags per anchor cell (UL-TDoA), indicative</td></tr><tr><th scope="row">Operating temperature</th><td>−20 °C to +60 °C, typical; indoor and sheltered outdoor</td></tr><tr><th scope="row">Commissioning</th><td>Phone app; found by AmIHub on its own</td></tr></tbody></table>
+<p class="more"><a href="/products/amimo/">AmIMo anchor</a><span class="sep" aria-hidden="true">·</span><a href="/tools/anchors/">How many anchors you need</a></p>
 </section>
 
-<section class="section light" style="padding-top:0">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">AmIMo anchor.</h2></div>
-<div class="spec-wrap" data-reveal><table class="spec"><tbody><tr><th scope="row">Antenna</th><td>3D angle-of-arrival array</td></tr><tr><th scope="row">Coverage</th><td>About 50 m line-of-sight radius, indicative and site-dependent</td></tr><tr><th scope="row">Synchronisation</th><td>Over the air; no sync cable</td></tr><tr><th scope="row">Backhaul</th><td>Wi-Fi 2.4 / 5 GHz to AmIHub; Ethernet option</td></tr><tr><th scope="row">Power</th><td>DC adapter or PoE</td></tr><tr><th scope="row">Mounting height</th><td>3 to 8 m recommended; wall, column, ceiling and pole brackets</td></tr><tr><th scope="row">Tag capacity</th><td>Hundreds of active tags per anchor cell in UL-TDoA, indicative. The figure for your update rates is in the detailed pack.</td></tr><tr><th scope="row">Commissioning</th><td>Phone app; found automatically by AmIHub</td></tr><tr><th scope="row">Silicon</th><td>NXP Trimension UWB</td></tr></tbody></table></div>
-<div class="link-row" style="margin-top:clamp(44px,5vw,72px)"><a class="link-card" href="/products/amimo/" data-reveal><b>AmIMo in full</b><span>Where anchors go and why.</span></a><a class="link-card" href="/tools/anchors/" data-reveal><b>How many anchors?</b><span>A first range from your floor size.</span></a></div>
-</div>
+<section class="sec band surface" aria-labelledby="amihub-software">
+<h2 id="amihub-software"><span>AmIHub software.</span></h2>
+<table class="spec"><tbody><tr><th scope="row">Hosting</th><td>Industrial PC inside your plant, with no internet needed; or cloud</td></tr><tr><th scope="row">Interfaces</th><td>REST, MQTT, WebSocket, omlox hub interface and a built-in MCP server</td></tr><tr><th scope="row">Records</th><td>Position, time and zone history; every entry, exit, idle and dwell, time-stamped</td></tr><tr><th scope="row">Export</th><td>CSV and Parquet</td></tr><tr><th scope="row">Security</th><td>TLS, role-based access, API keys, audit logs and data retention rules</td></tr><tr><th scope="row">Devices</th><td>Anchor auto-discovery, tag health and battery, over-the-air firmware, dark-anchor alert</td></tr><tr><th scope="row">Scale</th><td>Thousands of tags and hundreds of anchors per site, indicative</td></tr></tbody></table>
+<p class="more"><a href="/products/amihub/">AmIHub</a><span class="sep" aria-hidden="true">·</span><a href="/developers/">For developers</a></p>
 </section>
 
-<section class="section light" style="padding-top:0">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">AmIHub software.</h2></div>
-<div class="spec-wrap" data-reveal><table class="spec"><tbody><tr><th scope="row">Hosting</th><td>Industrial PC on your network with no internet dependency, or a cloud tenant</td></tr><tr><th scope="row">Interfaces</th><td>REST, MQTT, WebSocket, omlox hub interface and a built-in MCP server</td></tr><tr><th scope="row">Records</th><td>Position, time and zone history; every enter, exit, idle and dwell, time-stamped</td></tr><tr><th scope="row">Export</th><td>CSV and Parquet</td></tr><tr><th scope="row">Security</th><td>TLS, role-based access, API keys, audit logs and retention rules</td></tr><tr><th scope="row">Devices</th><td>Health and battery monitoring; over-the-air firmware updates</td></tr><tr><th scope="row">Scale</th><td>Thousands of tags and hundreds of anchors per site, indicative</td></tr></tbody></table></div>
-<div class="link-row" style="margin-top:clamp(44px,5vw,72px)"><a class="link-card" href="/products/amihub/" data-reveal><b>AmIHub in full</b><span>The map, the records and the interfaces.</span></a><a class="link-card" href="/developers/" data-reveal><b>For developers</b><span>APIs, events and the MCP server.</span></a></div>
-</div>
+<section class="sec has-lead" aria-labelledby="not-published-yet">
+<h2 id="not-published-yet"><span>Not published yet.</span></h2><p class="lead">After the first call, we share datasheets, architecture, prices and pilot options under NDA.</p>
+<ul class="points c3"><li><h3>Datasheets</h3><p>Size, weight, ingress rating and the hardware revision for your evaluation.</p></li><li><h3>Capacity</h3><p>Tags per anchor cell at the update rates your flows need.</p></li><li><h3>Your floor</h3><p>An anchor plan from the site survey, and the architecture for your network.</p></li></ul>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Not public yet.<br><span class="soft">Shared under NDA, before a pilot.</span></h2><p class="lede" style="margin-top:20px">The detailed pack has the final datasheets and the architecture for your site.</p></div>
-<div class="tiles"><div class="tile" data-reveal><p class="over">Datasheets</p><h3>Final figures</h3><p>Size, weight, ingress rating and the hardware revision for your evaluation.</p></div><div class="tile" data-reveal><p class="over">Capacity</p><h3>Your mix of tags</h3><p>Tags per anchor cell at the update rates your flows need.</p></div><div class="tile" data-reveal><p class="over">Accuracy</p><h3>How it is measured</h3><p>The test method a pilot uses, with anchor count and geometry, so you can check the figure yourself.</p></div></div>
-</div>
+<section class="sec band surface" aria-labelledby="questions-about-the-figures">
+<h2 id="questions-about-the-figures"><span>Questions about the figures.</span></h2><div class="faq"><details><summary>Which positioning methods does AmIMotion use?</summary><p>Several, chosen per zone in AmIHub: UL-TDoA, DL-TDoA, two-way ranging and 3D angle of arrival. Most asset tracking uses UL-TDoA, where AmIGo tags send and AmIMo anchors time the pulse.</p></details><details><summary>What update rate do AmIGo tags support?</summary><p>0.1 to 10 Hz, set per tag group. AmIGo tags sleep when still and send when they move, which is why one battery lasts 1 to 3 years, typical.</p></details><details><summary>How accurate is AmIMotion?</summary><p>Down to ±10 cm in 3D, typical, with AmIMo anchors. It depends on your floor, so you measure it on yours in the pilot, near racking and machines too.</p></details><details><summary>Why are size and weight not listed?</summary><p>AmIMotion shares them in the final datasheet, under NDA after the first call, with the hardware revision you would evaluate.</p></details><details><summary>Does AmIMotion hold a formal certification?</summary><p>AmIMotion is built on the FiRa and omlox specifications. It claims no formal certification.</p></details></div>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Questions teams ask first.</h2></div><div class="faq" style="margin-top:clamp(32px,4vw,56px);max-width:980px"><details><summary>Which positioning scheme does AmIMotion use?</summary><p>Several, chosen per zone: UL-TDoA, DL-TDoA, two-way ranging and 3D angle of arrival. Most asset tracking uses UL-TDoA, where tags send and anchors time the pulse.</p></details><details><summary>What update rate do AmIGo tags support?</summary><p>0.1 to 10 Hz, set per tag group. Tags sleep when still and send when they move, which is why one battery lasts 1 to 3 years, typical.</p></details><details><summary>How accurate is AmIMotion?</summary><p>Down to ±10 cm in 3D with AmIMo anchors. The figure depends on the site, so a pilot measures it on your floor, including near racking and machines.</p></details><details><summary>Does AmIMotion hold FiRa or omlox certification?</summary><p>It is built on the FiRa and omlox specifications. It does not claim certification. AmIHub has an omlox hub interface for mixing vendors.</p></details></div>
-</div>
-</section>
-
-<section class="section dark close-cta" aria-labelledby="close-title" data-tone="dark"><div class="wrap" data-reveal><h2 id="close-title" class="h2">See it on a live map.</h2><p class="lede" style="margin:20px auto 0">On a short call we show the live map and an AI query, on real AmIHub data.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Book a call</a><a class="btn btn-line" href="/diagnostic/">Diagnose your floor</a></div></div></section>
+<section class="close" aria-label="Next step"><p><span>Ask for the full datasheets.</span><span class="sub">We share them after the first call, with the architecture for your site.</span><a href="/contact/">Book a call</a></p></section>

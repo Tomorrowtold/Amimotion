@@ -1,0 +1,18 @@
+/* /use-cases/amr-hand-off/: the arrival record. The photograph on the left, the record card snapping in under it. */
+@media (min-width:1024px){
+  .head{grid-template-rows:auto auto 1fr;align-items:start}
+  .head-pic{grid-column:1 / span 6;grid-row:1 / span 3;margin:0!important}
+  .head .crumbs,.head h1,.head .words{grid-column:8 / -1}
+  .head h1{grid-row:2;font-size:clamp(2.8rem,1.4rem + 3.8vw,5.8rem)}
+  .head .words{grid-row:3;display:block}
+}
+.amr-frame{position:relative;margin:0;padding-bottom:56px}
+.amr-frame img{width:100%;border-radius:24px}
+.amr-rec{position:absolute;left:8%;right:8%;bottom:0;display:grid;grid-template-columns:1fr auto;gap:2px 16px;align-items:center;background:var(--surface);border-radius:16px;padding:16px 20px;box-shadow:0 30px 60px -30px rgba(13,26,38,.55)}
+.amr-rec b{font:600 17px/1.2 var(--font-display)}
+.amr-rec span{grid-column:1;font-size:15px;color:var(--ink-soft)}
+.amr-rec time{grid-column:2;grid-row:1 / span 2;font:400 2.2rem/1 var(--font-serif);color:var(--located)}
+@supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
+  .amr-rec{animation:amr-snap linear both;animation-timeline:view();animation-range:entry 0% entry 100%}
+  @keyframes amr-snap{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+}}

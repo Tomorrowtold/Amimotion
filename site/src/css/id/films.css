@@ -1,0 +1,12 @@
+/* /films/: the screening room. A dark page; the film is the only light. */
+body.ds[data-world]{background:#0c0a14}
+main{--ink:#efeaf2;--ink-soft:#a79fb3;--surface:#17131f;--link:#c8b8ff;color:var(--ink)}
+main .crumbs,main .crumbs a{color:#8d859a}
+.head h1{font-size:clamp(3.4rem,1.4rem + 6vw,8.6rem);color:#fff}
+.head h1 span+span{color:#c8b8ff}
+.head .short-answer{background:#17131f!important;color:#e6e0ee!important;box-shadow:none!important}
+.head-pic{grid-column:1 / -1}
+.head-pic img{border-radius:18px}
+.band{background:#120f19!important}
+/* phones: the logo sits on the screening room's dark ground, so its wordmark takes the page's ink, not navy */
+@media (max-width:1023px){.top .plogo{color:#efeaf2}}
