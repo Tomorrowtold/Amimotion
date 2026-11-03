@@ -41,29 +41,32 @@ if (!reduce && !STILL) {
   const onWheel = (e) => {
     const now = performance.now(), gap = now - lastWheel, mag = Math.abs(e.deltaY), prev = lastMag; lastWheel = now; lastMag = mag;
     if (e.ctrlKey || document.documentElement.classList.contains('sim-lock')) return;
-    if (glide.on) { e.preventDefault(); return; }
+    // what this handler takes, nothing after it sees (the explainer's beat stepper must not step on the hero's momentum)
+    if (glide.on) { e.preventDefault(); e.stopImmediatePropagation(); return; }
     // still the same flick: no pause, and the deltas are dying away rather than a fresh push
-    if (gap < 110 && now - glide.end < 2600 && mag <= prev * 1.15 + 1) { e.preventDefault(); return; }
+    if (gap < 110 && now - glide.end < 2600 && mag <= prev * 1.15 + 1) { e.preventDefault(); e.stopImmediatePropagation(); return; }
     const dir = Math.sign(e.deltaY); if (!dir || !inHero(dir)) return;
-    e.preventDefault(); glideTo(dir > 0 ? fsNow() : 0, dir > 0 ? 1050 : 800);
+    e.preventDefault(); e.stopImmediatePropagation(); glideTo(dir > 0 ? (fsCache = filmStart()) : 0, dir > 0 ? 1050 : 800);
   };
   let ty0 = null;
   const onTouchStart = (e) => { ty0 = e.touches[0].clientY; };
-  const onTouchMove = (e) => { if (glide.on) { e.preventDefault(); return; } if (ty0 == null) return; const dy = ty0 - e.touches[0].clientY; if (Math.abs(dy) < 12) return; const dir = Math.sign(dy); if (inHero(dir)) { e.preventDefault(); ty0 = null; glideTo(dir > 0 ? fsNow() : 0, 900); } };
+  const onTouchMove = (e) => { if (glide.on) { e.preventDefault(); e.stopImmediatePropagation(); return; } if (ty0 == null) return; const dy = ty0 - e.touches[0].clientY; if (Math.abs(dy) < 12) return; const dir = Math.sign(dy); if (inHero(dir)) { e.preventDefault(); e.stopImmediatePropagation(); ty0 = null; glideTo(dir > 0 ? (fsCache = filmStart()) : 0, 900); } };
   let armed = false;
   const arm = () => {
     const want = glide.on || scrollY <= fsNow() + innerHeight * .5 || performance.now() - glide.end < 2600;
     if (want === armed) return; armed = want;
     const f = want ? addEventListener : removeEventListener;
-    f('wheel', onWheel, { passive: false }); f('touchmove', onTouchMove, { passive: false }); f('touchstart', onTouchStart, { passive: true });
+    // capture phase: the hero always decides first, whatever was attached later
+    f('wheel', onWheel, { passive: false, capture: true }); f('touchmove', onTouchMove, { passive: false, capture: true }); f('touchstart', onTouchStart, { passive: true, capture: true });
   };
   addEventListener('scroll', arm, { passive: true }); queueMicrotask(arm);
   addEventListener('keydown', (e) => {
+    if (!armed) return;
     const dir = ['ArrowDown', 'PageDown', ' '].includes(e.key) ? 1 : ['ArrowUp', 'PageUp'].includes(e.key) ? -1 : 0;
     if (!dir || e.target.closest('input,textarea,select,button,[contenteditable]')) return;
-    if (glide.on) { e.preventDefault(); return; }
-    if (inHero(dir)) { e.preventDefault(); glideTo(dir > 0 ? fsNow() : 0); }
-  });
+    if (glide.on) { e.preventDefault(); e.stopImmediatePropagation(); return; }
+    if (inHero(dir)) { e.preventDefault(); e.stopImmediatePropagation(); glideTo(dir > 0 ? (fsCache = filmStart()) : 0); }
+  }, true);
 }
 
 /* ---------- while the page is moving, nothing under a still cursor reacts (cards would grow and relayout mid-scroll) ---------- */
