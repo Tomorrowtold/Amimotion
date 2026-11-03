@@ -44,7 +44,7 @@ export function mount(sim) {
   const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); cw = cv.clientWidth; ch = cv.clientHeight; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); phone = innerWidth < 900; };
 
   // a tilted floor plane seen through a long lens
-  const SC = () => phone ? Math.min(cw / 64, ch / 26) : Math.min(cw * .5 / 50, ch / 29);
+  const SC = () => phone ? Math.min(cw / 64, ch / 26) : ch / 15;
   let yaw = -.34, tilt = .98, tyaw = yaw, ttilt = tilt;
   const P = (x, y, z = 0) => {
     const X = x - W / 2, Y = y - H / 2;
@@ -54,7 +54,7 @@ export function mount(sim) {
     const py = ry * ct - z * st, pz = ry * st + z * ct;
     const D = 120, f = D / (D + pz);
     const sc = SC();
-    return [cw * (phone ? .5 : .71) + rx * f * sc, ch * (phone ? .6 : .52) + py * f * sc, f];
+    return [cw * (phone ? .5 : .62) + rx * f * sc, ch * (phone ? .6 : .56) + py * f * sc, f];
   };
   const path = (pts, z = 0) => { g.beginPath(); pts.forEach((p, i) => { const q = P(p[0], p[1], z); i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); }); };
   const rect = (x, y, w, h, z = 0) => { path([[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]], z); };
