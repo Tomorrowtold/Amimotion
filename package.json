@@ -1,0 +1,13 @@
+{
+  "name": "amimotion-site",
+  "private": true,
+  "type": "module",
+  "description": "AmIMotion website: static pages (site/, studio/) plus the inbound agent server (server/, functions/, netlify/).",
+  "scripts": {
+    "dev": "node server/dev.js",
+    "test": "node server/test.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.4.0"
+  }
+}

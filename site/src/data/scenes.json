@@ -2,122 +2,122 @@
   "_note": "Picture slots filled with scenes rendered from AmIMotion's CAD (scratchpad cf/stills.html) until the real shoot. Each brief stays in the markup as the shot list. Remove a code here when its real photo arrives.",
   "P02": [
     "waits",
-    "Rendered scene: three loaded trolleys waiting beside an inspection station, lit amber, seen from above",
+    "Three loaded trolleys waiting beside an inspection station, lit amber, seen from above",
     "center"
   ],
   "P19": [
     "waits",
-    "Rendered scene: three trolleys queued at inspection, glowing amber while they wait",
+    "Three trolleys queued at inspection, glowing amber while they wait",
     "center"
   ],
   "P21": [
     "queue",
-    "Rendered scene: loaded trolleys parked in a queue on a factory floor, lit amber",
+    "Loaded trolleys parked in a queue on a factory floor, lit amber",
     "left center"
   ],
   "P03": [
     "tag",
-    "Rendered scene: an AmIGo tag on a loaded trolley, with faint ranging lines to the anchors above",
+    "An AmIGo tag on a loaded trolley, with faint ranging lines to the anchors above",
     "center"
   ],
   "P13": [
     "tag",
-    "Rendered scene: an AmIGo tag fixed to the top rail of a parts trolley",
+    "An AmIGo tag fixed to the top rail of a parts trolley",
     "center"
   ],
   "P14": [
     "trails",
-    "Rendered scene: a tagged trolley moving down a factory aisle, its path drawn in blue",
+    "A tagged trolley moving down a factory aisle, its path drawn in blue",
     "center"
   ],
   "P15": [
     "tag",
-    "Rendered scene: an AmIGo tag on a carrier between operations",
+    "An AmIGo tag on a carrier between operations",
     "center"
   ],
   "P04": [
     "aisle",
-    "Rendered scene: a racked warehouse aisle with tagged carriers glowing blue",
+    "A racked warehouse aisle with tagged carriers glowing blue",
     "center"
   ],
   "P20": [
     "aisle",
-    "Rendered scene: a long racked aisle, a tagged trolley far down it",
+    "A long racked aisle, a tagged trolley far down it",
     "center"
   ],
   "P25": [
     "aisle",
-    "Rendered scene: racked storage and a tagged carrier in the aisle",
+    "Racked storage and a tagged carrier in the aisle",
     "center"
   ],
   "P28": [
     "aisle",
-    "Rendered scene: tall racking in a warehouse aisle, tags glowing blue",
+    "Tall racking in a warehouse aisle, tags glowing blue",
     "center"
   ],
   "P08": [
     "floor",
-    "Rendered scene: a whole factory floor from above, every tagged trolley a blue point and one queue in amber",
+    "A whole factory floor from above, every tagged trolley a blue point and one queue in amber",
     "center"
   ],
   "P12": [
     "floor",
-    "Rendered scene: the whole floor from above, machine cells, racking and every tagged trolley located",
+    "The whole floor from above, machine cells, racking and every tagged trolley located",
     "center"
   ],
   "P22": [
     "floor",
-    "Rendered scene: the whole floor, live, every tagged carrier on one map",
+    "The whole floor, live, every tagged carrier on one map",
     "center"
   ],
   "P23": [
     "floorlow",
-    "Rendered scene: machine cells and racking, tagged trolleys glowing blue in the aisles",
+    "Machine cells and racking, tagged trolleys glowing blue in the aisles",
     "center"
   ],
   "P24": [
     "floorlow",
-    "Rendered scene: machining cells with tagged carriers between operations",
+    "Machining cells with tagged carriers between operations",
     "center"
   ],
   "P27": [
     "hall",
-    "Rendered scene: tagged carriers moving between cells and racking",
+    "Tagged carriers moving between cells and racking",
     "center"
   ],
   "P17": [
     "hall",
-    "Rendered scene: anchors high on columns over an aisle, tagged trolleys below",
+    "Anchors high on columns over an aisle, tagged trolleys below",
     "center"
   ],
   "P18": [
     "floorlow",
-    "Rendered scene: the floor that AmIHub connects to your MES, ERP and WMS",
+    "The floor that AmIHub connects to your MES, ERP and WMS",
     "center"
   ],
   "P26": [
     "trails",
-    "Rendered scene: tagged trolleys and vehicles moving along an aisle, paths drawn in blue",
+    "Tagged trolleys and vehicles moving along an aisle, paths drawn in blue",
     "center"
   ],
   "P29": [
     "trails",
-    "Rendered scene: vehicles and trolleys sharing one aisle, each located",
+    "Vehicles and trolleys sharing one aisle, each located",
     "center"
   ],
   "P30": [
     "hall",
-    "Rendered scene: columns and aisles where a survey plans the anchors",
+    "Columns and aisles where a survey plans the anchors",
     "center"
   ],
   "P31": [
     "top",
-    "Rendered scene: a floor plan seen from above, tagged carriers in blue and one queue in amber",
+    "A floor plan seen from above, tagged carriers in blue and one queue in amber",
     "center"
   ],
   "P16": [
     "floor",
-    "Rendered scene: the whole floor on one live map, every tagged carrier located",
+    "The whole floor on one live map, every tagged carrier located",
     "center"
   ]
 }

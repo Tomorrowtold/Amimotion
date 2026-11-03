@@ -1,33 +1,32 @@
 <!--
 title: Can AI assistants query factory location data?
-description: Yes, through MCP. AmIHub has a built-in MCP server, so AI assistants can query live positions and zones, with logged calls and a person’s approval.
-tone: light
+description: Yes, through MCP. AmIHub has a built-in MCP server, so AI assistants can query live positions and zones, with logged calls and a person's approval.
 crumb: AI assistants and location data
 type: article
+css: learn
+scripts: km
+world: paper
+id: mcp
+cover: #0b1238
+look: cover guide progress norule
 -->
-<section class="page-head section light" aria-labelledby="page-title">
-<div class="wrap">
-<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/learn/">Field guides</a><span aria-hidden="true">/</span><span aria-current="page">AI assistants and location data</span></nav><h1 id="page-title" class="h-hero">AI assistants<br><span class="soft">and location data.</span></h1><div class="answer-tile"><p>The short answer</p><p class="short-answer">Yes. AmIHub, AmIMotion’s location software, has a built-in MCP (Model Context Protocol) server, so an MCP-capable AI assistant can query live positions, zones and history from the factory floor, located down to ±10 cm in 3D. Each assistant gets its own access, every call is logged, and write actions wait for a person’s approval. AmIMotion shows this in a live demo; the production setup is confirmed for each site.</p></div>
+<div data-km class="head">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true"> / </span><a href="/learn/">Field guides</a><span aria-hidden="true"> / </span><span aria-current="page">AI assistants and location data</span></nav>
+<div class="cv-glyph" aria-hidden="true"><svg viewBox="0 0 300 200"><path d="M20 60 L80 100 L20 140"/><line x1="110" y1="150" x2="200" y2="150" class="on"/></svg></div><h1 id="page-title" class="qa"><span>Can AI assistants query location data?</span> <span>Yes, through MCP.</span></h1>
+<div class="words"><p class="lede">How an assistant reads the floor, and what keeps it in check.</p><p class="short-answer" id="short-answer">Yes. AmIHub, AmIMotion's location software, has a built-in MCP (Model Context Protocol) server. An MCP-capable AI assistant can ask it for live positions, zones and history from the factory floor, where AmIGo tags are located down to ±10 cm in 3D, depending on the site. Each assistant gets its own credentials and tool scope, every call is logged, and any change needs a person's approval. AmIMotion shows this in a live demo, and the setup for your site is confirmed during scoping.</p></div>
 </div>
+
+<section class="sec" aria-labelledby="what">
+<div class="read"><nav class="toc" aria-label="On this page"><ol><li><a href="#what">What MCP is</a></li><li><a href="#ask">What people ask</a></li><li><a href="#tools">The tools AmIHub describes</a></li><li><a href="#guard">Access, logs and approval</a></li><li><a href="#where">Where it runs</a></li></ol></nav><div class="prose"><h2 id="what">What MCP is</h2><p>Model Context Protocol is an open standard that lets AI assistants use other software in a consistent way. An MCP server describes the tools it offers, and the assistant decides when to call them. AmIHub's MCP server offers location tools.</p><h2 id="ask">What people ask</h2><p>Examples of questions an assistant can answer from AmIHub:</p><ul><li>“Which forklifts have been idle for more than an hour, and where are they?”</li><li>“What entered the inspection queue on the night shift?”</li><li>“Where is trolley 14, and which job is on it?”</li></ul><p>The last one needs the trolley linked to its job in AmIHub.</p><h2 id="tools">The tools AmIHub describes</h2><p>AmIMotion groups AmIHub's MCP tools into live location, history, zones and fences, trackables and work orders. Example tool names include <code>get_live_locations</code>, <code>get_fence_events</code> and <code>count_idle_assets</code>. The same tools are available over REST and MQTT.</p><h2 id="guard">Access, logs and approval</h2><p>Each assistant gets its own credentials and tool scope, so it reads only what you allow. Every call is logged. Any change, such as raising a work order in AmIHub, needs a person's approval, and you can require it from a supervisor.</p><h2 id="where">Where it runs</h2><p>The MCP server runs where AmIHub runs: on a PC inside your plant, or in the cloud. What an assistant then does with an answer depends on where that assistant runs, which your IT team chooses. Settle both with your IT team when an AmIMotion pilot is scoped.</p></div></div>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="read"><nav class="read-nav" aria-label="On this page"><a href="#what">What MCP is</a><a href="#ask">What people ask</a><a href="#guard">Access, logs and approval</a><a href="#where">Where it runs</a></nav><div class="prose" data-reveal><h2 id="what">What MCP is</h2><p>Model Context Protocol is an open standard that lets AI assistants call software tools and data in a consistent way. An MCP server describes the tools it offers; the assistant decides when to call them.</p><h2 id="ask">What people ask</h2><ul><li>“Which forklifts have been idle for over an hour, and where are they?”</li><li>“What visited Cell 7 last night?”</li><li>“Where is trolley 14, and which job is on it?”</li></ul><h2 id="guard">Access, logs and approval</h2><p>Each assistant gets its own credentials and tool scope. It reads only what you allow. Every call is logged. Actions such as drafting a work order wait for a supervisor before anything happens.</p><h2 id="where">Where it runs</h2><p>The MCP server runs where AmIHub runs: on a PC inside your plant, or in the cloud. On-premise, the location data does not leave the site.</p></div></div>
-</div>
+<section class="sec band surface" aria-labelledby="common-follow-ups">
+<h2 id="common-follow-ups"><span>Common follow-ups.</span></h2><div class="faq"><details><summary>Can the assistant act on its own?</summary><p>No. Any change, such as raising a work order in AmIHub, needs a person's approval. You can require it from a supervisor.</p></details><details><summary>Which assistants work with it?</summary><p>Any MCP-capable client. Each one gets its own credentials and tool scope.</p></details><details><summary>Is it available today?</summary><p>The MCP server is built into AmIHub and shown in a live demo. The setup for your site is confirmed during scoping.</p></details><details><summary>Does location data leave the plant?</summary><p>AmIHub and its MCP server can run on a PC inside your plant with no internet dependency. Where an assistant runs is your IT team's choice.</p></details></div>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Common follow-ups.</h2></div><div class="faq" style="margin-top:clamp(32px,4vw,56px);max-width:980px"><details><summary>Can the assistant act on its own?</summary><p>Not in the setup AmIMotion shows. Write actions wait for a person’s approval.</p></details><details><summary>Which assistants work with it?</summary><p>Any MCP-capable client. Each one gets its own access rights.</p></details><details><summary>Is it available today?</summary><p>It is built into AmIHub and shown in a live demo. The setup for your site is confirmed during scoping.</p></details></div>
-</div>
+<section class="sec" aria-labelledby="read-next">
+<h2 id="read-next"><span>Read next.</span></h2>
+<nav class="related" aria-label="Related pages"><ul><li><a href="/use-cases/ask-your-plant/">Ask your floor</a> <span>A supervisor asks a plain question.</span></li><li><a href="/products/amihub/">AmIHub</a> <span>Interfaces and the MCP server.</span></li><li><a href="/learn/location-data-quality/">When a tag goes quiet</a> <span>Last seen, never a guess.</span></li></ul></nav>
 </section>
 
-<section class="section light">
-<div class="wrap">
-<div class="vp-head" data-reveal><h2 class="h2">Read next.</h2></div>
-<div class="link-row" style="margin-top:clamp(44px,5vw,72px)"><a class="link-card" href="/use-cases/ask-your-plant/" data-reveal><b>Watch: Ask your plant</b><span>A 1:24 film.</span></a><a class="link-card" href="/products/amihub/" data-reveal><b>AmIHub</b><span>Interfaces and the MCP server.</span></a><a class="link-card" href="/learn/location-data-quality/" data-reveal><b>When a tag goes quiet</b><span>Freshness, last seen and honest gaps.</span></a></div>
-</div>
-</section>
-
-<section class="section dark close-cta" aria-labelledby="close-title" data-tone="dark"><div class="wrap" data-reveal><h2 id="close-title" class="h2">Questions about your own floor?</h2><p class="lede" style="margin:20px auto 0">An engineer answers them on a short call, with the live map open.</p><div class="actions"><a class="btn btn-fill" href="/contact/">Book a call</a><a class="btn btn-line" href="/diagnostic/">Diagnose your floor</a></div></div></section>
+<section class="close" aria-label="Next step"><p><span>Questions about your own floor?</span><span class="sub">An engineer answers them on a short call, with the live map open.</span><a href="/contact/">Book a call</a></p></section>

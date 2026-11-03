@@ -24,10 +24,13 @@ def sh(*a, **k): return subprocess.run(a, check=True, **k)
 # 1. export + build the main site
 if BRANCH.startswith("origin/"): subprocess.run(["git", "-C", str(REPO), "fetch", "-q", "origin", BRANCH.split("/", 1)[1]])
 shutil.rmtree(WORK, ignore_errors=True); WORK.mkdir(parents=True)
-tar = subprocess.run(["git", "-C", str(REPO), "archive", BRANCH, "site"], check=True, capture_output=True).stdout
-_tf = tarfile.open(fileobj=io.BytesIO(tar))
-try: _tf.extractall(WORK, filter='data')
-except TypeError: _tf.extractall(WORK)   # Python before 3.12 (macOS system python): our own git archive, trusted
+if BRANCH == "WORKTREE":   # hosts that build from a checkout without git history (Vercel): use the files as checked out
+    shutil.copytree(REPO / "site", WORK / "site", ignore=shutil.ignore_patterns("dist", "reports", "__pycache__", "node_modules"))
+else:
+    tar = subprocess.run(["git", "-C", str(REPO), "archive", BRANCH, "site"], check=True, capture_output=True).stdout
+    _tf = tarfile.open(fileobj=io.BytesIO(tar))
+    try: _tf.extractall(WORK, filter='data')
+    except TypeError: _tf.extractall(WORK)   # Python before 3.12 (macOS system python): our own git archive, trusted
 site = WORK / "site"
 b = (site / "build.py").read_text()
 b = re.sub(r'    if missing: raise SystemExit\("build: homepage pictures missing.*\n', '    if missing: print("build: homepage pictures not landed yet:", len(missing))\n', b)
@@ -36,7 +39,7 @@ b = re.sub(r'    if missing: raise SystemExit\("build: homepage pictures missing
 LAUNCH = os.environ.get("LAUNCH") == "1"   # LAUNCH=1: real links, indexable, for the live host
 sh(sys.executable, "build.py", *(["--indexable"] if LAUNCH else ["--share"]), "--no-brief", cwd=site)
 dist = site / "dist"
-rev = subprocess.run(["git", "-C", str(REPO), "rev-parse", "--short", BRANCH], capture_output=True, text=True).stdout.strip()
+rev = (os.environ.get("VERCEL_GIT_COMMIT_SHA", "")[:7] or "worktree") if BRANCH == "WORKTREE" else subprocess.run(["git", "-C", str(REPO), "rev-parse", "--short", BRANCH], capture_output=True, text=True).stdout.strip()
 
 # 2. scope studio CSS under .studio
 DROP = re.compile(r"^(html|body|\*|img|a|em|:focus-visible|\.skip|\.bar|\.logo|\.nav|\.menu-btn|\.sheet|\.foot|\.roles|\.cols|\.entity|\.contact|\.legal|\.wordmark|\.hero-foot \.hero-part)\b")
@@ -59,8 +62,14 @@ def scope(css):
                 res.append(f".studio{{{body}}}")
             else:
                 parts = [p.strip() for p in sel.split(",")]
-                keep = [p for p in parts if not DROP.match(p)]
-                if keep: res.append(",".join(".studio " + p for p in keep) + f"{{{body}}}")
+                # html.state selectors (html.tag-live, html.sim-lock) stay on <html>; what follows is scoped under .studio
+                def sc(p):
+                    if re.match(r"html[.:\[]", p):
+                        h, _, rest = p.partition(" ")
+                        return h + (" .studio " + rest if rest else "")
+                    return ".studio " + p
+                keep = [p for p in parts if re.match(r"html[.:\[]", p) or not DROP.match(p)]
+                if keep: res.append(",".join(sc(p) for p in keep) + f"{{{body}}}")
             j = m
         return "\n".join(res)
     return block(re.sub(r"/\*.*?\*/", "", css, flags=re.S))
@@ -83,6 +92,7 @@ def rel(m):
     return f'href="./{u.strip("/")}/index.html"' if u != "/" else 'href="./index.html"'
 main = re.sub(r'href="(/[^"#]*)"', rel, main)
 main = main.replace('src="assets/', 'src="./assets/studio/assets/').replace('poster="assets/', 'poster="./assets/studio/assets/')
+main = re.sub(r'srcset="([^"]+)"', lambda m: 'srcset="' + re.sub(r'(^|,\s*)assets/', r'\1./assets/studio/assets/', m.group(1)) + '"', main)
 # rename studio classes that the main site's own stylesheet also uses, so neither side bleeds into the other
 CLS = ['hero','hero-stage','hero-copy','system','start','start-row','stage','stage-pics','stage-side','stage-floor','cards','card','card-pic','cta','ctas','cta-h','cta-p','cta-plan','cta-call','btn','btn-primary','btn-secondary','links','lead','panel','tabs','tab-ink','big','copy','two','screen','mega','display','lede','lede-lead','h2','h3','small','strong','more','caps','cap','rail','story','story-sticky','floor-media','floor-poster','floor-gl','floor-hud','wire','wire-line','wire-glow','world-gl','spec-line','arrow-link','magnet','tilt','ideas','sp','sp-hub','vh','q-big','tag-fallback','tag-shadow','scroll-cue','hero-foot','hero-part','wrap']
 CRE = re.compile(r'\.(' + '|'.join(sorted(map(re.escape, CLS), key=len, reverse=True)) + r')(?![\w-])')
@@ -91,7 +101,7 @@ main = re.sub(r'class="([^"]*)"', cls_attr, main)
 cursor = '<div class="cursor" id="cursor" aria-hidden="true"><i class="c-ring"></i><i class="c-dot"></i><i class="c-h"></i><i class="c-v"></i></div>'
 a, z = home.index("<main"), home.index("</main>") + 7
 home = home[:a] + main + home[z:]   # the normal system cursor (Shiv, 2 Nov): no custom cursor
-home = home.replace("</head>", '<link rel="stylesheet" href="./assets/studio/css/studio.css">\n<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("tag-live")</script>\n</head>', 1)
+home = home.replace("</head>", '<link rel="stylesheet" href="./assets/studio/css/studio.css">\n<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("tag-live")</script>\n<link rel="modulepreload" href="./assets/studio/js/tag.js">\n<link rel="modulepreload" href="./assets/studio/assets/vendor/three.module.min.js">\n<link rel="preload" href="./assets/studio/assets/cad/mesh.json" as="fetch" crossorigin="anonymous">\n<link rel="preload" href="./assets/studio/assets/cad/top_cover.mesh" as="fetch" crossorigin="anonymous">\n<link rel="preload" href="./assets/studio/assets/cad/bottom_cover.mesh" as="fetch" crossorigin="anonymous">\n</head>', 1)
 home = home.replace("</body>", '<script type="module" src="./assets/studio/js/studio.js"></script>\n</body>', 1)
 (dist / "index.html").write_text(home)
 
