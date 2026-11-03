@@ -456,6 +456,30 @@ def footer_html(url="/", world=None):
 
 
 NAV_JS = '<script src="/assets/js/nav.js" defer></script>'
+# the inbound agent (Ask AmIMotion): every page but the homepage; it loads its core, magnets and styles itself, lazily
+AGENT_JS = '<script src="/assets/js/agent.js" defer></script>'
+
+# inner-page magnets (thread "Build an agentic inbound lead system", 3 Nov 2026): an empty slot the agent fills in the
+# browser, so each page's own words and its crawler view stay as they are. One magnet per page, matched to its job.
+MAGNETS = {
+    "flow": ["/industries/", "/industries/manufacturing/", "/industries/warehousing/", "/solutions/", "/solutions/wip/", "/use-cases/station-to-station/",
+             "/learn/wip-visibility/", "/learn/dwell-time/", "/what-is-amimotion/", "/industrial-spatial-intelligence/", "/learn/"],
+    "floor": ["/technology/", "/learn/accuracy/", "/learn/anchor-planning/", "/learn/uwb-vs-rfid/", "/learn/rtls/", "/specs/", "/learn/location-data-quality/",
+              "/learn/uwb-rtls-india/", "/learn/alternatives/", "/faq/", "/glossary/"],
+    "exchange": ["/platform/", "/learn/value-without-mes/", "/learn/association/", "/learn/omlox/"],
+    "tags": ["/solutions/assets/", "/use-cases/find-the-asset/", "/industries/robotics/", "/use-cases/amr-hand-off/"],
+    "committee": ["/how-to-buy/", "/pilot/", "/start/", "/learn/pilot-baseline/", "/company/", "/trust/", "/trust/people/", "/resources/"],
+    "plant": ["/use-cases/ask-your-plant/", "/learn/mcp-location-data/", "/developers/", "/use-cases/"],
+}
+MAGNET_OF = {u: k for k, us in MAGNETS.items() for u in us}
+
+
+def with_magnet(body, url):
+    k = MAGNET_OF.get(url)
+    if not k: return body
+    slot = f'<section class="mg-slot" data-magnet="{k}"></section>\n'
+    i = body.rfind('<section class="close"')
+    return body[:i] + slot + body[i:] if i >= 0 else body + "\n" + slot
 
 
 def scripts(meta):
@@ -468,10 +492,10 @@ def scripts(meta):
     s = meta.get("scripts", "").split()
     out = [NAV_JS]
     if meta.get("layout") == "product":
-        return "\n".join(out + ['<script src="/assets/js/products/site.js" defer></script>'] + [f'<script type="module" src="/assets/js/products/{x}.js"></script>' for x in s])
+        return "\n".join(out + [AGENT_JS] + ['<script src="/assets/js/products/site.js" defer></script>'] + [f'<script type="module" src="/assets/js/products/{x}.js"></script>' for x in s])
     if "diag" in s: out.append('<script src="/assets/js/config.js" defer></script><script src="/assets/js/diagnostic.js" defer></script>')
     out += [f'<script src="/assets/js/{x}.js" defer></script>' for x in s if x not in ("hero", "diag")]
-    return "\n".join(out)
+    return "\n".join(out + [AGENT_JS])
 
 
 def relativise(page, url):
@@ -565,6 +589,7 @@ def build():
 
     public = []
     for url, (meta, body) in pages.items():
+        if url != "/": body = with_magnet(body, url)
         header = header_html(url, meta.get("world"), over_photo(meta, body))
         page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main" tabindex="-1">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
         if SHARE: page = relativise(page, url)
@@ -629,6 +654,28 @@ def build():
     for r in ask:
         if (r[1].lower(), r[0]) not in seen: seen.add((r[1].lower(), r[0])); rows.append(r)
     (DIST / "assets" / "ask.json").write_text(json.dumps({"p": ask_pages, "e": rows}, ensure_ascii=False, separators=(",", ":")))
+
+    # assets/agent/kb.json: what the inbound agent may say, beyond the founders' facts in agent-core.js. Every public
+    # page cut into passages under their nearest heading (questions keep their answers), so each answer cites a page.
+    kb_pages, kb = [], []
+    for u in sorted(public):
+        meta, body = pages[u]; i = len(kb_pages); kb_pages.append([u, LABEL.get(u) or titles[u]])
+        b = re.sub(r"<(script|style|svg|template|figure)\b.*?</\1>", " ", body, flags=re.S)
+        kh = text_of(re.search(r"<h1[^>]*>(.*?)</h1>", b, re.S).group(1)).strip() if re.search(r"<h1[^>]*>(.*?)</h1>", b, re.S) else titles[u]
+        for q in faq_items(body):
+            kb.append([i, q["name"], q["acceptedAnswer"]["text"]])
+        b = re.sub(r"<details\b.*?</details>", " ", b, flags=re.S)
+        for m in re.finditer(r"<(h2|h3|p|li|dd|td)\b[^>]*>(.*?)</\1>", b, re.S):
+            t = " ".join(text_of(m.group(2)).split())
+            if m.group(1) in ("h2", "h3"): kh = t; continue
+            if len(t) >= 50: kb.append([i, kh, t])
+        if meta.get("description"): kb.append([i, LABEL.get(u) or titles[u], meta["description"]])
+    seen, kb_rows = set(), []
+    for r in kb:
+        if r[2] not in seen: seen.add(r[2]); kb_rows.append(r)
+    (DIST / "assets" / "agent").mkdir(exist_ok=True)
+    shutil.copytree(SRC / "desk", DIST / "desk")   # the founders' lead desk (noindex; its data needs the desk key)
+    (DIST / "assets" / "agent" / "kb.json").write_text(json.dumps({"v": TODAY, "pages": kb_pages, "passages": kb_rows}, ensure_ascii=False, separators=(",", ":")))
 
     if args.indexnow_key: (DIST / f"{args.indexnow_key}.txt").write_text(args.indexnow_key)
     # Security headers for a static host. Every script and style is first-party; inline ones are the per-page CSS, the

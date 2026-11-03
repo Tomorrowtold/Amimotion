@@ -1,0 +1,11 @@
+# Cloudflare Pages: the static site in studio/out (built by ./publish-build.sh) and the agent in functions/.
+name = "amimotion"
+pages_build_output_dir = "studio/out"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Leads store for the founders' desk. Create it once (npx wrangler kv namespace create amimotion-leads)
+# and paste the id it prints here, or bind it in the dashboard: Pages project > Settings > Bindings > KV, name LEADS.
+# [[kv_namespaces]]
+# binding = "LEADS"
+# id = "<the id>"

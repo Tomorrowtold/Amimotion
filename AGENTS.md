@@ -13,6 +13,9 @@ AmIMotion (Locatepro Technologies, Bengaluru) makes ultra-wideband indoor positi
 - Always run from `site/`: `python3 tools/pagegen/run.py && python3 build.py && python3 tools/pickability.py dist`. Pickability must report 0 barred claims.
 - Preview: `./preview.sh` from the top folder (http://localhost:8000).
 
+## The inbound agent
+- `site/src/js/agent-core.js` holds the only facts the guide may state and its claims gate; edit facts there, never in prompts elsewhere. `server/agent-server.js` is the API (Cloudflare Pages via `functions/`). Run `node server/test.js` after any change to it. Setup and hosting: `docs/inbound-agent.md`.
+
 ## Rules that never move
 - Claims follow the claims register (kept privately by Shiv) and the founders' review (29 Oct 2026): "built on the FiRa and omlox specifications" (never "compliant" or "certified"); "down to ±10 cm" with AmIMo anchors, site-dependent; "runs in", never "deployed"; no "under a nanosecond"; Wi-Fi FTM "device support confirmed per site"; no phone-location claim; never "FCC certified". Milestones are plans, not facts.
 - No customer, prospect, backer or partner names in public copy, and no backers strip. Shiv holds the list privately; if unsure, leave a name out. AmIHub screenshots need the founders' permission before they appear.
