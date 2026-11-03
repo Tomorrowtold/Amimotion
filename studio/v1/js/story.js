@@ -200,6 +200,7 @@ export const BEATS = [
 ];
 export const NB = BEATS.length;
 const SNAP = /[?&]still\b/.test(location.search); // screenshots: no easing lag
+const FILM = /[?&]film\b/.test(location.search);  // recordings: the scroll position is the film's clock
 const PLAY = .92;
 export const REST = BEATS.map((_, i) => (i + .78) / NB);
 export const CH_FIRST = [0, 1, 2, 3, 4, 5].map((c) => BEATS.findIndex((b) => b.ch === c));
@@ -271,7 +272,7 @@ export function story(section, canvas) {
     const r = section.getBoundingClientRect(); const p = clamp(-r.top / (r.height - innerHeight)), sf = Math.min(NB - .0001, p * NB), pinned = r.top <= 1 || section.classList.contains('pre-on');
     // the scroll only chooses the moment; once a moment is reached it plays out on its own clock and then stops
     const sb = Math.floor(sf), target = Math.min(NB - .0001, sb + clamp((sf - sb) / .1) * .999);
-    if (SNAP || !pinned) disp = target; else { const dd = target - disp, rate = Math.max(.45, Math.abs(dd) * 1.5); disp += Math.sign(dd) * Math.min(Math.abs(dd), rate * dt); }
+    if (FILM) disp = Math.max(0, Math.min(NB - .0001, sf)); else if (SNAP || !pinned) disp = target; else { const dd = target - disp, rate = Math.max(.45, Math.abs(dd) * 1.5); disp += Math.sign(dd) * Math.min(Math.abs(dd), rate * dt); }
     const bf = disp, bNow = Math.floor(bf), ch = BEATS[bNow].ch;
     // the words: the chapter shows, and its words light up as their picture starts
     const lb = pinned ? bNow : -1;
@@ -387,7 +388,11 @@ function comet(x, P, path, k, s, a, col, tail = .4) {
   // the whole way so far, very faint
   x.globalAlpha = a * .22; x.strokeStyle = `rgb(${col})`; x.lineWidth = 1 * s; x.setLineDash([1.5 * s, 4 * s]); x.beginPath();
   for (let i = 0; i <= N; i++) { const [X, Y] = P(...along(path, k * i / N)); i ? x.lineTo(X, Y) : x.moveTo(X, Y); } x.stroke(); x.setLineDash([]);
-  for (let i = 1; i <= N; i++) { const q0 = lerp(k0, k, (i - 1) / N), q1 = lerp(k0, k, i / N), [X0, Y0] = P(...along(path, q0)), [X1, Y1] = P(...along(path, q1)); x.globalAlpha = a * Math.pow(i / N, 1.6) * .9; x.lineWidth = (.6 + 1.4 * i / N) * s; x.beginPath(); x.moveTo(X0, Y0); x.lineTo(X1, Y1); x.stroke(); }
+  // every step of the way so far, pressed into the floor as a soft worn track
+  x.globalAlpha = a * .2; x.lineWidth = 12 * s; x.beginPath(); for (let i = 0; i <= N; i++) { const [X, Y] = P(...along(path, k * i / N)); i ? x.lineTo(X, Y) : x.moveTo(X, Y); } x.stroke();
+  // footsteps: small marks every stride
+  x.fillStyle = `rgb(${col})`; for (let q = 0; q < k; q += .018) { const [X, Y] = P(...along(path, q)); x.globalAlpha = a * .55 * (q > k0 ? 1 : .6); x.beginPath(); x.arc(X, Y, 2.1 * s, 0, 7); x.fill(); }
+  for (let i = 1; i <= N; i++) { const q0 = lerp(k0, k, (i - 1) / N), q1 = lerp(k0, k, i / N), [X0, Y0] = P(...along(path, q0)), [X1, Y1] = P(...along(path, q1)); x.globalAlpha = a * Math.pow(i / N, 1.6) * .95; x.lineWidth = (1 + 2.6 * i / N) * s; x.beginPath(); x.moveTo(X0, Y0); x.lineTo(X1, Y1); x.stroke(); }
   const [HX, HY] = P(...along(path, k)); const g = x.createRadialGradient(HX, HY, 0, HX, HY, 14 * s); g.addColorStop(0, `rgba(${col},.32)`); g.addColorStop(1, `rgba(${col},0)`);
   x.globalAlpha = a; x.fillStyle = g; x.beginPath(); x.arc(HX, HY, 14 * s, 0, 7); x.fill();
   x.fillStyle = '#fff'; x.beginPath(); x.arc(HX, HY, 4.4 * s, 0, 7); x.fill(); x.fillStyle = `rgb(${col})`; x.beginPath(); x.arc(HX, HY, 2.8 * s, 0, 7); x.fill();
@@ -475,9 +480,9 @@ function drawHUD(x, bf, t, cx, cy, z, span, L, pj) {
     // the gates: two fine posts and a curtain of light between them
     G.forEach(([X, Y], i) => {
       const hit = clamp((k4 - (i ? .72 : .2)) / .25), flash = hit > 0 && hit < 1 ? Math.sin(hit * 3.14) : 0;
-      const gr = x.createLinearGradient(X, Y - 34 * s, X, Y); gr.addColorStop(0, `rgba(${BLUE},0)`); gr.addColorStop(1, `rgba(${BLUE},${.1 + flash * .35 + (hit >= 1 ? .08 : 0)})`);
-      x.fillStyle = gr; x.beginPath(); x.moveTo(X - 15 * s, Y - 9 * s - 30 * s); x.lineTo(X + 15 * s, Y + 9 * s - 30 * s); x.lineTo(X + 15 * s, Y + 9 * s); x.lineTo(X - 15 * s, Y - 9 * s); x.closePath(); x.fill();
-      x.strokeStyle = `rgba(${INK},.75)`; x.lineWidth = 1.2 * s; for (const dd of [-1, 1]) { x.beginPath(); x.moveTo(X + dd * 15 * s, Y + dd * 9 * s); x.lineTo(X + dd * 15 * s, Y + dd * 9 * s - 30 * s); x.stroke(); }
+      const gr = x.createLinearGradient(X, Y - 74 * s, X, Y); gr.addColorStop(0, `rgba(${BLUE},0)`); gr.addColorStop(1, `rgba(${BLUE},${.22 + flash * .45 + (hit >= 1 ? .1 : 0)})`);
+      x.fillStyle = gr; x.beginPath(); x.moveTo(X - 15 * s, Y - 9 * s - 70 * s); x.lineTo(X + 15 * s, Y + 9 * s - 70 * s); x.lineTo(X + 15 * s, Y + 9 * s); x.lineTo(X - 15 * s, Y - 9 * s); x.closePath(); x.fill();
+      x.strokeStyle = `rgba(${INK},.75)`; x.lineWidth = 1.2 * s; for (const dd of [-1, 1]) { x.beginPath(); x.moveTo(X + dd * 15 * s, Y + dd * 9 * s); x.lineTo(X + dd * 15 * s, Y + dd * 9 * s - 70 * s); x.stroke(); }
       x.strokeStyle = `rgba(${BLUE},${.6 + flash * .4})`; x.lineWidth = 1 * s; x.beginPath(); x.moveTo(X - 15 * s, Y - 9 * s); x.lineTo(X + 15 * s, Y + 9 * s); x.stroke();
       if (flash > 0) { x.globalAlpha = a * (1 - hit) * .7; x.strokeStyle = `rgb(${BLUE})`; floorRing(x, X, Y, 10 + hit * 50, s); x.stroke(); x.globalAlpha = a; }
     });
