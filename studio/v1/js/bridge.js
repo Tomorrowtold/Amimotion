@@ -27,7 +27,7 @@ export function bridge({ descent, hero, copy, stage, canvas, hudEl, story, panel
   let ready = false;
   Promise.all([plateTex(gl, `assets/scene/hall-after-${big}.webp`, 0), plateTex(gl, `assets/scene/hall-before-${big}.webp`, 1), plateTex(gl, `assets/scene/hall-masks-${big}.png`, 2, false)]).then(() => {
     gl.uniform1f(U.sky, 1); gl.uniform1f(U.dof, 0);
-    gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); ready = true;
+    gl.uniform1i(U.tA, 0); gl.uniform1i(U.tB, 1); gl.uniform1i(U.tM, 2); ready = true; requestAnimationFrame(() => { gl.viewport(0, 0, canvas.width, canvas.height); gl.uniform3f(U.cam, .5, .5, 1); gl.drawArrays(gl.TRIANGLES, 0, 3); });
   });
   const hx = hudEl.getContext('2d');
   const dist = MOVERS.map(moverDist);
