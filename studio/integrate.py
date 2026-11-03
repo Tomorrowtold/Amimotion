@@ -24,10 +24,13 @@ def sh(*a, **k): return subprocess.run(a, check=True, **k)
 # 1. export + build the main site
 if BRANCH.startswith("origin/"): subprocess.run(["git", "-C", str(REPO), "fetch", "-q", "origin", BRANCH.split("/", 1)[1]])
 shutil.rmtree(WORK, ignore_errors=True); WORK.mkdir(parents=True)
-tar = subprocess.run(["git", "-C", str(REPO), "archive", BRANCH, "site"], check=True, capture_output=True).stdout
-_tf = tarfile.open(fileobj=io.BytesIO(tar))
-try: _tf.extractall(WORK, filter='data')
-except TypeError: _tf.extractall(WORK)   # Python before 3.12 (macOS system python): our own git archive, trusted
+if BRANCH == "WORKTREE":   # hosts that build from a checkout without git history (Vercel): use the files as checked out
+    shutil.copytree(REPO / "site", WORK / "site", ignore=shutil.ignore_patterns("dist", "reports", "__pycache__", "node_modules"))
+else:
+    tar = subprocess.run(["git", "-C", str(REPO), "archive", BRANCH, "site"], check=True, capture_output=True).stdout
+    _tf = tarfile.open(fileobj=io.BytesIO(tar))
+    try: _tf.extractall(WORK, filter='data')
+    except TypeError: _tf.extractall(WORK)   # Python before 3.12 (macOS system python): our own git archive, trusted
 site = WORK / "site"
 b = (site / "build.py").read_text()
 b = re.sub(r'    if missing: raise SystemExit\("build: homepage pictures missing.*\n', '    if missing: print("build: homepage pictures not landed yet:", len(missing))\n', b)
@@ -36,7 +39,7 @@ b = re.sub(r'    if missing: raise SystemExit\("build: homepage pictures missing
 LAUNCH = os.environ.get("LAUNCH") == "1"   # LAUNCH=1: real links, indexable, for the live host
 sh(sys.executable, "build.py", *(["--indexable"] if LAUNCH else ["--share"]), "--no-brief", cwd=site)
 dist = site / "dist"
-rev = subprocess.run(["git", "-C", str(REPO), "rev-parse", "--short", BRANCH], capture_output=True, text=True).stdout.strip()
+rev = (os.environ.get("VERCEL_GIT_COMMIT_SHA", "")[:7] or "worktree") if BRANCH == "WORKTREE" else subprocess.run(["git", "-C", str(REPO), "rev-parse", "--short", BRANCH], capture_output=True, text=True).stdout.strip()
 
 # 2. scope studio CSS under .studio
 DROP = re.compile(r"^(html|body|\*|img|a|em|:focus-visible|\.skip|\.bar|\.logo|\.nav|\.menu-btn|\.sheet|\.foot|\.roles|\.cols|\.entity|\.contact|\.legal|\.wordmark|\.hero-foot \.hero-part)\b")
