@@ -20,7 +20,7 @@
   --g-action:#4b3df0; --g-located:#1f6bff; --g-sky:#66a5fa; --g-waiting:#ffb020;
   /* stopped: work has halted (Shiv, 3 Nov). A crimson that leans cool so it sits with the indigo, distinct from amber waiting */
   --g-stopped:#ef3b4f;          /* fills, rings, the stopped object: shader vec3(.937,.231,.310) */
-  --g-stopped-ink:#b81f33;      /* as text on the light page (AA 5.6:1 on #f0f6ff) */
+  --g-stopped-ink:#b81f33;      /* as text on the light page (AA 5.9:1 on #f0f6ff) */
   --g-stopped-glow:rgb(239 59 79 / .32);   /* atmosphere: a red pool of light under / around what stopped, never a full-frame wash */
   --g-located-glow:rgb(31 107 255 / .28); --g-waiting-glow:rgb(255 176 32 / .30);
 }
