@@ -934,59 +934,55 @@ html.sim-lock{overflow:hidden}
   .ind video,.ind::after,.ind::before{inset:7px}.ind video{width:calc(100% - 14px);height:calc(100% - 14px)}
   .ind-w{left:17px;right:17px;bottom:17px;padding:13px 15px}
 }
-/* ---------- guides (2 Nov 19:20): Shiv's film first, then seven guides on a spiral; black, padded, graded ---------- */
-.bs{--seg:76svh;--pad:clamp(12px,1.5vw,24px);--ink:#f4efe7;--mute:rgba(236,228,214,.62);--line:rgba(255,255,255,.07);--cream:rgba(236,224,204,.62);
-  position:relative;height:calc((var(--n) - 1) * var(--seg) + 100svh);background:#030303;color:var(--ink)}
+/* ---------- guides v3 (3 Nov): pure black, padded; the first film rises into the spiral on the first scroll; one guide per scroll, felt ---------- */
+.bs{--seg:62svh;--pad:clamp(10px,1.2vw,20px);--ink:#f5f0e8;--mute:rgba(236,228,214,.64);--line:rgba(255,255,255,.075);--cream:rgba(236,224,204,.7);
+  position:relative;height:calc((var(--n) - 1) * var(--seg) + 100svh);background:#000;color:var(--ink)}
 .bs-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.bs-stage{position:sticky;top:0;height:100svh;overflow:hidden;isolation:isolate;background:#030303}
-/* the padded screen: a recessed black panel inside the black, one hairline, four cream corner marks */
-.bs-panel{position:absolute;inset:var(--pad);border-radius:34px;z-index:0;pointer-events:none;
-  background:radial-gradient(70% 55% at 58% 64%,rgba(255,214,168,.055),transparent 70%),radial-gradient(90% 60% at 50% -20%,rgba(190,210,255,.04),transparent 60%),#070707;
-  box-shadow:inset 0 0 0 1px var(--line),inset 0 1px 0 rgba(255,255,255,.06),inset 0 30px 60px -30px rgba(0,0,0,.9),inset 0 -40px 80px -40px rgba(0,0,0,.9)}
-.bs-panel b{position:absolute;width:22px;height:22px;border:0 solid var(--cream)}
-.bs-panel b:nth-child(1){left:0;top:0;border-left-width:1px;border-top-width:1px;border-top-left-radius:34px}
-.bs-panel b:nth-child(2){right:0;top:0;border-right-width:1px;border-top-width:1px;border-top-right-radius:34px}
-.bs-panel b:nth-child(3){left:0;bottom:0;border-left-width:1px;border-bottom-width:1px;border-bottom-left-radius:34px}
-.bs-panel b:nth-child(4){right:0;bottom:0;border-right-width:1px;border-bottom-width:1px;border-bottom-right-radius:34px}
-.bs-stage::after{content:"";position:absolute;inset:0;z-index:9;pointer-events:none;opacity:.06;mix-blend-mode:screen;
+.bs-stage{position:sticky;top:0;height:100svh;overflow:hidden;isolation:isolate;background:#000;contain:layout paint}
+/* the padding: one hairline frame on black, cream corner marks, a breath of light at the top edge */
+.bs-panel{position:absolute;inset:var(--pad);border-radius:30px;z-index:0;pointer-events:none;background:#000;
+  box-shadow:inset 0 0 0 1px var(--line),inset 0 1px 0 rgba(255,255,255,.07)}
+.bs-panel::before{content:"";position:absolute;left:12%;right:12%;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,236,210,.32),transparent)}
+.bs-panel b{position:absolute;width:20px;height:20px;border:0 solid var(--cream)}
+.bs-panel b:nth-child(1){left:0;top:0;border-left-width:1px;border-top-width:1px;border-top-left-radius:30px}
+.bs-panel b:nth-child(2){right:0;top:0;border-right-width:1px;border-top-width:1px;border-top-right-radius:30px}
+.bs-panel b:nth-child(3){left:0;bottom:0;border-left-width:1px;border-bottom-width:1px;border-bottom-left-radius:30px}
+.bs-panel b:nth-child(4){right:0;bottom:0;border-right-width:1px;border-bottom-width:1px;border-bottom-right-radius:30px}
+.bs-stage::after{content:"";position:absolute;inset:0;z-index:9;pointer-events:none;opacity:.04;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .88 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
 /* warm light pooling under the guide in front */
-.bs-pool{position:absolute;z-index:1;left:58%;top:calc(56% + var(--ch,300px) * .5);width:min(70vw,1100px);height:220px;transform:translate(-50%,-30%);pointer-events:none;
-  background:radial-gradient(50% 50% at 50% 50%,rgba(255,206,150,.10),transparent 70%);opacity:var(--pool,0);transition:opacity .8s}
-/* the opening film: fills the padded screen, plays once, then settles into the first card */
-.bs-intro{position:absolute;z-index:7;left:var(--il,0);top:var(--it,0);width:var(--iw,100%);height:var(--ih,100%);border-radius:var(--ir,26px);overflow:hidden;background:#0a0a0a;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 50px 100px -40px rgba(0,0,0,1)}
+.bs-pool{position:absolute;z-index:1;left:var(--hx,60%);top:calc(var(--hy,50%) + var(--ch,300px) * .52);width:calc(var(--cw,600px) * 1.5);height:200px;transform:translate(-50%,-35%);pointer-events:none;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(255,206,150,.11),transparent 70%);opacity:var(--pool,0);transition:opacity .9s}
+/* the opening film: fills the padded screen; moved only by transform and clip (no layout), then hands over to the first card */
+.bs-intro{position:absolute;z-index:7;left:0;top:0;width:var(--iw,100%);height:var(--ih,100%);transform-origin:0 0;will-change:transform,clip-path,opacity;
+  transform:translate3d(var(--ix,0px),var(--iy,0px),0) scale(var(--is,1));clip-path:inset(var(--ict,0px) 0 var(--icb,0px) 0 round var(--icr,22px));opacity:var(--io,1)}
 .bs-intro video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.bs-intro::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(0,0,0,.45));
-  box-shadow:inset 0 0 0 1px rgba(0,0,0,.6)}
+.bs-intro::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:var(--ishade,1);
+  background:linear-gradient(90deg,rgba(0,0,0,.72) 0,rgba(0,0,0,.35) 32%,transparent 55%),radial-gradient(130% 100% at 50% 50%,transparent 60%,rgba(0,0,0,.5))}
 .bs.done .bs-intro{visibility:hidden}
 /* the spiral */
-.bs-helix{--cw:min(44vw,820px,calc((100svh - 230px) * 1.6));--ch:calc(var(--cw) * .5625);
-  position:absolute;left:58%;top:52%;width:0;height:0;perspective:1800px;perspective-origin:0 0;z-index:3}
-.bs-card{position:absolute;left:calc(var(--cw) / -2);top:calc(var(--ch) / -2);width:var(--cw);height:var(--ch);border-radius:22px;overflow:hidden;display:block;
+.bs-helix{--cw:min(50vw,980px,calc((100svh - 2 * var(--pad) - 150px) * 1.6));--ch:calc(var(--cw) * .5625);
+  position:absolute;left:var(--hx,60%);top:var(--hy,50%);width:0;height:0;perspective:1900px;perspective-origin:0 0;z-index:3}
+.bs-card{position:absolute;left:calc(var(--cw) / -2);top:calc(var(--ch) / -2);width:var(--cw);height:var(--ch);border-radius:20px;overflow:hidden;display:block;
   transform:translate3d(var(--x,0px),var(--y,0px),var(--z,0px)) rotateY(var(--a,0deg));opacity:var(--o,1);will-change:transform,opacity;
-  background:linear-gradient(155deg,#1a1a1d 0,#0e0e10 55%,#09090a 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 4px rgba(0,0,0,.6),0 50px 90px -34px rgba(0,0,0,1),0 0 0 1px rgba(255,255,255,.035)}
-.bs:not(.done) .bs-card{visibility:hidden}
-.bs-card video,.bs-card img{position:absolute;inset:8px;width:calc(100% - 16px);height:calc(100% - 16px);object-fit:cover;border-radius:15px;display:block}
-.bs-card::after{content:"";position:absolute;inset:8px;border-radius:15px;pointer-events:none;z-index:2;
+  background:linear-gradient(155deg,#151517 0,#0b0b0c 60%,#070707 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 50px 90px -34px rgba(0,0,0,1),0 0 0 1px rgba(255,255,255,.04)}
+.bs-card video,.bs-card img{position:absolute;inset:7px;width:calc(100% - 14px);height:calc(100% - 14px);object-fit:cover;border-radius:14px;display:block}
+.bs-card::after{content:"";position:absolute;inset:7px;border-radius:14px;pointer-events:none;z-index:2;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.65),inset 0 14px 30px -12px rgba(0,0,0,.7),inset 0 -1px 0 rgba(255,255,255,.07);
   background:radial-gradient(130% 100% at 50% 45%,transparent 60%,rgba(0,0,0,.35))}
-.bs-shade{position:absolute;inset:0;background:#050505;opacity:var(--d,0);pointer-events:none;z-index:1}
-.bs-num{position:absolute;z-index:3;right:22px;bottom:16px;font:600 clamp(.95rem,.8rem + .4vw,1.3rem)/1 var(--display);letter-spacing:-.03em;color:rgba(246,242,234,.82)}
+.bs-shade{position:absolute;inset:0;background:#000;opacity:var(--d,0);pointer-events:none;z-index:1}
 .bs-card img{transform:scale(var(--kb,1.04));transition:transform 9s linear}
-/* the words: one guide at a time, lower left */
-.bs-list{list-style:none;margin:0;padding:0;position:absolute;z-index:8;left:calc(var(--pad) + clamp(28px,3.6vw,64px));bottom:calc(var(--pad) + clamp(30px,6vh,72px));width:min(29vw,430px);
-  opacity:0;transition:opacity .8s .2s}
-.bs.done .bs-list{opacity:1}
-.bs-post{position:absolute;left:0;bottom:0;width:100%;opacity:0;visibility:hidden;transform:translateY(14px);transition:opacity .45s,transform .7s var(--ease-out),visibility 0s .45s}
-.bs-post.on{opacity:1;visibility:visible;transform:none;transition:opacity .6s .12s,transform .9s .12s var(--ease-out),visibility 0s}
+/* the words: the guide's name, its answer, one line, one link; lower left, over the film at first */
+.bs-list{list-style:none;margin:0;padding:0;position:absolute;z-index:8;left:calc(var(--pad) + clamp(28px,3.4vw,60px));bottom:calc(var(--pad) + clamp(28px,6vh,68px));width:min(27vw,420px)}
+.bs-post{position:absolute;left:0;bottom:0;width:100%;opacity:0;visibility:hidden;transform:translateY(16px);transition:opacity .4s,transform .6s var(--ease-out),visibility 0s .4s}
+.bs-post.on{opacity:1;visibility:visible;transform:none;transition:opacity .55s .1s,transform .8s .1s var(--ease-out),visibility 0s}
 .bs-post a{color:inherit;text-decoration:none}
 .bs-meta{display:flex;align-items:center;gap:12px;font:500 .8rem/1 var(--text);color:var(--mute)}
-.bs-n{font:600 .95rem/1 var(--display);color:var(--ink)}
-.bs-tag{padding:7px 11px;border-radius:999px;color:#ebe4d8;background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.03));box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),inset 0 1px 0 rgba(255,255,255,.12)}
-.bs-t{margin:18px 0 0;font:600 clamp(1.6rem,1rem + 1.5vw,2.6rem)/1.04 var(--display);letter-spacing:-.045em;color:var(--ink);text-wrap:balance}
-.bs-t em{display:block;margin-top:.12em;font:italic 400 1.08em/1.02 "Instrument Serif",Georgia,serif;letter-spacing:-.01em;color:#cfc6b8}
+.bs-tag{padding:7px 12px;border-radius:999px;color:#ece5d9;background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.035));box-shadow:inset 0 0 0 1px rgba(255,255,255,.11),inset 0 1px 0 rgba(255,255,255,.14);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.bs-t{margin:18px 0 0;font:600 clamp(1.7rem,1rem + 1.6vw,2.8rem)/1.03 var(--display);letter-spacing:-.045em;color:var(--ink);text-wrap:balance}
+.bs-t em{display:block;margin-top:.12em;font:italic 400 1.07em/1.02 "Instrument Serif",Georgia,serif;letter-spacing:-.01em;color:#d3cabc}
 .bs-l{margin:16px 0 0;max-width:36ch;font-size:clamp(.92rem,.85rem + .2vw,1.05rem);line-height:1.5;color:var(--mute)}
 .bs-links{display:flex;align-items:center;gap:22px;margin:22px 0 0}
 .bs-go{display:inline-flex;align-items:center;gap:10px;font:500 .95rem/1 var(--text);color:var(--ink);padding-bottom:6px;background:linear-gradient(currentColor,currentColor) 0 100%/30% 1px no-repeat;transition:background-size .5s var(--ease-out)}
@@ -996,22 +992,26 @@ html.sim-lock{overflow:hidden}
   background:linear-gradient(170deg,#fbf9f5 0,#e7e2da 100%);box-shadow:inset 0 1px 0 #fff,inset 0 -3px 6px rgba(120,108,90,.18),0 14px 30px -12px rgba(0,0,0,.9)}
 .bs-more::after{content:"";width:20px;height:20px;border-radius:50%;background:#0c0d10 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M8 11h7m-3-3 3 3-3 3' fill='none' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat}
 .bs-post a:focus-visible{outline:2px solid #66a5fa;outline-offset:6px;border-radius:6px}
-/* progress: seven marks inside the right edge of the panel */
-.bs-rail{position:absolute;z-index:8;right:calc(var(--pad) + 26px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;opacity:0;transition:opacity .8s .3s}
+/* progress: seven marks inside the right edge; the one in front grows, and pulses when a guide lands */
+.bs-rail{position:absolute;z-index:8;right:calc(var(--pad) + 24px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:11px;opacity:0;transition:opacity .8s .2s}
 .bs.done .bs-rail{opacity:1}
-.bs-rail i{display:block;width:12px;height:1px;margin-left:auto;background:rgba(236,226,208,.26);transition:width .6s var(--ease-out),background .4s}
+.bs-rail i{display:block;width:12px;height:1px;margin-left:auto;background:rgba(236,226,208,.26);transform-origin:100% 50%;transition:width .6s var(--ease-out),background .4s}
 .bs-rail i.on{width:34px;background:var(--ink)}
+.bs-rail i.on.land{animation:bs-land .55s var(--ease-out)}
+@keyframes bs-land{0%{transform:scaleY(1)}35%{transform:scaleY(3)}100%{transform:scaleY(1)}}
+.bs-haptic{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden}
 @media (max-width:860px){
-  .bs{--seg:68svh;--pad:10px}
-  .bs-panel,.bs-panel b{border-radius:24px}
-  .bs-helix{--cw:min(78vw,calc((100svh - 400px) * 1.78));left:50%;top:36%}
-  .bs-pool{left:50%;top:calc(36% + var(--ch,200px) * .5)}
-  .bs-card{border-radius:16px}.bs-card video,.bs-card img,.bs-card::after{inset:6px;border-radius:11px}.bs-card video,.bs-card img{width:calc(100% - 12px);height:calc(100% - 12px)}
-  .bs-list{left:28px;right:28px;width:auto;bottom:calc(env(safe-area-inset-bottom,0px) + var(--dock-h,92px))}
-  .bs-t{font-size:1.5rem;margin-top:14px}.bs-l{margin-top:10px;font-size:.92rem}.bs-links{margin-top:14px}
-  .bs-rail{right:22px;top:36%;gap:8px}.bs-rail i{width:8px}.bs-rail i.on{width:20px}
+  .bs{--seg:56svh;--pad:8px}
+  .bs-panel,.bs-panel b{border-radius:22px}
+  .bs-helix{--cw:min(84vw,calc((100svh - 380px) * 1.78));--hx:50%;--hy:33%}
+  .bs-pool{--hx:50%;--hy:33%}
+  .bs-card{border-radius:15px}.bs-card video,.bs-card img,.bs-card::after{inset:5px;border-radius:11px}.bs-card video,.bs-card img{width:calc(100% - 10px);height:calc(100% - 10px)}
+  .bs-intro::after{background:linear-gradient(0deg,rgba(0,0,0,.85) 0,rgba(0,0,0,.4) 38%,transparent 62%)}
+  .bs-list{left:26px;right:26px;width:auto;bottom:calc(env(safe-area-inset-bottom,0px) + var(--dock-h,92px))}
+  .bs-t{font-size:1.55rem;margin-top:14px}.bs-l{margin-top:10px;font-size:.92rem}.bs-links{margin-top:14px}
+  .bs-rail{right:18px;top:33%;gap:8px}.bs-rail i{width:8px}.bs-rail i.on{width:20px}
 }
-@media (prefers-reduced-motion:reduce){.bs-post,.bs-post.on,.bs-card img{transition:none}}
+@media (prefers-reduced-motion:reduce){.bs-post,.bs-post.on,.bs-card img{transition:none}.bs-rail i.on.land{animation:none}}
 
 /* ===== products, live from CAD (products3d.js): the tag and the anchor stand on the hero's slab; AmIHub floats in front ===== */
 .kn-gl{position:absolute;inset:0;width:100%;height:100%;z-index:2;opacity:0;transition:opacity .9s var(--ease-out),filter .6s var(--ease-out);border-radius:inherit}
@@ -1090,22 +1090,16 @@ html.tag-live .tag-fallback{opacity:0!important;transition:none}
 .cap p[data-b]:not(.now),.cap .q-big:not(.lit){color:#646b88}
 
 /* ===== scroll and the sections after the products (3 Nov): smooth by construction, one family of sheets ===== */
-/* the guides' opening film moves by transform (no layout shift); only its size eases */
-.bs-intro{left:0;top:0;transform:translate3d(var(--il,0px),var(--it,0px),0)}
 /* film grain over the guides: a plain overlay, no blend mode (a blended full-screen layer recomposited every frame) */
 .bs-stage::after{mix-blend-mode:normal;opacity:.045}
 /* while the page moves, a still cursor wakes nothing up */
 html.is-scrolling .inds-row,html.is-scrolling .bs-helix,html.is-scrolling .ctas,html.is-scrolling .bs-list{pointer-events:none}
-/* shorter pinned run for the guides: each guide still holds, the section asks for less scrolling */
-.bs{--seg:60svh}
-@media (max-width:860px){.bs{--seg:56svh}}
 
 /* ---- seams: the dark floors rise as a sheet over the light products; the light start rises over the dark guides ---- */
 .trio{padding-bottom:clamp(40px,7vh,88px)}
 .inds{--sheet:clamp(26px,3vw,44px);background:radial-gradient(80% 60% at 50% -10%,#15130f 0,transparent 60%),#05060d;border-radius:var(--sheet) var(--sheet) 0 0;padding-top:clamp(64px,10vh,120px);
   box-shadow:0 -30px 60px -40px rgba(11,18,56,.35)}
 .inds::before{top:-10%;opacity:.8}
-.bs,.bs-stage{background:#05060d}
 .start{--sheet:clamp(26px,3vw,44px);margin-top:calc(var(--sheet) * -1);padding:clamp(88px,9vw,170px) 0 clamp(56px,6vw,110px);border-radius:var(--sheet) var(--sheet) 0 0;background:var(--ground);z-index:4;
   box-shadow:0 -24px 60px -30px rgb(5 6 13 / .6)}
 .bs{padding-bottom:var(--sheet-gap,clamp(26px,3vw,44px))}
