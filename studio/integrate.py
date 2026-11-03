@@ -170,3 +170,23 @@ for f in keep:
     r = f.relative_to(dist.resolve()); d = OUT / r; d.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(f, d); n += 1
 (OUT / "BUILD.txt").write_text(f"main site {rev} + studio\n")
 print(f"studio site: {n} files from main {rev} -> {OUT}")
+
+# llms-full.txt: the homepage section must be the live (studio) homepage's words, not the inner-site homepage it replaced,
+# so what AI assistants read matches what people see on the page
+import html as _html
+_full = OUT / "llms-full.txt"
+if _full.exists() and (OUT / "index.html").exists():
+    _m = re.search(r"<main\b.*?</main>", (OUT / "index.html").read_text(), re.S)
+    if _m:
+        b = re.sub(r"<(script|style|svg|noscript|template|form|button|select|dialog)\b.*?</\1>", " ", _m.group(0), flags=re.S)
+        b = re.sub(r"</(p|h1|h2|h3|h4|li|figcaption|blockquote|div|section|article|a)>", "\n", b)
+        lines = [" ".join(l.split()) for l in _html.unescape(re.sub(r"<[^>]+>", " ", b)).split("\n")]
+        seen, keep_lines = set(), []
+        for l in lines:
+            if len(l) > 2 and l not in seen and l not in {"Read more", "Read the guide", "Connect on LinkedIn", "×"}:
+                seen.add(l); keep_lines.append(l)
+        text = " ".join(keep_lines)
+        t = _full.read_text()
+        t2 = re.sub(r"(## [^\n]*\nURL: https://www\.amimotion\.com/\n\n)(.*?)(?=\n## )", lambda mm: mm.group(1) + text + "\n", t, count=1, flags=re.S)
+        _full.write_text(t2)
+        print("llms-full.txt: homepage section from the live homepage" if t2 != t else "llms-full.txt: homepage section not found")

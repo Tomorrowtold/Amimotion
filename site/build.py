@@ -227,8 +227,10 @@ def head(meta, url, body, titles):
 <link rel="image_src" href="{og}">
 <link rel="icon" href="/assets/img/AmIMotion_Icon.svg" type="image/svg+xml">
 <link rel="alternate" type="text/plain" title="AmIMotion for AI assistants" href="/llms.txt">
+<link rel="alternate" type="text/plain" title="AmIMotion, the full site as text" href="/llms-full.txt">
 {styles(meta)}
 <script>(()=>{{const h=document.documentElement;h.classList.replace('no-js','js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/[?&]still\\b/.test(location.search))h.classList.add('motion')}})()</script>
+<script>{OPEN_AT_TOP}</script>
 <script type="application/ld+json">{page_schema(meta, url, body, titles)}</script>{KIT_HEAD if meta.get("world") else ''}
 </head>
 <body class="{body_class(meta)}"{(' data-rail="' + e(meta["rail"]) + '"') if meta.get("rail") else ''}{(' data-world="' + e(meta["world"]) + '"') if meta.get("world") else ''}{(' style="--cv:' + e(meta["cover"]) + '"') if meta.get("cover") else ''}>{'<div class="k-progress" aria-hidden="true"></div>' if 'progress' in meta.get('look','').split() else ''}"""
@@ -245,9 +247,32 @@ def body_class(meta):
     return " ".join(["ds"] + (["pl", "site-" + meta["id"]] if meta.get("layout") == "product" else []) + ["look-" + x for x in meta.get("look", "").split()])
 
 
+# Every page opens at its top when a link is followed (a link to a section, Back/Forward and reload keep the browser's own
+# position). In a frame that grows with its page (a preview host), the host keeps its scroll from the previous page, so the
+# page also brings its own top into view when it opens clipped. Stops the moment the visitor scrolls, taps or types.
+OPEN_AT_TOP = ("(()=>{const w=window,d=document;if(location.hash)return;const n=performance.getEntriesByType&&performance.getEntriesByType('navigation')[0];"
+               "if(n&&n.type!=='navigate')return;let m=0;['wheel','touchstart','keydown','pointerdown'].forEach(e=>addEventListener(e,()=>{m=1},{once:true,passive:true,capture:true}));"
+               "const f=()=>{if(m||d.prerendering)return;if(w.scrollY)w.scrollTo({top:0,left:0,behavior:'instant'});"
+               "if(w.top!==w&&d.body&&'IntersectionObserver'in w){const o=new IntersectionObserver(([x])=>{o.disconnect();"
+               "if(!m&&(!x.isIntersecting||x.intersectionRect.top>x.boundingClientRect.top+2))try{d.body.scrollIntoView({block:'start',behavior:'instant'})}catch(_){}});o.observe(d.body)}};"
+               "f();d.addEventListener('DOMContentLoaded',f);addEventListener('load',f);if(d.prerendering)d.addEventListener('prerenderingchange',f)})()")
+
+
+# Phones pick a picture for about twice their width, not three times: on a 2.6x-3x screen a full-width photo comes from
+# the 1080 file instead of the 1440/1600 one (40-50% fewer bytes on the picture that paints first; no visible change at
+# phone size). Only pictures that fill the phone's width are touched; each gets two leading entries for dense screens.
+def phone_dpr_cap(page):
+    def fix(m):
+        s = m.group(1)
+        if s == "100vw" or re.match(r"\(max-width:\s*(639|900|1023)px\)\s*100vw", s):
+            s = "(max-width:639px) and (min-resolution:2.75dppx) 67vw, (max-width:639px) and (min-resolution:2.25dppx) 80vw, " + s
+        return f'sizes="{s}"'
+    return re.sub(r'sizes="([^"]+)"', fix, page)
+
+
 # Inner pages: the next page is prerendered when a visitor's pointer rests on a link, and the headline of the page you
 # open grows out of the link you chose (cross-document view transitions; browsers without them just navigate).
-KIT_HEAD = """<script type="speculationrules">{"prerender":[{"where":{"and":[{"selector_matches":"main a[href], header a[href]"},{"not":{"selector_matches":"[href^='http'], [href*='#']"}}]},"eagerness":"moderate"}]}</script>
+KIT_HEAD = """<script type="speculationrules">{"prerender":[{"where":{"and":[{"selector_matches":"main a[href], header a[href]"},{"not":{"selector_matches":"[href^='http'], [href*='#'], .logo, [href='/'], [href='./index.html'], [href$='../index.html']"}}]},"eagerness":"moderate"}]}</script>
 <script>addEventListener('pageswap',e=>{if(!e.viewTransition||!e.activation)return;const u=e.activation.entry.url,a=[...document.querySelectorAll('main a[href]')].find(x=>x.href===u);const h=document.querySelector('.head h1');if(h)h.style.viewTransitionName='';if(a&&a.getBoundingClientRect().bottom>0&&a.getBoundingClientRect().top<innerHeight)(a.querySelector('b')||a).style.viewTransitionName='k-title'});addEventListener('pagereveal',e=>{if(!e.viewTransition)return;const h=document.querySelector('.head h1');if(!h)return;h.style.viewTransitionName='k-title';e.viewTransition.finished.finally(()=>h.style.viewTransitionName='')})</script>"""
 
 
@@ -592,6 +617,7 @@ def build():
         if url != "/": body = with_magnet(body, url)
         header = header_html(url, meta.get("world"), over_photo(meta, body))
         page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main" tabindex="-1">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
+        page = phone_dpr_cap(page)
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
         out.parent.mkdir(parents=True, exist_ok=True); out.write_text(page)
@@ -611,8 +637,9 @@ def build():
     # robots: search engines and AI answer engines named and welcomed on a public build (decision D2)
     bots = ["Googlebot", "Bingbot", "OAI-SearchBot", "ChatGPT-User", "GPTBot", "ClaudeBot", "Claude-SearchBot", "Claude-User",
             "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot", "Applebot-Extended", "DuckAssistBot", "meta-externalagent"]
-    robots = ("".join(f"User-agent: {b}\nAllow: /\n\n" for b in bots) + "User-agent: *\nAllow: /\n") if args.indexable else "User-agent: *\nDisallow: /\n"
-    (DIST / "robots.txt").write_text(robots + f"\nSitemap: {SITE}/sitemap.xml\n")
+    keep_out = "Disallow: /desk/\nDisallow: /api/\n"   # founders' lead desk and the agent's endpoints are not pages
+    robots = ("".join(f"User-agent: {b}\nAllow: /\n{keep_out}\n" for b in bots) + f"User-agent: *\nAllow: /\n{keep_out}") if args.indexable else "User-agent: *\nDisallow: /\n"
+    (DIST / "robots.txt").write_text(robots + f"\nSitemap: {SITE}/sitemap.xml\n" + (f"\n# For AI assistants: {SITE}/llms.txt (the site in brief) and {SITE}/llms-full.txt (every page as text)\n" if args.indexable else ""))
 
     # llms.txt (index of the site) and llms-full.txt (every page as plain text) for AI assistants
     facts = "\n".join(f"- {x}" for x in ENTITY["facts"])
