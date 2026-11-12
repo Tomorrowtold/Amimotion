@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Can you see it?</title>
+<style>
+@font-face{font-family:"AmI Display";src:url(assets/fonts/AmISansDisplay-SemiBold.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"AmI Text";src:url(assets/fonts/AmISansText-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"AmI Text";src:url(assets/fonts/AmISansText-Medium.woff2) format("woff2");font-weight:500;font-display:swap}
+:root{--display:"AmI Display",Arial,sans-serif;--text:"AmI Text",Arial,sans-serif}
+*{box-sizing:border-box}html,body{margin:0}body{background:#f0f6ff;color:#0b1238;font-family:var(--text);-webkit-font-smoothing:antialiased}
+.pad{height:34vh;display:grid;place-items:center;font:500 14px var(--text);letter-spacing:.14em;text-transform:uppercase;color:#7f8ab0}
+</style>
+<link rel="stylesheet" href="css/see.css">
+</head>
+<body>
+<div class="pad">The hero sits above.</div>
+
+<section class="see" id="see" data-assets="assets/see/" aria-label="What AmIMotion shows you on a factory floor">
+  <div class="see-stage">
+    <div class="see-box">
+      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/lit.webp"><img class="see-lit" src="assets/see/L/lit.webp" alt="A working factory floor with trolleys, bins, pallets, racks, a forklift and people." decoding="async"></picture>
+      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/dim.webp"><img class="see-dim" src="assets/see/L/dim.webp" alt="" loading="lazy" decoding="async"></picture>
+      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/blue.webp"><img class="see-blue" src="assets/see/L/blue.webp" alt="" loading="lazy" decoding="async"></picture>
+      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/amber.webp"><img class="see-amber" src="assets/see/L/amber.webp" alt="" loading="lazy" decoding="async"></picture>
+      <canvas class="see-rise" aria-hidden="true"></canvas>
+      <svg class="see-ov" aria-hidden="true" preserveAspectRatio="none"></svg>
+    </div>
+    <div class="see-fog"></div>
+    <img class="see-tag" src="assets/home/hero-rest-1140.webp" srcset="assets/home/hero-rest-1140.webp 1140w, assets/home/hero-rest-2280.webp 2280w" sizes="(max-aspect-ratio:4/5) 118vw, min(64vw,900px)" alt="" decoding="async">
+    <div class="see-veil"></div>
+    <div class="see-shade"></div>
+    <div class="see-tip" aria-hidden="true"></div>
+
+    <div class="see-words">
+      <div class="see-w see-w1 on">
+        <h2 class="see-h">One trolley here has <em>waited 42 minutes.</em></h2>
+        <p class="see-p">Can you tell which one?</p>
+      </div>
+      <div class="see-w see-w2">
+        <h2 class="see-h">A small tag on each one shows <em>where it is.</em></h2>
+        <p class="see-p">Every trolley, bin, pallet, forklift, robot and person. Right now, typically to within 10 cm.</p>
+      </div>
+      <div class="see-w see-w3">
+        <h2 class="see-h">And <em>how long it has waited.</em></h2>
+        <p class="see-p">There's your trolley. 42 minutes, at the end of the racks.</p>
+      </div>
+      <div class="see-w see-w4">
+        <p class="see-q" data-q="What has waited longest?">What has waited longest?</p>
+        <h2 class="see-h">Trolley 14. End of the racks. <em>42 minutes.</em></h2>
+        <p class="see-p">You find out from a screen, not a walk.</p>
+      </div>
+    </div>
+    <div class="see-ticks" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
+  </div>
+</section>
+
+<div class="pad">The rest of the page follows.</div>
+<script src="js/see.js" defer></script>
+</body>
+</html>

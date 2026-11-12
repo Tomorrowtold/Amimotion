@@ -39,7 +39,7 @@ PATHS = {   # where each moving thing came from, on the floor (metres)
     'B-11': [(3.0, 16.0), (3.0, 12.0)],
 }
 
-def build(w, h, samples, cam='eye', dim=1.0):
+def build(w, h, samples, cam='eye', dim=1.0, glow=None):
     clear(); mats()
     sc = bpy.context.scene; sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = samples
     sc.cycles.use_denoising = True; sc.render.resolution_x = w; sc.render.resolution_y = h
@@ -52,7 +52,7 @@ def build(w, h, samples, cam='eye', dim=1.0):
     wallm = mat('wall2', (.62, .63, .63), rough=.8); band = mat('band', (.16, .2, .3), rough=.7)
     box('backwall', (40, .3, 11), (15, 25.2, 5.5), wallm, bevel=0); box('bandb', (40, .32, 1.4), (15, 25.19, .7), band, bevel=0)
     box('leftwall', (.3, 34, 11), (-2.2, 12, 5.5), wallm, bevel=0); box('rightwall', (.3, 34, 11), (32.2, 12, 5.5), wallm, bevel=0)
-    box('roof', (40, 34, .2), (15, 12, 11.1), mat('roof', (.5, .51, .52), rough=.9), bevel=0).visible_camera = False
+    box('roof', (40, 34, .2), (15, 12, 11.1), mat('roof', (.5, .51, .52), rough=.9), bevel=0)
     for cx in (-2.0, 6.5, 15, 23.5, 32.0):   # columns along the back, where anchors sit
         box('col', (.4, .4, 11), (cx, 24.9, 5.5), mat('colm', (.5, .51, .52), rough=.6), bevel=.01)
     for cx in (6.5, 15, 23.5):
@@ -79,6 +79,10 @@ def build(w, h, samples, cam='eye', dim=1.0):
     tro('T-07', 23.4, 6.0, 0); tro('T-09', 23.4, 12.0, 0, 'still'); tro('T-11', 7.6, 7.2, math.pi, 'still')
     tro('T-14', 20.9, 12.6, 0.12, 'wait', 42)             # the one nobody is looking at: parked at the rack end
     tro('T-16', 13.4, 5.0, math.pi / 2, 'still'); tro('T-02', 3.0, 21.0, math.pi / 2, 'still')
+    tro('T-21', 23.4, 15.2, 0, 'still'); tro('T-22', 7.9, 3.9, math.pi, 'still'); tro('T-24', 4.9, 12.3, math.pi / 2 + .1, 'still')
+    tro('T-25', 18.9, 10.3, math.pi / 2); tro('T-27', 21.2, 5.2, .05); tro('T-28', 14.6, 12.2, math.pi / 2, 'still'); tro('T-30', 9.2, 12.2, math.pi / 2 - .08, 'still')
+    MD.totes('totes4', (22.6, 8.4, 0)); tag('B-14', 'Bins', 22.6, 8.4, 1.0, 'still'); MD.totes('totes5', (5.6, 8.2, 0)); tag('B-17', 'Bins', 5.6, 8.2, 1.0, 'still')
+    MD.pallet('pl5', (17.2, 12.3, 0)); tag('P-25', 'Pallet', 17.2, 12.3, 1.2, 'still')
     MD.totes('totes2', (3.0, 12.0, 0)); tag('B-11', 'Bins', 3.0, 12.0, 1.0)
     f = MD.forklift('forklift', (21.1, 17.6, 0)); f.rotation_euler.z = -math.pi / 2; tag('FL-1', 'Forklift', 21.1, 17.6, 2.0)
     a = MD.amr('amr', (16.0, 8.9, 0)); a.rotation_euler.z = math.pi / 2; tag('AMR-2', 'Robot', 16.0, 8.9, .35)
@@ -94,22 +98,35 @@ def build(w, h, samples, cam='eye', dim=1.0):
             l.data.energy = 620 * dim; l.data.size = 3.0; l.data.color = (1, .97, .93)
     bpy.ops.object.light_add(type='SUN', location=(0, 0, 20)); s = bpy.context.active_object; s.data.energy = 1.2 * dim; s.data.color = (.85, .9, 1)
     s.rotation_euler = (math.radians(38), math.radians(-22), 0)
+    if glow:      # light thrown by the points themselves, for the page to add on top of the picture
+        for t in TAGS:
+            if glow == 'amber' and t['state'] != 'wait': continue
+            amber = t['state'] == 'wait' and glow in ('amber', 'both')
+            bpy.ops.object.light_add(type='POINT', location=(t['p'][0], t['p'][1] - .35, t['p'][2] + .25)); l = bpy.context.active_object
+            l.data.color = (1, .62, .18) if amber else (.25, .5, 1); l.data.shadow_soft_size = .08
+            l.data.energy = (36 if t['mins'] == 42 else 16) if amber else 7
     portrait = h > w
     if cam == 'top':
         bpy.ops.object.camera_add(location=(15, 12.2, 60)); c = bpy.context.active_object; c.data.type = 'ORTHO'
         c.data.ortho_scale = 27 if portrait else 34; c.rotation_euler = (0, 0, math.pi / 2 if portrait else 0)
     else:
-        t = float(cam) if cam not in ('eye',) else 0.0     # 0 = mezzanine view, 1 = straight down
-        e = t * t * (3 - 2 * t)
-        loc = Vector((15.5, -6.0 + (12.2 + 6.0) * e, 5.2 + (46 - 5.2) * e))
-        tgt = Vector((15.5 - .5 * e, 9.5 + (12.2 - 9.5) * e, 1.2 * (1 - e)))
-        bpy.ops.object.camera_add(location=loc); c = bpy.context.active_object
-        d = tgt - loc; c.rotation_euler = d.to_track_quat('-Z', 'Y').to_euler()
-        if portrait and e == 0:
-            c.location = (16.5, -2.5, 6.4); d = Vector((16.8, 9.0, 1.0)) - c.location; c.rotation_euler = d.to_track_quat('-Z', 'Y').to_euler()
-        c.data.lens = (19 if portrait else 24) + (30 if e > 0 else 0) * e
+        bpy.ops.object.camera_add(); c = bpy.context.active_object
+        place(c, float(cam) if cam != 'eye' else 0.0, portrait)
     sc.camera = c
+    bpy.data.objects['roof'].visible_camera = c.location.z < 10.5
     return sc, c
+
+def place(c, t, portrait):
+    # 0 = the mezzanine view, 1 = straight down on the whole floor. Portrait turns a quarter as it rises so the long side of the floor runs down the phone.
+    from mathutils import Quaternion
+    e = t * t * (3 - 2 * t)
+    a, tg0 = (Vector((16.5, -2.5, 6.4)), Vector((16.8, 9.0, 1.0))) if portrait else (Vector((15.5, -6.0, 5.2)), Vector((15.5, 9.5, 1.2)))
+    loc = a.lerp(Vector((15.5 if portrait else 15.0, 12.2, 46)), e); tg = tg0.lerp(Vector((15.5 if portrait else 15.0, 12.2, 0)), e)
+    if e > .999: tg.y += .01
+    c.location = loc; q = (tg - loc).to_track_quat('-Z', 'Y')
+    if portrait: q = q @ Quaternion((0, 0, 1), -e * math.pi / 2)
+    c.rotation_euler = q.to_euler(); c.data.lens = (19 if portrait else 24) + 30 * e
+    if 'roof' in bpy.data.objects: bpy.data.objects['roof'].visible_camera = loc.z < 10.5
 
 def export(sc, c, path):
     bpy.context.view_layer.update()
@@ -117,6 +134,7 @@ def export(sc, c, path):
         v = world_to_camera_view(sc, c, Vector(p)); return [round(v.x, 4), round(1 - v.y, 4)]
     out = dict(tags=[dict(id=t['id'], kind=t['kind'], state=t['state'], mins=t['mins'], xy=pj(t['p']), floor=pj((t['p'][0], t['p'][1], 0))) for t in TAGS],
                paths={k: [pj((x, y, .02)) for x, y in dens(v)] for k, v in PATHS.items()},
+               zones={k: pj((x, y, .02)) for k, (x, y) in {'Inspection': (11.75, 3.75), 'Racks': (12.75, 14.9), 'Line 2': (28.5, 9.5), 'Press': (4.2, 7.4)}.items()},
                anchors=[pj((cx, cy, 8.5)) for cx, cy in [(-2.0, 24.7), (6.5, 24.7), (15, 24.7), (23.5, 24.7), (32, 24.7), (6.5, 12.2), (15, 12.2), (23.5, 12.2)]])
     json.dump(out, open(path, 'w'))
 
@@ -131,5 +149,13 @@ if __name__ == '__main__':
     a = sys.argv[sys.argv.index('--') + 1:]
     out, w, h, s, cam = a[0], int(a[1]), int(a[2]), int(a[3]), a[4]
     dim = float(a[5]) if len(a) > 5 else 1.0
-    import time; t0 = time.time(); sc, c = build(w, h, s, cam, dim); print('BUILD', round(time.time() - t0), 's', len(bpy.data.objects), 'objects', flush=True); export(sc, c, out.rsplit('.', 1)[0] + '.json')
-    sc.render.filepath = out; bpy.ops.render.render(write_still=True)
+    glow = a[6] if len(a) > 6 else None
+    if cam.startswith('rise:'):          # out is a folder: one frame and one json per step of the rise
+        n = int(cam[5:]); sc, c = build(w, h, s, '0', dim, glow); os.makedirs(out, exist_ok=True)
+        for i in range(n + 1):
+            f = os.path.join(out, '%02d' % i)
+            if os.path.exists(f + '.png'): continue
+            place(c, i / n, h > w); export(sc, c, f + '.json'); sc.render.filepath = f + '.png'; bpy.ops.render.render(write_still=True); print('FRAME', i, flush=True)
+    else:
+        sc, c = build(w, h, s, cam, dim, glow); export(sc, c, out.rsplit('.', 1)[0] + '.json')
+        sc.render.filepath = out; bpy.ops.render.render(write_still=True)
