@@ -61,7 +61,8 @@
 .see.see-ask .see-hush{opacity:1}
 .see-ov .pk{opacity:0;transition:opacity .9s ease}
 .see.see-ask .see-ov .pk{opacity:1}
-.see-ov .pk g{transition:opacity .5s}
+.see-ov .pk g{opacity:0;transition:opacity .7s ease}
+.see-ov .pk g.lit{opacity:1}
 .see-ov .pk-pool{fill:url(#see-gw);opacity:.7;mix-blend-mode:screen;transition:opacity .45s ease}
 .see.see-ask .see-ov .pk-pool{animation:see-pool 4.8s ease-in-out infinite;animation-delay:calc(var(--d,0)*-1s)}
 @keyframes see-pool{50%{opacity:1}}
@@ -81,6 +82,12 @@
 .see-say{display:inline-block;transition:opacity .3s,transform .5s cubic-bezier(.19,.9,.22,1)}
 .see-say.swap{opacity:0;transform:translateY(6px)}
 .see-say b{font-weight:600;color:#fff}
+/* three picks, shown as three small lights that go out one by one */
+.see-lives{display:inline-flex;gap:7px;margin-left:12px;vertical-align:.08em}
+.see-lives i{width:8px;height:8px;border-radius:50%;background:#fff3e2;box-shadow:0 0 10px rgba(255,236,205,.8);transition:background .4s,box-shadow .4s,transform .4s}
+.see-lives i.out{background:transparent;box-shadow:inset 0 0 0 1.2px rgba(255,255,255,.4);transform:scale(.85)}
+.see-lives.won i{background:var(--see-amber);box-shadow:0 0 12px rgba(240,164,58,.9)}
+.see-lives.won i.out{background:transparent;box-shadow:inset 0 0 0 1.2px rgba(255,255,255,.4)}
 @media (max-aspect-ratio:4/5){.see-ov .pk-l{font-size:22px}.see-ov .yes .pk-l{font-size:30px}}
 @media (prefers-reduced-motion:reduce){.see-ov .pk-pool{animation:none!important}}
 

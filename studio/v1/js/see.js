@@ -144,14 +144,14 @@
     words.forEach((el, i) => { const r = SHOW[i], out = seg(p, r[1], r[2]); el.classList.toggle('on', i === step && (i > 0 || seen)); el.style.opacity = out > 0 ? (1 - out).toFixed(3) : ''; el.style.setProperty('--out', out.toFixed(3)); });
     if (step !== shown || force) { shown = step; const k = w < .14 ? 0 : w < .44 ? 1 : w < .7 ? 2 : 3; ticks.forEach((t, i) => t.classList.toggle('on', i === k)); }
     // scroll 1 is a question you can answer with a finger: it stays open until the lights go
-    const ask = p >= -.01 && p < T.dip[0]; root.classList.toggle('see-ask', ask); if (!ask && tip.classList.contains('say')) tip.classList.remove('on', 'say');
+    const ask = p >= -.01 && p < T.dip[0]; root.classList.toggle('see-ask', ask); if (ask && seen && !lit0 && root.getBoundingClientRect().top < innerHeight * .15) lightUp(); if (!ask && tip.classList.contains('say')) tip.classList.remove('on', 'say');
     // the question is typed by the scroll, and answered on the floor
     const text = q.dataset.q, n = calm ? text.length : Math.round(text.length * seg(p, ...T.type));
     if (n !== typed) { typed = n; q.textContent = text.slice(0, n); }
     const told = p >= T.ans[0] - .012; words[3].classList.toggle('told', told);
     // what the story is doing now, for the ear and the hand
     const lit = order.filter(o => pts > o.at * .7 + .12).length, waits = order.filter(o => o.wait && !o.hero && amb > .3 + .25 * (o.t.mins > 20));
-    const st = { near, vel, fly, real, dip, bank: Math.min(3, Math.floor(dip * 3.2)), lit, litAt: lit ? order[lit - 1].t.xy : null, amber: waits.length, amberAt: waits.length ? waits[waits.length - 1].t.xy : null, hero: amb > .8, heroAt: D.eye.tags[hi].xy, mins: els.tags[hi].shown, rise, typed: n, told, guess: guessed };
+    const st = { near, vel, fly, real, dip, bank: Math.min(3, Math.floor(dip * 3.2)), lit, litAt: lit ? order[lit - 1].t.xy : null, amber: waits.length, amberAt: waits.length ? waits[waits.length - 1].t.xy : null, hero: amb > .8, heroAt: D.eye.tags[hi].xy, mins: els.tags[hi].shown, rise, typed: n, told, guess: guessed, pkLit, hotN, pickAt };
     const p0 = was || st; was = st;
     if (!calm && navigator.vibrate) { const n = st.told && !p0.told ? 18 : st.hero && !p0.hero ? 14 : st.bank > p0.bank ? 10 : 0; if (n) try { navigator.vibrate(n); } catch (e) {} }
     if (sound) sound.hear(st);
@@ -192,31 +192,50 @@
     const best = pick(ev, 34); if (!best) return tip.classList.remove('on');
     say(best, best[0].t.kind + (best[0].wait && c > T.amber[1] ? ', waiting ' + best[0].t.mins + ' min' : ''));
   }
-  // scroll 1: the visitor picks a trolley. Almost everyone is wrong, and that is the point: waiting cannot be seen.
-  const sayEl = root.querySelector('.see-say');
-  let tries = 0, found = false, hot = null;
-  const tell = html => { if (!sayEl) return; sayEl.classList.add('swap'); setTimeout(() => { sayEl.innerHTML = html; sayEl.classList.remove('swap'); }, 220); };
+  // Scroll 1 is a game with three picks. The hall's lights come down, the trolleys light up one by one, and the visitor
+  // picks the one that has waited 42 minutes. Almost everyone misses, and every miss shows the point: they all look the same,
+  // waiting cannot be seen. A hit (or the third miss, which shows the answer) carries the visitor straight into the next scene.
+  const sayEl = root.querySelector('.see-say'), lives = [...root.querySelectorAll('.see-lives i')], livesEl = root.querySelector('.see-lives');
+  let tries = 0, found = false, hot = null, lit0 = false, pkLit = 0, pickAt = null, hotN = 0;
+  const N_TRY = 3;
+  const tell = html => { if (!sayEl) return; sayEl.classList.add('swap'); setTimeout(() => { sayEl.innerHTML = html; sayEl.classList.remove('swap'); }, 200); };
   const ago = o => o.t.mins && o.t.mins !== 42 ? o.t.mins : 2 + o.i * 7 % 9;
+  function lightUp() {            // the pools come on far to near, each with a soft note
+    lit0 = true; const list = els.tags.filter(o => o.pk).sort((a, b) => a.t.xy[1] - b.t.xy[1]);
+    list.forEach((o, i) => setTimeout(() => { o.pk.classList.add('lit'); pkLit++; pickAt = o.t.xy; paint(); }, calm ? 0 : 260 + i * 85));
+  }
+  // straight on into scene 2: the lights go down and every tag comes on, played by a glide rather than the visitor's wheel
+  function carryOn(delay) {
+    setTimeout(() => {
+      const span = root.offsetHeight - innerHeight, top = root.getBoundingClientRect().top + scrollY, to = top + span * (PULL + (1 - PULL) * .3);
+      if (scrollY >= to - 2) return; if (calm) return scrollTo(0, to);
+      const from = scrollY, t0 = performance.now(), ms = 1900; let stop = false; const halt = () => { stop = true; };
+      ['wheel', 'touchstart', 'keydown'].forEach(e => addEventListener(e, halt, { once: true, passive: true }));
+      const e2 = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+      const step = now => { if (stop) return; const k = Math.min(1, (now - t0) / ms); scrollTo(0, from + (to - from) * e2(k)); if (k < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    }, delay);
+  }
+  function reveal(won) {
+    found = true; const h = els.tags[hi]; h.pk.classList.remove('hot', 'no'); h.pk.classList.add('yes', 'lit'); h.pl.textContent = '42 min'; root.classList.add('see-found');
+    if (livesEl) livesEl.classList.toggle('won', won); guessed += won ? 100 : 50; pickAt = h.t.xy; paint();
+    carryOn(won ? 1300 : 2300);
+  }
   function guess(ev) {
     if (!els || !root.classList.contains('see-ask') || ev.target.closest('.see-snd') || found) return;
     const best = pick(ev, 80, 'Trolley'); if (!best) return; const o = best[0];
     if (!o.pk || o.pk.classList.contains('no')) return;
-    const n = els.tags.filter(t => t.t.kind === 'Trolley').length; tries++;
-    if (o.hero) {
-      found = true; guessed += 100; o.pk.classList.add('yes'); o.pl.textContent = '42 min'; root.classList.add('see-found');
-      tell(tries === 1 ? `That's the one. A lucky guess: one in ${n}. <b>AmIMotion never has to guess.</b>` : `Found it, on try ${tries}. On a real floor, every try is a walk. <b>AmIMotion never has to guess.</b>`);
-    } else {
-      guessed += 1; o.pk.classList.add('no'); o.pl.textContent = ago(o) + ' min';
-      tell(tries === 1 ? `Not this one. It got here ${ago(o)} minutes ago. <b>They all look the same.</b>`
-         : tries === 2 ? `Not this one either. <b>Your eyes can't see how long something has waited.</b>`
-         : `Still not it. <b>Scroll, and let the floor tell you.</b>`);
-    }
+    const n = els.tags.filter(t => t.t.kind === 'Trolley').length; tries++; if (lives[tries - 1] && !o.hero) lives[tries - 1].classList.add('out');
+    if (o.hero) { reveal(true); return tell(tries === 1 ? `That's the one. First pick, one chance in ${n}. <b>AmIMotion never needs the luck.</b>` : `That's the one, on pick ${tries}. On a real floor every pick is a walk. <b>AmIMotion never needs one.</b>`); }
+    guessed += 1; pickAt = o.t.xy; o.pk.classList.remove('hot'); o.pk.classList.add('no'); o.pl.textContent = ago(o) + ' min';
+    if (tries >= N_TRY) { tell(`It was this one: <b>42 minutes, and it looked like all the rest.</b>`); return setTimeout(() => reveal(false), 450); }
+    tell(tries === 1 ? `Not this one. It got here ${ago(o)} minutes ago. <b>They all look the same.</b>` : `Not this one either. <b>Your eyes can't see how long something has waited.</b>`);
     paint();
   }
   // under the cursor, a trolley's light comes up: it is the thing to pick
   function lift(ev) {
     let o = null; if (els && root.classList.contains('see-ask') && !found) { const b = pick(ev, 80, 'Trolley'); o = b && b[0].pk && !b[0].pk.classList.contains('no') ? b[0] : null; }
-    if (o !== hot) { if (hot) hot.pk.classList.remove('hot'); hot = o; if (o) o.pk.classList.add('hot'); }
+    if (o !== hot) { if (hot) hot.pk.classList.remove('hot'); hot = o; if (o) { o.pk.classList.add('hot'); hotN++; pickAt = o.t.xy; if (sound) paint(); } }
   }
 
   // Sound is on by default. No browser lets a page make a sound before the visitor's first tap, click or key (a scroll is not
