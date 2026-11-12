@@ -32,11 +32,11 @@
   --size-legal:.8125rem;
   --s-1:4px;--s-2:8px;--s-3:12px;--s-4:16px;--s-5:24px;--s-6:32px;--s-7:48px;--s-8:64px;--s-9:96px;--s-10:128px;
   --rhythm-s:clamp(48px,5vw,96px); --rhythm-m:clamp(64px,8vw,160px); --rhythm-l:clamp(96px,11vw,224px);
-  --margin:clamp(20px,3.9vw,112px); --gutter:clamp(16px,1.67vw,40px); --bar:56px;
+  --margin:clamp(20px,3.9vw,112px); --gutter:clamp(16px,1.67vw,40px); --bar:64px;
   --radius-control:6px; --radius-pill:999px; --press-scale:.97; --t-fast:150ms; --ease-ds:cubic-bezier(.2,0,0,1);
   color:var(--ink); font-family:var(--font-text);
 }
-@media (max-width:1023px){.ds{--bar:52px}}
+@media (max-width:1023px){.ds{--bar:56px}}
 .ds :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:var(--radius-control)}
 .skip-link{position:absolute;left:16px;top:-100px;z-index:60;background:var(--ground);color:var(--ink);padding:8px 12px;font:500 15px/1 var(--font-text)}
 .skip-link:focus{top:12px}
@@ -60,20 +60,21 @@ main:focus{outline:none}
 .go:hover{text-decoration:underline!important;text-decoration-thickness:1px!important;text-underline-offset:4px}
 .go::after{width:.38em;height:.38em}
 
-/* ---------- the nav (round 3, thread "Perfect the site navigation", /mnt/project-files/nav/concepts/). One floating
-   capsule of glass. Four materials, four jobs: glass to move around; a lens bead that glides to the door you point at
-   and rests on the door you are in (with a short located-blue line); a pressed well for Ask; one clay button, Book a
-   call. Five doors, five worlds: a door's panel wears its world's ground and shows the stills its pages open on.
-   Doors are <details>, so the nav opens without JS. Phones: the capsule sits under the thumb and grows into the menu.
-   No dots, no glow beyond the located line, nothing that bounces past a 1.3 overshoot on the lens. ---------- */
+/* ---------- the nav (thread "Build a world-class homepage nav", 12 Nov 2026). One quiet full-width bar on solid
+   white (brand rule: black and white interface, brand blue #66a5fa only for located; no glass): logo, five doors with a small chevron (they open), Ask, Book a call. Panels drop flush under the bar on the
+   same white surface, in one layout on every door: groups of links left, pictures where a picture helps. A short
+   located-blue line marks the door you are in and glides to the door you point at. No capsule, no eyebrows in
+   capitals, no serif third voice, no glow; the page dims a little under an open panel and is never blurred.
+   Timing (NN/g): a click opens at once; a resting pointer opens after 120 ms; moving along open doors switches at once;
+   leaving the bar closes after 240 ms, so a diagonal move into the panel never loses it. ---------- */
 @font-face{font-family:"AmI Serif";src:url("/assets/fonts/InstrumentSerif-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
 .vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-.top{--n-ease:cubic-bezier(.16,1,.3,1);--n-liquid:cubic-bezier(.34,1.3,.54,1);--n-serif:"AmI Serif",Georgia,serif;position:relative;z-index:40;height:var(--bar)}
+.top{--n-ease:cubic-bezier(.2,0,0,1);--n-out:cubic-bezier(.16,1,.3,1);--n-w:1600px;--n-pad:max(var(--margin),calc((100vw - var(--n-w)) / 2));position:relative;z-index:40;height:var(--bar)}
 html{scroll-padding-top:calc(var(--bar) + var(--s-5))}
-/* sticky stages start under the bar's space, not behind it (kept from round 14); the products' local bar clears the capsule */
+/* sticky stages start under the bar's space, not behind it (kept from round 14) */
 html .motion .hero-pin,html .film,html .motion .find-pin,html .motion .how-pin,html .waits-panel{top:var(--bar);height:calc(100svh - var(--bar))}
 html .local{top:calc(var(--bar) + 10px)}
-html .local{transition:top .5s cubic-bezier(.16,1,.3,1)}
+html .local{transition:top .4s var(--ease-ds)}
 html:has(.top.away) .local{top:0}
 html .local .cta{display:none}
 html .top li{margin:0}
@@ -83,213 +84,219 @@ html .read .toc,html .read.has-fig .rail{top:calc(var(--bar) + var(--s-6))}
 html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5))}
 @media (max-width:1023px){html .tool-draw,html .local{top:0}html .motion .hero-pin,html .film,html .motion .find-pin,html .motion .how-pin,html .waits-panel{top:0;height:100svh}html .read .toc,html .read.has-fig .rail,html .bay{top:var(--s-5)}}
 .logo .mark path{fill:var(--brand)}
-.logo .mark{height:24px;width:auto}
-.logo .word{height:16px;width:auto}
+.logo .mark{height:22px;width:auto}
+.logo .word{height:15px;width:auto}
 .top a{color:var(--ink);text-decoration:none}
 .top ul{list-style:none;margin:0;padding:0}
 .top p{margin:0}
 .top summary{list-style:none;cursor:pointer;-webkit-user-select:none;user-select:none}
 .top summary::-webkit-details-marker{display:none}
-.ds .top summary:focus-visible,.ds .cap .cta:focus-visible,.ds .top .spine:focus-visible{outline-offset:2px;border-radius:999px}
-.ds .top .spine:focus-visible{border-radius:4px}
+.ds .top summary:focus-visible,.ds .top .cta:focus-visible{outline-offset:2px;border-radius:8px}
+.ds .top .door > summary:focus-visible{outline-offset:-2px}
 .top .chev{width:11px;height:11px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-/* glass */
-.cap{position:fixed;z-index:41;top:8px;left:50%;width:min(1240px,calc(100% - 2 * clamp(12px,2vw,32px)));height:52px;transform:translateX(-50%);display:flex;align-items:center;gap:var(--s-3);padding:0 6px 0 20px;border-radius:999px;
-  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.52));-webkit-backdrop-filter:blur(22px) saturate(1.8);backdrop-filter:blur(22px) saturate(1.8);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(11,18,56,.04),0 0 0 1px rgba(11,18,56,.06),0 14px 34px -20px rgba(11,18,56,.38);
-  transition:transform .5s var(--n-ease),height .35s var(--n-ease),top .35s var(--n-ease)}
-.top.compact .cap{height:48px;top:6px}
-.top.away .cap{transform:translateX(-50%) translateY(calc(-100% - 20px))}
-.cap .logo{display:flex;align-items:center;gap:10px;flex:none}
-.plogo{display:none}
-.main{flex:1;min-width:0;display:flex;justify-content:center;height:100%;align-items:center}
-.doors{display:flex;gap:2px;align-items:center}
-.door > summary{position:relative;z-index:1;height:40px;display:flex;align-items:center;padding:0 16px;border-radius:999px;font:500 15px/1 var(--font-text);letter-spacing:-.005em;color:var(--ink);white-space:nowrap}
-/* lens: brighter glass. Without JS it sits on the open door and the door you are in; with JS one bead glides */
-.lens,.no-js .door[open] > summary,.no-js .door.here > summary{background:linear-gradient(180deg,#fff,rgba(255,255,255,.84));box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 1px 2px rgba(11,18,56,.08),0 6px 14px -8px rgba(11,18,56,.3)}
-.lens{position:absolute;z-index:0;left:0;top:50%;height:40px;margin-top:-20px;width:0;border-radius:999px;opacity:0;pointer-events:none;transition:transform .55s var(--n-liquid),width .55s var(--n-liquid),opacity .2s}
+.top .down{width:12px;height:12px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.55;transition:transform .2s var(--n-ease),opacity .2s}
+
+/* the bar */
+.cap{position:fixed;z-index:41;inset:0 0 auto;height:var(--bar);display:flex;align-items:center;gap:var(--s-6);padding:0 var(--n-pad);
+  background:#fff;
+  box-shadow:0 1px 0 rgba(11,18,56,0);transition:transform .32s var(--n-ease),box-shadow .2s,background .2s}
+.top.compact .cap,.top:has(details[open]) .cap{box-shadow:0 1px 0 var(--hairline)}
+.top:has(details[open]) .cap{background:#fff}
+.top.away .cap{transform:translateY(-100%)}
+.cap .logo{display:flex;align-items:center;gap:9px;flex:none;height:100%}
+.main{flex:1;min-width:0;height:100%;display:flex;align-items:center}
+.doors{display:flex;align-items:center;gap:2px;height:100%}
+.door{height:100%;display:flex;align-items:center}
+.door > summary{height:40px;display:flex;align-items:center;gap:6px;padding:0 12px;border-radius:8px;font:500 15px/1 var(--font-text);letter-spacing:-.005em;color:var(--ink-soft);white-space:nowrap;transition:color .15s}
+.door > summary:hover,.door[open] > summary,.door.here > summary{color:var(--ink)}
+.door > summary:hover .down{opacity:.9}
+.door[open] > summary .down{transform:rotate(180deg);opacity:.9}
+/* the located line: where you are; it glides to the door you point at (nav.js); without JS it sits under the door you are in */
+.lens{position:absolute;left:0;bottom:0;height:2px;width:0;border-radius:2px 2px 0 0;background:var(--brand);opacity:0;pointer-events:none;
+  transition:transform .38s var(--n-out),width .38s var(--n-out),opacity .2s}
 .lens.on{opacity:1}
-.door.here > summary::after{content:"";position:absolute;left:50%;bottom:5px;width:14px;height:2px;margin-left:-7px;border-radius:2px;background:var(--located);box-shadow:0 0 8px rgba(31,107,255,.55)}
-/* the locator: on long pages the doors give way to where you are and the section you read */
-.where{display:none}
-.top.locate .main{display:none}
-.top.locate .where{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:12px;white-space:nowrap;animation:n-fade .35s var(--n-ease) both}
-.w-crumb{font:italic 400 19px/1 var(--n-serif);color:var(--ink-soft)}
-.w-crumb::after{content:"/";font:400 15px/1 var(--font-text);color:rgba(11,18,56,.3);margin-left:12px}
-.w-sec{font:500 15px/1 var(--font-text);padding:12px 16px;border-radius:999px;overflow:hidden;text-overflow:ellipsis;max-width:46ch;background:linear-gradient(180deg,#fff,rgba(255,255,255,.84));box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 6px 14px -8px rgba(11,18,56,.3)}
-.prog{position:absolute;left:26px;right:26px;bottom:0;height:2px;border-radius:2px;overflow:hidden;opacity:0;transition:opacity .3s;pointer-events:none}
-.prog i{display:block;height:100%;transform-origin:0 50%;transform:scaleX(var(--p,0));background:var(--cv,var(--w-accent,var(--action)))}
-.top.locate .prog{opacity:1}
+.no-js .door.here > summary{box-shadow:inset 0 -2px 0 var(--brand)}
+/* reading progress on long pages: the same line, full width, under the bar */
+.prog{position:absolute;left:0;right:0;bottom:0;height:2px;pointer-events:none;opacity:0;transition:opacity .3s}
+.prog i{display:block;height:100%;transform-origin:0 50%;transform:scaleX(var(--p,0));background:var(--brand);opacity:.55}
+.top.reading:not(:has(details[open])) .prog{opacity:1}
+.top.reading:not(:has(details[open])) .lens{opacity:0}
 .js .k-progress{display:none}
-/* well: Ask is pressed into the glass; a clay keycap shows the shortcut */
+
+/* actions: Ask (quiet), Book a call (the one solid button) */
 .act{display:flex;align-items:center;gap:8px;flex:none}
-.nask > summary{display:flex;align-items:center;gap:10px;height:40px;min-width:200px;padding:0 8px 0 14px;border-radius:999px;color:var(--ink-soft);font:400 15px/1 var(--font-text);background:rgba(11,18,56,.045);box-shadow:inset 0 1.5px 3px rgba(11,18,56,.13),inset 0 -1px 0 rgba(255,255,255,.85);transition:box-shadow .25s}
-.nask > summary:hover,.nask[open] > summary{box-shadow:inset 0 1.5px 3px rgba(11,18,56,.16),inset 0 -1px 0 rgba(255,255,255,.85),0 0 0 1px rgba(75,61,240,.22)}
-.nask > summary svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
-.nask .t{flex:1}
-.top kbd{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:6px;font:500 12px/1 var(--font-text);color:var(--ink-soft);background:linear-gradient(180deg,#fff,#eef2fb);box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(11,18,56,.18),0 2px 4px -1px rgba(11,18,56,.18)}
+.nask > summary{display:flex;align-items:center;gap:8px;height:36px;padding:0 6px 0 12px;border-radius:999px;color:var(--ink-soft);font:500 15px/1 var(--font-text);box-shadow:inset 0 0 0 1px var(--hairline);transition:box-shadow .15s,color .15s,background .15s}
+.nask > summary:hover,.nask[open] > summary{color:var(--ink);background:rgba(11,18,56,.03);box-shadow:inset 0 0 0 1px rgba(11,18,56,.2)}
+.nask > summary svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
+.top kbd{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;font:500 12px/1 var(--font-text);color:var(--ink-soft);background:rgba(11,18,56,.06)}
 .no-js .nask,.no-js .sheet-ask{display:none}
-/* clay: the one thing you press */
-.cap .cta,.cap .cta:hover{height:42px;padding:0 20px;border-radius:999px;color:#fff;background:linear-gradient(180deg,#5d51f6,#4232e4);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -2px 0 rgba(10,0,80,.16),0 1px 1px rgba(40,30,160,.3),0 10px 22px -10px rgba(75,61,240,.75);transition:transform .18s var(--n-ease),box-shadow .18s}
-.cap .cta:hover{transform:translateY(-1px)}
-.cap .cta:active{transform:translateY(1px) scale(1);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -1px 0 rgba(10,0,80,.16),0 1px 1px rgba(40,30,160,.3),0 4px 10px -6px rgba(75,61,240,.7)}
+.cap .cta,.cap .cta:hover{display:inline-flex;align-items:center;height:36px;padding:0 16px;border-radius:999px;font:500 15px/1 var(--font-text);color:var(--on-action);background:var(--ink);transition:background .15s,transform .1s}
+.cap .cta:hover{background:#2a3260}
+.cap .cta:active{transform:scale(var(--press-scale))}
 .phone{display:none}
-/* the panel: one surface under the capsule, in the ground of the world the door leads to; moving between doors
+
+/* the panel (round 3, "located"): one raised white card that floats a little under the bar, on the bar's own column.
+   Pictures are the cards: each sits on one dark studio ground (the hardware is CAD on the same lit stage as the live
+   map), and the brand's own mark does the hover: four located corners close in on the card you point at, the way the
+   hero locks onto a tag. The card of the page you are on keeps its corners. Lists are plain columns split by one
+   hairline, set larger, so the panel reads as a page of contents, not a form. Everything inside steps in 25 ms apart
+   on transform and opacity only. No blur, no glow; all depth is static shadow. Moving from one open door to the next
    morphs from the old panel's height (--from, set by nav.js) */
-.drop{--wg:var(--surface);position:absolute;left:0;right:0;top:calc(100% + 10px);max-height:calc(100vh - 90px);overflow:auto;overscroll-behavior:contain;border-radius:28px;background:var(--wg);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 0 0 1px rgba(11,18,56,.06),0 40px 90px -40px rgba(11,18,56,.45),0 12px 24px -18px rgba(11,18,56,.2);animation:n-in .42s var(--n-ease) both}
-.drop[data-world="steel"]{--wg:#eef3fb}.drop[data-world="shift"]{--wg:#f3f5f9}.drop[data-world="morning"]{--wg:#f0f6ff}.drop[data-world="paper"]{--wg:#f8f5ef}.drop[data-world="studio"]{--wg:#f6f3f1}
-@keyframes n-in{from{clip-path:inset(0 0 calc(100% - var(--from,0px)) 0 round 28px);opacity:var(--o0,0)}to{clip-path:inset(0 0 0 0 round 28px);opacity:1}}
-@keyframes n-fade{from{opacity:0;transform:translateY(6px)}}
-.drop-grid{display:grid;gap:36px;padding:30px 32px 0;grid-template-columns:minmax(0,2.4fr) minmax(0,1fr);animation:n-fade .32s .04s var(--n-ease) both}
-.drop-grid.g2:has(.g-feature){grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
-.drop-grid.g3{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr) minmax(0,1fr)}
-.drop-grid.g3:has(.g-feature){grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr)}
-.drop .grp-name,.pane .grp-name{font:500 12px/1 var(--font-text);letter-spacing:.07em;text-transform:uppercase;color:rgba(11,18,56,.48);margin:2px 0 16px}
-.grp-name a{color:inherit!important}
-.drop-foot{display:flex;align-items:center;justify-content:space-between;margin-top:28px;padding:16px 32px 18px;border-top:1px solid var(--hairline)}
-.drop-hub,.pane-hub a{display:inline-flex;align-items:center;gap:10px;font:italic 400 25px/1 var(--n-serif);letter-spacing:-.01em}
-.drop-hub .chev,.pane-hub .chev{color:var(--action);transition:transform .25s var(--n-ease)}
-.drop-hub:hover .chev{transform:translateX(3px)}
-.drop-ask{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(11,18,56,.48)}
-/* rows: a quiet list; hover lifts a pane of glass behind the row */
+.drop{position:absolute;left:calc(var(--n-pad) - 20px);right:calc(var(--n-pad) - 20px);top:calc(100% + 8px);max-height:calc(100vh - var(--bar) - 24px);overflow:auto;overscroll-behavior:contain;
+  border-radius:20px;background:#fff;
+  box-shadow:0 0 0 1px rgba(11,18,56,.07),0 1px 2px rgba(11,18,56,.05),0 12px 24px -12px rgba(11,18,56,.14),0 40px 80px -32px rgba(11,18,56,.30);
+  animation:n-in .28s var(--n-out) both}
+.drop-in{padding:28px 28px 0}
+@keyframes n-in{from{clip-path:inset(0 0 calc(100% - var(--from,0px)) 0 round 20px);opacity:var(--o0,0);transform:translateY(-6px)}to{clip-path:inset(0 0 0 0 round 20px);opacity:1;transform:none}}
+@keyframes n-fade{from{opacity:0;transform:translateY(-4px)}}
+@keyframes n-step{from{opacity:0;transform:translateY(6px)}}
+/* the stagger: each group, then each item, 25 ms apart */
+.drop .grp{animation:n-step .36s var(--n-out) both}
+.drop .grp:nth-child(2){animation-delay:.05s}.drop .grp:nth-child(3){animation-delay:.1s}
+.drop li{animation:n-step .36s var(--n-out) both}
+.drop li:nth-child(2){animation-delay:.025s}.drop li:nth-child(3){animation-delay:.05s}.drop li:nth-child(4){animation-delay:.075s}
+.drop li:nth-child(5){animation-delay:.1s}.drop li:nth-child(6){animation-delay:.125s}.drop li:nth-child(n+7){animation-delay:.15s}
+.drop .grp:nth-child(2) li{animation-delay:.08s}
+.drop-foot{animation:n-fade .3s .12s var(--n-ease) both}
+.drop-grid{display:grid;gap:0;grid-template-columns:minmax(0,2.15fr) minmax(0,1fr)}
+.drop-grid.g3{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr)}
+.drop-grid[data-kinds~="feature"]{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)}
+.drop-grid.g2[data-kinds~="feature"]{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr)}
+.drop-grid[data-kinds~="shelf"]{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+.drop .grp{padding:0 28px}
+.drop .grp:first-child{padding-left:0}
+.drop .grp:last-child{padding-right:0}
+.drop .grp + .grp{border-left:1px solid rgba(11,18,56,.08)}
+.drop .grp-name,.pane .grp-name{font:500 13px/1.2 var(--font-text);color:rgba(11,18,56,.5);margin:0 0 14px}
+.grp-name a{color:inherit!important;display:inline-flex;align-items:center;gap:6px}
+.grp-name a:hover{color:var(--ink)!important}
+.top .drop-foot{display:flex;align-items:center;justify-content:space-between;margin:28px -28px 0;padding:16px 28px;border-top:1px solid rgba(11,18,56,.07)}
+.drop-hub,.pane-hub a{display:inline-flex;align-items:center;gap:8px;font:500 15px/1 var(--font-text);color:var(--ink)!important}
+.drop-hub .chev,.pane-hub .chev,.grp-name .chev{transition:transform .2s var(--n-ease)}
+.drop-hub:hover .chev,.grp-name a:hover .chev{transform:translateX(3px)}
+/* lists: a page of contents, larger type, a small located tick slides in on the row you point at */
 .top .list{display:grid;gap:2px}
-.list a{display:grid;grid-template-columns:1fr auto;align-items:center;padding:9px 12px;margin:0 -12px;border-radius:14px;transition:background .25s,box-shadow .25s}
-.list b{font:500 15.5px/1.3 var(--font-text);letter-spacing:-.005em}
-.list span{grid-column:1;font-size:13.5px;color:var(--ink-soft);line-height:1.35}
-.list .chev{grid-row:1 / 3;grid-column:2;color:var(--action);opacity:0;transform:translateX(-6px);transition:opacity .2s,transform .3s var(--n-ease)}
-.list a:hover,.list a[aria-current]{background:rgba(255,255,255,.75);box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 6px 14px -10px rgba(11,18,56,.3)}
-.list a:hover .chev,.list a:focus-visible .chev{opacity:1;transform:none}
-/* clay plinths for the products (CAD on a pale ground) */
-.plinths{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.plinth{display:block;padding:10px 10px 16px;border-radius:22px;background:linear-gradient(180deg,#fff,#f6f8fd);box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 22px 34px -26px rgba(12,20,48,.45);transition:transform .5s var(--n-ease),box-shadow .5s var(--n-ease)}
-.plinth .pic{display:block;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#f3f6fc}
-.top .pic img{display:block;width:100%;height:100%;object-fit:cover;transition:transform 1s var(--n-ease)}
-.plinth b,.photo b{display:block;font:500 15.5px/1.3 var(--font-text);margin:14px 6px 2px}
-.plinth span:not(.pic),.photo span:not(.pic){display:block;font-size:13.5px;color:var(--ink-soft);line-height:1.35;margin:0 6px}
-.plinth:hover{transform:translateY(-4px);box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 30px 40px -26px rgba(12,20,48,.5)}
+.list a{position:relative;display:block;padding:10px 0 10px 0;transition:transform .25s var(--n-out)}
+.list b{display:block;font:500 16.5px/1.3 var(--font-text);letter-spacing:-.01em;transition:color .15s}
+.list span{display:block;font-size:14px;color:var(--ink-soft);line-height:1.4;margin-top:3px}
+.list .chev{display:none}
+.list a::before{content:"";position:absolute;left:-14px;top:14px;width:2px;height:14px;border-radius:2px;background:var(--brand);opacity:0;transform:scaleY(.3);transition:opacity .15s,transform .25s var(--n-out)}
+.list a:hover,.list a:focus-visible{transform:translateX(4px)}
+.list a:hover::before,.list a:focus-visible::before,.list a[aria-current]::before{opacity:1;transform:none}
+.list a:hover b,.list a[aria-current] b{color:var(--ink)}
+/* picture cards */
+.plinths,.photos,.feature{display:grid;gap:14px}
+.plinths{grid-template-columns:repeat(4,minmax(0,1fr))}
+.photos{grid-template-columns:repeat(3,minmax(0,1fr))}
+.feature{grid-template-columns:1fr}
+.plinth,.photo{display:block;position:relative}
+.top .pic{position:relative;display:block;aspect-ratio:4 / 3;border-radius:14px;overflow:hidden;background:#0a0d1c;
+  box-shadow:0 1px 2px rgba(11,18,56,.08),0 10px 22px -14px rgba(11,18,56,.4);transition:transform .35s var(--n-out),box-shadow .35s var(--n-out)}
+.plinth .pic{aspect-ratio:5 / 4}
+.photo.feature .pic{aspect-ratio:16 / 9}
+.drop-grid.g2 .photo.feature .pic{aspect-ratio:2 / 1}
+.top .pic img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .7s var(--n-out)}
+/* the located corners: four short L's that close in from outside the card */
+.top .pic::after{content:"";position:absolute;inset:10px;border-radius:4px;pointer-events:none;opacity:0;transform:scale(1.08);
+  transition:opacity .16s,transform .32s var(--n-out);
+  --c:var(--brand);--l:16px;--t:2px;
+  background:
+   linear-gradient(var(--c),var(--c)) 0 0/var(--l) var(--t),linear-gradient(var(--c),var(--c)) 0 0/var(--t) var(--l),
+   linear-gradient(var(--c),var(--c)) 100% 0/var(--l) var(--t),linear-gradient(var(--c),var(--c)) 100% 0/var(--t) var(--l),
+   linear-gradient(var(--c),var(--c)) 0 100%/var(--l) var(--t),linear-gradient(var(--c),var(--c)) 0 100%/var(--t) var(--l),
+   linear-gradient(var(--c),var(--c)) 100% 100%/var(--l) var(--t),linear-gradient(var(--c),var(--c)) 100% 100%/var(--t) var(--l);
+  background-repeat:no-repeat}
+.plinth:hover .pic::after,.photo:hover .pic::after,.plinth:focus-visible .pic::after,.photo:focus-visible .pic::after,
+.plinth[aria-current] .pic::after,.photo[aria-current] .pic::after{opacity:1;transform:none}
+.plinth:hover .pic,.photo:hover .pic,.plinth:focus-visible .pic,.photo:focus-visible .pic{transform:translateY(-3px);box-shadow:0 2px 4px rgba(11,18,56,.1),0 22px 36px -18px rgba(11,18,56,.55)}
 .plinth:hover img,.photo:hover img{transform:scale(1.04)}
-/* graded photographs: the same still the page opens on */
-.photos,.feature{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.g-feature ul{grid-template-columns:1fr}
-.photo{display:block}
-.photo b,.photo span:not(.pic){margin-inline:0}
-.photo .pic{position:relative;display:block;aspect-ratio:3 / 4;border-radius:18px;overflow:hidden;background:var(--surface)}
-.photo.feature .pic{aspect-ratio:16 / 10}
-.photo.feature b{font:italic 400 27px/1.1 var(--n-serif);letter-spacing:-.01em}
-.photo .pic::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(11,18,56,.06);transition:box-shadow .4s}
-.photo:hover .pic::after{box-shadow:inset 0 0 0 1.5px var(--located)}
-/* the field guides as a shelf: each guide a spine in its own cover colour */
-.shelf{display:flex;align-items:flex-end;gap:6px;height:262px;position:relative;margin-bottom:8px}
-.shelf::after{content:"";position:absolute;left:-8px;right:-8px;bottom:-8px;height:8px;border-radius:4px;background:linear-gradient(180deg,#fff,#efe8da);box-shadow:inset 0 1px 0 #fff,0 10px 18px -12px rgba(28,27,42,.5)}
-.shelf li{flex:1;min-width:0;max-width:56px;display:flex;align-items:flex-end;height:100%}
-.spine{width:100%;height:var(--h,240px);border-radius:4px 4px 2px 2px;background:var(--c);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 3px 0 0 rgba(255,255,255,.14),inset -4px 0 0 rgba(0,0,0,.16),0 6px 10px -8px rgba(0,0,0,.5);transition:transform .45s var(--n-liquid)}
-.top .spine,.top .spine:hover{color:rgba(255,255,255,.94)}
-.spine span{writing-mode:vertical-rl;transform:rotate(180deg);font:italic 400 15px/1 var(--n-serif);white-space:nowrap;padding:12px 0}
-.spine:hover,.spine:focus-visible,.spine[aria-current]{transform:translateY(-14px)}
-.shelf-cap{margin-top:24px!important;min-height:28px;font:italic 400 23px/1.15 var(--n-serif)}
-/* Ask: a palette under the well */
-.nask-drop{left:auto;width:min(640px,calc(100vw - 32px));padding:10px}
-.nask-main{padding:6px 14px 4px;border-radius:20px;background:linear-gradient(180deg,#fff,rgba(255,255,255,.88));box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 6px 14px -10px rgba(11,18,56,.25)}
-.nask-form input{width:100%;height:56px;border:0;border-radius:0;background:none;padding:0;font:400 20px/1 var(--font-text);color:var(--ink)}
-.nask-form input::placeholder{color:var(--ink-soft);opacity:.6}
+.plinth b,.photo b{display:block;font:500 16px/1.3 var(--font-text);letter-spacing:-.01em;margin:14px 2px 3px;transition:color .15s}
+.plinth span:not(.pic),.photo span:not(.pic){display:block;font-size:14px;color:var(--ink-soft);line-height:1.4;margin:0 2px}
+.plinth:hover b,.photo:hover b,.plinth[aria-current] b,.photo[aria-current] b{color:var(--ink)}
+/* field guides: every guide by its question, two columns */
+.guides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s-5)}
+.guides a{position:relative;display:block;padding:8px 0;font:400 15.5px/1.35 var(--font-text);color:var(--ink);transition:color .15s,transform .25s var(--n-out)}
+.guides a:hover,.guides a[aria-current]{color:var(--ink);transform:translateX(4px)}
+@media (prefers-reduced-motion:reduce){.drop .grp,.drop li,.drop-foot{animation:none}.top .pic::after{transition:opacity .1s;transform:none}}
+
+/* Ask: a palette under its button */
+.nask-drop{left:auto;right:calc(var(--n-pad) - 8px);top:calc(100% + 8px);width:min(560px,calc(100vw - 32px));border-radius:20px;padding:8px}
+.nask-main{padding:0 12px;border-bottom:1px solid var(--hairline)}
+.nask-form input{width:100%;height:52px;border:0;border-radius:0;background:none;padding:0;font:400 18px/1 var(--font-text);color:var(--ink)}
+.nask-form input::placeholder{color:var(--ink-soft);opacity:.65}
 .ds .nask-form input:focus-visible{outline:0}
 .nask-form input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
 .nask-out a{display:block;padding-block:var(--s-2)}
-.nask-out b{display:block;font:500 17px/1.35 var(--font-text)}
-.nask-out span,.nask-out i{display:block;font:400 15px/1.45 var(--font-text);color:var(--ink-soft);font-style:normal}
-.nask-out .ans{margin-block:var(--s-3);padding:var(--s-5);border-radius:16px;background:var(--ground)}
-.nask-out .ans b{font:600 var(--size-lede)/1.2 var(--font-display);letter-spacing:-.01em;margin-bottom:var(--s-2)}
+.nask-out b{display:block;font:500 16px/1.35 var(--font-text)}
+.nask-out span,.nask-out i{display:block;font:400 14.5px/1.45 var(--font-text);color:var(--ink-soft);font-style:normal}
+.nask-out .ans{margin-block:var(--s-3);padding:var(--s-4) var(--s-5);border-radius:12px;background:var(--ground)}
+.nask-out .ans b{font:600 20px/1.2 var(--font-display);letter-spacing:-.01em;margin-bottom:var(--s-2)}
 .nask-out .ans span{color:var(--ink);font-size:var(--size-small)}
-.nask-out .ans i{margin-top:var(--s-3);color:var(--link)}
-.nask-out a:hover b,.nask-out a:focus-visible b{color:var(--link)}
+.nask-out .ans i{margin-top:var(--s-3);color:var(--ink)}
+.nask-out a:hover b,.nask-out a:focus-visible b{color:var(--ink)}
 .nask-more{border-top:1px solid var(--hairline);margin-bottom:var(--s-3)!important}
-.nask-roles{padding:18px 8px 6px}
-.nask-roles p{font:italic 400 20px/1 var(--n-serif);color:var(--ink-soft);margin:0 0 14px 6px!important}
-.nask-roles ul{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
-.nask-roles a{display:grid;gap:3px;padding:12px 14px;border-radius:16px;background:linear-gradient(180deg,#fff,rgba(255,255,255,.84));box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 6px 14px -10px rgba(11,18,56,.3);transition:transform .3s var(--n-ease)}
-.nask-roles a:hover{transform:translateY(-2px)}
+.nask-roles{padding:12px 4px 4px}
+.nask-roles p{font:500 13px/1 var(--font-text);color:rgba(11,18,56,.5);margin:4px 8px 6px!important}
+.nask-roles a{display:flex;align-items:baseline;gap:10px;padding:10px 8px;border-radius:8px;transition:background .15s}
+.nask-roles a:hover,.nask-roles a:focus-visible{background:var(--ground)}
 .nask-roles b{font-weight:500;font-size:15px}
-.nask-roles span{color:var(--ink-soft);font-size:13.5px}
+.nask-roles span{color:var(--ink-soft);font-size:13.5px;flex:1}
+.nask-roles .chev{color:var(--ink);opacity:0;transition:opacity .15s}
+.nask-roles a:hover .chev{opacity:1}
 .asking .nask-roles{display:none}
-.scrim{position:fixed;inset:0;z-index:39;background:rgba(11,18,56,.1);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s,visibility 0s .35s}
-.top:has(details[open]) + .scrim{opacity:1;visibility:visible;transition:opacity .35s}
-@media (min-width:1024px) and (max-width:1239px){.door > summary{padding-inline:12px}.nask > summary{min-width:0}.nask .t{display:none}.cap{padding-left:16px}}
-/* phones and tablets: the logo stays at the top of the page; the capsule moves under the thumb (Menu, Ask, Book a
-   call) and grows upward into the menu: the five doors, then a door's own page with its stills */
+.scrim{position:fixed;inset:0;z-index:39;background:rgba(11,18,56,.10);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,visibility 0s .2s}
+.top:has(.door[open]) + .scrim,.top:has(.nask[open]) + .scrim{opacity:1;visibility:visible;transition:opacity .2s}
+@media (min-width:1024px) and (max-width:1199px){.cap{gap:var(--s-4)}.door > summary{padding-inline:9px}.nask .t,.nask kbd{display:none}.nask > summary{width:36px;padding:0;justify-content:center}}
+
+/* phones and tablets: the same bar at the top (logo, Book a call, Menu); Menu opens a full-screen sheet with Ask on
+   top and the five doors; a door slides in its own page */
 @media (max-width:1023px){
-  .plogo{display:flex;align-items:center;gap:8px;height:100%;padding-inline:var(--margin);width:max-content}
-  /* a page whose photograph runs up under the bar (build.py over_photo): the wordmark turns white, like the crumbs */
-  .top.over .plogo{color:#fff;filter:drop-shadow(0 1px 8px rgba(11,18,56,.5))}
-  .cap{top:auto;bottom:calc(10px + env(safe-area-inset-bottom));width:min(440px,calc(100% - 20px));height:56px;padding:0 6px;gap:6px}
-  .top.compact .cap{top:auto;height:56px}
-  .top.away .cap{transform:translateX(-50%) translateY(calc(100% + 24px))}
-  .cap .logo,.main,.top.locate .where{display:none}
-  .act{flex:1;gap:6px}
-  .phone{display:block;order:-1;flex:none}
-  .phone > summary{display:flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:999px;font:500 15px/1 var(--font-text);background:linear-gradient(180deg,#fff,rgba(255,255,255,.84));box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.05),0 6px 14px -8px rgba(11,18,56,.3)}
-  .bars{width:16px;height:10px;position:relative}
-  .bars::before,.bars::after{content:"";position:absolute;left:0;right:0;height:1.6px;border-radius:2px;background:currentColor;transition:transform .35s var(--n-ease)}
+  .cap{padding:0 max(var(--margin),env(safe-area-inset-left)) 0 max(var(--margin),env(safe-area-inset-left));gap:var(--s-3)}
+  .main,.nask,.lens{display:none}
+  .act{margin-left:auto;gap:4px}
+  .cap .cta{height:34px;padding:0 14px;font-size:14px}
+  .phone{display:block}
+  .phone > summary{display:grid;place-items:center;width:44px;height:44px;margin-right:-10px;border-radius:8px}
+  .bars{width:18px;height:10px;position:relative}
+  .bars::before,.bars::after{content:"";position:absolute;left:0;right:0;height:1.6px;border-radius:2px;background:var(--ink);transition:transform .3s var(--n-out)}
   .bars::before{top:1px}.bars::after{bottom:1px}
   .phone[open] .bars::before{transform:translateY(3.2px) rotate(45deg)}
   .phone[open] .bars::after{transform:translateY(-3.2px) rotate(-45deg)}
-  .m-close,.phone[open] .m-open{display:none}
-  .phone[open] .m-close{display:inline}
-  .nask{flex:none;margin-left:auto}
-  .nask > summary{min-width:0;width:44px;height:44px;padding:0;justify-content:center}
-  .nask .t,.nask > summary kbd{display:none}
-  .nask-drop{top:auto;bottom:calc(100% + 10px);left:0;right:0;width:auto;max-height:calc(100svh - 120px)}
-  .cap .cta{flex:none;height:44px;padding:0 18px}
-  .cap .cta::after{display:none}
-  .sheet{position:absolute;z-index:-1;left:0;right:0;bottom:0;height:min(80svh,720px);border-radius:28px;background:var(--sg,rgba(255,255,255,.98));overflow:hidden;
-    box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.06),0 40px 80px -30px rgba(11,18,56,.5);animation:n-grow .55s var(--n-ease) both;transition:background .35s}
-  @keyframes n-grow{from{clip-path:inset(calc(100% - 56px) 0 0 0 round 28px)}to{clip-path:inset(0 0 0 0 round 28px)}}
-  .sheet::after{content:"";position:absolute;left:0;right:0;bottom:0;height:96px;border-radius:0 0 28px 28px;background:linear-gradient(rgba(255,255,255,0),var(--sg,#fff) 70%);pointer-events:none}
+  /* a backdrop filter would make the bar the containing block of the fixed sheet: off while the sheet is open */
+  .top:has(.phone[open]) .cap{background:#fff;box-shadow:0 1px 0 var(--hairline);-webkit-backdrop-filter:none;backdrop-filter:none;transform:none}
+  .sheet{position:fixed;left:0;right:0;top:var(--bar);bottom:0;background:#fff;overflow:hidden;animation:n-sheet .28s var(--n-out) both}
+  @keyframes n-sheet{from{opacity:0;transform:translateY(-8px)}}
   html:has(.phone[open]){overflow:hidden}
-  .sheet-track{display:flex;width:200%;height:100%;transition:transform .45s var(--n-ease)}
+  .sheet-track{display:flex;width:200%;height:100%;transition:transform .36s var(--n-out)}
   .sheet.deep .sheet-track{transform:translateX(-50%)}
-  .sheet-home,.sheet-panes{width:50%;height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:22px 22px 84px}
+  .sheet-home,.sheet-panes{width:50%;height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:16px var(--margin) calc(32px + env(safe-area-inset-bottom))}
   .sheet-ask{margin-bottom:var(--s-3)}
-  .sheet-ask .nask-form input{height:52px;padding:0 16px;border-radius:16px;background:rgba(11,18,56,.045);box-shadow:inset 0 1.5px 3px rgba(11,18,56,.13);font-size:17px}
-  .asking .sheet-doors{display:none}
-  .sheet-doors button{width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:0;border-bottom:1px solid var(--hairline);padding:17px 2px;font:600 28px/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);cursor:pointer;text-align:left}
-  .sheet-doors .chev{width:14px;height:14px;color:rgba(11,18,56,.4);transition:transform .2s var(--n-ease)}
-  .back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;font:500 15px/1 var(--font-text);color:var(--action);padding:2px 0 10px;cursor:pointer}
+  .sheet-ask .nask-form input{height:48px;padding:0 16px;border-radius:12px;background:var(--ground);font-size:17px}
+  .asking .sheet-doors,.asking .sheet-reach{display:none}
+  .sheet-doors button{width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:0;border-bottom:1px solid var(--hairline);padding:18px 0;font:600 26px/1.1 var(--font-display);letter-spacing:-.02em;color:var(--ink);cursor:pointer;text-align:left}
+  .sheet-doors .chev{width:14px;height:14px;color:rgba(11,18,56,.4)}
+  .sheet-reach{display:flex;flex-direction:column;gap:14px;margin-top:28px!important}
+  .sheet-reach a:first-child{display:flex;justify-content:center;align-items:center;height:48px;border-radius:999px;background:var(--ink);color:#fff!important;font:500 16px/1 var(--font-text)}
+  .sheet-reach a:last-child{text-align:center;font-size:15px;color:var(--ink-soft)!important}
+  .back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;font:500 15px/1 var(--font-text);color:var(--ink);padding:6px 0 10px;cursor:pointer}
   .back .chev{transform:rotate(180deg)}
   .js .pane{display:none}
-  .js .pane.on{display:block;animation:n-fade .3s var(--n-ease) both}
-  .pane-h{font:600 32px/1.05 var(--font-display);letter-spacing:-.025em;margin:6px 0 4px}
-  .pane .grp-name{margin-top:26px}
-  .pane .plinths,.pane .photos{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:22px;margin:0 -22px;padding:4px 22px 12px;gap:12px;scrollbar-width:none}
-  .pane .plinths li,.pane .photos li{flex:0 0 62%;scroll-snap-align:start}
-  .pane .shelf{height:206px;gap:4px}
-  .pane .spine{--h:186px!important}
-  .pane .spine span{font-size:12.5px}
+  .js .pane.on{display:block;animation:n-fade .25s var(--n-ease) both}
+  .top .pane-h{font:600 30px/1.05 var(--font-display);letter-spacing:-.025em;margin:6px 0 4px;color:var(--ink)}
+  .pane .grp{padding:0}
+  .pane .grp-name{margin:26px 0 12px}
+  .pane .plinths,.pane .photos{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--margin);margin:0 calc(-1 * var(--margin));padding:0 var(--margin) 4px;gap:12px;scrollbar-width:none}
+  .pane .plinths li,.pane .photos li{flex:0 0 58%;scroll-snap-align:start}
+  .pane .guides{grid-template-columns:1fr}
+  .pane .guides a,.pane .list a{padding:10px 0}
   .pane-hub{margin-top:26px!important;padding-top:16px;border-top:1px solid var(--hairline)}
   .no-js .sheet-track{display:block;width:auto;overflow-y:auto}
   .no-js .sheet-doors,.no-js .back{display:none}
   .no-js .sheet-home,.no-js .sheet-panes{width:auto;height:auto;overflow:visible;padding-bottom:var(--s-5)}
   .no-js .sheet{overflow-y:auto}
-  .ft-card{padding-bottom:84px}
-  /* over the night footer (nav.js on-ink) the dock is the same glass, tinted for the ground under it */
-  .top.on-ink:not(:has(details[open])) .cap{background:linear-gradient(180deg,rgba(30,38,96,.66),rgba(14,19,60,.58));
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1px rgba(190,204,255,.16),0 14px 34px -18px rgba(0,0,0,.6)}
-  .top.on-ink:not(:has(details[open])) .nask > summary{color:#eef1ff;background:rgba(255,255,255,.08);box-shadow:inset 0 1px 2px rgba(0,0,0,.35),inset 0 -1px 0 rgba(255,255,255,.08)}
-  .cap{transition:transform .5s var(--n-ease),height .35s var(--n-ease),top .35s var(--n-ease),background .35s,box-shadow .35s}
 }
-/* round 2: over the night footer (nav.js on-ink) the desktop capsule is the same glass, tinted for the ground under it */
-@media (min-width:1024px){
-  .top.on-ink:not(:has(details[open])) .cap{background:linear-gradient(180deg,rgba(30,38,96,.66),rgba(14,19,60,.58));
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1px rgba(190,204,255,.16),0 14px 34px -18px rgba(0,0,0,.6)}
-  .top.on-ink:not(:has(details[open])) .cap .logo,.top.on-ink:not(:has(details[open])) .door > summary,.top.on-ink:not(:has(details[open])) .w-sec{color:#eef1ff}
-  .top.on-ink:not(:has(details[open])) .w-crumb{color:rgba(208,216,255,.72)}
-  .top.on-ink:not(:has(details[open])) .lens,.top.on-ink:not(:has(details[open])) .w-sec{background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px rgba(190,204,255,.12)}
-  .top.on-ink:not(:has(details[open])) .nask > summary{color:rgba(238,241,255,.8);background:rgba(255,255,255,.08);box-shadow:inset 0 1px 2px rgba(0,0,0,.35),inset 0 -1px 0 rgba(255,255,255,.08)}
-  .top.on-ink:not(:has(details[open])) kbd{color:#eef1ff;background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
-  .cap .logo,.door > summary{transition:color .35s}
-}
-@media (max-width:359px){.phone > summary{padding-inline:12px}.cap .cta{padding-inline:12px}.plogo .word{height:13px}}
-@media (prefers-reduced-motion:reduce){.cap,.lens,.drop,.drop-grid,.sheet,.sheet-track,.spine,.plinth{transition:none!important;animation:none!important}}
+@media (max-width:359px){.cap .cta{padding-inline:12px}.logo .word{height:13px}}
+@media (prefers-reduced-motion:reduce){.cap,.lens,.drop,.drop-in,.sheet,.sheet-track,.top .pic img,.top .down{transition:none!important;animation:none!important}}
 /* ---------- the footer (thread "Redesign the site footer"): one night-indigo card that closes every page.
    Line + one clay button; the site as a floor plan (five bays, anchor marks, a located-blue trail and a tag that rests
    on this page's bay and glides to the bay you point at, by :has, no script); a row of jobs; the entity paragraph word
@@ -412,7 +419,7 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
   .phone > summary:active,.nask > summary:active,.cap .cta:active,.ft-clay:active,.ft-glass:active,.ft-roles a:active{transform:scale(.96)}
   .sheet-doors button:active{color:var(--ink-soft)}
   .sheet-doors button:active .chev{transform:translateX(3px)}
-  .list a:active{background:rgba(255,255,255,.75)}
+  .list a:active b{color:var(--action)}
   .plinth:active,.photo:active{transform:scale(.98)}
   .ft-bay a:active,.ft-door:active{color:#fff}
   .back:active{opacity:.6}

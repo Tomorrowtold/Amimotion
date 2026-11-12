@@ -2,20 +2,20 @@
    The question in the middle of the page is set as a quotation, large, in the second voice. */
 .head h1{font-size:clamp(3rem,1.5rem + 4.6vw,6.8rem)}
 .head .words{grid-column:1 / span 6}
-.head-pic{grid-column:1 / -1;margin:var(--s-7) 0 0!important;background:#0b1130;border-radius:18px;padding:0;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) 340px;box-shadow:0 50px 90px -60px rgba(5,10,30,.7)}
-.head-pic .hb-bar{grid-column:1 / -1;display:flex;align-items:center;gap:8px;padding:12px 16px;color:rgba(233,238,248,.55);font:500 13px/1 var(--font-text)}
+.head-pic{grid-column:1 / -1;margin:var(--s-7) 0 0!important;background:#121418;border-radius:18px;padding:0;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) 340px;box-shadow:0 50px 90px -60px rgba(11,13,18,.7)}
+.head-pic .hb-bar{grid-column:1 / -1;display:flex;align-items:center;gap:8px;padding:12px 16px;color:rgba(242,243,245,.55);font:500 13px/1 var(--font-text)}
 .head-pic .hb-bar i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.14)}
-.head-pic .hb-bar b{margin-left:10px;font-weight:500;color:#e9eef8}
+.head-pic .hb-bar b{margin-left:10px;font-weight:500;color:#eef0f3}
 .head-pic figure{margin:0;border-radius:10px;overflow:hidden;margin:0 0 12px 12px}
 .head-pic figure img{width:100%;height:100%;object-fit:cover}
-.hb-feed{margin:0 12px 12px;background:#121a40;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;overflow:hidden;font:400 14px/1.4 var(--font-text);color:#dfe6f7}
+.hb-feed{margin:0 12px 12px;background:#16181d;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;overflow:hidden;font:400 14px/1.4 var(--font-text);color:#e9ebef}
 .hb-feed ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .hb-feed li{margin:0;background:rgba(255,255,255,.05);border-radius:8px;padding:10px 12px;transition:transform .5s var(--k-ease),opacity .5s}
 .hb-feed li.new{opacity:0;transform:translateY(-10px)}
 .hb-feed li b{display:block;font-weight:500;color:#fff}
-.hb-feed li time{font-variant-numeric:tabular-nums;color:rgba(223,230,247,.55);font-size:13px}
-.hb-feed li.wait b{color:#ffc35a}
-.hb-feed .cap{margin-top:auto;font-size:12px;color:rgba(223,230,247,.45)}
+.hb-feed li time{font-variant-numeric:tabular-nums;color:rgba(242,243,245,.55);font-size:13px}
+.hb-feed li.wait b{color:#f0a43a}
+.hb-feed .cap{margin-top:auto;font-size:12px;color:rgba(242,243,245,.45)}
 .sec .prose .lead{font:italic 400 clamp(2.2rem,1.2rem + 3vw,4.4rem)/1.04 var(--font-serif)!important;letter-spacing:-.02em;max-width:18em;color:var(--ink)}
 @media (max-width:1023px){.head-pic{grid-template-columns:1fr}.head-pic figure{margin:0 12px 12px}.head .words{grid-column:1 / -1}}
 .head .words{display:block;grid-column:1 / span 7}

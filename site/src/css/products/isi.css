@@ -123,7 +123,7 @@ i.b{background:var(--blue)}i.g{background:#7a8399}i.a{background:var(--amber)}
 .si-rec dl>div{position:relative;display:grid;grid-template-columns:120px 1fr;align-items:center;padding:13px 16px 13px 22px;border-radius:12px;background:rgba(255,255,255,.035)}
 .si-rec dl>div::before{content:"";position:absolute;left:9px;top:12px;bottom:12px;width:3px;border-radius:3px;background:var(--c)}
 .si-rec .m{--c:var(--blue)}.si-rec .g{--c:#7a8399}.si-rec .a{--c:var(--amber);background:rgba(255,176,32,.07)}
-.si-rec dt{color:rgba(233,236,243,.62)}
+.si-rec dt{color:rgba(233,236,243,.8)}
 .si-rec dd{margin:0;color:#fff}
 .si-rec dd small{margin-left:6px;font-size:11px;color:rgba(233,236,243,.6)}
 .si-rec dd.big{font:600 clamp(1.6rem,1.1rem + 1.2vw,2.3rem)/1 var(--font-display);letter-spacing:-.03em;color:#ffc35a}

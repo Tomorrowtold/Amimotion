@@ -11,7 +11,7 @@
 .head-pic{grid-column:1 / -1;margin:var(--s-5) 0 0!important}
 .pf-stack{position:relative;aspect-ratio:16/8;perspective:2200px;margin:0}
 .pf-plane{position:absolute;left:24%;top:22%;width:52%;aspect-ratio:16/9;transform-style:preserve-3d;transform:rotateX(58deg) rotateZ(-34deg) translateZ(calc(var(--i) * var(--gap,90px)));border-radius:10px;transition:transform .2s linear}
-.pf-plane.floor{overflow:hidden;box-shadow:0 30px 60px -20px rgba(11,18,56,.45)}
+.pf-plane.floor{overflow:hidden;box-shadow:0 30px 60px -20px rgba(11,13,18,.45)}
 .pf-plane.floor img{width:100%;height:100%;object-fit:cover}
 .pf-plane:not(.floor){background:color-mix(in srgb,var(--surface) 55%,transparent);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ink) 30%,transparent)}
 .pf-plane svg{width:100%;height:100%;display:block}
@@ -50,8 +50,8 @@
 }
 /* the parts shelf matches the lineup page: each render stands on a lit centre, so its soft contact shadow reads
    as light falling off, not as a smudge on a white card */
-.parts .pic.still{background:radial-gradient(closest-side,#fff 58%,#eaf0fa 100%);border-radius:14px;overflow:hidden}
+.parts .pic.still{background:radial-gradient(closest-side,#fff 58%,#eef0f3 100%);border-radius:14px;overflow:hidden}
 .parts .pic.still img{mix-blend-mode:multiply}
-.parts .pic.r32-pic{border-radius:14px;overflow:hidden;background:#e9eff9}
+.parts .pic.r32-pic{border-radius:14px;overflow:hidden;background:#eef0f3}
 .parts .pic.r32-pic picture{display:block;height:100%}
 .parts .pic.r32-pic img{display:block;width:100%;height:100%;object-fit:cover;transform:none!important;translate:none!important}

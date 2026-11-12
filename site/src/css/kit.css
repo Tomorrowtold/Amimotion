@@ -53,7 +53,7 @@
 .look-rail .points>li>h3{grid-column:1 / span 5;font-size:var(--size-h3)!important;letter-spacing:-.01em!important;margin:0}
 .look-rail .points>li>:not(h3){grid-column:6 / -1}
 .look-ink .points{background:var(--w-band);color:#e9eef8;border-radius:10px;padding:var(--s-7) var(--s-6);margin-inline:calc(-1 * var(--s-2))}
-.look-ink .points p,.look-ink .points ul{color:rgba(233,238,248,.72)}
+.look-ink .points p,.look-ink .points ul{color:rgba(242,243,245,.72)}
 .look-ink .points h3{color:#fff}
 
 /* ---------- figures: numerals in the second voice ---------- */
@@ -81,7 +81,7 @@
 .ds[data-world] .related:not(.tiles) li>a::after{content:"";position:absolute;inset:0}
 .ds[data-world] .related:not(.tiles) li:hover>a{color:var(--to-ink,var(--link))}
 .ds[data-world] .band .related:not(.tiles) li{background:var(--w-ground)}
-[data-to="steel"]{--to:#1f6bff}[data-to="shift"]{--to:#4b3df0}[data-to="floor"]{--to:#0f8a7a}[data-to="paper"]{--to:#c9a35a}[data-to="morning"]{--to:#66a5fa}[data-to="studio"]{--to:#a0627a}
+[data-to="steel"]{--to:#66a5fa}[data-to="shift"]{--to:#0b0d12}[data-to="floor"]{--to:#0f8a7a}[data-to="paper"]{--to:#c9a35a}[data-to="morning"]{--to:#66a5fa}[data-to="studio"]{--to:#a0627a}
 
 /* ---------- moving between pages: the headline of the next page grows out of the link you chose ---------- */
 @view-transition{navigation:auto}

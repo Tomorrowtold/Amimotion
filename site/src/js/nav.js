@@ -1,8 +1,9 @@
-// The nav (round 3, thread "Perfect the site navigation"). Every door is a native <details>, so the nav works with this
-// file off. It adds: one panel at a time, hover intent on a mouse, Escape and focus-out closing, the morph between
-// panels, the lens that glides to the door you point at and rests on the door you are in, the shelf caption, the
-// locator on long pages, the capsule tucking away while you read, prefetch on intent, the phone sheet's doors and
-// panes, and Ask (answers from assets/ask.json, built from the pages themselves; no backend).
+// The nav (thread "Build a world-class homepage nav", 12 Nov 2026). Every door is a native <details>, so the nav
+// works with this file off. It adds: one panel at a time, hover intent on a mouse (120 ms to open, none to move along,
+// 240 ms grace to leave), Escape and focus-out closing, the morph between panels, the located line that glides to the
+// door you point at and rests on the door you are in, reading progress on long pages, the bar stepping away while you
+// read down and coming back as you scroll up, prefetch on intent, the phone sheet's doors and panes, and Ask (answers
+// from assets/ask.json, built from the pages themselves; no backend).
 (() => {
   const d = document, h = d.documentElement, top = d.querySelector('.top'); if (!top) return;
   const P = [...d.querySelectorAll('details[data-panel]')], S = p => p.querySelector('summary'), phone = d.querySelector('.phone');
@@ -27,22 +28,22 @@
     p.addEventListener('toggle', () => {
       s.setAttribute('aria-expanded', p.open);
       if (p === phone) { h.classList.toggle('sheet-on', p.open); inert(p.open); if (!p.open) home() }
-      if (p.open) top.classList.remove('away', 'locate');
+      if (p.open) top.classList.remove('away');
       if (p.open && p.classList.contains('nask')) setTimeout(() => p.querySelector('input').focus(), 30);
     });
     if (p !== phone) p.addEventListener('focusout', e => { if (p.open && e.relatedTarget && !p.contains(e.relatedTarget)) show(p, false) });
-    // hover intent, mouse only: 110 ms to open the first panel, none to move to the next one
+    // hover intent, mouse only: 120 ms to open the first panel, none to move to the next one
     if (mouse && p.classList.contains('door')) {
       s.addEventListener('pointerenter', e => {
         if (e.pointerType !== 'mouse') return; clearTimeout(tm); lensTo(s);
-        tm = setTimeout(() => { if (!p.open) { show(p, true); p.dataset.hover = 1 } }, P.some(q => q.open && q !== p) ? 0 : 110);
+        tm = setTimeout(() => { if (!p.open) { show(p, true); p.dataset.hover = 1 } }, P.some(q => q.open && q !== p) ? 0 : 120);
       });
       s.addEventListener('pointerleave', () => clearTimeout(tm));
     }
   });
   if (mouse) {
-    top.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') tm = setTimeout(() => { P.forEach(p => p.dataset.hover && show(p, false)); lensTo() }, 260) });
-    top.addEventListener('pointerenter', e => { clearTimeout(tm); if (e.pointerType === 'mouse' && !narrow()) top.classList.remove('locate') });
+    top.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') tm = setTimeout(() => { P.forEach(p => p.dataset.hover && show(p, false)); lensTo() }, 240) });
+    top.addEventListener('pointerenter', () => clearTimeout(tm));
   }
   d.addEventListener('click', e => P.forEach(p => { if (p.open && !p.contains(e.target)) show(p, false) }));
   d.addEventListener('keydown', e => {
@@ -60,57 +61,42 @@
     else if (phone) { show(phone, true); home(); phone.querySelector('.sheet-ask input').focus() }
   };
 
-  // the lens: one bead of glass behind the door you point at (or the open one); at rest on the door you are in
-  const doors = d.querySelector('.doors'), lens = d.querySelector('.lens');
+  // the located line: under the door you point at (or the open one); at rest under the door you are in
+  const doors = d.querySelector('.doors'), lens = d.querySelector('.lens'), cap = d.querySelector('.cap');
   function lensTo(s) {
     if (!lens) return;
     s = s || (d.querySelector('.door[open] > summary')) || d.querySelector('.door.here > summary');
     if (!s || narrow()) { lens.classList.remove('on'); return }
-    lens.style.width = s.offsetWidth + 'px'; lens.style.transform = `translateX(${s.offsetLeft}px)`;
+    const r = s.getBoundingClientRect(), c = cap.getBoundingClientRect(), w = Math.max(16, r.width - 24);
+    lens.style.width = w + 'px'; lens.style.transform = `translateX(${r.left - c.left + (r.width - w) / 2}px)`;
     requestAnimationFrame(() => lens.classList.add('on'));
   }
   if (doors) doors.addEventListener('pointerleave', () => { if (!P.some(p => p.open)) lensTo() });
   (d.fonts ? d.fonts.ready : Promise.resolve()).then(() => lensTo());
   addEventListener('resize', () => lensTo());
 
-  // the shelf: the spine under the pointer or the focus names its guide
-  d.querySelectorAll('.shelfgrp').forEach(g => {
-    const c = g.querySelector('.shelf-cap');
-    const go = e => { const a = e.target.closest('.spine'); if (a) c.textContent = a.dataset.t };
-    g.addEventListener('pointerover', go); g.addEventListener('focusin', go);
-  });
-
-  // reading: the capsule tucks away going down and comes back going up; on long pages it becomes a locator instead,
-  // naming where you are and the section you read, with a hairline for how far (the page's cover or world colour)
+  // reading: the bar steps away going down and comes back going up; on long pages a hairline under it shows how far
   const main = d.querySelector('main'), world = d.body.dataset.world;
-  const H = world && !d.querySelector('.local,[data-rail]') ? [...main.querySelectorAll('h2')].filter(x => !x.closest('.head,.close,.related,details,footer')) : [];
-  const where = top.querySelector('.where'), wc = where && where.querySelector('.w-crumb'), ws = where && where.querySelector('.w-sec');
-  const crumbs = main.querySelectorAll('.crumbs a'), here = d.querySelector('.door.here > summary');
-  if (wc) wc.textContent = crumbs.length ? crumbs[crumbs.length - 1].textContent : here ? here.textContent : '';
+  const long = !!world && !d.querySelector('.local,[data-rail]') && [...main.querySelectorAll('h2')].filter(x => !x.closest('.head,.close,.related,details,footer')).length >= 3;
   const head = main.querySelector('.head');
-  let lastY = scrollY, sec = -1;
-  const ft = d.querySelector('footer.ft .ft-card');
-  const tidy = s => (s.querySelector('span') || s).textContent.replace(/\s+/g, ' ').trim().replace(/\.$/, '');
+  let lastY = scrollY;
   const onScroll = () => {
     const y = scrollY, dy = y - lastY; lastY = y;
     top.classList.toggle('compact', y > 8);
-    // over the night footer the capsule's glass turns dark (the dock at the foot of a phone, the bar at the top of a
-    // desktop), so it reads as glass there too, not a grey smear
-    if (ft) top.classList.toggle('on-ink', ft.getBoundingClientRect().top < (narrow() ? innerHeight - 40 : 60));
-    if (P.some(p => p.open) || top.contains(d.activeElement) && d.activeElement !== d.body) return;
-    const past = head ? head.getBoundingClientRect().bottom < 80 : y > innerHeight * .8;
-    if (H.length >= 3 && past && !narrow()) {
-      top.classList.remove('away');
-      let k = 0; H.forEach((x, i) => { if (x.getBoundingClientRect().top < innerHeight * .4) k = i });
-      if (k !== sec) { sec = k; ws.textContent = tidy(H[k]) }
+    if (long) {
+      const past = head ? head.getBoundingClientRect().bottom < 80 : y > innerHeight * .8;
+      top.classList.toggle('reading', past);
       top.style.setProperty('--p', Math.min(1, y / Math.max(1, d.documentElement.scrollHeight - innerHeight)).toFixed(4));
-      if (dy > 3) top.classList.add('locate'); else if (dy < -8) top.classList.remove('locate');
-    } else {
-      top.classList.remove('locate');
-      if (y > innerHeight * .9 && dy > 6) top.classList.add('away'); else if (dy < -6 || y < innerHeight * .9) top.classList.remove('away');
     }
+    if (P.some(p => p.open) || top.contains(d.activeElement) && d.activeElement !== d.body) return;
+    if (y > innerHeight * .9 && dy > 6) top.classList.add('away'); else if (dy < -6 || y < innerHeight * .9) top.classList.remove('away');
   };
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  // the panels' pictures load lazily; the first sign of intent on the bar (pointer or keyboard) fetches them all, so a
+  // panel never opens on empty frames
+  const warm = () => { top.querySelectorAll('img[loading="lazy"]').forEach(i => { i.loading = 'eager' }) };
+  top.addEventListener('pointerenter', warm, { once: true }); top.addEventListener('focusin', warm, { once: true });
 
   // prefetch a page the pointer rests on in the capsule, its panels and the sheet (Vercel pick, M17)
   const seen = new Set([location.pathname]);
@@ -119,14 +105,13 @@
     seen.add(a.pathname); const l = d.createElement('link'); l.rel = 'prefetch'; l.href = a.href; d.head.append(l);
   }, { passive: true });
 
-  // the phone sheet: the five doors; a door slides in its own page, in its world's ground
+  // the phone sheet: the five doors; a door slides in its own page
   const sheet = d.querySelector('.sheet'), panes = sheet ? [...sheet.querySelectorAll('.pane')] : [];
-  const GROUND = { steel: '#eef3fb', shift: '#f3f5f9', morning: '#f0f6ff', paper: '#f8f5ef', studio: '#f6f3f1' };
-  function home() { if (!sheet) return; sheet.classList.remove('deep'); sheet.style.removeProperty('--sg') }
+  function home() { if (!sheet) return; sheet.classList.remove('deep') }
   if (sheet) {
     sheet.querySelectorAll('[data-pane]').forEach(b => b.addEventListener('click', () => {
       const p = panes[+b.dataset.pane]; panes.forEach(x => x.classList.toggle('on', x === p));
-      sheet.style.setProperty('--sg', GROUND[p.dataset.world] || '#fff'); sheet.classList.add('deep');
+      sheet.classList.add('deep');
       p.parentNode.scrollTop = 0; setTimeout(() => sheet.querySelector('.back').focus({ preventScroll: true }), 300);
     }));
     sheet.querySelector('.back').addEventListener('click', home);

@@ -12,14 +12,14 @@
 .site-amihub .more a{color:var(--p-accent)}
 .site-amihub .p-sec{--p-pad:clamp(96px,11vw,176px)}
 
-/* the capsule in the dark */
+/* the bar on black: the same bar, dark, until a panel opens (panels stay white) */
 .site-amihub .top{background:transparent}
-.site-amihub .cap{background:linear-gradient(180deg,rgba(26,28,34,.8),rgba(14,15,19,.7));box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(255,255,255,.07),0 18px 40px -20px #000}
-.site-amihub .cap .door>summary,.site-amihub .cap .logo .word{color:#e9edf7}
-.site-amihub .lens{background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.06))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px rgba(255,255,255,.05)!important}
-.site-amihub .nask>summary{color:rgba(233,237,247,.6);background:rgba(255,255,255,.05);box-shadow:inset 0 1.5px 3px rgba(0,0,0,.6),inset 0 -1px 0 rgba(255,255,255,.06)}
-.site-amihub .top kbd{background:linear-gradient(180deg,#2a2d35,#1b1d23);color:#cfd6e6;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 1px 0 #000}
-.site-amihub .cap .cta,.site-amihub .cap .cta:hover{background:linear-gradient(180deg,#f4f6fb,#c9d0de);color:#0b0c10!important;box-shadow:inset 0 1px 0 #fff,0 0 22px -4px rgba(122,162,255,.75)}
+.site-amihub .top:not(:has(details[open])) .cap{background:rgba(14,15,19,.78);box-shadow:0 1px 0 rgba(255,255,255,.08)}
+.site-amihub .top:not(:has(details[open])) .door>summary,.site-amihub .top:not(:has(details[open])) .logo .word{color:#e9edf7}
+.site-amihub .top:not(:has(details[open])) .nask>summary{color:rgba(255,255,255,.72);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.site-amihub .top:not(:has(details[open])) kbd{color:#fff;background:rgba(255,255,255,.1)}
+.site-amihub .top:not(:has(details[open])) .bars::before,.site-amihub .top:not(:has(details[open])) .bars::after{background:#fff}
+.site-amihub .cap .cta,.site-amihub .cap .cta:hover{background:#fff;color:#000!important}
 
 /* headings: big, tight, left-aligned; the second line quieter */
 .hb-h1,.hb-h2{font-family:var(--font-display);font-weight:600;letter-spacing:-.045em;line-height:.98;color:var(--p-fg)}

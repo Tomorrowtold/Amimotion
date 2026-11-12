@@ -1,7 +1,7 @@
 /* /products/amigo/: the object. An outlined name behind the tag, the tag turning a little as you scroll,
    one giant figure in the second voice, the pulse strip, and the datasheet set like a manual. */
 .prod-name{color:transparent!important;-webkit-text-stroke:1.5px color-mix(in srgb,var(--ink) 16%,transparent);font-size:30vw!important}
-.prod-stage .pic img{mix-blend-mode:normal!important;filter:drop-shadow(0 40px 40px rgba(11,18,56,.28))}
+.prod-stage .pic img{mix-blend-mode:normal!important;filter:drop-shadow(0 40px 40px rgba(11,13,18,.28))}
 @supports (animation-timeline:scroll()){@media (prefers-reduced-motion:no-preference){
   .prod-stage .pic{animation:ag-turn linear both;animation-timeline:scroll(root);animation-range:0 70vh}
   @keyframes ag-turn{to{transform:translateY(-6%) rotate(-7deg) scale(.92)}}

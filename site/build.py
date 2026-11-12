@@ -18,7 +18,7 @@ python3 build.py --indexable           public build for amimotion.com (only afte
 python3 build.py --share               preview build: relative links ending in index.html, runs from an artifact
 python3 tools/pickability.py dist      the AI pickability test on whatever was built
 """
-import argparse, html, json, re, shutil
+import argparse, html, json, re, shutil, subprocess
 from datetime import date
 from pathlib import Path
 
@@ -44,6 +44,15 @@ for _s in NAV["sections"]:
 part = lambda n: (SRC / "partials" / n).read_text()
 # colours live only in core.css: the browser bar colour is read from the --ground token, so a palette swap is one file
 GROUND = re.search(r"--ground:\s*(#[0-9a-fA-F]{3,8})", (SRC / "css" / "core.css").read_text()).group(1)
+
+
+def last_changed(f):
+    """The day the page's source was last committed; the build date when git has no answer (a fresh file)."""
+    try:
+        d = subprocess.run(["git", "log", "-1", "--format=%cs", "--", str(f)], cwd=SRC, capture_output=True, text=True, timeout=10).stdout.strip()
+    except Exception:
+        d = ""
+    return d or TODAY
 
 
 def front(src):
@@ -150,7 +159,7 @@ def page_schema(meta, url, body, titles):
                "description": ENTITY["short"], "publisher": {"@id": SITE + "/#org"}}]
     wp = {"@type": meta.get("page", "WebPage"), "@id": full + "#page", "url": full, "name": meta.get("title", ""), "description": meta.get("description", ""),
           "isPartOf": {"@id": SITE + "/#site"}, "about": {"@id": SITE + "/#org"}, "publisher": {"@id": SITE + "/#org"},
-          "primaryImageOfPage": {"@type": "ImageObject", "url": og}, "inLanguage": "en-IN", "dateModified": TODAY}
+          "primaryImageOfPage": {"@type": "ImageObject", "url": og}, "inLanguage": "en-IN", "dateModified": meta.get("_modified", TODAY)}
     if "short-answer" in body:   # the paragraph a voice assistant or answer engine should read out
         wp["speakable"] = {"@type": "SpeakableSpecification", "cssSelector": ["h1", ".short-answer"]}
     g.append(wp)
@@ -169,7 +178,7 @@ def page_schema(meta, url, body, titles):
     if kind == "article":
         g.append({"@type": "TechArticle", "@id": full + "#article", "headline": meta.get("title"), "description": meta.get("description"),
                   "author": {"@id": SITE + "/#org"}, "publisher": {"@id": SITE + "/#org"}, "about": {"@id": SITE + "/#org"},
-                  "datePublished": meta.get("published", "2026-10-28"), "dateModified": TODAY, "mainEntityOfPage": {"@id": full + "#page"}, "image": og, "inLanguage": "en-IN"})
+                  "datePublished": meta.get("published", "2026-10-28"), "dateModified": meta.get("_modified", TODAY), "mainEntityOfPage": {"@id": full + "#page"}, "image": og, "inLanguage": "en-IN"})
     if meta.get("app"):   # a tool that runs in the browser (round 07 buying squad)
         g.append({"@type": "WebApplication", "@id": full + "#app", "name": meta["app"], "url": full, "applicationCategory": "BusinessApplication",
                   "operatingSystem": "Any modern browser", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": True, "publisher": {"@id": SITE + "/#org"}})
@@ -290,11 +299,13 @@ def styles(meta):
     # the product sites (thread "Build AmIGo, AmIMo and AmIHub product sites"): each product page is its own small
     # site under the AmIMotion nav, so it carries core.css plus its own two files, none of the inner-page kit
     if meta.get("layout") == "product":
-        css = css_min("".join((SRC / "css" / f).read_text() for f in ["core.css", "products/base.css", f"products/{meta['id']}.css"]))
+        css = css_min("".join((SRC / "css" / f).read_text() for f in ["core.css", "products/base.css", f"products/{meta['id']}.css"] + ([] if meta["id"] in ("amigo", "amimo", "amihub") else ["house.css"])))
         return (FONT_PRELOAD +
                 f"<style>{css}</style>")
     files = ["core.css"] + (["home.css"] if meta.get("layout") == "home" else ["inner.css"] + [f"{x}.css" for x in meta.get("css", "").split()] + ["worlds.css", "kit.css"])
     if meta.get("layout") != "home" and meta.get("id") and (SRC / "css" / "id" / f"{meta['id']}.css").exists(): files.append(f"id/{meta['id']}.css")
+    # house.css last (site audit, 12 Nov 2026): one house style settles the tokens of every older layer; not on the homepage
+    if meta.get("layout") != "home": files.append("house.css")
     css = css_min("".join((SRC / "css" / f).read_text() for f in files))
     return (FONT_PRELOAD +
             f"<style>{css}</style>")
@@ -347,6 +358,7 @@ def ask_form(i, hint="Ask about tags, anchors, pilots or data"):
 WORLD_DOOR = {"steel": "Products", "shift": "Solutions", "floor": "Solutions", "morning": "Start small", "paper": "Resources", "studio": "Company"}
 GUIDES = []   # every field guide as [url, short title, cover colour]; build() fills it from the pages before rendering
 CHEV = '<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5"/></svg>'
+DOWN = '<svg class="down" viewBox="0 0 12 12" aria-hidden="true"><path d="m3 4.75 3 3 3-3"/></svg>'
 LOOK = '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6"/><path d="m13 13 5 5"/></svg>'
 
 
@@ -367,7 +379,7 @@ def still(u):
     The panel's frame sets the shape (aspect-ratio, object-fit), so width and height only tell the browser the ratio early."""
     k = PIC.get(u)
     if not k: return ""
-    src = f"/assets/worlds/{k[2:]}-800.webp" if k.startswith("w:") else f"/assets/nav/{k}-640.webp"
+    src = f"/assets/worlds/{k[2:]}-800.webp" if k.startswith("w:") else f"/assets/nav/{k[2:]}.webp" if k.startswith("n:") else f"/assets/nav/{k}-640.webp"
     w, h = webp_size(src)
     return f'<span class="pic"><img src="{src}" width="{w}" height="{h}" alt="" loading="lazy" decoding="async"></span>'
 
@@ -377,12 +389,11 @@ def panel_group(name, kind, items, cur, where):
     a = lambda l, u, line, cls="": (f'<a class="{cls}" href="{u}"{cur(u)} data-nav-id="{where}.{slug(name)}.{slug(l)}">'
                                      f'{still(u) if cls else ""}<b>{html.escape(l)}</b><span>{html.escape(line)}</span>'
                                      f'{"" if cls else CHEV}</a>')
-    if kind == "shelf":
+    if kind == "shelf":   # every field guide by its question, in two quiet columns (was a shelf of coloured spines)
         lu, ll = items[0][1], items[0][0]
-        spines = "".join(f'<li><a class="spine" href="{u}"{cur(u)} style="--c:{c};--h:{220 + (i * 37) % 34}px" data-t="{html.escape(t)}"><span>{html.escape(t)}</span></a></li>'
-                         for i, (u, t, c) in enumerate(GUIDES))
-        return (f'<div class="grp shelfgrp"><p class="grp-name"><a href="{lu}"{cur(lu)}>{html.escape(ll)}</a></p>'
-                f'<ul class="shelf">{spines}</ul><p class="shelf-cap" aria-hidden="true">{html.escape(GUIDES[0][1]) if GUIDES else ""}</p></div>')
+        rows = "".join(f'<li><a href="{u}"{cur(u)} data-nav-id="{where}.guides.{slug(t)}">{html.escape(t)}</a></li>' for u, t, _ in GUIDES)
+        return (f'<div class="grp g-guides"><p class="grp-name"><a href="{lu}"{cur(lu)}>{html.escape(ll)}{CHEV}</a></p>'
+                f'<ul class="guides">{rows}</ul></div>')
     cls = {"plinths": "plinth", "photos": "photo", "feature": "photo feature"}.get(kind, "")
     body = "".join(f"<li>{a(*it, cls)}</li>" for it in items)
     return f'<div class="grp g-{kind}"><p class="grp-name">{html.escape(name)}</p><ul class="{kind}">{body}</ul></div>'
@@ -398,12 +409,12 @@ def over_photo(meta, body):
 
 
 def header_html(url="/", world=None, over=False):
-    """The capsule (round 3 nav, /mnt/project-files/nav/concepts/). One floating piece of glass; four materials, four
-    jobs: glass to move around, a lens bead that rests on the door you are in, a pressed well for Ask, one clay button.
-    Five doors, each one world of the inner pages; a door's panel wears that world's ground and shows the stills its
-    pages open on. Every door is a native <details>, so it opens on click, tap and keyboard with JavaScript off.
-    On long pages nav.js turns the capsule into a locator (where you are, the section you read, how far). On phones
-    the capsule sits at the bottom under the thumb and grows into the menu sheet."""
+    """The bar (thread "Build a world-class homepage nav", 12 Nov 2026). One quiet full-width bar: logo, five doors,
+    Ask, Book a call. A door's panel opens under the bar on the same white surface, the same layout on every door, so
+    the eye never re-learns it. A short located-blue line sits under the door you are in and glides to the door you
+    point at: the site's one signature, the same blue the map uses for "located". Every door is a native <details>,
+    so it opens on click, tap and keyboard with JavaScript off. Phones: the same bar at the top (logo, Book a call,
+    Menu); Menu opens a full-screen sheet with Ask on top and the five doors as pages."""
     here_label = WORLD_DOOR.get(world) if world else None
     here = next((s for s in NAV["sections"] if s["label"] == here_label), None) or section_of(url)
     cur = lambda u: ' aria-current="page"' if u == url else ""
@@ -411,24 +422,24 @@ def header_html(url="/", world=None, over=False):
     for s in NAV["sections"]:
         sl = slug(s["label"]); gs = [(n, k, its) for (n, _, k), (_, its) in zip(s["groups"], grouped(s))]
         groups = "".join(panel_group(n, k, its, cur, f"header.{sl}") for n, k, its in gs)
-        foot = f'<div class="drop-foot"><a class="drop-hub" href="{s["url"]}"{cur(s["url"])} data-nav-id="header.{sl}.hub">{html.escape(s["hub"])}{CHEV}</a><span class="drop-ask">Ask anything <kbd>/</kbd></span></div>'
-        doors.append(f'<details class="door{" here" if s is here else ""}" data-panel data-world="{s["world"]}"><summary data-nav-id="header.{sl}"{" aria-current=\"true\"" if s is here else ""}>{s["label"]}</summary>'
-                     f'<div class="drop" data-world="{s["world"]}"><div class="drop-grid g{len(gs)}">{groups}</div>{foot}</div></details>')
-        panes.append(f'<section class="pane" data-world="{s["world"]}" aria-label="{s["label"]}"><h2 class="pane-h">{s["label"]}</h2>'
+        foot = f'<p class="drop-foot"><a class="drop-hub" href="{s["url"]}"{cur(s["url"])} data-nav-id="header.{sl}.hub">{html.escape(s["hub"])}{CHEV}</a></p>'
+        kinds = " ".join(sorted({k for _, k, _ in gs}))
+        doors.append(f'<details class="door{" here" if s is here else ""}" data-panel><summary data-nav-id="header.{sl}"{" aria-current=\"true\"" if s is here else ""}>{s["label"]}{DOWN}</summary>'
+                     f'<div class="drop"><div class="drop-in"><div class="drop-grid g{len(gs)}" data-kinds="{kinds}">{groups}</div>{foot}</div></div></details>')
+        panes.append(f'<section class="pane" aria-label="{s["label"]}"><h2 class="pane-h">{s["label"]}</h2>'
                      + "".join(panel_group(n, k, its, cur, f"sheet.{sl}") for n, k, its in gs)
                      + f'<p class="pane-hub"><a href="{s["url"]}"{cur(s["url"])}>{html.escape(s["hub"])}{CHEV}</a></p></section>')
-    roles = "".join(f'<li><a href="{u}"><b>{html.escape(r)}</b><span>{html.escape(l)}</span></a></li>' for r, l, u in NAV["ask_roles"])
+    roles = "".join(f'<li><a href="{u}"><b>{html.escape(r)}</b><span>{html.escape(l)}</span>{CHEV}</a></li>' for r, l, u in NAV["ask_roles"])
     ask = (f'<details class="nask" data-panel><summary data-nav-id="header.ask" aria-label="Ask a question">{LOOK}<span class="t">Ask</span><kbd aria-hidden="true">/</kbd></summary>'
            f'<div class="drop nask-drop"><div class="nask-main">{ask_form("d")}</div><div class="nask-roles"><p>I\'m here as</p><ul>{roles}</ul></div></div></details>')
     menu = ''.join(f'<li><button type="button" data-pane="{i}">{s["label"]}{CHEV}</button></li>' for i, s in enumerate(NAV["sections"]))
-    return (f'<a class="skip-link" href="#main">Skip to content</a>\n<header class="top ds{" over" if over else ""}">\n'
-            f'<a class="logo plogo" href="/" aria-label="AmIMotion home">{part("logo.html")}</a>\n<div class="cap">'
+    return (f'<a class="skip-link" href="#main">Skip to content</a>\n<header class="top ds{" over" if over else ""}">\n<div class="cap">'
             f'<a class="logo" href="/" aria-label="AmIMotion home" data-nav-id="header.home">{part("logo.html")}</a>\n'
-            f'<nav class="main" aria-label="Main"><div class="doors">{"".join(doors)}<span class="lens" aria-hidden="true"></span></div></nav>\n'
-            '<div class="where" aria-hidden="true"><span class="w-crumb"></span><span class="w-sec"></span></div>\n'
+            f'<nav class="main" aria-label="Main"><div class="doors">{"".join(doors)}</div></nav><span class="lens" aria-hidden="true"></span>\n'
             f'<div class="act">{ask}<a class="cta" href="/contact/" data-nav-id="header.book-a-call">Book a call</a>'
-            '<details class="phone" data-panel><summary data-nav-id="sheet.menu"><span class="bars" aria-hidden="true"></span><span class="m-open">Menu</span><span class="m-close">Close</span></summary>'
-            f'<nav class="sheet" aria-label="Menu"><div class="sheet-track"><div class="sheet-home"><div class="sheet-ask">{ask_form("m", "Ask a question")}</div><ul class="sheet-doors">{menu}</ul></div>'
+            '<details class="phone" data-panel><summary data-nav-id="sheet.menu" aria-label="Menu"><span class="bars" aria-hidden="true"></span></summary>'
+            f'<nav class="sheet" aria-label="Menu"><div class="sheet-track"><div class="sheet-home"><div class="sheet-ask">{ask_form("m", "Ask a question")}</div><ul class="sheet-doors">{menu}</ul>'
+            '<p class="sheet-reach"><a href="/contact/">Book a call</a><a href="mailto:sales@amimotion.com">sales@amimotion.com</a></p></div>'
             f'<div class="sheet-panes"><button type="button" class="back">{CHEV}Menu</button>{"".join(panes)}</div></div></nav></details></div>'
             '<span class="prog" aria-hidden="true"><i></i></span></div>\n</header>\n<div class="scrim" aria-hidden="true"></div>')
 
@@ -580,7 +591,7 @@ def build():
     # assets/intro (the old AI-made hero turn) is no longer shipped: nothing may use it
     # shipped: fonts, CAD stills, film files. Not shipped: assets/intro (the old AI-made turn), assets/scene (the dark
     # glowing scene stills, replaced by reserved slots in round 05), vendor (three.js, no longer loaded)
-    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech", "locate", "worlds", "products"):
+    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech", "locate", "worlds", "products", "og"):
         if (SRC / "assets" / sub).exists(): shutil.copytree(SRC / "assets" / sub, DIST / "assets" / sub)
     # three.js ships again for one use: the homepage locate stage (round 19), loaded lazily, never in the first screen
     (DIST / "assets" / "vendor").mkdir()
@@ -594,6 +605,11 @@ def build():
         rel = f.relative_to(SRC / "pages")
         meta, body = front(f.read_text()); body = crumb_labels(body, url_for(rel))
         if url_for(rel) == "/": body = wire_turntable(body)
+        # site audit (12 Nov 2026): each page shares its own picture when tools/og.py has made one, and says when its
+        # own source last changed (git), not the build date
+        slug = url_for(rel).strip("/").replace("/", "-")
+        if slug and "og" not in meta and (SRC / "assets" / "og" / f"{slug}.jpg").exists(): meta["og"] = f"/assets/og/{slug}.jpg"
+        meta["_modified"] = last_changed(f)
         pages[url_for(rel) if rel.name != "404.html" else "/404.html"] = (meta, body)
     titles = {u: m.get("crumb") or m.get("title", "").split(" | ")[0] for u, (m, _) in pages.items()}
     worlds = {u: m.get("world") for u, (m, _) in pages.items() if m.get("world")}
@@ -632,7 +648,7 @@ def build():
         if url != "/": found += re.findall(r'<img\b[^>]*?\ssrc="(/assets/[\w./-]+\.(?:webp|jpg|png))"', body)
         return "".join(f"<image:image><image:loc>{SITE}{p}</image:loc></image:image>" for p in list(dict.fromkeys(found))[:12])
     (DIST / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n'
-        + "".join(f"  <url><loc>{SITE}{u}</loc><lastmod>{TODAY}</lastmod>{imgs(u)}</url>\n" for u in sorted(public)) + "</urlset>\n")
+        + "".join(f"  <url><loc>{SITE}{u}</loc><lastmod>{pages[u][0].get('_modified', TODAY)}</lastmod>{imgs(u)}</url>\n" for u in sorted(public)) + "</urlset>\n")
 
     # robots: search engines and AI answer engines named and welcomed on a public build (decision D2)
     bots = ["Googlebot", "Bingbot", "OAI-SearchBot", "ChatGPT-User", "GPTBot", "ClaudeBot", "Claude-SearchBot", "Claude-User",

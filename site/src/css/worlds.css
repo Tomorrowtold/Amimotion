@@ -7,18 +7,18 @@
 
 /* ---------- world tokens ---------- */
 .ds{--w-ground:var(--ground);--w-band:#0e1530;--w-accent:var(--located);--w-rule:var(--hairline);--w-plate:#dfe7f3;--w-tag:"Field note"}
-.ds[data-world="steel"]{--w-ground:#eef3fb;--w-band:#0c1430;--w-accent:#1f6bff;--w-plate:#dde6f4}
-.ds[data-world="shift"]{--w-ground:#f3f5f9;--w-band:#141a2e;--w-accent:#4b3df0;--w-plate:#e6e4dd}
-.ds[data-world="floor"]{--w-ground:#eff3f6;--w-band:#0d1a26;--w-accent:#1f6bff;--w-plate:#dfe5e4}
-.ds[data-world="paper"]{--w-ground:#f8f5ef;--w-band:#1c1b2a;--w-accent:#4b3df0;--w-plate:#ece5d8}
-.ds[data-world="morning"]{--w-ground:#f0f6ff;--w-band:#122052;--w-accent:#4b3df0;--w-plate:#e2ecfb}
-.ds[data-world="studio"]{--w-ground:#f6f3f1;--w-band:#18142a;--w-accent:#4b3df0;--w-plate:#ebe2d8}
+.ds[data-world="steel"]{--w-ground:#eef3fb;--w-band:#0c1430;--w-accent:#66a5fa;--w-plate:#dde6f4}
+.ds[data-world="shift"]{--w-ground:#f3f5f9;--w-band:#141a2e;--w-accent:#0b0d12;--w-plate:#e6e4dd}
+.ds[data-world="floor"]{--w-ground:#eff3f6;--w-band:#0d1a26;--w-accent:#66a5fa;--w-plate:#dfe5e4}
+.ds[data-world="paper"]{--w-ground:#f8f5ef;--w-band:#1c1b2a;--w-accent:#0b0d12;--w-plate:#ece5d8}
+.ds[data-world="morning"]{--w-ground:#f0f6ff;--w-band:#122052;--w-accent:#0b0d12;--w-plate:#e2ecfb}
+.ds[data-world="studio"]{--w-ground:#f6f3f1;--w-band:#0b0d12;--w-accent:#0b0d12;--w-plate:#ebe2d8}
 body.ds[data-world]{background:var(--w-ground)}
 body.ds[data-world] .band.surface{background:color-mix(in srgb,var(--surface) 70%,var(--w-ground))}
 
 /* ---------- shared layer: the answer card (the page's .short-answer, read first by people and by AI) ---------- */
 .ds .head .short-answer{position:relative;margin-top:var(--s-5);padding:var(--s-5) var(--s-5) var(--s-5) calc(var(--s-5) + 3px);
-  background:var(--surface);border-radius:4px;box-shadow:0 1px 0 var(--hairline),0 20px 40px -32px rgba(11,18,56,.35);
+  background:var(--surface);border-radius:4px;box-shadow:0 1px 0 var(--hairline),0 20px 40px -32px rgba(11,13,18,.35);
   font-size:var(--size-small);line-height:1.6;color:var(--ink)}
 .ds .head .short-answer::before{content:"The short answer";display:block;margin-bottom:var(--s-2);
   font:500 .75rem/1 var(--font-text);letter-spacing:.08em;text-transform:uppercase;color:var(--w-accent)}
@@ -57,21 +57,21 @@ body.ds[data-world] .band.surface{background:color-mix(in srgb,var(--surface) 70
 
 /* ---------- signature: ASK console (use-cases/ask-your-plant) ---------- */
 .w-console{grid-column:1 / -1;margin:var(--s-7) 0 0;background:var(--w-band);color:#e9eef8;border-radius:10px;overflow:hidden;
-  box-shadow:0 40px 80px -50px rgba(5,10,30,.6)}
+  box-shadow:0 40px 80px -50px rgba(11,13,18,.6)}
 .w-console .bar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.08);
-  font:500 .75rem/1 var(--font-text);letter-spacing:.08em;text-transform:uppercase;color:rgba(233,238,248,.6)}
+  font:500 .75rem/1 var(--font-text);letter-spacing:.08em;text-transform:uppercase;color:rgba(242,243,245,.6)}
 .w-console .bar i{width:8px;height:8px;border-radius:50%;background:#2fd27a;box-shadow:0 0 0 4px rgba(47,210,122,.15)}
 .w-console .bar span:last-child{margin-left:auto}
 .w-console .q{display:flex;gap:14px;align-items:flex-start;padding:26px 24px 10px;font:600 clamp(1.15rem,.9rem + 1vw,1.75rem)/1.3 var(--font-display);letter-spacing:-.01em;color:#fff}
-.w-console .q::before{content:"Ask";flex:none;margin-top:.35em;font:500 .7rem/1 var(--font-text);letter-spacing:.1em;text-transform:uppercase;color:#8fb4ff;border:1px solid rgba(143,180,255,.4);border-radius:4px;padding:5px 6px}
-.w-console .q .caret{display:inline-block;width:.5ch;height:1em;margin-left:2px;vertical-align:-.12em;background:#8fb4ff;animation:wblink 1s steps(2) infinite}
+.w-console .q::before{content:"Ask";flex:none;margin-top:.35em;font:500 .7rem/1 var(--font-text);letter-spacing:.1em;text-transform:uppercase;color:#c9ccd3;border:1px solid rgba(143,180,255,.4);border-radius:4px;padding:5px 6px}
+.w-console .q .caret{display:inline-block;width:.5ch;height:1em;margin-left:2px;vertical-align:-.12em;background:#c9ccd3;animation:wblink 1s steps(2) infinite}
 .w-console ol{list-style:none;margin:0;padding:6px 24px 8px}
 .w-console li{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:14px 0;border-top:1px solid rgba(255,255,255,.07);
   font:500 .95rem/1.3 var(--font-text);transition:opacity .4s,transform .5s cubic-bezier(.16,1,.3,1)}
-.w-console li b{font:500 .82rem/1 var(--font-text);color:#cfdcff;background:rgba(31,107,255,.18);border-radius:4px;padding:6px 8px}
+.w-console li b{font:500 .82rem/1 var(--font-text);color:#cfdcff;background:rgba(102,165,250,.18);border-radius:4px;padding:6px 8px}
 .w-console li em{font-style:normal;font:500 .9rem/1 var(--font-text);color:#ffc35a;font-variant-numeric:tabular-nums}
 .w-console li.pending{opacity:0;transform:translateY(8px)}
-.w-console .src{padding:12px 24px 18px;font:500 .74rem/1.5 var(--font-text);color:rgba(233,238,248,.5)}
+.w-console .src{padding:12px 24px 18px;font:500 .74rem/1.5 var(--font-text);color:rgba(242,243,245,.5)}
 .w-console .chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 24px 22px}
 .w-console .chips button{cursor:pointer;font:500 .82rem/1.2 var(--font-text);color:#e9eef8;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:9px 14px;text-align:left}
 .w-console .chips button[aria-pressed="true"]{background:#e9eef8;color:var(--w-band);border-color:#e9eef8}
@@ -97,7 +97,7 @@ body.ds[data-world] .band.surface{background:color-mix(in srgb,var(--surface) 70
 .w-lbl-ink{font:600 15px var(--font-text);fill:var(--ink)}
 
 /* ---------- signature: DWELL lab (learn/dwell-time) ---------- */
-.w-lab{margin:var(--s-6) 0 var(--s-6);background:var(--surface);border-radius:8px;padding:var(--s-5);box-shadow:0 1px 0 var(--hairline),0 30px 60px -48px rgba(28,27,42,.5)}
+.w-lab{margin:var(--s-6) 0 var(--s-6);background:var(--surface);border-radius:8px;padding:var(--s-5);box-shadow:0 1px 0 var(--hairline),0 30px 60px -48px rgba(11,13,18,.5)}
 .w-lab svg{width:100%;height:auto;display:block;touch-action:pan-y}
 .w-lab .read{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-4);margin:var(--s-4) 0 var(--s-3);padding:0}
 .w-lab .read div{border-top:1px solid var(--hairline);padding-top:var(--s-3)}
