@@ -35,7 +35,7 @@ window.SeeSound = function (AC) {
   const tick = (freq, len, vol, at) => { const src = AC.createBufferSource(), f = AC.createBiquadFilter(), e = AC.createGain(), t = AC.currentTime; src.buffer = noise; f.type = 'highpass'; f.frequency.value = freq; e.gain.setValueAtTime(1, t); e.gain.exponentialRampToValueAtTime(.0001, t + len); src.connect(f).connect(e); place(e, vol, at); src.start(t, Math.random() * 2); src.stop(t + len + .05); };
 
   const SCALE = [1047, 1175, 1319, 1568, 1760, 2093];   // the tags answer in one key, so a floor of them is a chord, not noise
-  let was = null, lastPing = 0;
+  let was = null, lastPing = 0, lastHot = 0;
   return {
     set(on) { if (on) AC.resume(); master.gain.setTargetAtTime(on ? .62 : 0, AC.currentTime, .08); was = null; },
     // st is where the story is now. A sound plays when the scroll carries the story forward past its moment; the beds follow it both ways.
@@ -56,9 +56,8 @@ window.SeeSound = function (AC) {
       if (st.told && !p0.told) { tone(587, 1.5, .11, [.5, .5]); setTimeout(() => tone(880, 2.0, .11, st.heroAt), 140); }
       // scroll 1, the game: each trolley's light comes on with a soft note of one chord; the light under the cursor answers with
       // the faintest tick; a miss is a muted knock where it was picked; the hit (or the answer) is the chord resolving
-      if (st.bankOff > p0.bankOff) { const at = [.5, .2 + .25 * st.bankOff]; tone(84 - 8 * st.bankOff, .5, .5, at, 'sine', 36); tick(620, .08, .3, at); }   // a breaker for each bank of lights
       if (st.pkLit > p0.pkLit && st.pickAt) tone(SCALE[st.pkLit % SCALE.length] / 2, 1.1, .045, st.pickAt);
-      if (st.hotN > p0.hotN && st.pickAt) tick(5200, .014, .05, st.pickAt);
+      if (st.hotN > p0.hotN && st.pickAt && performance.now() - lastHot > 70) { lastHot = performance.now(); tick(5200, .014, .05, st.pickAt); }
       const g = st.guess - p0.guess;
       if (g > 0 && g < 50) { tick(1100, .06, .22, st.pickAt); tone(150, .45, .14, st.pickAt, 'sine', 96); }
       if (g >= 50) { const at = st.heroAt; [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, 1.8 - i * .2, g >= 100 ? .09 : .06, at, i ? 'sine' : 'triangle'), i * 85)); tone(131, 2.2, .1, at); }

@@ -29,9 +29,9 @@
   // The pull-back takes the first fifth of the scroll when it is on. Everything after is a fraction of what is left.
   const PULL = pv && root.hasAttribute('data-pull') ? .2 : 0, FLY = .74;
   const rest = v => (v - PULL) / (1 - PULL);
-  const T = { dip: [.05, .19], pts: [.17, .31], trail: [.43, .56], amber: [.47, .59], rise: [.66, .88], type: [.865, .925], ans: [.93, .965], push: [0, .66] };
+  const T = { dip: [.07, .2], pts: [.17, .31], trail: [.43, .56], amber: [.47, .59], rise: [.66, .88], type: [.865, .925], ans: [.93, .965], push: [0, .66] };
   // each set of words: where it comes in (it plays once, by itself), and the stretch of scroll that carries it away
-  const SHOW = [[-.01, .05, .105], [.2, .395, .45], [.5, .62, .67], [.855, 2, 3]];
+  const SHOW = [[-.01, .07, .12], [.2, .395, .45], [.5, .62, .67], [.855, 2, 3]];
   const PUSH = .07;
 
   // headlines come up word by word from behind their own baseline
@@ -147,13 +147,14 @@
     if (step !== shown || force) { shown = step; const k = w < .14 ? 0 : w < .44 ? 1 : w < .7 ? 2 : 3; ticks.forEach((t, i) => t.classList.toggle('on', i === k)); }
     // scroll 1 is a question you can answer with a finger: it stays open until the lights go
     const ask = p >= -.01 && p < T.dip[0]; root.classList.toggle('see-ask', ask); if (ask && seen && !lit0 && root.getBoundingClientRect().top < innerHeight * .15) lightUp(); if (!ask && tip.classList.contains('say')) tip.classList.remove('on', 'say');
+    const night = lit0 && p < T.dip[1]; if (night !== root._night) { root._night = night; root.classList.toggle('see-night', night); } V$('--hn', night ? (1 - ease(dip)).toFixed(3) : '0');
     // the question is typed by the scroll, and answered on the floor
     const text = q.dataset.q, n = calm ? text.length : Math.round(text.length * seg(p, ...T.type));
     if (n !== typed) { typed = n; q.textContent = text.slice(0, n); }
     const told = p >= T.ans[0] - .012; words[3].classList.toggle('told', told);
     // what the story is doing now, for the ear and the hand
     const lit = order.filter(o => pts > o.at * .7 + .12).length, waits = order.filter(o => o.wait && !o.hero && amb > .3 + .25 * (o.t.mins > 20));
-    const st = { near, vel, fly, real, dip, bank: Math.min(3, Math.floor(dip * 3.2)), lit, litAt: lit ? order[lit - 1].t.xy : null, amber: waits.length, amberAt: waits.length ? waits[waits.length - 1].t.xy : null, hero: amb > .8, heroAt: D.eye.tags[hi].xy, mins: els.tags[hi].shown, rise, typed: n, told, guess: guessed, pkLit, hotN, pickAt, bankOff };
+    const st = { near, vel, fly, real, dip: Math.max(dip, night ? bankOff / 3 : 0), bank: Math.max(Math.min(3, Math.floor(dip * 3.2)), night ? bankOff : 0), lit, litAt: lit ? order[lit - 1].t.xy : null, amber: waits.length, amberAt: waits.length ? waits[waits.length - 1].t.xy : null, hero: amb > .8, heroAt: D.eye.tags[hi].xy, mins: els.tags[hi].shown, rise, typed: n, told, guess: guessed, pkLit, hotN, pickAt, bankOff };
     const p0 = was || st; was = st;
     if (!calm && navigator.vibrate) { const n = st.told && !p0.told ? 18 : st.hero && !p0.hero ? 14 : st.bank > p0.bank ? 10 : 0; if (n) try { navigator.vibrate(n); } catch (e) {} }
     if (sound) sound.hear(st);
@@ -179,7 +180,7 @@
 
   // the nearest thing of a kind to the cursor or finger, within reach
   function pick(ev, reach, kind) {
-    const b = box.getBoundingClientRect(); let best = null, bd = reach;
+    const b = ev._b || (ev._b = box.getBoundingClientRect()); let best = null, bd = reach;
     els.tags.forEach(o => { if (kind && o.t.kind !== kind) return; const x = b.left + o.t.xy[0] * b.width, y = b.top + o.t.xy[1] * b.height, d = Math.hypot(ev.clientX - x, ev.clientY - y); if (d < bd) { bd = d; best = [o, x, y]; } });
     return best;
   }
@@ -205,8 +206,8 @@
   let bankOff = 0;
   function lightUp() {            // the hall's lights go off bank by bank, far to near; then the trolleys' lights come on, each with a note
     lit0 = true; const list = els.tags.filter(o => o.pk).sort((a, b) => a.t.xy[1] - b.t.xy[1]);
-    [1, 2, 3].forEach(b => setTimeout(() => { root.classList.add('pk-b' + b); bankOff = b; paint(); }, calm ? 0 : 200 + (b - 1) * 420));
-    list.forEach((o, i) => setTimeout(() => { o.pk.classList.add('lit'); pkLit++; pickAt = o.t.xy; paint(); }, calm ? 0 : 1500 + i * 90));
+    [1, 2, 3].forEach(b => setTimeout(() => { root.classList.add('pk-b' + b); bankOff = b; if (sound) paint(); }, calm ? 0 : 200 + (b - 1) * 420));
+    list.forEach((o, i) => setTimeout(() => { o.pk.classList.add('lit'); pkLit++; pickAt = o.t.xy; if (sound) paint(); }, calm ? 0 : 1500 + i * 90));
   }
   const red = root.querySelector('.see-red');
   // straight on into scene 2: the lights go down and every tag comes on, played by a glide rather than the visitor's wheel
