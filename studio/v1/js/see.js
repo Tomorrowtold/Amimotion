@@ -52,7 +52,8 @@
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.textContent = ''; frames = []; pframes = []; drawn = pdrawn = -1; memo = {};
     cv.width = D.frame[0]; cv.height = D.frame[1]; if (pv) { pv.width = D.frame[0]; pv.height = D.frame[1]; }
     const defs = mk('defs', {});   // soft glows as gradients: no filters, so nothing is re-blurred while the camera rises
-    for (const [id, c] of [['see-gb', '102,165,250'], ['see-ga', '240,164,58'], ['see-gw', '255,236,205'], ['see-gh', '255,248,236']]) { const g = mk('radialGradient', { id }, defs); (id === 'see-gw' ? [[0, .62], [.45, .34], [.8, .08], [1, 0]] : id === 'see-gh' ? [[0, .95], [.45, .55], [.8, .14], [1, 0]] : [[0, .9], [.35, .42], [1, 0]]).forEach(([o, a]) => mk('stop', { offset: o, 'stop-color': `rgba(${c},${a})` }, g)); }
+    for (const [id, c] of [['see-gb', '102,165,250'], ['see-ga', '240,164,58'], ['see-gw', '255,236,205'], ['see-gh', '255,248,236'], ['see-gr', '214,64,48']]) { const g = mk('radialGradient', { id }, defs); (id === 'see-gw' ? [[0, .62], [.45, .34], [.8, .08], [1, 0]] : id === 'see-gh' ? [[0, .95], [.45, .55], [.8, .14], [1, 0]] : id === 'see-gr' ? [[0, .7], [.45, .3], [.8, .06], [1, 0]] : [[0, .9], [.35, .42], [1, 0]]).forEach(([o, a]) => mk('stop', { offset: o, 'stop-color': `rgba(${c},${a})` }, g)); }
+    for (const [id, c] of [['see-gbeam', '255,240,214'], ['see-gbeam-a', '246,178,80']]) { const g = mk('linearGradient', { id, x1: 0, y1: 0, x2: 0, y2: 1 }, defs); [[0, 0], [.55, .05], [.9, .2], [1, .26]].forEach(([o, a]) => mk('stop', { offset: o, 'stop-color': `rgba(${c},${a})` }, g)); }
     const gK = mk('g', { class: 'pk' }), gT = mk('g', {}), gZ = mk('g', {}), gP = mk('g', { class: 'pts' });
     const A = D.eye.anchors, wave = t => Math.min(...A.map(a => Math.hypot((a[0] - t.xy[0]) * W, (a[1] - t.xy[1]) * H)));
     const dist = D.eye.tags.map(wave), far = Math.max(...dist);
@@ -75,6 +76,7 @@
     els.tags.forEach((o, i) => {
       if (o.t.kind !== 'Trolley') return; const [x, y] = o.t.xy, k = .62 + .76 * y, flip = x > (V === 'P' ? .6 : .72);
       const g = mk('g', { transform: `translate(${(x * W).toFixed(1)} ${(y * H).toFixed(1)})` }, gK); g.style.setProperty('--d', (i * .73 % 4.8).toFixed(2));
+      const top = -(y * H) + H * .03; mk('polygon', { class: 'pk-beam', points: `${-10 * k},${top} ${10 * k},${top} ${70 * k},${26 * k} ${-70 * k},${26 * k}` }, g);
       mk('ellipse', { class: 'pk-pool', cx: 0, cy: (26 * k).toFixed(1), rx: (78 * k).toFixed(1), ry: (52 * k).toFixed(1) }, g);
       mk('circle', { class: 'pk-ring', r: (24 * k).toFixed(1) }, g); mk('circle', { class: 'pk-dot', r: 2.6 }, g);
       const l = mk('text', { class: 'pk-l', x: (30 * k + 8) * (flip ? -1 : 1), y: 6, 'text-anchor': flip ? 'end' : 'start' }, g);
@@ -151,7 +153,7 @@
     const told = p >= T.ans[0] - .012; words[3].classList.toggle('told', told);
     // what the story is doing now, for the ear and the hand
     const lit = order.filter(o => pts > o.at * .7 + .12).length, waits = order.filter(o => o.wait && !o.hero && amb > .3 + .25 * (o.t.mins > 20));
-    const st = { near, vel, fly, real, dip, bank: Math.min(3, Math.floor(dip * 3.2)), lit, litAt: lit ? order[lit - 1].t.xy : null, amber: waits.length, amberAt: waits.length ? waits[waits.length - 1].t.xy : null, hero: amb > .8, heroAt: D.eye.tags[hi].xy, mins: els.tags[hi].shown, rise, typed: n, told, guess: guessed, pkLit, hotN, pickAt };
+    const st = { near, vel, fly, real, dip, bank: Math.min(3, Math.floor(dip * 3.2)), lit, litAt: lit ? order[lit - 1].t.xy : null, amber: waits.length, amberAt: waits.length ? waits[waits.length - 1].t.xy : null, hero: amb > .8, heroAt: D.eye.tags[hi].xy, mins: els.tags[hi].shown, rise, typed: n, told, guess: guessed, pkLit, hotN, pickAt, bankOff };
     const p0 = was || st; was = st;
     if (!calm && navigator.vibrate) { const n = st.told && !p0.told ? 18 : st.hero && !p0.hero ? 14 : st.bank > p0.bank ? 10 : 0; if (n) try { navigator.vibrate(n); } catch (e) {} }
     if (sound) sound.hear(st);
@@ -200,10 +202,13 @@
   const N_TRY = 3;
   const tell = html => { if (!sayEl) return; sayEl.classList.add('swap'); setTimeout(() => { sayEl.innerHTML = html; sayEl.classList.remove('swap'); }, 200); };
   const ago = o => o.t.mins && o.t.mins !== 42 ? o.t.mins : 2 + o.i * 7 % 9;
-  function lightUp() {            // the pools come on far to near, each with a soft note
+  let bankOff = 0;
+  function lightUp() {            // the hall's lights go off bank by bank, far to near; then the trolleys' lights come on, each with a note
     lit0 = true; const list = els.tags.filter(o => o.pk).sort((a, b) => a.t.xy[1] - b.t.xy[1]);
-    list.forEach((o, i) => setTimeout(() => { o.pk.classList.add('lit'); pkLit++; pickAt = o.t.xy; paint(); }, calm ? 0 : 260 + i * 85));
+    [1, 2, 3].forEach(b => setTimeout(() => { root.classList.add('pk-b' + b); bankOff = b; paint(); }, calm ? 0 : 200 + (b - 1) * 420));
+    list.forEach((o, i) => setTimeout(() => { o.pk.classList.add('lit'); pkLit++; pickAt = o.t.xy; paint(); }, calm ? 0 : 1500 + i * 90));
   }
+  const red = root.querySelector('.see-red');
   // straight on into scene 2: the lights go down and every tag comes on, played by a glide rather than the visitor's wheel
   function carryOn(delay) {
     setTimeout(() => {
@@ -227,7 +232,7 @@
     if (!o.pk || o.pk.classList.contains('no')) return;
     const n = els.tags.filter(t => t.t.kind === 'Trolley').length; tries++; if (lives[tries - 1] && !o.hero) lives[tries - 1].classList.add('out');
     if (o.hero) { reveal(true); return tell(tries === 1 ? `That's the one. First pick, one chance in ${n}. <b>AmIMotion never needs the luck.</b>` : `That's the one, on pick ${tries}. On a real floor every pick is a walk. <b>AmIMotion never needs one.</b>`); }
-    guessed += 1; pickAt = o.t.xy; o.pk.classList.remove('hot'); o.pk.classList.add('no'); o.pl.textContent = ago(o) + ' min';
+    guessed += 1; pickAt = o.t.xy; o.pk.classList.remove('hot'); o.pk.classList.add('no'); if (red && !calm) { red.classList.remove('on'); void red.offsetWidth; red.classList.add('on'); } o.pl.textContent = ago(o) + ' min';
     if (tries >= N_TRY) { tell(`It was this one: <b>42 minutes, and it looked like all the rest.</b>`); return setTimeout(() => reveal(false), 450); }
     tell(tries === 1 ? `Not this one. It got here ${ago(o)} minutes ago. <b>They all look the same.</b>` : `Not this one either. <b>Your eyes can't see how long something has waited.</b>`);
     paint();

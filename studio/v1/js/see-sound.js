@@ -56,6 +56,7 @@ window.SeeSound = function (AC) {
       if (st.told && !p0.told) { tone(587, 1.5, .11, [.5, .5]); setTimeout(() => tone(880, 2.0, .11, st.heroAt), 140); }
       // scroll 1, the game: each trolley's light comes on with a soft note of one chord; the light under the cursor answers with
       // the faintest tick; a miss is a muted knock where it was picked; the hit (or the answer) is the chord resolving
+      if (st.bankOff > p0.bankOff) { const at = [.5, .2 + .25 * st.bankOff]; tone(84 - 8 * st.bankOff, .5, .5, at, 'sine', 36); tick(620, .08, .3, at); }   // a breaker for each bank of lights
       if (st.pkLit > p0.pkLit && st.pickAt) tone(SCALE[st.pkLit % SCALE.length] / 2, 1.1, .045, st.pickAt);
       if (st.hotN > p0.hotN && st.pickAt) tick(5200, .014, .05, st.pickAt);
       const g = st.guess - p0.guess;
