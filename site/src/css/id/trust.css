@@ -4,3 +4,51 @@
 .head .words{display:block;grid-column:1 / span 7}
 .points.c3>li{background:var(--surface)!important;border-radius:26px!important;padding:var(--s-7) var(--s-6)!important;min-height:260px}
 .points.c3 h3{font-size:1.6rem!important;letter-spacing:-.015em!important}
+/* the data-flow drawing: where location data goes, inside the plant or in the cloud (CSS only, no script) */
+.tr-flow{grid-column:1 / -1;margin:var(--s-6) 0 var(--s-8);padding:var(--s-6);border-radius:20px;background:#fff;box-shadow:0 0 0 1px rgba(11,13,18,.08),0 30px 60px -40px rgba(11,13,18,.35)}
+.tr-mode{display:inline-flex;gap:4px;margin:0 0 var(--s-5);padding:4px;border:0;border-radius:999px;background:#eef0f3}
+.tr-mode legend{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.tr-mode label{position:relative;padding:10px 18px;border-radius:999px;font:500 .95rem/1 var(--font-text);color:var(--ink-soft);cursor:pointer;transition:background .25s,color .25s}
+.tr-mode input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.tr-mode label:has(input:checked){background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(11,13,18,.12)}
+.tr-mode label:has(input:focus-visible){outline:2px solid var(--ink);outline-offset:2px}
+.tr-flow svg{display:block;width:100%;height:auto}
+.tr-flow text{font:500 15px var(--font-text);fill:#4b515d}
+.tr-flow .t{font:600 22px var(--font-display);fill:#fff}.tr-flow .t2{font:600 18px var(--font-display);fill:#0b0d12}
+.tr-flow .hub .s{fill:rgba(255,255,255,.78)}
+.tr-flow .plant rect{fill:color-mix(in srgb,var(--cv,#213a3a) 6%,#fff);stroke:var(--cv,#213a3a);stroke-width:1.5;stroke-dasharray:6 6}
+.tr-flow .plant text,.tr-flow .cloud text{font:600 16px var(--font-text);fill:var(--cv,#213a3a)}
+.tr-flow .cloud rect{fill:#f5f6f7;stroke:rgba(11,13,18,.25);stroke-width:1.5;stroke-dasharray:6 6}
+.tr-flow .cloud text{fill:#4b515d}
+.tr-flow .floor>rect{fill:#fff;stroke:rgba(11,13,18,.12)}
+.tr-flow .an path{fill:#fff;stroke:#0b0d12;stroke-width:1.5}
+.tr-flow .tag circle{fill:#66a5fa}
+.tr-flow .pulse line{stroke:#66a5fa;stroke-width:1.5;stroke-dasharray:3 7}
+.tr-flow .wire path,.tr-flow path.wire{fill:none;stroke:#0b0d12;stroke-width:1.5;stroke-dasharray:2 6}
+.tr-flow .hub rect{fill:#0b0d12}
+.tr-flow .sys rect,.tr-flow .ai>rect{fill:#fff;stroke:rgba(11,13,18,.2)}
+.tr-flow .tls rect{fill:#0b0d12}.tr-flow .tls text{font:600 12px var(--font-text);fill:#fff;text-anchor:middle;letter-spacing:.04em}
+.tr-flow .gate rect{fill:#0b0d12}.tr-flow .gate path{fill:none;stroke:#fff;stroke-width:2}
+.tr-flow figcaption{margin-top:var(--s-5);max-width:52em;color:var(--ink-soft);font-size:var(--size-small);line-height:1.5}
+/* the two modes */
+.tr-flow .hub{transition:transform .8s cubic-bezier(.16,1,.3,1)}
+.tr-flow .m-cloud,.tr-flow .m-plant{transition:opacity .45s}
+.tr-flow .m-cloud{opacity:0}
+.tr-flow .cloud{opacity:.45;transition:opacity .45s}
+.tr-flow:has(input[value="cloud"]:checked) .hub{transform:translateX(340px)}
+.tr-flow:has(input[value="cloud"]:checked) .m-cloud{opacity:1}
+.tr-flow:has(input[value="cloud"]:checked) .m-plant{opacity:0}
+.tr-flow:has(input[value="cloud"]:checked) .cloud{opacity:1}
+@media (prefers-reduced-motion:no-preference){
+  .tr-flow .pulse line{animation:tr-pulse 1.6s linear infinite}
+  .tr-flow .wire path,.tr-flow path.wire{animation:tr-flow 1.2s linear infinite}
+}
+@keyframes tr-pulse{to{stroke-dashoffset:-20}}
+@keyframes tr-flow{to{stroke-dashoffset:-16}}
+@media (prefers-reduced-motion:reduce){.tr-flow .hub,.tr-flow .m-cloud,.tr-flow .m-plant,.tr-flow .cloud{transition:none}}
+@media (max-width:767px){
+  .tr-flow{padding:var(--s-5) 0 var(--s-5) var(--s-5);margin-inline:calc(-1 * var(--margin) + 8px)}
+  .tr-flow svg{min-width:760px}
+  .tr-flow>div,.tr-flow{overflow-x:auto}
+  .tr-flow figcaption{padding-right:var(--s-5)}
+}

@@ -253,7 +253,7 @@ def css_min(css):
 
 def body_class(meta):
     """The shared class plus the page's looks (front matter look: serif sidehead cards ...): kit.css restyles by them."""
-    return " ".join(["ds"] + (["pl", "site-" + meta["id"]] if meta.get("layout") == "product" else []) + ["look-" + x for x in meta.get("look", "").split()])
+    return " ".join(["ds"] + (["pl", "site-" + meta["id"]] if meta.get("layout") == "product" else []) + ["look-" + x for x in meta.get("look", "").split()] + (["series"] if meta.get("cover") and meta.get("layout") != "product" else []))
 
 
 # Every page opens at its top when a link is followed (a link to a section, Back/Forward and reload keep the browser's own
@@ -306,6 +306,8 @@ def styles(meta):
     if meta.get("layout") != "home" and meta.get("id") and (SRC / "css" / "id" / f"{meta['id']}.css").exists(): files.append(f"id/{meta['id']}.css")
     # house.css last (site audit, 12 Nov 2026): one house style settles the tokens of every older layer; not on the homepage
     if meta.get("layout") != "home": files.append("house.css")
+    # series.css (12 Nov 2026): Resources and Company pages each wear their own colour (front matter cover:)
+    if meta.get("layout") != "home": files.append("series.css")
     css = css_min("".join((SRC / "css" / f).read_text() for f in files))
     return (FONT_PRELOAD +
             f"<style>{css}</style>")

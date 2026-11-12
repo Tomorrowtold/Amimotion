@@ -1,0 +1,59 @@
+/* series.css: Resources and Company pages each wear one colour of their own (front matter cover:, set on <body> as
+   --cv). The interface stays ink on white; the colour is the page's cover: its opening band, its shelf tile and its
+   closing band. Located blue and waiting amber keep their meaning inside drawings. Loaded after house.css. */
+
+/* ---------- the opening band: the page's colour, white words, its photograph on the right ---------- */
+.series main>.head:first-child{position:relative;margin:0 calc(-1 * var(--margin));padding:var(--s-8) var(--margin) var(--s-8);
+  background:var(--cv);color:#fff;isolation:isolate;margin-top:0}
+.series main>.head:first-child::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.18))}
+.series .head .crumbs,.series .head .crumbs a{color:rgba(255,255,255,.72)!important}
+.series .head h1,.series .head h1 span{color:#fff!important}
+body.series .head h1 span+span,body.series .head.w-poster h1 span+span,body.series[style*="--cv"] .head h1 span+span{color:rgba(255,255,255,.66)!important}
+.series .head .lede{color:rgba(255,255,255,.9)!important}
+.series .head .short-answer{background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.18)!important;color:#fff!important;box-shadow:none!important}
+.series .head .short-answer::before{color:rgba(255,255,255,.72)!important}
+.series .head .short-answer a,.series .head .more a{color:#fff!important}
+.series .head .more .sep{color:rgba(255,255,255,.5)}
+.series .head .head-pic img{border-radius:4px}
+.series .head.w-document .head-pic{margin:0;align-self:stretch}
+.series .head.w-document .head-pic img{border-radius:4px;max-height:640px}
+.series .head.w-poster,.series .head.has-bleed.w-poster{margin-top:0}
+.series .head :focus-visible{outline-color:#fff}
+/* the guide's own reading progress line takes its colour */
+.series .k-progress{background:var(--cv)!important}
+
+/* ---------- reading: the current section in the contents carries the colour ---------- */
+.series .toc a[aria-current],.series .toc li.on a,.series .toc a.on{color:var(--cv)}
+.series .toc li.on,.series .toc li:has(a[aria-current]){border-top-color:var(--cv)}
+.series .prose a{text-decoration-color:var(--cv)}
+
+/* ---------- read next: each guide named in its own colour ---------- */
+.ds[data-world] .related:not(.tiles) li[style*="--cv"]::before{background:var(--cv)!important;width:4px}
+
+/* ---------- the ending: one band in the page's colour ---------- */
+.series .close{position:relative;margin:var(--rhythm-m) calc(-1 * var(--margin)) 0;padding:var(--s-8) var(--margin);background:var(--cv)!important;color:#fff!important}
+.series .close p>span:first-child{color:#fff!important}
+.series .close .sub{color:rgba(255,255,255,.8)!important}
+.series .close a:not(.go){background:#fff!important;color:#0b0d12!important}
+.series .close a:not(.go):hover{background:#eef0f3!important}
+
+/* ---------- the shelf: every guide a cover in its own colour, its photograph set into it ---------- */
+.ds[data-world] .related.tiles li[style*="--cv"]>a{display:flex!important;flex-direction:column;justify-content:flex-start!important;min-height:0!important;height:100%;padding:0!important;border-radius:6px!important;
+  background:var(--cv)!important;color:#fff!important;overflow:hidden;text-decoration:none;transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s}
+.ds[data-world] .related.tiles li[style*="--cv"]>a:hover{transform:translateY(-4px)!important;box-shadow:0 24px 40px -24px rgba(11,13,18,.45)!important}
+.ds[data-world] .related.tiles li[style*="--cv"] .pic{margin:10px 10px 0;border-radius:3px;overflow:hidden}
+.ds[data-world] .related.tiles li[style*="--cv"] .pic img{aspect-ratio:4/3;object-fit:cover;width:100%;height:auto;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.ds[data-world] .related.tiles li[style*="--cv"]>a:hover .pic img{transform:scale(1.04)}
+.ds[data-world] .related.tiles li[style*="--cv"] b{display:block;position:static!important;padding:var(--s-4) var(--s-5) var(--s-5);color:#fff!important}
+.ds[data-world] .related.tiles li[style*="--cv"]>a span{display:block;padding:var(--s-2) var(--s-5) var(--s-5);margin-top:auto;color:rgba(255,255,255,.78)!important}
+@media (prefers-reduced-motion:reduce){.ds[data-world] .related.tiles li[style*="--cv"]>a,.ds[data-world] .related.tiles li[style*="--cv"] .pic img{transition:none}}
+
+@media (max-width:1023px){
+  .series main>.head:first-child{padding:var(--s-7) var(--margin)}
+  .series .head.w-document .head-pic{margin:var(--s-6) 0 0}
+}
+
+/* ---------- the guide's own live example sits on a wash of the page's colour ---------- */
+.series .w-lab{background:color-mix(in srgb,var(--cv) 7%,#fff)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--cv) 18%,transparent)!important;border-radius:16px}
+.series .w-lab input[type=range]{accent-color:var(--cv)}
