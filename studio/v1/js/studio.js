@@ -304,6 +304,8 @@ if (simSec) {
       card.style.setProperty('--mx', (mx + .5) * 100 + '%'); card.style.setProperty('--my', (my + .5) * 100 + '%');
       card.style.setProperty('--ry', (mx * 5).toFixed(2) + 'deg'); card.style.setProperty('--rx', (-my * 4).toFixed(2) + 'deg'); });
     card.addEventListener('pointerleave', () => { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); });
+    // final audit: the poster frames load a screen ahead of the floors, not with the hero
+    new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { io.disconnect(); if (v.dataset.poster) v.poster = v.dataset.poster; } }, { rootMargin: '1200px 0px' }).observe(card);
     if (lowData || reduce) return;   // the poster frame stays
     new IntersectionObserver((es) => {
       if (es[0].isIntersecting) { if (!v.src) { v.src = v.dataset.src; v.load(); } const p = v.play(); if (p) p.catch(() => {}); }

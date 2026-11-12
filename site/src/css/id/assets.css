@@ -12,7 +12,7 @@
 .as-find .ret{position:absolute;left:50%;top:44%;width:30%;aspect-ratio:1;transform:translate(-50%,-50%);
   background:conic-gradient(from 0deg,#fff 0 0) top left/26% 3px no-repeat,conic-gradient(#fff 0 0) top left/3px 26% no-repeat,conic-gradient(#fff 0 0) top right/26% 3px no-repeat,conic-gradient(#fff 0 0) top right/3px 26% no-repeat,conic-gradient(#fff 0 0) bottom left/26% 3px no-repeat,conic-gradient(#fff 0 0) bottom left/3px 26% no-repeat,conic-gradient(#fff 0 0) bottom right/26% 3px no-repeat,conic-gradient(#fff 0 0) bottom right/3px 26% no-repeat}
 .as-find .chip{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);white-space:nowrap;background:#fff;color:var(--ink);border-radius:999px;padding:12px 18px;font:400 15px/1.2 var(--font-text);box-shadow:0 20px 40px -20px rgba(0,0,0,.5)}
-.as-find .chip b{font-weight:600;margin-right:8px;color:var(--located)}
+.as-find .chip b{font-weight:600;margin-right:8px;color:#1f6bff}
 @supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
   .as-find .ret{animation:as-lock linear both;animation-timeline:view();animation-range:entry 0% entry 100%}
   @keyframes as-lock{from{width:60%;opacity:.3}to{width:30%;opacity:1}}
