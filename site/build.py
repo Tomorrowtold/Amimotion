@@ -591,7 +591,7 @@ def build():
     # assets/intro (the old AI-made hero turn) is no longer shipped: nothing may use it
     # shipped: fonts, CAD stills, film files. Not shipped: assets/intro (the old AI-made turn), assets/scene (the dark
     # glowing scene stills, replaced by reserved slots in round 05), vendor (three.js, no longer loaded)
-    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech", "locate", "worlds", "products"):
+    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech", "locate", "worlds", "products", "og"):
         if (SRC / "assets" / sub).exists(): shutil.copytree(SRC / "assets" / sub, DIST / "assets" / sub)
     # three.js ships again for one use: the homepage locate stage (round 19), loaded lazily, never in the first screen
     (DIST / "assets" / "vendor").mkdir()
