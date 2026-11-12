@@ -278,8 +278,8 @@
   }
  ],
  "pictures": {
-  "/products/amigo/": "amigo",
-  "/products/amimo/": "amimo",
+  "/products/amigo/": "n:amigo-studio-800",
+  "/products/amimo/": "n:amimo-studio-800",
   "/products/amihub/": "n:hublive-800",
   "/use-cases/ask-your-plant/": "n:asklive-800",
   "/industries/manufacturing/": "w:mfg-hero",
