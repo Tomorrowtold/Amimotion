@@ -1121,7 +1121,7 @@ html.is-scrolling .inds-row,html.is-scrolling .bs-helix,html.is-scrolling .ctas,
 /* AmIHub: the plant from above, read in from left to right */
 .kn-hub{padding:7% 7% 14%}
 .kn-screen{width:96%;aspect-ratio:16 / 9;background:#0b1238;padding:6px;border-radius:18px}
-.kn-screen::before{inset:6px;border-radius:12px;background:#0b1238 url(../assets/hw/hub-top-800.webp) center/cover no-repeat;filter:grayscale(1) brightness(.45) contrast(1.1)}
+.kn-screen::before{inset:6px;border-radius:12px;background:#0b1238 url(../assets/hw/hub-map-800.webp) center/cover no-repeat;filter:grayscale(1) brightness(.45) contrast(1.1)}
 .kn-screen .kn-img{object-position:50% 50%;border-radius:12px;filter:brightness(1.16) contrast(1.05)}
 .kn-scan{top:6px;bottom:6px}
 .kn-screen::after{content:"";position:absolute;inset:6px;z-index:2;border-radius:12px;pointer-events:none;
@@ -1139,3 +1139,27 @@ html.tag-live .hero .lede.k-fade{transition:opacity .9s var(--ease),transform 1.
 .hero-stage .tag-fallback{inset:0!important;left:0!important;padding:0!important;display:block!important}
 .hero-stage .tag-fallback img{position:absolute;left:70%;top:53%;width:calc(2.6 * min(32cqw, 600px, 52cqh))!important;max-width:none;max-height:none!important;height:auto;transform:translate(-50%,-50%);animation:none}
 @media (max-width:900px){.hero-stage .tag-fallback img{left:50%;top:40.3%;width:100cqw!important}}
+
+/* ===== guides, 12 Nov: one alignment. Laptop: the words keep their low corner, clear of the guide before, and the card is
+   centred in the space between the words and the rail. Phone: the words start a fixed step under the card, the rail runs between. ===== */
+@media (min-width:861px){
+  .bs{--col:calc(var(--pad) + clamp(28px,3.4vw,60px));--colw:min(27vw,420px);
+    --hx:calc((var(--col) + var(--colw) + 100% - var(--pad) - 72px) / 2)}
+  .bs-list{left:var(--col);width:var(--colw)}
+}
+@media (max-width:860px){
+  .bs{--below:calc(var(--hy,35%) + var(--ch,184px) / 2)}
+  .bs-helix,.bs-pool{--hy:35%}
+  .bs-list{top:min(calc(var(--below) + 46px),calc(100% - env(safe-area-inset-bottom,0px) - var(--dock-h,92px) - 270px));bottom:auto}
+  .bs-post{top:0;bottom:auto}
+  .bs-rail{top:calc(var(--below) + 22px);right:auto;left:26px;transform:none;flex-direction:row;align-items:center;gap:6px}
+  .bs-rail i{width:12px;margin:0}.bs-rail i.on{width:28px}
+}
+/* the link's rule runs its full width at rest; hover moves the arrow */
+.bs-go{background-size:100% 1px}
+
+/* ===== the team, 12 Nov: moved out of the products and set just before "Start with one bay"; the same card, on its own
+   light sheet that rises over the guides the way Start used to ===== */
+.trio-team{--sheet:clamp(26px,3vw,44px);z-index:3;margin-top:calc(var(--sheet) * -1);border-radius:var(--sheet) var(--sheet) 0 0;
+  padding:clamp(56px,7vw,112px) 0 calc(var(--sheet) + clamp(48px,6vw,96px));box-shadow:0 -24px 60px -30px rgb(5 6 13 / .6)}
+.trio-team + .start{box-shadow:0 -24px 60px -40px rgba(11,18,56,.22)}

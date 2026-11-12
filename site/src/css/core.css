@@ -425,3 +425,28 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
   .back:active{opacity:.6}
 }
 @media (prefers-reduced-motion:reduce){.phone > summary,.nask > summary,.ft-roles a,.ft-clay,.ft-glass{transition:none}}
+
+/* footer on a phone (12 Nov): each group folds to one row; the whole row opens it, like a settings list.
+   Every link stays in the page for search and AI readers. Laptop and tablet are unchanged. */
+.ft-fold,.ft-all{display:none}
+.ft-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:640px){
+  .ft-map{display:block}
+  .ft-bay,.ft-bay + .ft-bay{position:relative;padding:0;border-top:1px solid var(--ft-line)}
+  .ft-bay:last-child{border-bottom:1px solid var(--ft-line)}
+  .ft-door{display:block;margin:0;padding:18px 44px 18px 0;pointer-events:none}
+  .ft-fold{display:block;position:absolute;left:0;right:0;top:0;height:62px;border:0;padding:0;background:none;color:var(--ft-ink);cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .ft-fold::before,.ft-fold::after{content:"";position:absolute;right:6px;top:30px;width:13px;height:1.5px;border-radius:1px;background:currentColor;opacity:.7;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+  .ft-fold::after{transform:rotate(90deg)}
+  .ft-fold[aria-expanded="true"]::after{transform:rotate(0)}
+  .ft-fold:focus-visible{outline:2px solid #66a5fa;outline-offset:-2px;border-radius:10px}
+  .ft-bay ul{display:none;padding:0 0 16px}
+  .ft-bay.open ul{display:block}
+  .ft-all{display:list-item}
+  .ft-roles ul{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-16px;padding-right:16px}
+  .ft-roles ul::-webkit-scrollbar{display:none}
+  .ft-roles{align-items:stretch;min-width:0}.ft-roles ul{min-width:0}
+  .ft-roles li{flex:none}
+}
+/* a page without the closing band (the homepage) opens the footer straight on its links */
+.ft-card:not(:has(.ft-close)) .ft-map{margin-top:0}

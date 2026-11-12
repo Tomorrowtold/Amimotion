@@ -238,10 +238,21 @@ kick();
 const idle = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 1200 }) : (f) => setTimeout(f, 200);
 // the hero's tag starts at once, so it is there on the very first visit; the fallback picture only shows if it cannot run
 const tagFb = $('#tagFallback');
-if (!slow && !reduce && window.WebGLRenderingContext) {
-  document.documentElement.classList.add('tag-live');
+// phones and tablets (12 Nov): the hero paints at once from its resting frame, which is the 3D tag at rest, and the live tag
+// cross-fades in over it at the first touch or a few seconds after load, so the first view never waits on 3D
+const touchFirst = !matchMedia('(pointer: fine)').matches;
+const startTag = () => {
+  const live = document.documentElement.classList.contains('tag-live');
   import('./tag.js').then((m) => m.init($('#tagGL'), tagFb, $('#hero'))).catch(() => document.documentElement.classList.remove('tag-live'));
-  setTimeout(() => { if (!$('#tagGL').classList.contains('ready')) document.documentElement.classList.remove('tag-live'); }, 3000);
+  if (live) setTimeout(() => { if (!$('#tagGL').classList.contains('ready')) document.documentElement.classList.remove('tag-live'); }, 3000);
+};
+if (!slow && !reduce && window.WebGLRenderingContext) {
+  if (!touchFirst) { document.documentElement.classList.add('tag-live'); startTag(); }
+  else {
+    let go = false; const once = () => { if (go) return; go = true; ['touchstart', 'scroll', 'pointerdown', 'keydown'].forEach((t) => removeEventListener(t, once)); startTag(); };
+    ['touchstart', 'scroll', 'pointerdown', 'keydown'].forEach((t) => addEventListener(t, once, { passive: true, once: true }));
+    addEventListener('load', () => setTimeout(once, 6000), { once: true });
+  }
 }
 addEventListener('load', () => idle(() => {
   startGL();
@@ -461,7 +472,8 @@ if (simSec) {
   addEventListener('resize', () => { measure(); cur = -1; active = -1; place(); if (phase < 2) setIntro(0); });
   new IntersectionObserver((es) => {
     const was = seen; seen = es[0].isIntersecting;
-    if (seen && !was) { active = -1; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.preload = 'auto'; } wake(); }
+    if (seen && !was) { if (!sec.dataset.posters) { sec.dataset.posters = '1'; $$('video[data-poster]', sec).forEach((v) => { v.poster = v.dataset.poster; }); }   // the films' first frames load only as the guides come near
+      active = -1; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.preload = 'auto'; } wake(); }
     if (!seen) { cards.forEach((c) => { const vid = c.querySelector('video'); if (vid && vid.src && !vid.paused) vid.pause(); }); if (phase === 1) { iv.pause(); phase = 0; } }
   }, { rootMargin: '400px' }).observe(sec);
 })();
