@@ -9,6 +9,7 @@
 <link rel="preload" href="assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/AmISansText-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/studio.css">
+<link rel="stylesheet" href="css/see.css">
 <script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('tag-live')</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"AmIMotion","legalName":"Locatepro Technologies Pvt Ltd","address":{"@type":"PostalAddress","addressLocality":"Bengaluru","addressCountry":"IN"},"email":"sales@amimotion.com","description":"AmIMotion builds industrial spatial intelligence. It gives a time-stamped location to every trolley, bin, tool and vehicle you tag in a plant."}</script>
 </head>
@@ -45,7 +46,7 @@
   <div class="hero-stage" aria-hidden="true">
     <picture class="tag-fallback" id="tagFallback">
       <source media="(max-width: 900px)" srcset="assets/home/hero-rest-m-780.webp">
-      <img src="assets/home/hero-rest-1140.webp" srcset="assets/home/hero-rest-1140.webp 1140w, assets/home/hero-rest-2280.webp 2280w" sizes="min(84vw, 1560px)" alt="" width="1140" height="657" fetchpriority="low">
+      <img src="assets/home/hero-rest-1140.webp" srcset="assets/home/hero-rest-1140.webp 1140w, assets/home/hero-rest-2280.webp 2280w" sizes="min(84vw, 1560px)" alt="" width="1140" height="657" fetchpriority="high">
     </picture>
     <canvas class="bridge-gl" id="bridgeGL"></canvas>
     <canvas class="bridge-hud" id="bridgeHUD"></canvas>
@@ -65,24 +66,50 @@
 </section>
 </div>
 
-<!-- 1b. THE STORY: one scroll film over the model hall -->
-<section class="story" id="story" aria-label="One trolley, one tag">
-  <div class="story-sticky">
-    <div class="floor-media">
-      <img class="floor-poster" src="assets/scene/hall-before-1600.webp" alt="A model of a factory floor seen from above. Blue lines show where tagged trolleys, tools and vehicles went. Three trolleys at inspection and one pallet in a staging lane are marked amber because they are waiting." width="1600" height="2000" loading="lazy">
-      <canvas class="floor-gl" id="storyGL"></canvas>
-      <canvas class="floor-hud" id="storyHUD" aria-hidden="true"></canvas>
+<!-- 1b. CAN YOU SEE IT: one floor, told in four scrolls; it opens straight on the floor (no pull-back from the hero) -->
+<section class="see" id="see" data-assets="assets/see/" aria-label="What AmIMotion shows you on a factory floor">
+  <div class="see-stage">
+    <div class="see-box">
+      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/lit.webp"><img class="see-lit" src="assets/see/L/lit.webp" alt="A working factory floor with trolleys, bins, pallets, racks, a forklift and people." loading="lazy" fetchpriority="low" decoding="async"></picture>
+      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/dim.webp"><img class="see-dim" src="assets/see/L/dim.webp" alt="" loading="lazy" decoding="async"></picture>
+      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/blue.webp"><img class="see-blue" src="assets/see/L/blue.webp" alt="" loading="lazy" decoding="async"></picture>
+      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/amber.webp"><img class="see-amber" src="assets/see/L/amber.webp" alt="" loading="lazy" decoding="async"></picture>
+      <canvas class="see-rise" aria-hidden="true"></canvas>
+      <div class="see-grid"></div>
+      <div class="see-veil"></div>
+      <div class="see-hush" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="see-mono"></div>
+      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/lit.webp"><img class="see-spot" src="assets/see/L/lit.webp" alt="" loading="lazy" decoding="async"></picture>
+      <svg class="see-ov" aria-hidden="true" preserveAspectRatio="none"></svg>
     </div>
-    <div class="caps">
-      <div class="cap" data-from="0" data-to=".17"><h2 class="h2 k-cap" data-b="0"><span class="ln"><span>Think of the last time someone</span></span><span class="ln"><span>went looking for a trolley.</span></span></h2><p><span data-b="1">The walk.</span> <span data-b="2">The calls to stores.</span> <span data-b="3">The second walk.</span></p></div>
-      <div class="cap" data-from=".17" data-to=".32"><h2 class="h2 k-cap" data-b="4"><span class="ln"><span>A scan tells you</span></span><span class="ln"><span>where it last passed.</span></span></h2><p data-b="5">Between scans at each checkpoint, work moves and waits out of sight.</p></div>
-      <div class="cap" data-from=".32" data-to=".45"><h2 class="h2 k-cap"><span class="ln"><span data-b="6">A small tag rides on each</span></span><span class="ln"><span><span data-b="6">trolley,</span> <span data-b="7">bin</span> <span data-b="8">and tool.</span></span></span></h2><p><span data-b="9">Anchors on your columns</span> <span data-b="10">hear its signal.</span></p></div>
-      <div class="cap" data-from=".45" data-to=".62"><h2 class="h2 k-cap" data-b="11"><span class="ln"><span>A tag tells you</span></span><span class="ln"><span>where it stopped.</span></span></h2><p><span data-b="12">One live map shows where it went</span> <span data-b="13">and how long it has waited.</span></p></div>
-      <div class="cap" data-from=".62" data-to=".76"><h2 class="h2 k-cap" data-b="14"><span class="ln"><span>See where</span></span><span class="ln"><span>work <em>waits.</em></span></span></h2><p><span data-b="15">You see how long each one has waited,</span> <span data-b="16">while it is still waiting.</span></p></div>
-      <div class="cap" data-from=".76" data-to=".9"><h2 class="h2 k-cap" data-b="17"><span class="ln"><span>Ask your floor a question.</span></span></h2><p class="q-big" data-b="18">Which trolleys have waited at inspection for more than an hour?</p></div>
+    <div class="see-vig"></div>
+    <div class="see-red"></div>
+    <div class="see-grain"></div>
+    <div class="see-shade"></div>
+    <div class="see-tip" aria-hidden="true"></div>
+
+    <div class="see-words">
+      <div class="see-w see-w1">
+        <h2 class="see-h">One trolley here has <em>waited 42 minutes.</em></h2>
+        <p class="see-p" aria-live="polite"><span class="see-say">Can you tell which one? You have three picks.</span><span class="see-lives" aria-hidden="true"><i></i><i></i><i></i></span></p>
+      </div>
+      <div class="see-w see-w2">
+        <h2 class="see-h">A small tag on each one shows <em>where it is.</em></h2>
+        <p class="see-p">Every trolley, bin, pallet, forklift, robot and person. Right now, typically to within 10 cm.</p>
+      </div>
+      <div class="see-w see-w3">
+        <h2 class="see-h">And <em>how long it has waited.</em></h2>
+        <p class="see-p">There's your trolley. 42 minutes, at the end of the racks.</p>
+      </div>
+      <div class="see-w see-w4">
+        <p class="see-q" data-q="What has waited longest?">What has waited longest?</p>
+        <h2 class="see-h">Trolley 14. End of the racks. <em>42 minutes.</em></h2>
+        <p class="see-p">You find out from a screen, not a walk.</p>
+      </div>
     </div>
-    <nav class="rail" aria-label="Chapters"><i></i><b></b>
-      <a href="#story" data-to="0.02">Search</a><a href="#story" data-to="0.24">Scans</a><a href="#story" data-to="0.40">Tag</a><a href="#story" data-to="0.56">Paths</a><a href="#story" data-to="0.70">Waits</a><a href="#story" data-to="0.84">Ask</a></nav>
+    <div class="see-keys" role="group" aria-label="Pick the trolley that has waited 42 minutes"></div>
+    <button class="see-snd" type="button" aria-pressed="false"><i aria-hidden="true"><b></b></i><span>Tap for sound</span></button>
+    <div class="see-ticks" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
   </div>
 </section>
 
@@ -336,6 +363,7 @@
   <div class="wordmark" aria-hidden="true"><span>amimotion</span></div>
 </footer>
 
+<script src="js/see.js" defer></script>
 <script type="module" src="js/studio.js"></script>
 </body>
 </html>

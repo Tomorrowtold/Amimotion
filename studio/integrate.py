@@ -91,7 +91,7 @@ def rel(m):
     if LAUNCH: return f'href="{u}"'
     return f'href="./{u.strip("/")}/index.html"' if u != "/" else 'href="./index.html"'
 main = re.sub(r'href="(/[^"#]*)"', rel, main)
-main = main.replace('src="assets/', 'src="./assets/studio/assets/').replace('poster="assets/', 'poster="./assets/studio/assets/')
+main = main.replace('src="assets/', 'src="./assets/studio/assets/').replace('poster="assets/', 'poster="./assets/studio/assets/').replace('data-assets="assets/', 'data-assets="./assets/studio/assets/')
 main = re.sub(r'srcset="([^"]+)"', lambda m: 'srcset="' + re.sub(r'(^|,\s*)assets/', r'\1./assets/studio/assets/', m.group(1)) + '"', main)
 # rename studio classes that the main site's own stylesheet also uses, so neither side bleeds into the other
 CLS = ['hero','hero-stage','hero-copy','system','start','start-row','stage','stage-pics','stage-side','stage-floor','cards','card','card-pic','cta','ctas','cta-h','cta-p','cta-plan','cta-call','btn','btn-primary','btn-secondary','links','lead','panel','tabs','tab-ink','big','copy','two','screen','mega','display','lede','lede-lead','h2','h3','small','strong','more','caps','cap','rail','story','story-sticky','floor-media','floor-poster','floor-gl','floor-hud','wire','wire-line','wire-glow','world-gl','spec-line','arrow-link','magnet','tilt','ideas','sp','sp-hub','vh','q-big','tag-fallback','tag-shadow','scroll-cue','hero-foot','hero-part','wrap']
@@ -101,8 +101,8 @@ main = re.sub(r'class="([^"]*)"', cls_attr, main)
 cursor = '<div class="cursor" id="cursor" aria-hidden="true"><i class="c-ring"></i><i class="c-dot"></i><i class="c-h"></i><i class="c-v"></i></div>'
 a, z = home.index("<main"), home.index("</main>") + 7
 home = home[:a] + main + home[z:]   # the normal system cursor (Shiv, 2 Nov): no custom cursor
-home = home.replace("</head>", '<link rel="stylesheet" href="./assets/studio/css/studio.css">\n<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("tag-live")</script>\n<link rel="modulepreload" href="./assets/studio/js/tag.js">\n<link rel="modulepreload" href="./assets/studio/assets/vendor/three.module.min.js">\n<link rel="preload" href="./assets/studio/assets/cad/mesh.json" as="fetch" crossorigin="anonymous">\n<link rel="preload" href="./assets/studio/assets/cad/top_cover.mesh" as="fetch" crossorigin="anonymous">\n<link rel="preload" href="./assets/studio/assets/cad/bottom_cover.mesh" as="fetch" crossorigin="anonymous">\n</head>', 1)
-home = home.replace("</body>", '<script type="module" src="./assets/studio/js/studio.js"></script>\n</body>', 1)
+home = home.replace("</head>", '<link rel="stylesheet" href="./assets/studio/css/studio.css">\n<link rel="stylesheet" href="./assets/studio/css/see.css">\n<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("tag-live")</script>\n<link rel="modulepreload" href="./assets/studio/js/tag.js">\n<link rel="modulepreload" href="./assets/studio/assets/vendor/three.module.min.js">\n<link rel="preload" href="./assets/studio/assets/cad/mesh.json" as="fetch" crossorigin="anonymous">\n<link rel="preload" href="./assets/studio/assets/cad/top_cover.mesh" as="fetch" crossorigin="anonymous">\n<link rel="preload" href="./assets/studio/assets/cad/bottom_cover.mesh" as="fetch" crossorigin="anonymous">\n</head>', 1)
+home = home.replace("</body>", '<script src="./assets/studio/js/see.js" defer></script>\n<script type="module" src="./assets/studio/js/studio.js"></script>\n</body>', 1)
 (dist / "index.html").write_text(home)
 
 # studio assets under assets/studio/
@@ -112,6 +112,8 @@ for sub in ("js", "assets"):
     shutil.copytree(STUDIO / sub, sa / sub)
 css = CRE.sub(lambda m: '.z-' + m.group(1), css)
 (sa / "css").mkdir(parents=True); (sa / "css" / "studio.css").write_text(css)
+# the section after the hero has its own small stylesheet: every rule in it already starts with .see, so it needs no scoping
+(sa / "css" / "see.css").write_text((STUDIO / "css" / "see.css").read_text().replace("url(../assets/fonts/", "url(../fonts/"))
 shutil.copytree(STUDIO / "assets" / "fonts", sa / "fonts")
 # studio JS fetches assets/... relative to the page: point it at assets/studio/assets/
 for f in (sa / "js").glob("*.js"):

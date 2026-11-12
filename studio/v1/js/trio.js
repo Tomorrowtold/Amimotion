@@ -35,8 +35,11 @@ export function mount({ sim, team, kn, reduce }) {
           if (st === 2) { const s = stage.querySelector('.kn-screen'); if (s) { s.classList.remove('read'); void s.offsetWidth; s.classList.add('read'); } }
         }
       }
-      requestAnimationFrame(tick);
+      if (performance.now() < until) requestAnimationFrame(tick); else looping = false;
     };
-    if (stage) requestAnimationFrame(tick);
+    // it follows the scroll: frames only while the page moves (and 600 ms after), so the main thread rests otherwise
+    let looping = false, until = 0;
+    const kick = () => { until = performance.now() + 600; if (!looping) { looping = true; requestAnimationFrame(tick); } };
+    if (stage) { addEventListener('scroll', kick, { passive: true }); addEventListener('resize', kick); kick(); }
   }
 }

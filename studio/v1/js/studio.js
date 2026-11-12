@@ -24,7 +24,7 @@ if (mb) mb.addEventListener('click', () => { const o = mb.getAttribute('aria-exp
    JavaScript (the compositor cannot scroll on its own). So they are attached only while the page is in the hero, and taken off after. */
 let wheeling = false; const STILL = /[?&]still\b/.test(location.search); // screenshots: no glide
 const glide = { on: false, to: 0, end: 0, hero: false };   // hero: the glide is the hero's own (other sections reuse glideTo)
-const filmStart = () => { const s = storySec; if (!s) return 0; const top = s.getBoundingClientRect().top + scrollY, len = s.offsetHeight - innerHeight, nb = +s.dataset.beats || 19; return Math.round(top + len * (.78 / nb)); };
+const filmStart = () => { const s = storySec; if (!s) return 0; const top = s.getBoundingClientRect().top + scrollY, len = s.offsetHeight - innerHeight; return Math.round(top + len * (s.hasAttribute('data-pull') ? .2 : 0)); };   // one gesture: the camera backs away from the tag and the floor turns real
 let fsCache = 0; const fsNow = () => fsCache || (fsCache = filmStart());
 addEventListener('resize', () => { fsCache = 0; }); addEventListener('load', () => { fsCache = 0; });
 const glideTo = (to, ms = 1050, hero = false) => {
@@ -47,11 +47,11 @@ if (!reduce && !STILL) {
     // still the same flick: no pause, and the deltas are dying away rather than a fresh push
     if (mine && !glide.on && gap < 110 && now - glide.end < 2600 && mag <= prev * 1.15 + 1) { e.preventDefault(); e.stopImmediatePropagation(); return; }
     const dir = Math.sign(e.deltaY); if (!dir || !inHero(dir)) return;
-    e.preventDefault(); e.stopImmediatePropagation(); glideTo(dir > 0 ? (fsCache = filmStart()) : 0, dir > 0 ? 1050 : 800, true);
+    e.preventDefault(); e.stopImmediatePropagation(); glideTo(dir > 0 ? (fsCache = filmStart()) : 0, dir > 0 ? 2100 : 900, true);
   };
   let ty0 = null;
   const onTouchStart = (e) => { ty0 = e.touches[0].clientY; };
-  const onTouchMove = (e) => { if (glide.on && glide.hero) { e.preventDefault(); e.stopImmediatePropagation(); return; } if (ty0 == null) return; const dy = ty0 - e.touches[0].clientY; if (Math.abs(dy) < 12) return; const dir = Math.sign(dy); if (inHero(dir)) { e.preventDefault(); e.stopImmediatePropagation(); ty0 = null; glideTo(dir > 0 ? (fsCache = filmStart()) : 0, 900, true); } };
+  const onTouchMove = (e) => { if (glide.on && glide.hero) { e.preventDefault(); e.stopImmediatePropagation(); return; } if (ty0 == null) return; const dy = ty0 - e.touches[0].clientY; if (Math.abs(dy) < 12) return; const dir = Math.sign(dy); if (inHero(dir)) { e.preventDefault(); e.stopImmediatePropagation(); ty0 = null; glideTo(dir > 0 ? (fsCache = filmStart()) : 0, dir > 0 ? 1900 : 900, true); } };
   let armed = false;
   const arm = () => {
     const want = scrollY <= fsNow() + innerHeight * .5 || (glide.hero && (glide.on || performance.now() - glide.end < 2600));
@@ -66,7 +66,7 @@ if (!reduce && !STILL) {
     const dir = ['ArrowDown', 'PageDown', ' '].includes(e.key) ? 1 : ['ArrowUp', 'PageUp'].includes(e.key) ? -1 : 0;
     if (!dir || e.target.closest('input,textarea,select,button,[contenteditable]')) return;
     if (glide.on && glide.hero) { e.preventDefault(); e.stopImmediatePropagation(); return; }
-    if (inHero(dir)) { e.preventDefault(); e.stopImmediatePropagation(); glideTo(dir > 0 ? (fsCache = filmStart()) : 0, 1050, true); }
+    if (inHero(dir)) { e.preventDefault(); e.stopImmediatePropagation(); glideTo(dir > 0 ? (fsCache = filmStart()) : 0, dir > 0 ? 2100 : 900, true); }
   }, true);
 }
 
@@ -195,13 +195,9 @@ $$('main details').forEach((d) => {   // the page's own details only: the nav's 
   });
 });
 
-/* ---------- the story film ---------- */
-const storySec = $('#story'); let drawStory = null, storyOn = false;
-new IntersectionObserver((es) => { storyOn = es[0].isIntersecting; }, { rootMargin: '200px' }).observe(storySec);
-let drawBridge = null;
-const startGL = () => { if (!reduce) import('./story.js').then((m) => { drawStory = m.story(storySec, $('#storyGL'));
-  // the landing between the hero and the film
-  if ($('#descent') && $('#bridgeGL')) import('./bridge.js').then((b) => { drawBridge = b.bridge({ descent: $('#descent'), hero: $('#hero'), copy: $('#hero .hero-copy'), stage: $('#hero .hero-stage'), canvas: $('#bridgeGL'), hudEl: $('#bridgeHUD'), story: storySec, panel: $('#storyGL').parentElement, sticky: $('#storyGL').closest('.story-sticky'), fallback: $('#tagFallback') }); }); }); };
+/* ---------- the section after the hero runs itself (see.js); the hero's first scroll glides into it ---------- */
+const storySec = $('#see'); const drawStory = null, storyOn = false, drawBridge = null;
+const startGL = () => {};
 /* ---------- parallax pictures ---------- */
 const pics = $$('.card-pic img');
 
@@ -214,7 +210,11 @@ if (pv) new IntersectionObserver((es) => es.forEach((e) => {
 /* ---------- bar ---------- */
 const bar = $('#bar') || document.createElement('i'); let lastY = 0, barS = null, barH = null;
 
-/* ---------- main loop ---------- */
+/* ---------- main loop: everything in it follows the scroll, so it runs only while the page moves (and 600 ms after),
+   then the main thread rests ---------- */
+let looping = false, until = 0;
+const kick = () => { until = performance.now() + 600; if (!looping) { looping = true; requestAnimationFrame(frame); } };
+addEventListener('scroll', kick, { passive: true }); addEventListener('resize', kick);
 function frame(t) {
   const y = scrollY;
   const bs = y > 20, bh = y > innerHeight * 1.2 && y > lastY + 2 && sheet.hidden;
@@ -229,9 +229,9 @@ function frame(t) {
   if (pf && !reduce) { const r = pro.getBoundingClientRect(); const k = clamp(-r.top / (r.height - innerHeight) * 1.25 + .15); const e = 1 - Math.pow(1 - k, 3);
     pf.style.setProperty('--pi', `${(1 - e) * 18}%`); pf.style.setProperty('--pj', `${(1 - e) * 22}%`); pf.style.setProperty('--pr', `${(1 - e) * 28}px`); pf.style.setProperty('--ps', `${1.18 - e * .18}`); }
   if (!reduce && pics.length) for (const el of pics) { const r = el.parentElement.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue; const k = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; el.style.setProperty('--py', `${k * -5}%`); }
-  requestAnimationFrame(frame);
+  if (t < until) requestAnimationFrame(frame); else looping = false;
 }
-requestAnimationFrame(frame);
+kick();
 
 /* ---------- progressive 3D: after first paint and idle ---------- */
 // a busy main thread (the hero renders every frame) can starve idle callbacks forever: cap the wait
@@ -410,8 +410,11 @@ if (simSec) {
     if (reduce || still) { p = target; v = 0; }
     else { const w = 13, z = .68; v += (w * w * (target - p) - 2 * z * w * v) * dt; p += v * dt; if (Math.abs(target - p) < .0004 && Math.abs(v) < .002) { p = target; v = 0; } }
     if (p !== cur || phase === 2) { cur = p; place(); }
-    if (seen) requestAnimationFrame(tick);
+    if (seen && (phase < 3 || p !== target || v !== 0 || glide.on)) requestAnimationFrame(tick); else ticking = false;
   };
+  let ticking = false;
+  const wake = () => { if (seen && !ticking) { ticking = true; last = 0; requestAnimationFrame(tick); } };
+  addEventListener('scroll', wake, { passive: true });
 
   /* one scroll, one guide: armed only while the guides fill the screen */
   if (!reduce && !STILL && fixed == null) {
@@ -458,7 +461,7 @@ if (simSec) {
   addEventListener('resize', () => { measure(); cur = -1; active = -1; place(); if (phase < 2) setIntro(0); });
   new IntersectionObserver((es) => {
     const was = seen; seen = es[0].isIntersecting;
-    if (seen && !was) { active = -1; last = 0; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.preload = 'auto'; } requestAnimationFrame(tick); }
+    if (seen && !was) { active = -1; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.preload = 'auto'; } wake(); }
     if (!seen) { cards.forEach((c) => { const vid = c.querySelector('video'); if (vid && vid.src && !vid.paused) vid.pause(); }); if (phase === 1) { iv.pause(); phase = 0; } }
   }, { rootMargin: '400px' }).observe(sec);
 })();
