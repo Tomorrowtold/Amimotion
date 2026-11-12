@@ -24,7 +24,7 @@
 .see-grid{position:absolute;inset:0;pointer-events:none;opacity:var(--grid,0);background:linear-gradient(rgba(102,165,250,.11) 1px,transparent 1px) 0 0/100% 6.25%,linear-gradient(90deg,rgba(102,165,250,.11) 1px,transparent 1px) 0 0/3.515% 100%}
 /* the way in: the camera backs away from the hero's tag through a white model of the plant (a sequence of frames on a canvas),
    then the model turns real: the canvas opens in a circle that spreads from the trolley the story is about */
-.see-box .see-pull{display:none;-webkit-mask-image:radial-gradient(circle at var(--hx,50%) var(--hy,50%),transparent calc(var(--rr,0%) - 9%),#000 var(--rr,0%));mask-image:radial-gradient(circle at var(--hx,50%) var(--hy,50%),transparent calc(var(--rr,0%) - 9%),#000 var(--rr,0%))}
+.see-box .see-pull{display:none;background:#eef2fa;-webkit-mask-image:radial-gradient(circle at var(--hx,50%) var(--hy,50%),transparent calc(var(--rr,0%) - 9%),#000 var(--rr,0%));mask-image:radial-gradient(circle at var(--hx,50%) var(--hy,50%),transparent calc(var(--rr,0%) - 9%),#000 var(--rr,0%))}
 .see.live[data-pull] .see-pull{display:block}
 .see-shade{position:absolute;inset:auto 0 0 0;height:52%;pointer-events:none;opacity:calc((.72 + .28*var(--dip,0))*var(--in,1));background:linear-gradient(to top,rgba(5,7,13,.86),rgba(5,7,13,.5) 38%,rgba(5,7,13,0))}
 .see-grain{position:absolute;inset:0;pointer-events:none;background:url(../assets/see/grain.png) 0 0/256px 256px;mix-blend-mode:overlay;opacity:.24}
@@ -37,18 +37,18 @@
 .see-ov .pg{fill:url(#see-gb)}
 .see-ov .pc{fill:#eaf3ff}
 .see-ov .trh{fill:#fff;opacity:0}
-.see-ov .pts{animation:see-breathe 3.6s ease-in-out infinite}
+.see.near .see-ov .pts{animation:see-breathe 3.6s ease-in-out infinite}
 @keyframes see-breathe{50%{opacity:.8}}
 .see-ov .ag{fill:url(#see-ga)}
 .see-ov .ac{fill:#ffe2ad}
 .see-ov .mins{font:500 17px var(--text,"AmI Text",Arial,sans-serif);fill:#f6c888;letter-spacing:.01em}
-.see-ov .mins.hero{font:600 24px var(--display,"AmI Display",Arial,sans-serif);fill:#fff;letter-spacing:-.02em}
+.see-ov .mins.big{font:600 24px var(--display,"AmI Display",Arial,sans-serif);fill:#fff;letter-spacing:-.02em}
 .see-ov .zone{font:500 12px var(--text,"AmI Text",Arial,sans-serif);fill:#93a0b8;letter-spacing:.2em;text-transform:uppercase;text-anchor:middle}
 .see-ov .lock{fill:none;stroke:#fff;stroke-width:1.5}
 .see-tip{position:absolute;left:0;top:0;z-index:3;pointer-events:none;padding:5px 10px 6px;border-radius:6px;background:rgba(5,7,13,.86);font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);color:#eaf2ff;white-space:nowrap;opacity:0;transition:opacity .2s}
 .see-tip.on{opacity:1}
 .see-tip.say{padding:9px 14px 10px;font-size:15px;background:#fff;color:var(--see-ink)}
-.see.ask .see-stage{cursor:pointer}
+.see.see-ask .see-stage{cursor:pointer}
 
 /* the words */
 .see-words{position:absolute;inset:auto 0 0 0;z-index:2;padding:0 clamp(20px,5vw,96px) clamp(40px,8vh,96px);pointer-events:none}
@@ -111,7 +111,7 @@
   .see-words{padding-bottom:clamp(36px,9vh,80px)}
   .see-h{font-size:clamp(1.9rem,1rem + 5.4vw,3.2rem);line-height:1.02}
   .see-ticks{right:10px}
-  .see-ov .mins{font-size:22px}.see-ov .mins.hero{font-size:30px}.see-ov .zone{font-size:15px}
+  .see-ov .mins{font-size:22px}.see-ov .mins.big{font-size:30px}.see-ov .zone{font-size:15px}
   .see:not(.live) .see-stage{aspect-ratio:9/16}
 }
 @media (prefers-reduced-motion:reduce){

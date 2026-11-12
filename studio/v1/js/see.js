@@ -57,7 +57,7 @@
         const o = { t, g, i, at: dist[i] / far, wait, hero, shown: -1, pg: mk('circle', { class: 'pg', r: 24 }, g), pc: mk('circle', { class: 'pc', r: 3.6 }, g) };
         if (wait) {
           o.ag = mk('circle', { class: 'ag', r: hero ? 58 : 38 }, g); o.ac = mk('circle', { class: 'ac', r: hero ? 7 : 5 }, g);
-          const flip = V === 'P' && t.xy[0] > .6; o.tx = mk('text', { class: 'mins' + (hero ? ' hero' : '') + (flip ? ' flip' : ''), x: (hero ? 16 : 12) * (flip ? -1 : 1), y: hero ? 8 : 6 }, g);
+          const flip = V === 'P' && t.xy[0] > .6; o.tx = mk('text', { class: 'mins' + (hero ? ' big' : '') + (flip ? ' flip' : ''), x: (hero ? 16 : 12) * (flip ? -1 : 1), y: hero ? 8 : 6 }, g);
           if (hero) o.lock = mk('path', { class: 'lock', d: 'M-22-12v-10h10M12-22h10v10M22 12v10h-10M-12 22h-10v-10' }, g);
         }
         return o;
@@ -125,7 +125,7 @@
     words.forEach((el, i) => { const r = SHOW[i], out = seg(p, r[1], r[2]); el.classList.toggle('on', i === step && (i > 0 || seen)); el.style.opacity = out > 0 ? (1 - out).toFixed(3) : ''; el.style.setProperty('--out', out.toFixed(3)); });
     if (step !== shown || force) { shown = step; const k = w < .14 ? 0 : w < .44 ? 1 : w < .7 ? 2 : 3; ticks.forEach((t, i) => t.classList.toggle('on', i === k)); }
     // scroll 1 is a question you can answer with a finger: it stays open until the lights go
-    const ask = p >= -.01 && p < T.dip[0]; root.classList.toggle('ask', ask); if (!ask && tip.classList.contains('say')) tip.classList.remove('on', 'say');
+    const ask = p >= -.01 && p < T.dip[0]; root.classList.toggle('see-ask', ask); if (!ask && tip.classList.contains('say')) tip.classList.remove('on', 'say');
     // the question is typed by the scroll, and answered on the floor
     const text = q.dataset.q, n = calm ? text.length : Math.round(text.length * seg(p, ...T.type));
     if (n !== typed) { typed = n; q.textContent = text.slice(0, n); }
@@ -141,7 +141,7 @@
   function measure() {
     const r = root.getBoundingClientRect(), span = r.height - innerHeight;
     want = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
-    near = r.top < innerHeight * 2.5 && r.bottom > -innerHeight; if (!seen && r.top < innerHeight * .5) { seen = true; shown = -1; }
+    near = r.top < innerHeight * 2.5 && r.bottom > -innerHeight; root.classList.toggle('near', near); if (!seen && r.top < innerHeight * .5) { seen = true; shown = -1; }
     if (near) preload();
     if (!raf && near) raf = requestAnimationFrame(tick);
   }
@@ -172,7 +172,7 @@
   }
   // scroll 1: the visitor guesses. Almost everyone is wrong, which is the point.
   function guess(ev) {
-    if (!els || !root.classList.contains('ask') || ev.target.closest('.see-snd')) return;
+    if (!els || !root.classList.contains('see-ask') || ev.target.closest('.see-snd')) return;
     const best = pick(ev, 70, 'Trolley'); if (!best) return;
     const n = els.tags.filter(o => o.t.kind === 'Trolley').length; guessed += best[0].hero ? 100 : 1;
     say(best, best[0].hero ? `Yes, this one. A lucky guess: one in ${n}.` : `Not this one. It got here ${2 + best[0].i * 7 % 9} minutes ago.`, true); paint();
