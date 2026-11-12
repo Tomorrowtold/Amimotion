@@ -411,7 +411,7 @@ def header_html(url="/", world=None, over=False):
     for s in NAV["sections"]:
         sl = slug(s["label"]); gs = [(n, k, its) for (n, _, k), (_, its) in zip(s["groups"], grouped(s))]
         groups = "".join(panel_group(n, k, its, cur, f"header.{sl}") for n, k, its in gs)
-        foot = f'<p class="drop-foot"><a class="drop-hub" href="{s["url"]}"{cur(s["url"])} data-nav-id="header.{sl}.hub">{html.escape(s["hub"])}{CHEV}</a></p>'
+        foot = f'<p class="drop-foot"><a class="drop-hub" href="{s["url"]}"{cur(s["url"])} data-nav-id="header.{sl}.hub">{html.escape(s["hub"])}{CHEV}</a><span class="drop-ask">Ask anything <kbd>/</kbd></span></p>'
         kinds = " ".join(sorted({k for _, k, _ in gs}))
         doors.append(f'<details class="door{" here" if s is here else ""}" data-panel><summary data-nav-id="header.{sl}"{" aria-current=\"true\"" if s is here else ""}>{s["label"]}{DOWN}</summary>'
                      f'<div class="drop"><div class="drop-in"><div class="drop-grid g{len(gs)}" data-kinds="{kinds}">{groups}</div>{foot}</div></div></details>')
@@ -426,7 +426,7 @@ def header_html(url="/", world=None, over=False):
             f'<a class="logo" href="/" aria-label="AmIMotion home" data-nav-id="header.home">{part("logo.html")}</a>\n'
             f'<nav class="main" aria-label="Main"><div class="doors">{"".join(doors)}</div></nav><span class="lens" aria-hidden="true"></span>\n'
             f'<div class="act">{ask}<a class="cta" href="/contact/" data-nav-id="header.book-a-call">Book a call</a>'
-            '<details class="phone" data-panel><summary data-nav-id="sheet.menu" aria-label="Menu"><span class="bars" aria-hidden="true"></span></summary>'
+            '<details class="phone" data-panel><summary data-nav-id="sheet.menu"><span class="bars" aria-hidden="true"></span><span class="vh m-open">Menu</span><span class="vh m-close">Close</span></summary>'
             f'<nav class="sheet" aria-label="Menu"><div class="sheet-track"><div class="sheet-home"><div class="sheet-ask">{ask_form("m", "Ask a question")}</div><ul class="sheet-doors">{menu}</ul>'
             '<p class="sheet-reach"><a href="/contact/">Book a call</a><a href="mailto:sales@amimotion.com">sales@amimotion.com</a></p></div>'
             f'<div class="sheet-panes"><button type="button" class="back">{CHEV}Menu</button>{"".join(panes)}</div></div></nav></details></div>'

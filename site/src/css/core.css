@@ -134,6 +134,7 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
 .cap .cta:hover{background:#2a3260}
 .cap .cta:active{transform:scale(var(--press-scale))}
 .phone{display:none}
+.phone[open] .m-open,.phone:not([open]) .m-close{display:none!important}
 
 /* the panel (round 3, "located"): one raised white card that floats a little under the bar, on the bar's own column.
    Pictures are the cards: each sits on one dark studio ground (the hardware is CAD on the same lit stage as the live
@@ -171,6 +172,8 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
 .grp-name a{color:inherit!important;display:inline-flex;align-items:center;gap:6px}
 .grp-name a:hover{color:var(--ink)!important}
 .top .drop-foot{display:flex;align-items:center;justify-content:space-between;margin:28px -28px 0;padding:16px 28px;border-top:1px solid rgba(11,18,56,.07)}
+.drop-ask{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(11,18,56,.48)}
+.no-js .drop-ask{display:none}
 .drop-hub,.pane-hub a{display:inline-flex;align-items:center;gap:8px;font:500 15px/1 var(--font-text);color:var(--ink)!important}
 .drop-hub .chev,.pane-hub .chev,.grp-name .chev{transition:transform .2s var(--n-ease)}
 .drop-hub:hover .chev,.grp-name a:hover .chev{transform:translateX(3px)}
