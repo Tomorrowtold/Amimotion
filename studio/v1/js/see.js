@@ -71,6 +71,7 @@
       })
     };
     order = [...els.tags].sort((a, b) => a.at - b.at);
+    hi = D.eye.tags.findIndex(t => t.mins === 42); gameLayer();
     hi = D.eye.tags.findIndex(t => t.mins === 42); const hero = D.eye.tags[hi].xy; box.style.transformOrigin = `${hero[0] * 100}% ${hero[1] * 100}%`;
     if (PULL) for (let i = 0; i <= D.pull; i++) pframes.push(image(`${base}${V}/pull/${pad(i)}.webp`, () => { if (pdrawn < 0 || i === Math.round(seg(cur, 0, PULL * FLY) * D.pull)) { pdrawn = -1; paint(true); } }));
     shown = -1; paint(true);
@@ -132,6 +133,7 @@
     els.zones.forEach(o => { const xy = last.zones[o.k]; A$(o.e, 'x', xy[0] * W); A$(o.e, 'y', xy[1] * H); O$(o.e, .9 * seg(rise, .92, 1) * (1 - .5 * ans)); });
     // words come in on their own once you reach them; the scroll itself carries them away
     const step = SHOW.findIndex(r => w >= r[0] && w < r[2]);
+    V$('--cout', seg(p, SHOW[0][1], SHOW[0][2]).toFixed(3)); if (call) call.style.visibility = p > SHOW[0][2] ? 'hidden' : '';
     words.forEach((el, i) => { const r = SHOW[i], out = seg(p, r[1], r[2]); el.classList.toggle('on', i === step && (i > 0 || seen)); el.style.opacity = out > 0 ? (1 - out).toFixed(3) : ''; el.style.setProperty('--out', out.toFixed(3)); });
     if (step !== shown || force) { shown = step; const k = w < .14 ? 0 : w < .44 ? 1 : w < .7 ? 2 : 3; ticks.forEach((t, i) => t.classList.toggle('on', i === k)); }
     // scroll 1 is a question you can answer with a finger: it stays open until the lights go
@@ -142,7 +144,7 @@
     const told = p >= T.ans[0] - .012; words[3].classList.toggle('told', told);
     // what the story is doing now, for the ear and the hand
     const lit = order.filter(o => pts > o.at * .7 + .12).length, waits = order.filter(o => o.wait && !o.hero && amb > .3 + .25 * (o.t.mins > 20));
-    const st = { near, vel, fly, real, dip, bank: Math.min(3, Math.floor(dip * 3.2)), lit, litAt: lit ? order[lit - 1].t.xy : null, amber: waits.length, amberAt: waits.length ? waits[waits.length - 1].t.xy : null, hero: amb > .8, heroAt: D.eye.tags[hi].xy, mins: els.tags[hi].shown, rise, typed: n, told, guess: guessed };
+    const st = { near, vel, fly, real, dip, bank: Math.min(3, Math.floor(dip * 3.2)), lit, litAt: lit ? order[lit - 1].t.xy : null, amber: waits.length, amberAt: waits.length ? waits[waits.length - 1].t.xy : null, hero: amb > .8, heroAt: D.eye.tags[hi].xy, mins: els.tags[hi].shown, rise, typed: n, told, guess: guessed, gLeft: game === 1 ? gLeft : 9, gLost, gTold };
     const p0 = was || st; was = st;
     if (!calm && navigator.vibrate) { const n = st.told && !p0.told ? 18 : st.hero && !p0.hero ? 14 : st.bank > p0.bank ? 10 : 0; if (n) try { navigator.vibrate(n); } catch (e) {} }
     if (sound) sound.hear(st);
@@ -154,6 +156,7 @@
     const wasNear = near; near = r.top < innerHeight * 2.5 && r.bottom > -innerHeight; root.classList.toggle('near', near);
     if (near !== wasNear) { if (near) fetchScore(); if (sound) paint(); idle(); } if (!seen && r.top < innerHeight * .5) { seen = true; shown = -1; }
     if (near && rest(want) > .2) preload();
+    if (els && call && game !== 2) { const w = rest(want); if (w > .03) end(false, game === 0); else if (!game && r.top <= 2 && r.bottom > innerHeight * .9) play(); }
     if (!raf && near) raf = requestAnimationFrame(tick);
   }
   // the picture follows the scroll with a little weight. Time-based, so it feels the same at 60, 90 or 120 frames a second
@@ -178,18 +181,47 @@
   }
   // a point says what it is when the cursor or a finger comes near
   function hover(ev) {
+    if (game === 1) return els && gameHover(ev);
     const c = rest(cur); if (!els || tip.classList.contains('say')) return;
     if (c < T.pts[1] || c > T.rise[0]) return tip.classList.remove('on');
     const best = pick(ev, 34); if (!best) return tip.classList.remove('on');
     say(best, best[0].t.kind + (best[0].wait && c > T.amber[1] ? ', waiting ' + best[0].t.mins + ' min' : ''));
   }
-  // scroll 1: the visitor guesses. Almost everyone is wrong, which is the point.
-  function guess(ev) {
-    if (!els || !root.classList.contains('see-ask') || ev.target.closest('.see-snd')) return;
-    const best = pick(ev, 70, 'Trolley'); if (!best) return;
-    const n = els.tags.filter(o => o.t.kind === 'Trolley').length; guessed += best[0].hero ? 100 : 1;
-    say(best, best[0].hero ? `Yes, this one. A lucky guess: one in ${n}.` : `Not this one. It got here ${2 + best[0].i * 7 % 9} minutes ago.`, true); paint();
+  // Scroll 1 is the call every plant gets: the line needs a trolley now. Five seconds to find it by eye (almost nobody can:
+  // every trolley looks the same, and waiting cannot be seen), then AmIMotion answers. It plays once; scrolling on skips to the answer.
+  const call = root.querySelector('.see-call'), tEl = call && call.querySelector('.see-t'), mIn = call && call.querySelector('.see-msg-in p');
+  let game = 0, g0 = 0, gLeft = 5, gTold = false, gLost = false, gTimer = 0;
+  const LEN = 5000;
+  function gameLayer() {
+    if (!els) return; const t = D.eye.tags[hi], flip = t.xy[0] > .62, sx = flip ? -1 : 1;
+    const g = mk('g', { class: 'gm', transform: `translate(${(t.xy[0] * W).toFixed(1)} ${(t.xy[1] * H).toFixed(1)})` });
+    const k = mk('g', { class: 'gm-k' }, g); k.style.transformOrigin = 'center'; k.style.transformBox = 'fill-box';
+    mk('circle', { class: 'gm-g', r: 64 }, k); mk('circle', { class: 'gm-r', r: 30 }, k);
+    mk('path', { class: 'lock', d: 'M-22-12v-10h10M12-22h10v10M22 12v10h-10M-12 22h-10v-10' }, k);
+    const l = mk('text', { class: 'gm-l', x: 44 * sx, y: -2, 'text-anchor': flip ? 'end' : 'start' }, g); l.textContent = 'Trolley 14';
+    const m = mk('text', { class: 'gm-s', x: 44 * sx, y: 22, 'text-anchor': flip ? 'end' : 'start' }, g); m.textContent = 'Brackets · waiting 42 min';
   }
+  const setLeft = v => { call.style.setProperty('--left', v.toFixed(3)); const n = Math.max(0, Math.ceil(v * 5)); if (n !== gLeft) { gLeft = n; tEl.textContent = n; paint(); } };
+  function play() {
+    if (game || !call) return; game = 1; g0 = performance.now(); call.hidden = false; root.classList.add('gm-run');
+    const step = () => { if (game !== 1) return; const v = 1 - (performance.now() - g0) / LEN; if (v <= 0) { setLeft(0); return end(false); } setLeft(v); gTimer = requestAnimationFrame(step); };
+    gTimer = requestAnimationFrame(step);
+  }
+  function end(won, quiet) {
+    if (game === 2) return; game = 2; cancelAnimationFrame(gTimer); if (call) call.hidden = false;
+    root.classList.remove('gm-run'); root.classList.add('gm-over', won ? 'gm-won' : 'gm-lost'); tip.classList.remove('on', 'say');
+    if (mIn) mIn.textContent = won ? 'That’s the one. Lucky guess.' : quiet ? 'Which trolley has our brackets?' : 'Time’s up. Line 3 stopped.';
+    gLost = !won && !quiet; paint();
+    setTimeout(() => { gTold = true; root.classList.add('gm-told'); paint(); }, won || quiet ? 250 : 1000);
+  }
+  // the trolleys answer the cursor while the clock runs
+  function guess(ev) {
+    if (!els || game !== 1 || ev.target.closest('.see-snd')) return;
+    const best = pick(ev, 70, 'Trolley'); if (!best) return;
+    if (best[0].hero) return end(true);
+    say(best, 'Not this one.', true); clearTimeout(guess.t); guess.t = setTimeout(() => tip.classList.remove('on', 'say'), 900);
+  }
+  function gameHover(ev) { const best = pick(ev, 46, 'Trolley'); if (best && !tip.classList.contains('say')) say(best, 'Trolley'); else if (!best && !tip.classList.contains('say')) tip.classList.remove('on'); }
 
   // Sound is on by default. No browser lets a page make a sound before the visitor's first tap, click or key (a scroll is not
   // enough), so the button says "Tap for sound" until then, and the very first touch anywhere starts it. The audio context is

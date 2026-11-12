@@ -54,6 +54,10 @@ window.SeeSound = function (AC) {
       if (st.mins > p0.mins && st.mins % 3 === 0) tick(3400, .016, .05, st.heroAt);
       if (st.typed > p0.typed) tick(2500, .028, .15, [.5, .95]);
       if (st.told && !p0.told) { tone(587, 1.5, .11, [.5, .5]); setTimeout(() => tone(880, 2.0, .11, st.heroAt), 140); }
+      // the call: a quiet clock for the last seconds, the line winding down if the time runs out, and the answer as one clear chord
+      if (st.gLeft < p0.gLeft && st.gLeft > 0) tick(st.gLeft <= 2 ? 2600 : 3200, .03, st.gLeft <= 2 ? .2 : .12, [.5, .9]);
+      if (st.gLost && !p0.gLost) { tone(92, 1.4, .3, [.5, .5], 'sine', 46); tone(184, .9, .08, [.5, .5], 'triangle', 92); }
+      if (st.gTold && !p0.gTold) { tone(587, 1.4, .1, [.5, .9]); setTimeout(() => tone(880, 1.9, .1, st.heroAt), 120); }
       if (st.guess > p0.guess) st.guess - p0.guess >= 100 ? tone(660, .6, .1, [.5, .9]) : tone(170, .2, .13, [.5, .9], 'sine', 120);
     }
   };
