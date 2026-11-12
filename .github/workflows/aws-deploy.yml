@@ -1,0 +1,28 @@
+name: Deploy to AWS
+# Runs only after AmIMotion sets the repository variables AWS_ROLE_ARN and AWS_REGION
+# (printed by ./aws/deploy.sh when run with GITHUB_REPO=...). Until then it skips itself.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  id-token: write
+  contents: read
+concurrency: { group: aws-deploy, cancel-in-progress: false }
+jobs:
+  deploy:
+    if: vars.AWS_ROLE_ARN != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - run: npm install --omit=dev --no-audit --no-fund
+      - name: Build and upload
+        run: UPDATE_ONLY=1 STACK=${{ vars.AWS_STACK || 'amimotion-website' }} ./aws/deploy.sh
