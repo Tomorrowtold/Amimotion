@@ -5,7 +5,7 @@
   const root = document.getElementById('see'); if (!root) return;
   const here = document.currentScript ? document.currentScript.src : '';
   const $ = s => root.querySelector(s), NS = 'http://www.w3.org/2000/svg';
-  const stage = $('.see-stage'), box = $('.see-box'), svg = $('.see-ov'), cv = $('.see-rise'), pv = $('.see-pull'), tip = $('.see-tip'), sndBtn = $('.see-snd');
+  const stage = $('.see-stage'), box = $('.see-box'), svg = $('.see-ov'), cv = $('.see-rise'), pv = $('.see-pull'), tip = $('.see-tip');
   const words = [...root.querySelectorAll('.see-w')], ticks = [...root.querySelectorAll('.see-ticks i')], q = $('.see-q');
   const lay = { dim: $('.see-dim'), blue: $('.see-blue'), amber: $('.see-amber'), vig: $('.see-vig') };
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -181,26 +181,13 @@
   }
   // scroll 1: the visitor guesses. Almost everyone is wrong, which is the point.
   function guess(ev) {
-    if (!els || !root.classList.contains('see-ask') || ev.target.closest('.see-snd')) return;
+    if (!els || !root.classList.contains('see-ask') ) return;
     const best = pick(ev, 70, 'Trolley'); if (!best) return;
     const n = els.tags.filter(o => o.t.kind === 'Trolley').length; guessed += best[0].hero ? 100 : 1;
     say(best, best[0].hero ? `Yes, this one. A lucky guess: one in ${n}.` : `Not this one. It got here ${2 + best[0].i * 7 % 9} minutes ago.`, true); paint();
   }
 
-  // Sound is on by default, but no browser lets a page make a sound before the visitor's first tap, click or key.
-  // So it starts on that first touch, and the code for it is only fetched then.
-  let muted = false; try { muted = localStorage.getItem('see-mute') === '1'; } catch (e) {}
-  const label = () => { if (!sndBtn) return; sndBtn.setAttribute('aria-pressed', !muted); sndBtn.lastElementChild.textContent = muted ? 'Sound off' : 'Sound on'; };
-  const GEST = ['pointerdown', 'keydown', 'touchend'];
-  function unlock() {
-    if (muted || unlock.done) return; unlock.done = true; GEST.forEach(e => removeEventListener(e, unlock));
-    const sc = document.createElement('script'); sc.src = here.replace(/see\.js(\?.*)?$/, 'see-sound.js');
-    sc.onload = () => { try { sound = window.SeeSound(); sound.set(!muted); was = null; paint(); } catch (e) { sound = null; } };
-    document.head.append(sc);
-  }
-  GEST.forEach(e => addEventListener(e, unlock, { passive: true }));
-  if (sndBtn) sndBtn.addEventListener('click', () => { muted = !muted; try { localStorage.setItem('see-mute', muted ? '1' : '0'); } catch (e) {} label(); if (sound) { sound.set(!muted); was = null; paint(); } else unlock(); });
-  label();
+  // No sound on the site (founders' rule; Shiv, 12 Nov): the score in see-sound.js is never fetched.
 
   root.classList.add('live');
   load().then(() => { measure(); cur = want; paint(true); });

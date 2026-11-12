@@ -77,14 +77,6 @@
 .see-w4:not(.told) .see-h .wd b{transform:translateY(118%)}
 .see-w4:not(.told) .see-p{opacity:0;transform:translateY(10px)}
 
-/* sound: on from the first touch, and one tap turns it off */
-.see-snd{position:absolute;left:clamp(14px,2.2vw,36px);bottom:clamp(14px,2.6vh,30px);z-index:3;display:none;align-items:center;gap:8px;padding:8px 2px;border:0;background:none;color:color-mix(in srgb,#fff calc(var(--in,1)*100%),var(--see-ink));font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);letter-spacing:.02em;opacity:.72;cursor:pointer;transition:opacity .25s}
-.see.live .see-snd{display:flex}
-.see-snd:hover,.see-snd:focus-visible,.see-snd[aria-pressed=true]{opacity:1}
-.see-snd:focus-visible{outline:1px solid #fff;outline-offset:4px}
-.see-snd i{display:flex;align-items:center;gap:2px;height:12px}
-.see-snd i::before,.see-snd i::after,.see-snd i b{content:"";width:2px;height:4px;border-radius:1px;background:currentColor;transition:height .3s}
-.see-snd[aria-pressed=true] i::before{height:8px}.see-snd[aria-pressed=true] i b{height:12px}.see-snd[aria-pressed=true] i::after{height:6px}
 
 /* four ticks: where you are */
 .see-ticks{position:absolute;right:clamp(14px,2.2vw,36px);top:50%;z-index:2;display:flex;flex-direction:column;gap:8px;transform:translateY(-50%)}
