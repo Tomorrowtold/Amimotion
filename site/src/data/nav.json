@@ -1,5 +1,5 @@
 {
- "about": "The one nav tree (round 3 nav, thread 'Perfect the site navigation', 2 Nov 2026). Five doors, each one of the inner-page worlds: Products (steel), Solutions (shift and floor), Start small (morning), Resources (paper), Company (studio). One label per URL: build.py renders the capsule, its panels, Ask, the phone sheet, the footer columns, BreadcrumbList JSON-LD, llms.txt and assets/ask.json from this file. 'groups' splits each section's items in order: [group name, how many items, how they show: plinths (CAD on clay), photos (the graded still the page opens on), feature (one big still), list, shelf (every field guide as a spine in its cover colour, read from the pages)]. 'hub' is the overview link at the foot of the panel. 'pictures' gives a still to an item: a bare key is assets/nav/<key>-640.webp, 'w:<name>' is assets/worlds/<name>-800.webp.",
+ "about": "The one nav tree (round 3 nav, thread 'Perfect the site navigation', 2 Nov 2026). Five doors, each one of the inner-page worlds: Products (steel), Solutions (shift and floor), Start small (morning), Resources (paper), Company (studio). One label per URL: build.py renders the capsule, its panels, Ask, the phone sheet, the footer columns, BreadcrumbList JSON-LD, llms.txt and assets/ask.json from this file. 'groups' splits each section's items in order: [group name, how many items, how they show: plinths (CAD on clay), photos (the graded still the page opens on), feature (one big still), list, shelf (every field guide as a spine in its cover colour, read from the pages)]. 'hub' is the overview link at the foot of the panel. 'pictures' gives a still to an item: a bare key is assets/nav/<key>-640.webp, 'w:<name>' is assets/worlds/<name>-800.webp, 'n:<file>' is assets/nav/<file>.webp (the nav's own pictures).",
  "sections": [
   {
    "label": "Products",
@@ -280,8 +280,8 @@
  "pictures": {
   "/products/amigo/": "amigo",
   "/products/amimo/": "amimo",
-  "/products/amihub/": "hub",
-  "/use-cases/ask-your-plant/": "ask",
+  "/products/amihub/": "n:hublive-800",
+  "/use-cases/ask-your-plant/": "n:asklive-800",
   "/industries/manufacturing/": "w:mfg-hero",
   "/industries/warehousing/": "w:wh-hero",
   "/industries/robotics/": "w:rob-hero",

@@ -368,7 +368,7 @@ def still(u):
     The panel's frame sets the shape (aspect-ratio, object-fit), so width and height only tell the browser the ratio early."""
     k = PIC.get(u)
     if not k: return ""
-    src = f"/assets/worlds/{k[2:]}-800.webp" if k.startswith("w:") else f"/assets/nav/{k}-640.webp"
+    src = f"/assets/worlds/{k[2:]}-800.webp" if k.startswith("w:") else f"/assets/nav/{k[2:]}.webp" if k.startswith("n:") else f"/assets/nav/{k}-640.webp"
     w, h = webp_size(src)
     return f'<span class="pic"><img src="{src}" width="{w}" height="{h}" alt="" loading="lazy" decoding="async"></span>'
 

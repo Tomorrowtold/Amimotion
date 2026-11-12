@@ -135,54 +135,67 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
 .cap .cta:active{transform:scale(var(--press-scale))}
 .phone{display:none}
 
-/* the panel: flush under the bar, full width, white; its content sits on the bar's own column. Moving from one open
-   door to the next morphs from the old panel's height (--from, set by nav.js) */
-.drop{position:absolute;left:0;right:0;top:100%;max-height:calc(100vh - var(--bar));overflow:auto;overscroll-behavior:contain;background:#fff;
-  box-shadow:0 1px 0 var(--hairline),0 24px 48px -24px rgba(11,18,56,.22);animation:n-in .26s var(--n-out) both}
-.drop-in{padding:28px var(--n-pad) 0;animation:n-fade .22s .03s var(--n-ease) both}
-@keyframes n-in{from{clip-path:inset(0 0 calc(100% - var(--from,0px)) 0);opacity:var(--o0,0)}to{clip-path:inset(0 0 0 0);opacity:1}}
+/* the panel (round 2, "soft depth"): one raised white card that floats a little under the bar, on the bar's own
+   column. Inside it, pictures sit on raised cards and lists sit in a pressed, tinted well, so the eye reads two
+   materials: cards to look at, a well to scan. All depth is static shadow and 1 px light, never blur, so it costs
+   nothing to draw. Moving from one open door to the next morphs from the old panel's height (--from, set by nav.js) */
+.drop{position:absolute;left:calc(var(--n-pad) - 20px);right:calc(var(--n-pad) - 20px);top:calc(100% + 8px);max-height:calc(100vh - var(--bar) - 24px);overflow:auto;overscroll-behavior:contain;
+  border-radius:22px;background:#fff;
+  box-shadow:0 0 0 1px rgba(11,18,56,.07),0 1px 2px rgba(11,18,56,.05),0 12px 24px -12px rgba(11,18,56,.14),0 40px 80px -32px rgba(11,18,56,.30);
+  animation:n-in .28s var(--n-out) both}
+.drop-in{padding:20px 20px 0;animation:n-fade .24s .03s var(--n-ease) both}
+@keyframes n-in{from{clip-path:inset(0 0 calc(100% - var(--from,0px)) 0 round 22px);opacity:var(--o0,0);transform:translateY(-6px)}to{clip-path:inset(0 0 0 0 round 22px);opacity:1;transform:none}}
 @keyframes n-fade{from{opacity:0;transform:translateY(-4px)}}
-.drop-grid{display:grid;gap:var(--s-7);grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+.drop-grid{display:grid;gap:16px;grid-template-columns:minmax(0,2.15fr) minmax(0,1fr)}
 .drop-grid.g3{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr)}
 .drop-grid[data-kinds~="feature"]{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)}
-.drop-grid.g2[data-kinds~="feature"]{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+.drop-grid.g2[data-kinds~="feature"]{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr)}
 .drop-grid[data-kinds~="shelf"]{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
-.drop .grp-name,.pane .grp-name{font:500 13px/1.2 var(--font-text);color:rgba(11,18,56,.5);margin:0 0 14px;padding-bottom:12px;border-bottom:1px solid var(--hairline)}
+.grp{padding:12px 8px 8px}
+.drop .grp-name,.pane .grp-name{font:500 13px/1.2 var(--font-text);color:rgba(11,18,56,.5);margin:0 0 12px 4px}
 .grp-name a{color:inherit!important;display:inline-flex;align-items:center;gap:6px}
 .grp-name a:hover{color:var(--ink)!important}
-.top .drop-foot{margin-top:28px;padding:16px 0 20px;border-top:1px solid var(--hairline)}
+/* the well: lists sit in a pressed, tinted tray */
+.drop .g-list,.drop .g-guides{border-radius:16px;background:#f5f8fe;box-shadow:inset 0 1px 2px rgba(11,18,56,.06),inset 0 0 0 1px rgba(11,18,56,.035);padding:16px 16px 10px}
+.top .drop-foot{display:flex;align-items:center;justify-content:space-between;margin:20px -20px 0;padding:14px 28px;background:#fafbfe;border-top:1px solid rgba(11,18,56,.06)}
 .drop-hub,.pane-hub a{display:inline-flex;align-items:center;gap:8px;font:500 15px/1 var(--font-text);color:var(--action)!important}
 .drop-hub .chev,.pane-hub .chev,.grp-name .chev{transition:transform .2s var(--n-ease)}
 .drop-hub:hover .chev,.grp-name a:hover .chev{transform:translateX(3px)}
-/* rows: title and one line; the title turns action colour on hover, nothing jumps */
-.top .list{display:grid;gap:4px}
-.list a{display:block;padding:8px 0}
+/* rows in the well: a row lifts onto a white card under the pointer */
+.top .list{display:grid;gap:2px}
+.list a{display:block;padding:9px 12px;margin:0 -4px;border-radius:10px;transition:background .15s,box-shadow .15s}
 .list b{display:block;font:500 15px/1.3 var(--font-text);letter-spacing:-.005em;transition:color .15s}
 .list span{display:block;font-size:13.5px;color:var(--ink-soft);line-height:1.4;margin-top:2px}
 .list .chev{display:none}
+.list a:hover,.list a:focus-visible{background:#fff;box-shadow:0 0 0 1px rgba(11,18,56,.06),0 4px 10px -6px rgba(11,18,56,.18)}
 .list a:hover b,.list a[aria-current] b{color:var(--action)}
-/* pictures: products on their pale ground, places as the photograph the page opens on; one size per row */
-.plinths,.photos,.feature{display:grid;gap:16px}
+/* high cards: each picture on a raised card with a lit top edge; the card lifts 2 px and its edge turns located blue */
+.plinths,.photos,.feature{display:grid;gap:12px}
 .plinths{grid-template-columns:repeat(4,minmax(0,1fr))}
 .photos{grid-template-columns:repeat(3,minmax(0,1fr))}
 .feature{grid-template-columns:1fr}
-.plinth,.photo{display:block}
-.top .pic{position:relative;display:block;aspect-ratio:4 / 3;border-radius:10px;overflow:hidden;background:#f3f6fc}
+.plinth,.photo{display:block;padding:6px 6px 12px;border-radius:16px;background:linear-gradient(180deg,#fff,#fbfcff);
+  box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(11,18,56,.07),0 1px 2px rgba(11,18,56,.05),0 10px 22px -14px rgba(11,18,56,.28);
+  transition:transform .3s var(--n-out),box-shadow .3s var(--n-out)}
+.top .pic{position:relative;display:block;aspect-ratio:4 / 3;border-radius:11px;overflow:hidden;background:#f3f6fc}
 .plinth .pic{aspect-ratio:5 / 4}
 .photo.feature .pic{aspect-ratio:16 / 9}
+.drop-grid.g2 .photo.feature .pic{aspect-ratio:2 / 1}
 .top .pic::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(11,18,56,.06)}
 .top .pic img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .6s var(--n-out)}
-.plinth b,.photo b{display:block;font:500 15px/1.3 var(--font-text);margin:12px 0 2px;transition:color .15s}
-.plinth span:not(.pic),.photo span:not(.pic){display:block;font-size:13.5px;color:var(--ink-soft);line-height:1.4}
-.plinth:hover img,.photo:hover img{transform:scale(1.03)}
+.plinth b,.photo b{display:block;font:500 15px/1.3 var(--font-text);margin:11px 6px 2px;transition:color .15s}
+.plinth span:not(.pic),.photo span:not(.pic){display:block;font-size:13.5px;color:var(--ink-soft);line-height:1.4;margin:0 6px}
+.plinth:hover,.photo:hover,.plinth:focus-visible,.photo:focus-visible{transform:translateY(-2px);
+  box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(31,107,255,.28),0 2px 4px rgba(11,18,56,.06),0 18px 32px -16px rgba(11,18,56,.36)}
+.plinth:hover img,.photo:hover img{transform:scale(1.035)}
 .plinth:hover b,.photo:hover b,.plinth[aria-current] b,.photo[aria-current] b{color:var(--action)}
-/* field guides: every guide by its question, two columns */
-.guides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s-6)}
-.guides a{display:block;padding:7px 0;font:400 15px/1.35 var(--font-text);color:var(--ink);transition:color .15s}
-.guides a:hover,.guides a[aria-current]{color:var(--action)}
+/* field guides: every guide by its question, two columns in the well */
+.guides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s-4)}
+.guides a{display:block;padding:7px 8px;margin:0 -4px;border-radius:8px;font:400 15px/1.35 var(--font-text);color:var(--ink);transition:color .15s,background .15s}
+.guides a:hover,.guides a[aria-current]{color:var(--action);background:#fff}
 
 /* Ask: a palette under its button */
-.nask-drop{left:auto;right:var(--n-pad);top:calc(100% + 8px);width:min(560px,calc(100vw - 32px));border-radius:16px;padding:8px;box-shadow:0 0 0 1px var(--hairline),0 24px 48px -20px rgba(11,18,56,.3)}
+.nask-drop{left:auto;right:calc(var(--n-pad) - 8px);top:calc(100% + 8px);width:min(560px,calc(100vw - 32px));border-radius:22px;padding:8px}
 .nask-main{padding:0 12px;border-bottom:1px solid var(--hairline)}
 .nask-form input{width:100%;height:52px;border:0;border-radius:0;background:none;padding:0;font:400 18px/1 var(--font-text);color:var(--ink)}
 .nask-form input::placeholder{color:var(--ink-soft);opacity:.65}
@@ -206,7 +219,7 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
 .nask-roles .chev{color:var(--action);opacity:0;transition:opacity .15s}
 .nask-roles a:hover .chev{opacity:1}
 .asking .nask-roles{display:none}
-.scrim{position:fixed;inset:0;z-index:39;background:rgba(11,18,56,.14);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,visibility 0s .2s}
+.scrim{position:fixed;inset:0;z-index:39;background:rgba(11,18,56,.10);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,visibility 0s .2s}
 .top:has(.door[open]) + .scrim,.top:has(.nask[open]) + .scrim{opacity:1;visibility:visible;transition:opacity .2s}
 @media (min-width:1024px) and (max-width:1199px){.cap{gap:var(--s-4)}.door > summary{padding-inline:9px}.nask .t,.nask kbd{display:none}.nask > summary{width:36px;padding:0;justify-content:center}}
 
@@ -245,7 +258,8 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
   .js .pane{display:none}
   .js .pane.on{display:block;animation:n-fade .25s var(--n-ease) both}
   .pane-h{font:600 30px/1.05 var(--font-display);letter-spacing:-.025em;margin:6px 0 4px}
-  .pane .grp-name{margin-top:26px}
+  .pane .grp{padding:0}
+  .pane .grp-name{margin:26px 0 12px}
   .pane .plinths,.pane .photos{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--margin);margin:0 calc(-1 * var(--margin));padding:0 var(--margin) 4px;gap:12px;scrollbar-width:none}
   .pane .plinths li,.pane .photos li{flex:0 0 58%;scroll-snap-align:start}
   .pane .guides{grid-template-columns:1fr}
