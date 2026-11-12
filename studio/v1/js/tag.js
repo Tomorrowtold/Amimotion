@@ -184,8 +184,13 @@ export async function init(canvas, fallback, hero) {
   const refit = () => { const b = canvas.clientWidth + 'x' + canvas.clientHeight; if (b !== lastBox) { lastBox = b; size(); } };
 
   let landing = false, px = 0, py = 0, tx = 0, ty = 0, on = true, t0 = 0, lift = 0, late = false;
-  addEventListener('pointermove', (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, { passive: true });
-  new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on) requestAnimationFrame(loop); }).observe(hero);
+  // the tag rests: once its story has played (drop, pulses, the wait filling) it holds that last frame and the GPU and main
+  // thread go quiet. A pointer move or a scroll wakes it for as long as it takes to settle, then it rests again.
+  let running = false;
+  const wake = () => { if (on && !running && t0) { running = true; requestAnimationFrame(loop); } };
+  addEventListener('pointermove', (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; wake(); }, { passive: true });
+  addEventListener('scroll', wake, { passive: true }); addEventListener('resize', wake);
+  new IntersectionObserver((es) => { on = es[0].isIntersecting; wake(); }).observe(hero);
 
   // timeline (seconds from the first frame): the tag comes down out of soft focus, the highlight crosses the lid,
   // it touches down, is heard (the pulse reaches the anchors), the fix locks on, then the wait begins. The pulse repeats.
@@ -195,9 +200,11 @@ export async function init(canvas, fallback, hero) {
   const ANCR = ANCH.map((a) => a.length());
   // ?hero=1.2 holds the hero at that second (for stills and review)
   const FREEZE = (() => { const m = /[?&]hero=([\d.]+)/.exec(location.search); return m ? +m[1] : -1; })();
+  // HOLD: the moment the story rests on: between pulses (no ring) with the wait fully drawn
+  const HOLD = DOWN + 3 * EVERY + 3;
   function loop(now) {
-    if (!on) return;
-    const t = FREEZE >= 0 ? FREEZE : (now - t0) / 1000 + (late ? REST : 0);
+    if (!on) { running = false; return; }
+    const t = FREEZE >= 0 ? FREEZE : Math.min(HOLD, (now - t0) / 1000 + (late ? REST : 0));
     const r = hero.getBoundingClientRect(); const sp = clamp(-r.top / r.height);
     px = lerp(px, tx, .04); py = lerp(py, ty, .04);
 
@@ -255,9 +262,11 @@ export async function init(canvas, fallback, hero) {
     } else if (landing) { landing = false; canvas.style.opacity = ''; cam.near = 10; cam.far = 6000; cam.updateProjectionMatrix(); size(); }
     tag.updateMatrixWorld(true); refl.matrix.multiplyMatrices(MIR, tag.matrixWorld); rTop.position.copy(top.position);
     if (!(B && B.fade < .01)) renderer.render(scene, cam);
+    const settled = t >= HOLD && !B && Math.abs(tx - px) < .002 && Math.abs(ty - py) < .002 && Math.abs(lift - sp * 30) < .05;
+    if (settled) { running = false; return; }
     requestAnimationFrame(loop);
   }
   // compile everything before the first visible frame, so the first frame the visitor sees is the finished picture
   renderer.compile(scene, cam);
-  requestAnimationFrame((n) => { t0 = n; late = FREEZE < 0 && !document.documentElement.classList.contains('tag-live'); if (late) { WAIT_AT = REST + 1.6; fallback.style.transition = 'opacity 1.6s ease'; } else canvas.style.transition = 'none'; loop(n); canvas.classList.add('ready'); fallback.classList.add('gone'); hero.classList.add('tag-in'); dispatchEvent(new Event('tag:ready')); });
+  requestAnimationFrame((n) => { t0 = n; late = FREEZE < 0 && !document.documentElement.classList.contains('tag-live'); if (late) { WAIT_AT = REST + 1.6; fallback.style.transition = 'opacity 1.6s ease'; } else canvas.style.transition = 'none'; running = true; loop(n); canvas.classList.add('ready'); fallback.classList.add('gone'); hero.classList.add('tag-in'); dispatchEvent(new Event('tag:ready')); });
 }

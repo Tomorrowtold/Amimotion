@@ -101,7 +101,7 @@ main = re.sub(r'class="([^"]*)"', cls_attr, main)
 cursor = '<div class="cursor" id="cursor" aria-hidden="true"><i class="c-ring"></i><i class="c-dot"></i><i class="c-h"></i><i class="c-v"></i></div>'
 a, z = home.index("<main"), home.index("</main>") + 7
 home = home[:a] + main + home[z:]   # the normal system cursor (Shiv, 2 Nov): no custom cursor
-home = home.replace("</head>", '<link rel="stylesheet" href="./assets/studio/css/studio.css">\n<link rel="stylesheet" href="./assets/studio/css/see.css">\n<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("tag-live")</script>\n<link rel="modulepreload" href="./assets/studio/js/tag.js">\n<link rel="modulepreload" href="./assets/studio/assets/vendor/three.module.min.js">\n<link rel="preload" href="./assets/studio/assets/cad/mesh.json" as="fetch" crossorigin="anonymous">\n<link rel="preload" href="./assets/studio/assets/cad/top_cover.mesh" as="fetch" crossorigin="anonymous">\n<link rel="preload" href="./assets/studio/assets/cad/bottom_cover.mesh" as="fetch" crossorigin="anonymous">\n</head>', 1)
+home = home.replace("</head>", '<link rel="stylesheet" href="./assets/studio/css/studio.css">\n<link rel="stylesheet" href="./assets/studio/css/see.css">\n<link rel="stylesheet" href="./assets/studio/css/home.css">\n<script>if(matchMedia("(pointer: fine) and (prefers-reduced-motion: no-preference)").matches)document.documentElement.classList.add("tag-live")</script>\n<link rel="preload" href="./assets/studio/assets/cad/mesh.json" as="fetch" crossorigin="anonymous" media="(pointer: fine)">\n<link rel="preload" href="./assets/studio/assets/cad/top_cover.mesh" as="fetch" crossorigin="anonymous" media="(pointer: fine)">\n<link rel="preload" href="./assets/studio/assets/cad/bottom_cover.mesh" as="fetch" crossorigin="anonymous" media="(pointer: fine)">\n</head>', 1)
 home = home.replace("</body>", '<script src="./assets/studio/js/see.js" defer></script>\n<script type="module" src="./assets/studio/js/studio.js"></script>\n</body>', 1)
 (dist / "index.html").write_text(home)
 
@@ -114,6 +114,8 @@ css = CRE.sub(lambda m: '.z-' + m.group(1), css)
 (sa / "css").mkdir(parents=True); (sa / "css" / "studio.css").write_text(css)
 # the section after the hero has its own small stylesheet: every rule in it already starts with .see, so it needs no scoping
 (sa / "css" / "see.css").write_text((STUDIO / "css" / "see.css").read_text().replace("url(../assets/fonts/", "url(../fonts/"))
+# the homepage's own visual system, loaded last: scoped and renamed exactly like studio.css
+(sa / "css" / "home.css").write_text(CRE.sub(lambda m: '.z-' + m.group(1), scope((STUDIO / "css" / "home.css").read_text())))
 shutil.copytree(STUDIO / "assets" / "fonts", sa / "fonts")
 # studio JS fetches assets/... relative to the page: point it at assets/studio/assets/
 for f in (sa / "js").glob("*.js"):

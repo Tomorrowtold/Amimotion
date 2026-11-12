@@ -10,7 +10,8 @@
 <link rel="preload" href="assets/fonts/AmISansText-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/studio.css">
 <link rel="stylesheet" href="css/see.css">
-<script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('tag-live')</script>
+<link rel="stylesheet" href="css/home.css">
+<script>if(matchMedia('(pointer: fine) and (prefers-reduced-motion: no-preference)').matches)document.documentElement.classList.add('tag-live')</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"AmIMotion","legalName":"Locatepro Technologies Pvt Ltd","address":{"@type":"PostalAddress","addressLocality":"Bengaluru","addressCountry":"IN"},"email":"sales@amimotion.com","description":"AmIMotion builds industrial spatial intelligence. It gives a time-stamped location to every trolley, bin, tool and vehicle you tag in a plant."}</script>
 </head>
 <body>
@@ -46,7 +47,7 @@
   <div class="hero-stage" aria-hidden="true">
     <picture class="tag-fallback" id="tagFallback">
       <source media="(max-width: 900px)" srcset="assets/home/hero-rest-m-780.webp">
-      <img src="assets/home/hero-rest-1140.webp" srcset="assets/home/hero-rest-1140.webp 1140w, assets/home/hero-rest-2280.webp 2280w" sizes="min(84vw, 1560px)" alt="" width="1140" height="657" fetchpriority="low">
+      <img src="assets/home/hero-rest-1140.webp" srcset="assets/home/hero-rest-1140.webp 1140w, assets/home/hero-rest-2280.webp 2280w" sizes="min(84vw, 1560px)" alt="" width="1140" height="657" fetchpriority="high">
     </picture>
     <canvas class="bridge-gl" id="bridgeGL"></canvas>
     <canvas class="bridge-hud" id="bridgeHUD"></canvas>
@@ -58,7 +59,7 @@
       <span class="ln"><span>Where work is.</span></span>
       <span class="ln"><span>Where it <em>waits.</em></span></span>
     </h1>
-    <p class="lede k-fade"><span class="lede-lead">AmIMotion is spatial intelligence for factories and warehouses.</span> A small tag rides on each trolley, bin and tool. Anchors on your columns hear its signal. One live map shows where it went and how long it has waited. You find out from a screen, not a walk.</p>
+    <p class="lede k-fade"><span class="lede-lead">AmIMotion is spatial intelligence for factories and warehouses.</span></p>
   </div>
   <div class="hero-foot k-fade">
     <span class="scroll-cue" aria-hidden="true"><i></i></span>
@@ -66,15 +67,14 @@
 </section>
 </div>
 
-<!-- 1b. CAN YOU SEE IT: the camera backs away from the hero's tag to one floor, told in four scrolls -->
-<section class="see" id="see" data-pull data-assets="assets/see/" aria-label="What AmIMotion shows you on a factory floor">
+<!-- 1b. CAN YOU SEE IT: one floor, told in four scrolls. It opens on the question -->
+<section class="see" id="see" data-assets="assets/see/" aria-label="What AmIMotion shows you on a factory floor">
   <div class="see-stage">
     <div class="see-box">
-      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/lit.webp"><img class="see-lit" src="assets/see/L/lit.webp" alt="A working factory floor with trolleys, bins, pallets, racks, a forklift and people." decoding="async"></picture>
+      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/lit.webp"><img class="see-lit" src="assets/see/L/lit.webp" alt="A working factory floor with trolleys, bins, pallets, racks, a forklift and people." loading="lazy" decoding="async"></picture>
       <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/dim.webp"><img class="see-dim" src="assets/see/L/dim.webp" alt="" loading="lazy" decoding="async"></picture>
       <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/blue.webp"><img class="see-blue" src="assets/see/L/blue.webp" alt="" loading="lazy" decoding="async"></picture>
       <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/amber.webp"><img class="see-amber" src="assets/see/L/amber.webp" alt="" loading="lazy" decoding="async"></picture>
-      <canvas class="see-pull" aria-hidden="true"></canvas>
       <canvas class="see-rise" aria-hidden="true"></canvas>
       <div class="see-grid"></div>
       <div class="see-veil"></div>
@@ -104,206 +104,122 @@
         <p class="see-p">You find out from a screen, not a walk.</p>
       </div>
     </div>
-    <button class="see-snd" type="button" aria-pressed="false"><i aria-hidden="true"><b></b></i><span>Sound off</span></button>
     <div class="see-ticks" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
   </div>
 </section>
 
-<!-- 1c. ONE SCREEN: plan your first bay, the people, the products -->
-<section class="trio" id="trio" aria-label="Plan, people and products">
-<div class="trio-sticky">
-<div class="sim" id="sim" aria-label="Plan your first bay">
-  <div class="sim-card" data-sim>
-    <i class="sim-orb a" aria-hidden="true"></i><i class="sim-orb b" aria-hidden="true"></i><i class="sim-orb c" aria-hidden="true"></i><i class="sim-light" aria-hidden="true"></i>
-    <svg class="sim-art" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path class="sim-path" d="M-20 250 C 220 250, 260 120, 470 120 S 760 210, 900 150 S 1120 60, 1230 70"/><circle class="sim-wait" cx="900" cy="150" r="9"/><circle class="sim-tag" cx="470" cy="120" r="6"/></svg>
-    <div class="sim-teaser">
-      <div class="sim-words">
-        <h2 class="sim-h">Plan your first bay</h2>
-        <p class="sim-sub">Six questions, a plan back</p>
-      </div>
-      <div class="sim-q">
-        <p class="sim-qt">What does your team look for?</p>
-        <div class="sim-opts"><button type="button" class="sim-opt" data-v="carriers"><svg class="sim-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4.5h11v6h-11z"/><path d="M5 10.5v1.5M11 10.5v1.5"/><circle cx="5" cy="13.4" r="1.1"/><circle cx="11" cy="13.4" r="1.1"/></svg>WIP carriers &amp; bins</button><button type="button" class="sim-opt" data-v="tools"><svg class="sim-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.2 2.6a3 3 0 0 0-3.4 3.9L2.7 10.6a1.3 1.3 0 0 0 1.8 1.8l4.1-4.1a3 3 0 0 0 3.9-3.4l-1.8 1.8-1.6-.4-.4-1.6z"/></svg>Tools &amp; fixtures</button><button type="button" class="sim-opt" data-v="vehicles"><svg class="sim-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 12V6.5h4l2 3v2.5"/><path d="M10.5 3v9h3"/><circle cx="4.3" cy="12.6" r="1.2"/><circle cx="8" cy="12.6" r="1.2"/></svg>Forklifts &amp; tuggers</button><button type="button" class="sim-opt" data-v="robots"><svg class="sim-ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="5" width="11" height="6.5" rx="2"/><circle cx="8" cy="8.2" r="1.3"/><path d="M4.5 13h7"/></svg>AGVs &amp; AMRs</button><button type="button" class="sim-opt" data-v="goods"><svg class="sim-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3.5h8v6H4z"/><path d="M8 3.5v2.2"/><path d="M2.5 11.5h11M3.5 11.5v1.8M8 11.5v1.8M12.5 11.5v1.8"/></svg>Pallets &amp; finished goods</button></div>
-      </div>
+<!-- 2. THE PARTS: three products, one black screen -->
+<section class="hm hm-dark hm-parts" id="system" aria-labelledby="sys-title">
+  <div class="hm-in">
+    <div class="hm-head">
+      <h2 class="hm-h2" id="sys-title"><span>Three parts work</span> <span>as one system.</span></h2>
+      <p class="hm-lede">Built on the FiRa and omlox specifications.</p>
     </div>
-    <div class="sim-window" hidden>
-      <button type="button" class="sim-close" aria-label="Close the planner"><span aria-hidden="true">&times;</span></button>
-      <iframe class="sim-frame" title="Plan your first bay" tabindex="0"></iframe>
-    </div>
-  </div>
-</div>
-
-<div class="team" id="team" aria-labelledby="team-h">
-  <div class="team-in">
-    <h2 class="team-h" id="team-h"><span>Decades of shipping hardware.</span> <span>Now building for the factory floor.</span></h2>
-    <ul class="team-row">
-      <li class="tm">
-        <figure class="tm-pic" tabindex="0" aria-describedby="tm-kaushal-kukkar">
-          <img src="assets/team/kaushal-kukkar.webp" alt="Kaushal Kukkar" width="640" height="800" loading="lazy" decoding="async">
-          <div class="tm-pop" id="tm-kaushal-kukkar" role="note"><p>20 years in product development and business growth. Scaled products from 0 to 1 and led P&amp;L across global markets.</p><a class="tm-in" href="https://www.linkedin.com/search/results/people/?keywords=Kaushal%20Kukkar%20AmIMotion" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.1c0-1.22-.02-2.78-1.7-2.78-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg>Connect on LinkedIn</a></div>
-        </figure>
-        <h3 class="tm-name">Kaushal Kukkar</h3>
-        <p class="tm-role">Founder and CEO</p>
+    <ul class="hm-trio">
+      <li class="hm-part">
+        <a class="hm-pic" href="/products/amigo/" tabindex="-1" aria-hidden="true"><img src="assets/hw/amigo-stage-1200.webp" srcset="assets/hw/amigo-stage-700.webp 700w, assets/hw/amigo-stage-1200.webp 1200w" sizes="(max-width:860px) 92vw, 30vw" alt="" width="1200" height="797" loading="lazy" decoding="async"></a>
+        <h3 class="hm-h3"><a href="/products/amigo/">AmIGo tag</a></h3>
+        <p>Screws or sticks onto the trolley. Sends a short UWB radio pulse when it moves and sleeps when it stops.</p>
       </li>
-      <li class="tm">
-        <figure class="tm-pic" tabindex="0" aria-describedby="tm-vivek-dham">
-          <img src="assets/team/vivek-dham.webp" alt="Vivek Dham" width="640" height="800" loading="lazy" decoding="async">
-          <div class="tm-pop" id="tm-vivek-dham" role="note"><p>22 years in hardware systems design and manufacturing. Deep expertise in RF, embedded and volume production.</p><a class="tm-in" href="https://www.linkedin.com/search/results/people/?keywords=Vivek%20Dham%20AmIMotion" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.1c0-1.22-.02-2.78-1.7-2.78-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg>Connect on LinkedIn</a></div>
-        </figure>
-        <h3 class="tm-name">Vivek Dham</h3>
-        <p class="tm-role">CTO</p>
+      <li class="hm-part">
+        <a class="hm-pic" href="/products/amimo/" tabindex="-1" aria-hidden="true"><img src="assets/hw/amimo-stage-1200.webp" srcset="assets/hw/amimo-stage-700.webp 700w, assets/hw/amimo-stage-1200.webp 1200w" sizes="(max-width:860px) 92vw, 30vw" alt="" width="1200" height="962" loading="lazy" decoding="async"></a>
+        <h3 class="hm-h3"><a href="/products/amimo/">AmIMo anchor</a></h3>
+        <p>Fixed to a column or wall 3 to 8 m up. Records when each pulse arrives and the angle it came from.</p>
       </li>
-      <li class="tm">
-        <figure class="tm-pic" tabindex="0" aria-describedby="tm-sumeer-bhatara">
-          <img src="assets/team/sumeer-bhatara.webp" alt="Sumeer Bhatara" width="640" height="800" loading="lazy" decoding="async">
-          <div class="tm-pop" id="tm-sumeer-bhatara" role="note"><p>24 years in wireless product development. Shipped connectivity products across UWB, BLE and Wi-Fi stacks.</p><a class="tm-in" href="https://www.linkedin.com/search/results/people/?keywords=Sumeer%20Bhatara%20AmIMotion" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.1c0-1.22-.02-2.78-1.7-2.78-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg>Connect on LinkedIn</a></div>
-        </figure>
-        <h3 class="tm-name">Sumeer Bhatara</h3>
-        <p class="tm-role">Head of Software</p>
+      <li class="hm-part">
+        <a class="hm-pic hm-pic-map" href="/products/amihub/" tabindex="-1" aria-hidden="true"><img src="assets/hw/hub-top-1600.webp" srcset="assets/hw/hub-top-800.webp 800w, assets/hw/hub-top-1600.webp 1600w" sizes="(max-width:860px) 92vw, 30vw" alt="" width="1600" height="893" loading="lazy" decoding="async"></a>
+        <h3 class="hm-h3"><a href="/products/amihub/">AmIHub</a></h3>
+        <p>Works out where each tag is from those times and angles. Runs on an industrial PC inside your plant, with no internet needed.</p>
       </li>
     </ul>
+    <p class="hm-links"><a href="/technology/">How it locates a tag</a><a href="/specs/">Specifications</a><a href="/developers/">For developers</a></p>
   </div>
-</div>
-
-<div class="kn" id="system" aria-labelledby="sys-title">
-  <div class="kn-sticky">
-    <div class="kn-grid">
-      <div class="kn-side">
-        <h2 class="kn-title" id="sys-title"><span>Three parts work</span> <span>as one system.</span></h2>
-        <ol class="kn-index">
-          <li class="kn-item kn-tag" data-i="0">
-            <h3 class="kn-name"><button type="button" class="kn-go" data-i="0">AmIGo tag</button></h3>
-            <div class="kn-more"><div class="kn-more-in"><p class="kn-lead">Screws or sticks onto the trolley. Sends a short UWB radio pulse when it moves and sleeps when it stops.</p>
-            <details><summary><span>Read more</span></summary><div class="more"><p>While it sleeps, the map shows where it was last seen. If it comes off the trolley, the map still shows its last-seen spot. One battery lasts 1 to 3 years, depending on use. AmIHub tracks each tag's health and battery level.</p></div></details></div></div>
-          </li>
-          <li class="kn-item kn-anchor" data-i="1">
-            <h3 class="kn-name"><button type="button" class="kn-go" data-i="1">AmIMo anchor</button></h3>
-            <div class="kn-more"><div class="kn-more-in"><p class="kn-lead">Fixed to a column or wall 3 to 8 m up. Records when each pulse arrives and the angle it came from.</p>
-            <details><summary><span>Read more</span></summary><div class="more"><p>Needs only power, from DC or PoE. It syncs over the air, with no sync cable. It sends its data to AmIHub over Wi-Fi, so it needs no separate data cable. Ethernet is also an option. Each reaches about 50 m around it in clear line of sight. Racking and steel change that, so we survey your floor and set the count. With these anchors, AmIHub places a tag down to ±10 cm. How close depends on your floor. You set anchors up from a phone app. AmIHub finds each one on its own and raises an alert if one goes dark.</p></div></details></div></div>
-          </li>
-          <li class="kn-item kn-hub" data-i="2">
-            <h3 class="kn-name"><button type="button" class="kn-go" data-i="2">AmIHub</button></h3>
-            <div class="kn-more"><div class="kn-more-in"><p class="kn-lead">Works out where each tag is from those times and angles. Runs on an industrial PC inside your plant, with no internet needed.</p>
-            <details><summary><span>Read more</span></summary><div class="more"><p>Your MES, ERP and WMS connect to it through open REST, MQTT, WebSocket and omlox hub interfaces. Your team, your systems and AI assistants read the same live map. Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited.</p></div></details></div></div>
-          </li>
-        </ol>
-      </div>
-      <div class="kn-stage" aria-hidden="false">
-        <div class="kn-grade" aria-hidden="true"><i class="g0"></i><i class="g1"></i><i class="c1"></i><i class="g2"></i><i class="c2"></i></div>
-        <div class="kn-lab" aria-hidden="true"><i class="kn-c tl"></i><i class="kn-c tr"></i><i class="kn-c bl"></i><i class="kn-c br"></i><span class="kn-plinth"></span><span class="kn-sweep"></span></div>
-        <figure class="kn-shot kn-tag" data-i="0"><i class="kn-fx kn-pulse" aria-hidden="true"><b></b><b></b><b></b></i><div class="kn-obj"><img class="kn-img" src="assets/hw/amigo-stage-1200.webp" srcset="assets/hw/amigo-stage-700.webp 700w, assets/hw/amigo-stage-1200.webp 1200w" sizes="(max-width:900px) 70vw, 34vw" alt="The AmIGo tag, dark grey, with the amimotion name pressed into its lid" width="1200" height="797" loading="lazy" decoding="async"><i class="kn-gloss" aria-hidden="true"></i></div></figure>
-        <figure class="kn-shot kn-anchor" data-i="1"><i class="kn-fx kn-aoa" aria-hidden="true"><b></b></i><div class="kn-obj"><img class="kn-img" src="assets/hw/amimo-stage-1200.webp" srcset="assets/hw/amimo-stage-700.webp 700w, assets/hw/amimo-stage-1200.webp 1200w" sizes="(max-width:900px) 64vw, 30vw" alt="The AmIMo anchor, a dark grey box with the amimotion name on its side and a network port" width="1200" height="962" loading="lazy" decoding="async"><i class="kn-gloss" aria-hidden="true"></i></div></figure>
-        <figure class="kn-shot kn-hub" data-i="2"><div class="kn-screen"><i class="kn-scan" aria-hidden="true"></i><img class="kn-img" src="assets/hw/hub-top-1600.webp" srcset="assets/hw/hub-top-800.webp 800w, assets/hw/hub-top-1600.webp 1600w" sizes="(max-width:900px) 90vw, 46vw" alt="A plant floor seen from above: two long rows of racking and the aisle between them, as AmIHub maps it" width="1600" height="893" loading="lazy" decoding="async"></div></figure>
-        <div class="kn-prog" aria-hidden="true"><i></i><i></i><i></i></div>
-      </div>
-    </div>
-    <div class="kn-foot">
-      <p class="spec-line">Built on the FiRa and omlox specifications.</p>
-      <p class="links"><a class="arrow-link" href="/technology/">How it locates a tag</a><a class="arrow-link" href="/specs/">Specifications</a><a class="arrow-link" href="/developers/">For developers</a></p>
-    </div>
-  </div>
-</div>
-</div>
 </section>
 
-<!-- 1d. FLOORS: pitch black, drawn in code -->
+<!-- 3. FLOORS: real footage, one row -->
 <section class="inds" id="industries" aria-labelledby="inds-h">
   <h2 class="inds-h" id="inds-h">Different floors. <em>One live map.</em></h2>
   <div class="inds-row">
-    <a class="ind" href="/industries/manufacturing/" data-scene="factory"><video aria-hidden="true" muted loop playsinline preload="none" poster="assets/floors/factory-poster.jpg" data-src="assets/floors/factory.mp4"></video><span class="ind-w"><span class="ind-n">Manufacturing</span><span class="ind-p">Trolleys and bins between cells, lines and inspection.</span></span></a>
-    <a class="ind" href="/industries/warehousing/" data-scene="warehouse"><video aria-hidden="true" muted loop playsinline preload="none" poster="assets/floors/warehouse-poster.jpg" data-src="assets/floors/warehouse.mp4"></video><span class="ind-w"><span class="ind-n">Warehousing</span><span class="ind-p">Pallets, staging lanes and docks, with forklifts on the same map.</span></span></a>
-    <a class="ind" href="/industries/robotics/" data-scene="robots"><video aria-hidden="true" muted loop playsinline preload="none" poster="assets/floors/robots-poster.jpg" data-src="assets/floors/robots.mp4"></video><span class="ind-w"><span class="ind-n">Robotics and AMRs</span><span class="ind-p">Robots and the trolleys they tow, beside everything else you tag.</span></span></a>
+    <a class="ind" href="/industries/manufacturing/" data-scene="factory"><img class="ind-still" src="assets/floors/factory-poster.jpg" alt="" width="1024" height="768" loading="lazy" decoding="async"><video aria-hidden="true" muted loop playsinline preload="none" data-src="assets/floors/factory.mp4"></video><span class="ind-w"><span class="ind-n">Manufacturing</span><span class="ind-p">Trolleys and bins between cells, lines and inspection.</span></span></a>
+    <a class="ind" href="/industries/warehousing/" data-scene="warehouse"><img class="ind-still" src="assets/floors/warehouse-poster.jpg" alt="" width="1024" height="768" loading="lazy" decoding="async"><video aria-hidden="true" muted loop playsinline preload="none" data-src="assets/floors/warehouse.mp4"></video><span class="ind-w"><span class="ind-n">Warehousing</span><span class="ind-p">Pallets, staging lanes and docks, with forklifts on the same map.</span></span></a>
+    <a class="ind" href="/industries/robotics/" data-scene="robots"><img class="ind-still" src="assets/floors/robots-poster.jpg" alt="" width="1024" height="768" loading="lazy" decoding="async"><video aria-hidden="true" muted loop playsinline preload="none" data-src="assets/floors/robots.mp4"></video><span class="ind-w"><span class="ind-n">Robotics and AMRs</span><span class="ind-p">Robots and the trolleys they tow, beside everything else you tag.</span></span></a>
   </div>
   <a class="inds-more" href="/industries/">Know more</a>
 </section>
 
-<!-- 1e. GUIDES: Shiv's film fills the screen, rises into the spiral on the first scroll; one guide per scroll -->
-<section class="bs" id="guides" aria-labelledby="bs-h" style="--n:8">
-  <h2 class="bs-sr" id="bs-h">Guides</h2>
-  <div class="bs-stage">
-    <div class="bs-panel" aria-hidden="true"><b></b><b></b><b></b><b></b></div>
-    <div class="bs-pool" aria-hidden="true"></div>
-    <div class="bs-intro" aria-hidden="true"><video muted playsinline preload="metadata" poster="assets/blog/wip-visibility-poster.jpg" data-src="assets/blog/wip-visibility.mp4"></video></div>
-    <div class="bs-helix">
-      <a class="bs-card" href="/learn/wip-visibility/" tabindex="-1" aria-hidden="true"><video muted loop playsinline preload="none" poster="assets/blog/wip-visibility-poster.jpg" data-src="assets/blog/wip-visibility.mp4"></video><span class="bs-shade"></span></a>
-      <a class="bs-card" href="/learn/mcp-location-data/" tabindex="-1" aria-hidden="true"><video muted loop playsinline preload="none" poster="assets/blog/mcp-poster.jpg" data-src="assets/blog/mcp.mp4"></video><span class="bs-shade"></span></a>
-      <a class="bs-card" href="/learn/dwell-time/" tabindex="-1" aria-hidden="true"><video muted loop playsinline preload="none" poster="assets/blog/dwell-time-poster.jpg" data-src="assets/blog/dwell-time.mp4"></video><span class="bs-shade"></span></a>
-      <a class="bs-card" href="/learn/accuracy/" tabindex="-1" aria-hidden="true"><video muted loop playsinline preload="none" poster="assets/blog/accuracy-poster.jpg" data-src="assets/blog/accuracy.mp4"></video><span class="bs-shade"></span></a>
-      <a class="bs-card" href="/learn/uwb-vs-rfid/" tabindex="-1" aria-hidden="true"><video muted loop playsinline preload="none" poster="assets/blog/uwb-vs-rfid-poster.jpg" data-src="assets/blog/uwb-vs-rfid.mp4"></video><span class="bs-shade"></span></a>
-      <a class="bs-card" href="/learn/value-without-mes/" tabindex="-1" aria-hidden="true"><video muted loop playsinline preload="none" poster="assets/blog/value-without-mes-poster.jpg" data-src="assets/blog/value-without-mes.mp4"></video><span class="bs-shade"></span></a>
-      <a class="bs-card" href="/learn/anchor-planning/" tabindex="-1" aria-hidden="true"><img src="assets/blog/anchor-planning.jpg" alt="" width="1600" height="900" loading="lazy" decoding="async"><span class="bs-shade"></span></a>
+<!-- 4. GUIDES: one row -->
+<section class="hm hm-guides" id="guides" aria-labelledby="gd-h">
+  <div class="hm-in">
+    <div class="hm-head hm-head-row">
+      <h2 class="hm-h2" id="gd-h"><span>Field guides.</span> <span>Short answers, from the floor.</span></h2>
+      <a class="hm-more" href="/learn/">All guides</a>
     </div>
-    <ol class="bs-list">
-      <li class="bs-post on">
-        <span class="bs-meta"><span class="bs-tag">WIP visibility</span><span class="bs-min">3 min read</span></span>
-        <h3 class="bs-t"><a href="/learn/wip-visibility/">What is WIP visibility? <em>Where each job is, and how long it waited.</em></a></h3>
-        <p class="bs-l">What it means, what it needs, and where a plant should start.</p>
-        <p class="bs-links"><a class="bs-go" href="/learn/wip-visibility/">Read the guide</a></p></li>
-      <li class="bs-post">
-        <span class="bs-meta"><span class="bs-tag">AI and MCP</span><span class="bs-min">3 min read</span></span>
-        <h3 class="bs-t"><a href="/learn/mcp-location-data/">Can AI assistants query location data? <em>Yes, through MCP.</em></a></h3>
-        <p class="bs-l">How an assistant reads the floor, and what keeps it in check.</p>
-        <p class="bs-links"><a class="bs-go" href="/learn/mcp-location-data/">Read the guide</a></p></li>
-      <li class="bs-post">
-        <span class="bs-meta"><span class="bs-tag">Dwell time</span><span class="bs-min">4 min read</span></span>
-        <h3 class="bs-t"><a href="/learn/dwell-time/">How is dwell time measured? <em>From zone entry to zone exit.</em></a></h3>
-        <p class="bs-l">What dwell includes, where the edge cases hide, and how AmIMotion times every wait.</p>
-        <p class="bs-links"><a class="bs-go" href="/learn/dwell-time/">Read the guide</a></p></li>
-      <li class="bs-post">
-        <span class="bs-meta"><span class="bs-tag">Accuracy</span><span class="bs-min">3 min read</span></span>
-        <h3 class="bs-t"><a href="/learn/accuracy/">How accurate is UWB? <em>Test it where your floor is hardest.</em></a></h3>
-        <p class="bs-l">What a quoted figure means, and how to measure it on your own floor.</p>
-        <p class="bs-links"><a class="bs-go" href="/learn/accuracy/">Read the guide</a></p></li>
-      <li class="bs-post">
-        <span class="bs-meta"><span class="bs-tag">Choosing a radio</span><span class="bs-min">4 min read</span></span>
-        <h3 class="bs-t"><a href="/learn/uwb-vs-rfid/">UWB, BLE or RFID? <em>Choose by the question you ask.</em></a></h3>
-        <p class="bs-l">A fair way to pick a radio for trolleys, bins and work in progress.</p>
-        <p class="bs-links"><a class="bs-go" href="/learn/uwb-vs-rfid/">Read the guide</a></p></li>
-      <li class="bs-post">
-        <span class="bs-meta"><span class="bs-tag">Pilots</span><span class="bs-min">3 min read</span></span>
-        <h3 class="bs-t"><a href="/learn/value-without-mes/">Value before the MES link? <em>Yes. Location and time come first.</em></a></h3>
-        <p class="bs-l">What location proves on its own, and when the MES connection should follow.</p>
-        <p class="bs-links"><a class="bs-go" href="/learn/value-without-mes/">Read the guide</a></p></li>
-      <li class="bs-post">
-        <span class="bs-meta"><span class="bs-tag">Planning</span><span class="bs-min">4 min read</span></span>
-        <h3 class="bs-t"><a href="/learn/anchor-planning/">How many UWB anchors? <em>Fewer than area suggests, more than racking allows.</em></a></h3>
-        <p class="bs-l">What sets the count, a worked example, and where the real number comes from.</p>
-        <p class="bs-links"><a class="bs-go" href="/learn/anchor-planning/">Read the guide</a> <a class="bs-more" href="/learn/">All guides</a></p></li>
-    </ol>
-    <div class="bs-rail" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <ul class="hm-cards">
+      <li class="hm-card"><a href="/learn/wip-visibility/"><span class="hm-shot"><img src="assets/blog/wip-visibility-poster.jpg" alt="An operator pushes a trolley of cast parts past the racking" width="1600" height="900" loading="lazy" decoding="async"></span><span class="hm-meta">WIP visibility · 3 min read</span><span class="hm-t">What is WIP visibility?</span><span class="hm-l">Where each job is, and how long it waited.</span></a></li>
+      <li class="hm-card"><a href="/learn/dwell-time/"><span class="hm-shot"><img src="assets/blog/dwell-time-poster.jpg" alt="Loaded trolleys parked in an aisle between racks" width="1600" height="900" loading="lazy" decoding="async"></span><span class="hm-meta">Dwell time · 4 min read</span><span class="hm-t">How is dwell time measured?</span><span class="hm-l">From zone entry to zone exit.</span></a></li>
+      <li class="hm-card"><a href="/learn/anchor-planning/"><span class="hm-shot"><img src="assets/blog/anchor-planning.jpg" alt="An engineer on a step ladder fixes an anchor to a column while a colleague looks on" width="1600" height="900" loading="lazy" decoding="async"></span><span class="hm-meta">Planning · 4 min read</span><span class="hm-t">How many UWB anchors?</span><span class="hm-l">Fewer than area suggests, more than racking allows.</span></a></li>
+    </ul>
   </div>
 </section>
 
+<!-- 5. TEAM -->
+<section class="hm hm-team" id="team" aria-labelledby="team-h">
+  <div class="hm-in">
+    <div class="hm-head">
+      <h2 class="hm-h2" id="team-h"><span>Decades of shipping hardware.</span> <span>Now building for the factory floor.</span></h2>
+    </div>
+    <ul class="hm-people">
+      <li class="hm-person">
+        <img src="assets/team/kaushal-kukkar.webp" alt="Kaushal Kukkar" width="640" height="800" loading="lazy" decoding="async">
+        <h3 class="hm-name">Kaushal Kukkar</h3>
+        <p class="hm-role">Founder and CEO</p>
+        <p class="hm-bio">20 years in product development and business growth. Scaled products from 0 to 1 and led P&amp;L across global markets.</p>
+      </li>
+      <li class="hm-person">
+        <img src="assets/team/vivek-dham.webp" alt="Vivek Dham" width="640" height="800" loading="lazy" decoding="async">
+        <h3 class="hm-name">Vivek Dham</h3>
+        <p class="hm-role">CTO</p>
+        <p class="hm-bio">22 years in hardware systems design and manufacturing. Deep expertise in RF, embedded and volume production.</p>
+      </li>
+      <li class="hm-person">
+        <img src="assets/team/sumeer-bhatara.webp" alt="Sumeer Bhatara" width="640" height="800" loading="lazy" decoding="async">
+        <h3 class="hm-name">Sumeer Bhatara</h3>
+        <p class="hm-role">Head of Software</p>
+        <p class="hm-bio">24 years in wireless product development. Shipped connectivity products across UWB, BLE and Wi-Fi stacks.</p>
+      </li>
+    </ul>
+  </div>
+</section>
 
-
-<!-- 2-4. THREE IDEAS, VISUAL FIRST -->
-<!-- 6. START WITH ONE BAY -->
-<section class="screen start" id="start">
-  <div class="wrap">
-    <h2 class="mega k-lines"><span class="ln"><span>Start with</span></span><span class="ln"><span>one bay.</span></span></h2>
-    <div class="start-row">
-      <p class="big k-fade">A pilot follows one flow in one bay or line. You choose the flow.</p>
-      <details class="k-fade"><summary><span>How a pilot runs</span></summary><div class="more">
+<!-- 6. START WITH ONE BAY: the one close -->
+<section class="hm hm-start" id="start" aria-labelledby="start-h">
+  <div class="hm-in">
+    <div class="hm-head hm-start-head">
+      <h2 class="hm-mega" id="start-h"><span>Start with</span> <span>one bay.</span></h2>
+      <div class="hm-start-side">
+        <p class="hm-lede">A pilot follows one flow in one bay or line. You choose the flow.</p>
+        <details class="hm-q"><summary><span>How a pilot runs</span></summary><div class="more">
         <p>The pilot times today's waits first, over a window you choose. That is your baseline. Before it starts, we agree how to count a wait that runs past shift end. We also agree who on your team acts when work waits too long.</p>
         <p>The pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project. It would need its own policy. You also set how long the map keeps its history.</p>
         <p>You see your own waits in one bay, and prove the numbers, before you decide on more. Then grow plant-wide on the same AmIHub, without re-fitting the first bay. A second plant gets its own survey, and AmIHub can run both from one console.</p>
         <p class="links"><a class="arrow-link" href="/trust/people/">People and privacy</a><a class="arrow-link" href="/learn/pilot-baseline/">Measure before you claim</a></p>
       </div></details>
-      <details class="k-fade"><summary><span>What you buy</span></summary><div class="more">
+      <details class="hm-q"><summary><span>What you buy</span></summary><div class="more">
         <p>AmIGo tags, AmIMo anchors and AmIHub, plus our survey and an anchor plan for your floor. Designed and built in India, with local stock and local engineers on your site. One contract and one support line cover every layer. Your team or your integrator can build on it at any layer, through open interfaces. After the first call, we share datasheets, architecture, prices and pilot options under NDA. AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO.</p>
       </div></details>
+      </div>
     </div>
-    <div class="ctas">
-      <a class="cta cta-plan magnet" href="/diagnostic/"><svg class="cta-line" viewBox="0 0 400 200" preserveAspectRatio="xMaxYMax slice" aria-hidden="true"><path pathLength="1" d="M410 36 C 350 44, 330 150, 262 146 S 190 92, 150 128"/><circle cx="150" cy="128" r="5"/></svg>
-        <span class="cta-h">Plan your first bay.</span>
-        <span class="cta-p">Six questions about how work moves in your plant. You get a plan for where to start, before anyone calls you.</span>
-        <span class="btn btn-secondary"><span>Plan your first bay</span></span>
-      </a>
-      <a class="cta cta-call magnet" href="/contact/"><svg class="cta-line" viewBox="0 0 400 200" preserveAspectRatio="xMaxYMax slice" aria-hidden="true"><path pathLength="1" d="M410 168 C 352 160, 330 64, 268 72 S 196 146, 160 104"/><circle cx="160" cy="104" r="5"/></svg>
-        <span class="cta-h">See it on real data.</span>
-        <span class="cta-p">The call is a live demo on real AmIHub data, not slides.</span>
-        <span class="btn btn-primary"><span>Book a call</span></span>
-      </a>
+    <div class="hm-acts">
+      <div class="hm-act hm-act-call">
+        <h3 class="hm-h3">See it on real data.</h3>
+        <p>The call is a live demo on real AmIHub data, not slides.</p>
+        <a class="hm-btn hm-btn-ink" href="/contact/">Book a call</a>
+      </div>
+      <div class="hm-act">
+        <h3 class="hm-h3">Plan your first bay.</h3>
+        <p>Six questions about how work moves in your plant. You get a plan for where to start, before anyone calls you.</p>
+        <a class="hm-btn hm-btn-line" href="/diagnostic/">Plan your first bay</a>
+      </div>
     </div>
   </div>
 </section>

@@ -467,16 +467,14 @@ def footer_html(url="/", world=None):
     roles = dict(NAV["roles"])
     assert sorted(ROLE_ORDER) == sorted(roles), "every job line has a place in the footer row"
     word = re.search(r'<svg class="word" viewBox="([^"]+)"[^>]*>(.*?)</svg>', part("logo.html"), re.S)
-    vb, paths = word.group(1), word.group(2).replace('fill="currentColor"', 'fill="url(#ft-wg)"')
+    vb, paths = word.group(1), word.group(2)
     at = door_index(url, world)
     bays = "".join(
         f'<div class="ft-bay"{" data-here" if i == at else ""}>{A(s["url"], s["label"], " class=\"ft-door\"")}<ul>'
         + "".join(f"<li>{A(u, l)}</li>" for l, u, _ in s["items"]) + "</ul></div>" for i, s in enumerate(NAV["sections"]))
     chips = "".join(f'<li>{A(roles[r][0][1], r)}</li>' for r in ROLE_ORDER)
     style = f' style="--at:{at}"' if at is not None else ""
-    return (f'<footer class="ft ds"{style}>\n<div class="ft-card">\n<div class="ft-light" aria-hidden="true"></div>\n'
-            '<div class="ft-close"><h2 class="ft-line"><span>Where work is.</span> <em>Where it waits.</em></h2>\n'
-            '<div class="ft-act"><a class="ft-clay" href="/contact/">Book a call</a><a class="ft-glass" href="/diagnostic/">Plan your first bay</a></div></div>\n'
+    return (f'<footer class="ft ds"{style}>\n<div class="ft-card">\n'
             f'<nav class="ft-map" aria-label="All pages"><div class="ft-route" aria-hidden="true"><i class="ft-trail"></i><i class="ft-tag"></i></div>{bays}</nav>\n'
             f'<nav class="ft-roles" aria-label="Start from your job"><p>I\'m here as</p><ul>{chips}</ul></nav>\n'
             '<div class="ft-base">'
@@ -486,9 +484,7 @@ def footer_html(url="/", world=None):
             '<li><a href="https://www.youtube.com/@locateprotech" rel="me noopener">YouTube</a></li><li><a href="/llms.txt">For AI assistants</a></li></ul>\n'
             f'<p class="ft-legal">© {TODAY[:4]} Locatepro Technologies Pvt Ltd. NXP and Trimension are trademarks of NXP B.V. FiRa and omlox are trademarks of their owners. Specifications are indicative. Final datasheets are shared under NDA.</p>'
             '</div>\n'
-            f'<div class="ft-word" aria-hidden="true"><svg viewBox="{vb}" preserveAspectRatio="xMidYMin meet"><defs><linearGradient id="ft-wg" x1="0" y1="0" x2="0" y2="1">'
-            '<stop offset="0" stop-color="#e4e9ff" stop-opacity=".22"/><stop offset=".45" stop-color="#9aabff" stop-opacity=".08"/><stop offset=".9" stop-color="#6b7cff" stop-opacity="0"/></linearGradient></defs>'
-            f'{paths}</svg></div>\n</div></footer>')
+            f'<div class="ft-word" aria-hidden="true"><svg viewBox="{vb}" preserveAspectRatio="xMidYMin meet">{paths}</svg></div>\n</div></footer>')
 
 
 NAV_JS = '<script src="/assets/js/nav.js" defer></script>'
