@@ -128,6 +128,51 @@ def place(c, t, portrait):
     c.rotation_euler = q.to_euler(); c.data.lens = (19 if portrait else 24) + 30 * e
     if 'roof' in bpy.data.objects: bpy.data.objects['roof'].visible_camera = loc.z < 10.5
 
+# ---------- the pull-back out of the hero ----------
+# The hero's tag lies on top of trolley T-14's load. The camera starts on it, as close as the hero is, and backs away to the
+# mezzanine view. The whole plant is a white model here, in the hero's own light, so the hero and this floor are one place.
+def clayify(sc):
+    clay = mat('clay', (.74, .77, .83), rough=.62); fl = mat('clayfloor', (.72, .76, .83), rough=.5)
+    for o in bpy.data.objects:
+        if o.type not in ('MESH', 'CURVE'): continue
+        for i, m in enumerate(o.data.materials):
+            if m is None or not m.name.startswith('amigo'): o.data.materials[i] = fl if o.name.startswith('floor') else clay
+        for sl in o.material_slots:
+            if sl.link == 'OBJECT' and not (sl.material and sl.material.name.startswith('amigo')): sl.material = clay
+    w = sc.world.node_tree.nodes['Background']; w.inputs['Color'].default_value = (.9, .94, 1, 1); w.inputs['Strength'].default_value = .36
+    for o in bpy.data.objects:
+        if o.type == 'LIGHT' and o.data.type == 'AREA': o.data.energy = 95; o.data.color = (1, 1, 1)
+        if o.type == 'LIGHT' and o.data.type == 'SUN': o.data.energy = 1.5; o.data.angle = math.radians(18)
+    bpy.data.objects['roof'].hide_render = True
+    sc.view_settings.view_transform = 'Standard'; sc.view_settings.look = 'None'; sc.view_settings.exposure = 0
+
+def hero_tag(sc):
+    bpy.context.view_layer.update(); t = bpy.data.objects['T-14']; dg = bpy.context.evaluated_depsgraph_get()
+    # the highest flat spot on the load: a point whose neighbours are at the same height
+    best = None
+    for i in range(-8, 9):
+        for j in range(-5, 6):
+            px, py = t.location.x + i * .05, t.location.y + j * .05
+            zs = [sc.ray_cast(dg, Vector((px + dx, py + dy, 3)), Vector((0, 0, -1)))[1].z for dx, dy in ((0, 0), (.08, 0), (-.08, 0), (0, .08), (0, -.08))]
+            if max(zs) - min(zs) < .002 and (best is None or zs[0] > best[2] + .001 or (abs(zs[0] - best[2]) < .001 and abs(i) + abs(j) < best[3])): best = (px, py, zs[0], abs(i) + abs(j))
+    x, y, z = best[:3]; hit, loc = True, Vector((x, y, z))
+    g = amigo('hero_tag', (x, y, z + .001), '+Z', rotz=HERO_RZ); bpy.context.view_layer.update()
+    bb = [g.matrix_world @ Vector(c) for ch in g.children for c in ch.bound_box]
+    print('HERO', hit, tuple(round(v, 3) for v in loc), 'bbox', [round(min(b[i] for b in bb), 3) for i in range(3)], [round(max(b[i] for b in bb), 3) for i in range(3)], flush=True)
+    return Vector((x, y, z + .012))
+
+HERO_RZ, PULL0 = float(os.environ.get('HERO_RZ', .75)), dict(el=float(os.environ.get('HERO_EL', 32)), az=-8, dist=.19, lens=58)
+def pull_place(c, t, portrait, tagp):
+    eye, tg0, lens1 = (Vector((16.5, -2.5, 6.4)), Vector((16.8, 9.0, 1.0)), 19) if portrait else (Vector((15.5, -6.0, 5.2)), Vector((15.5, 9.5, 1.2)), 24)
+    el, az = math.radians(PULL0['el']), math.radians(PULL0['az'])
+    d0 = Vector((math.sin(az) * math.cos(el), -math.cos(az) * math.cos(el), math.sin(el))); v1 = eye - tagp; d1 = v1.normalized()
+    e = t * t * (3 - 2 * t)
+    dist = PULL0['dist'] * (v1.length / PULL0['dist']) ** t            # equal steps of scroll are equal steps of scale
+    d = d0.slerp(d1, e); loc = tagp + d * dist; tg = tagp.lerp(tg0, dist / v1.length * e * e)   # the tag stays the centre until it is too small to see
+    if t >= 1: loc, tg = eye, tg0
+    c.location = loc; c.rotation_euler = (tg - loc).to_track_quat('-Z', 'Y').to_euler(); c.data.lens = PULL0['lens'] + (lens1 - PULL0['lens']) * e
+    c.data.clip_start = .02
+
 def export(sc, c, path):
     bpy.context.view_layer.update()
     def pj(p):
@@ -150,7 +195,14 @@ if __name__ == '__main__':
     out, w, h, s, cam = a[0], int(a[1]), int(a[2]), int(a[3]), a[4]
     dim = float(a[5]) if len(a) > 5 else 1.0
     glow = a[6] if len(a) > 6 else None
-    if cam.startswith('rise:'):          # out is a folder: one frame and one json per step of the rise
+    if cam.startswith('pull:'):          # out is a folder: the frames of the pull-back, in the white model. Optional 7th arg: only these frames.
+        n = int(cam[5:]); sc, c = build(w, h, s, '0', 1.0, None); clayify(sc); tp = hero_tag(sc); os.makedirs(out, exist_ok=True)
+        only = [int(x) for x in a[6].split(',')] if len(a) > 6 else range(n + 1)
+        for i in only:
+            f = os.path.join(out, '%02d' % i)
+            if os.path.exists(f + '.png'): continue
+            pull_place(c, i / n, h > w, tp); sc.render.filepath = f + '.png'; bpy.ops.render.render(write_still=True); print('FRAME', i, flush=True)
+    elif cam.startswith('rise:'):          # out is a folder: one frame and one json per step of the rise
         n = int(cam[5:]); sc, c = build(w, h, s, '0', dim, glow); os.makedirs(out, exist_ok=True)
         for i in range(n + 1):
             f = os.path.join(out, '%02d' % i)

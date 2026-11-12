@@ -12,35 +12,34 @@
 :root{--display:"AmI Display",Arial,sans-serif;--text:"AmI Text",Arial,sans-serif}
 *{box-sizing:border-box}html,body{margin:0}body{background:#f0f6ff;color:#0b1238;font-family:var(--text);-webkit-font-smoothing:antialiased}
 .pad{height:34vh;display:grid;place-items:center;font:500 14px var(--text);letter-spacing:.14em;text-transform:uppercase;color:#7f8ab0}
+.standin{position:absolute;left:clamp(20px,6vw,110px);bottom:clamp(40px,12vh,130px);z-index:2;margin:0;font:600 clamp(2.4rem,1rem + 5vw,5.6rem)/.98 var(--display);letter-spacing:-.05em;color:#0b1238;opacity:var(--lede,0);translate:0 calc((1 - var(--lede,0))*-30px);pointer-events:none}
 </style>
 <link rel="stylesheet" href="css/see.css">
 </head>
 <body>
-<div class="pad">The hero sits above.</div>
-
-<section class="see" id="see" data-assets="assets/see/" aria-label="What AmIMotion shows you on a factory floor">
+<section class="see" id="see" data-pull data-assets="assets/see/" aria-label="What AmIMotion shows you on a factory floor">
   <div class="see-stage">
     <div class="see-box">
       <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/lit.webp"><img class="see-lit" src="assets/see/L/lit.webp" alt="A working factory floor with trolleys, bins, pallets, racks, a forklift and people." decoding="async"></picture>
       <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/dim.webp"><img class="see-dim" src="assets/see/L/dim.webp" alt="" loading="lazy" decoding="async"></picture>
       <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/blue.webp"><img class="see-blue" src="assets/see/L/blue.webp" alt="" loading="lazy" decoding="async"></picture>
       <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/amber.webp"><img class="see-amber" src="assets/see/L/amber.webp" alt="" loading="lazy" decoding="async"></picture>
+      <canvas class="see-pull" aria-hidden="true"></canvas>
       <canvas class="see-rise" aria-hidden="true"></canvas>
       <div class="see-grid"></div>
       <div class="see-veil"></div>
       <svg class="see-ov" aria-hidden="true" preserveAspectRatio="none"></svg>
     </div>
-    <div class="see-fog"></div>
-    <img class="see-tag" src="assets/home/hero-rest-1140.webp" srcset="assets/home/hero-rest-1140.webp 1140w, assets/home/hero-rest-2280.webp 2280w" sizes="(max-aspect-ratio:4/5) 118vw, min(64vw,900px)" alt="" decoding="async">
     <div class="see-vig"></div>
     <div class="see-grain"></div>
     <div class="see-shade"></div>
     <div class="see-tip" aria-hidden="true"></div>
+    <p class="standin" aria-hidden="true">Where work is.<br>Where it waits.</p>
 
     <div class="see-words">
       <div class="see-w see-w1">
         <h2 class="see-h">One trolley here has <em>waited 42 minutes.</em></h2>
-        <p class="see-p">Can you tell which one?</p>
+        <p class="see-p">Can you tell which one? Pick the one you think it is.</p>
       </div>
       <div class="see-w see-w2">
         <h2 class="see-h">A small tag on each one shows <em>where it is.</em></h2>

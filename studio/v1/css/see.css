@@ -5,7 +5,7 @@
 .see{--see-ink:#0b1238;--see-night:#05070d;--see-blue:#66a5fa;--see-amber:#f0a43a;--see-ground:#f0f6ff;position:relative;background:var(--see-night);color:#fff}
 .see-stage{position:relative;overflow:hidden;height:100vh;height:100svh;background:var(--see-night)}
 .see.live{height:440vh}
-.see.live[data-pull]{height:640vh}
+.see.live[data-pull]{height:570vh}
 .see.live .see-stage{position:sticky;top:0}
 
 /* the picture: always covers the stage, and every layer shares one box so the drawn points stay on their objects */
@@ -22,12 +22,11 @@
 .see-veil{position:absolute;inset:0;pointer-events:none;opacity:var(--spot,0);background:radial-gradient(circle at var(--hx,50%) var(--hy,50%),rgba(5,7,13,0) 0,rgba(5,7,13,0) 6%,rgba(5,7,13,.66) 34%)}
 /* the map's own grid arrives only once the view is from straight above */
 .see-grid{position:absolute;inset:0;pointer-events:none;opacity:var(--grid,0);background:linear-gradient(rgba(102,165,250,.11) 1px,transparent 1px) 0 0/100% 6.25%,linear-gradient(90deg,rgba(102,165,250,.11) 1px,transparent 1px) 0 0/3.515% 100%}
-.see-fog{position:absolute;inset:0;pointer-events:none;background:var(--see-ground);opacity:var(--fog,0);display:none}
-.see.live[data-pull] .see-fog{display:block}
-/* the hero's own tag, at the hero's own size: the picture pulls back from it */
-.see-tag{position:absolute;left:var(--ax,62%);top:var(--ay,47%);width:min(64vw,900px);margin:0;translate:-50% -50%;mix-blend-mode:multiply;-webkit-mask-image:radial-gradient(closest-side,#000 52%,transparent 96%);mask-image:radial-gradient(closest-side,#000 52%,transparent 96%);pointer-events:none;display:none;will-change:scale,translate,opacity}
-.see.live[data-pull] .see-tag{display:block}
-.see-shade{position:absolute;inset:auto 0 0 0;height:52%;pointer-events:none;opacity:calc(.72 + .28*var(--dip,0));background:linear-gradient(to top,rgba(5,7,13,.86),rgba(5,7,13,.5) 38%,rgba(5,7,13,0))}
+/* the way in: the camera backs away from the hero's tag through a white model of the plant (a sequence of frames on a canvas),
+   then the model turns real: the canvas opens in a circle that spreads from the trolley the story is about */
+.see-box .see-pull{display:none;-webkit-mask-image:radial-gradient(circle at var(--hx,50%) var(--hy,50%),transparent calc(var(--rr,0%) - 9%),#000 var(--rr,0%));mask-image:radial-gradient(circle at var(--hx,50%) var(--hy,50%),transparent calc(var(--rr,0%) - 9%),#000 var(--rr,0%))}
+.see.live[data-pull] .see-pull{display:block}
+.see-shade{position:absolute;inset:auto 0 0 0;height:52%;pointer-events:none;opacity:calc((.72 + .28*var(--dip,0))*var(--in,1));background:linear-gradient(to top,rgba(5,7,13,.86),rgba(5,7,13,.5) 38%,rgba(5,7,13,0))}
 .see-grain{position:absolute;inset:0;pointer-events:none;background:url(../assets/see/grain.png) 0 0/256px 256px;mix-blend-mode:overlay;opacity:.24}
 .see-vig{position:absolute;inset:0;pointer-events:none;opacity:var(--dip,0);background:radial-gradient(ellipse at 50% 46%,rgba(5,7,13,0) 46%,rgba(5,7,13,.42) 100%)}
 
@@ -48,6 +47,8 @@
 .see-ov .lock{fill:none;stroke:#fff;stroke-width:1.5}
 .see-tip{position:absolute;left:0;top:0;z-index:3;pointer-events:none;padding:5px 10px 6px;border-radius:6px;background:rgba(5,7,13,.86);font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);color:#eaf2ff;white-space:nowrap;opacity:0;transition:opacity .2s}
 .see-tip.on{opacity:1}
+.see-tip.say{padding:9px 14px 10px;font-size:15px;background:#fff;color:var(--see-ink)}
+.see.ask .see-stage{cursor:pointer}
 
 /* the words */
 .see-words{position:absolute;inset:auto 0 0 0;z-index:2;padding:0 clamp(20px,5vw,96px) clamp(40px,8vh,96px);pointer-events:none}
@@ -76,8 +77,8 @@
 .see-w4:not(.told) .see-h .wd b{transform:translateY(118%)}
 .see-w4:not(.told) .see-p{opacity:0;transform:translateY(10px)}
 
-/* sound: asked for, never assumed */
-.see-snd{position:absolute;left:clamp(14px,2.2vw,36px);bottom:clamp(14px,2.6vh,30px);z-index:3;display:none;align-items:center;gap:8px;padding:8px 2px;border:0;background:none;color:#fff;font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);letter-spacing:.02em;opacity:.72;cursor:pointer;transition:opacity .25s}
+/* sound: on from the first touch, and one tap turns it off */
+.see-snd{position:absolute;left:clamp(14px,2.2vw,36px);bottom:clamp(14px,2.6vh,30px);z-index:3;display:none;align-items:center;gap:8px;padding:8px 2px;border:0;background:none;color:color-mix(in srgb,#fff calc(var(--in,1)*100%),var(--see-ink));font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);letter-spacing:.02em;opacity:.72;cursor:pointer;transition:opacity .25s}
 .see.live .see-snd{display:flex}
 .see-snd:hover,.see-snd:focus-visible,.see-snd[aria-pressed=true]{opacity:1}
 .see-snd:focus-visible{outline:1px solid #fff;outline-offset:4px}
@@ -90,7 +91,7 @@
 .see-ticks i{width:2px;height:22px;border-radius:2px;background:currentColor;opacity:.28;transition:opacity .4s,height .4s}
 .see-ticks i.on{opacity:.95;height:34px}
 .see-ticks{color:#fff}
-.see.live[data-pull] .see-ticks{opacity:calc(1 - var(--fog,0))}
+.see.live[data-pull] .see-ticks{opacity:var(--in,1)}
 
 /* no script: one picture, then the four captions as plain text */
 .see:not(.live) .see-words{position:relative;padding-block:48px;display:flex;flex-direction:column;gap:40px}
@@ -106,8 +107,7 @@
   .see-box{left:auto;right:0}
   .see-ov .mins.flip{text-anchor:end}
   .see.live{height:420vh}
-  .see.live[data-pull]{height:600vh}
-  .see-tag{width:118vw}
+  .see.live[data-pull]{height:540vh}
   .see-words{padding-bottom:clamp(36px,9vh,80px)}
   .see-h{font-size:clamp(1.9rem,1rem + 5.4vw,3.2rem);line-height:1.02}
   .see-ticks{right:10px}

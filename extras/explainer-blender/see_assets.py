@@ -58,8 +58,14 @@ for v in VAR:
     if not rise:   # no rise frames yet: stand in with the eye view so the page still runs
         rise = [{'tags': [t['xy'] for t in eye['tags']], 'paths': eye['paths'], 'zones': eye.get('zones', {})}]
         Image.open(f'{R}/eye{sfx}_dim.png').convert('RGB').resize(rsize).save(f'{o}/rise/00.webp', quality=72)
+    # the way in from the hero: the white model, camera backing away from the tag
+    pj = sorted(glob.glob(f'{R}/pull{v}/*.png'))
+    if pj:
+        os.makedirs(o + '/pull', exist_ok=True)
+        for f in pj: Image.open(f).convert('RGB').resize(rsize, Image.LANCZOS).save(f"{o}/pull/{os.path.basename(f)[:-3]}webp", quality=80, method=6)
     for t in eye['tags']: t.pop('floor', None)
     eye.pop('zones', None)
     data = {'frame': list(rsize), 'eye': eye, 'zones': rise[-1]['zones'] if rise else {}, 'rise': rise}
+    if pj: data['pull'] = len(pj) - 1
     json.dump(data, open(f'{o}/data.json', 'w'), separators=(',', ':'))
     print(v, len(rise), 'frames', sum(os.path.getsize(f) for f in glob.glob(o + '/**/*', recursive=True) if os.path.isfile(f)) // 1024, 'KB')
