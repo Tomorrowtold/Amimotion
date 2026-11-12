@@ -10,7 +10,7 @@
 .isi-ov .l1 circle{fill:var(--located);stroke:#fff;stroke-width:5}
 .isi-ov .l2 path{fill:none;stroke:var(--located);stroke-width:7;stroke-linecap:round;stroke-dasharray:14 12}
 .isi-ov .l3 circle{fill:var(--waiting);stroke:#fff;stroke-width:5}
-.isi-ov .l3 text{font:600 44px var(--font-text);fill:#fff;paint-order:stroke;stroke:rgba(11,18,56,.6);stroke-width:8px}
+.isi-ov .l3 text{font:600 44px var(--font-text);fill:#fff;paint-order:stroke;stroke:rgba(11,13,18,.6);stroke-width:8px}
 @supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
   .isi-ov g{animation:isi-in linear both;animation-timeline:view()}
   .isi-ov .l1{animation-range:entry 40% cover 45%}.isi-ov .l2{animation-range:cover 40% cover 55%}.isi-ov .l3{animation-range:cover 50% cover 62%}

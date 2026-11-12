@@ -18,7 +18,7 @@ python3 build.py --indexable           public build for amimotion.com (only afte
 python3 build.py --share               preview build: relative links ending in index.html, runs from an artifact
 python3 tools/pickability.py dist      the AI pickability test on whatever was built
 """
-import argparse, html, json, re, shutil
+import argparse, html, json, re, shutil, subprocess
 from datetime import date
 from pathlib import Path
 
@@ -44,6 +44,15 @@ for _s in NAV["sections"]:
 part = lambda n: (SRC / "partials" / n).read_text()
 # colours live only in core.css: the browser bar colour is read from the --ground token, so a palette swap is one file
 GROUND = re.search(r"--ground:\s*(#[0-9a-fA-F]{3,8})", (SRC / "css" / "core.css").read_text()).group(1)
+
+
+def last_changed(f):
+    """The day the page's source was last committed; the build date when git has no answer (a fresh file)."""
+    try:
+        d = subprocess.run(["git", "log", "-1", "--format=%cs", "--", str(f)], cwd=SRC, capture_output=True, text=True, timeout=10).stdout.strip()
+    except Exception:
+        d = ""
+    return d or TODAY
 
 
 def front(src):
@@ -150,7 +159,7 @@ def page_schema(meta, url, body, titles):
                "description": ENTITY["short"], "publisher": {"@id": SITE + "/#org"}}]
     wp = {"@type": meta.get("page", "WebPage"), "@id": full + "#page", "url": full, "name": meta.get("title", ""), "description": meta.get("description", ""),
           "isPartOf": {"@id": SITE + "/#site"}, "about": {"@id": SITE + "/#org"}, "publisher": {"@id": SITE + "/#org"},
-          "primaryImageOfPage": {"@type": "ImageObject", "url": og}, "inLanguage": "en-IN", "dateModified": TODAY}
+          "primaryImageOfPage": {"@type": "ImageObject", "url": og}, "inLanguage": "en-IN", "dateModified": meta.get("_modified", TODAY)}
     if "short-answer" in body:   # the paragraph a voice assistant or answer engine should read out
         wp["speakable"] = {"@type": "SpeakableSpecification", "cssSelector": ["h1", ".short-answer"]}
     g.append(wp)
@@ -169,7 +178,7 @@ def page_schema(meta, url, body, titles):
     if kind == "article":
         g.append({"@type": "TechArticle", "@id": full + "#article", "headline": meta.get("title"), "description": meta.get("description"),
                   "author": {"@id": SITE + "/#org"}, "publisher": {"@id": SITE + "/#org"}, "about": {"@id": SITE + "/#org"},
-                  "datePublished": meta.get("published", "2026-10-28"), "dateModified": TODAY, "mainEntityOfPage": {"@id": full + "#page"}, "image": og, "inLanguage": "en-IN"})
+                  "datePublished": meta.get("published", "2026-10-28"), "dateModified": meta.get("_modified", TODAY), "mainEntityOfPage": {"@id": full + "#page"}, "image": og, "inLanguage": "en-IN"})
     if meta.get("app"):   # a tool that runs in the browser (round 07 buying squad)
         g.append({"@type": "WebApplication", "@id": full + "#app", "name": meta["app"], "url": full, "applicationCategory": "BusinessApplication",
                   "operatingSystem": "Any modern browser", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": True, "publisher": {"@id": SITE + "/#org"}})
@@ -290,11 +299,13 @@ def styles(meta):
     # the product sites (thread "Build AmIGo, AmIMo and AmIHub product sites"): each product page is its own small
     # site under the AmIMotion nav, so it carries core.css plus its own two files, none of the inner-page kit
     if meta.get("layout") == "product":
-        css = css_min("".join((SRC / "css" / f).read_text() for f in ["core.css", "products/base.css", f"products/{meta['id']}.css"]))
+        css = css_min("".join((SRC / "css" / f).read_text() for f in ["core.css", "products/base.css", f"products/{meta['id']}.css"] + ([] if meta["id"] in ("amigo", "amimo", "amihub") else ["house.css"])))
         return (FONT_PRELOAD +
                 f"<style>{css}</style>")
     files = ["core.css"] + (["home.css"] if meta.get("layout") == "home" else ["inner.css"] + [f"{x}.css" for x in meta.get("css", "").split()] + ["worlds.css", "kit.css"])
     if meta.get("layout") != "home" and meta.get("id") and (SRC / "css" / "id" / f"{meta['id']}.css").exists(): files.append(f"id/{meta['id']}.css")
+    # house.css last (site audit, 12 Nov 2026): one house style settles the tokens of every older layer; not on the homepage
+    if meta.get("layout") != "home": files.append("house.css")
     css = css_min("".join((SRC / "css" / f).read_text() for f in files))
     return (FONT_PRELOAD +
             f"<style>{css}</style>")
@@ -594,6 +605,11 @@ def build():
         rel = f.relative_to(SRC / "pages")
         meta, body = front(f.read_text()); body = crumb_labels(body, url_for(rel))
         if url_for(rel) == "/": body = wire_turntable(body)
+        # site audit (12 Nov 2026): each page shares its own picture when tools/og.py has made one, and says when its
+        # own source last changed (git), not the build date
+        slug = url_for(rel).strip("/").replace("/", "-")
+        if slug and "og" not in meta and (SRC / "assets" / "og" / f"{slug}.jpg").exists(): meta["og"] = f"/assets/og/{slug}.jpg"
+        meta["_modified"] = last_changed(f)
         pages[url_for(rel) if rel.name != "404.html" else "/404.html"] = (meta, body)
     titles = {u: m.get("crumb") or m.get("title", "").split(" | ")[0] for u, (m, _) in pages.items()}
     worlds = {u: m.get("world") for u, (m, _) in pages.items() if m.get("world")}
@@ -632,7 +648,7 @@ def build():
         if url != "/": found += re.findall(r'<img\b[^>]*?\ssrc="(/assets/[\w./-]+\.(?:webp|jpg|png))"', body)
         return "".join(f"<image:image><image:loc>{SITE}{p}</image:loc></image:image>" for p in list(dict.fromkeys(found))[:12])
     (DIST / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n'
-        + "".join(f"  <url><loc>{SITE}{u}</loc><lastmod>{TODAY}</lastmod>{imgs(u)}</url>\n" for u in sorted(public)) + "</urlset>\n")
+        + "".join(f"  <url><loc>{SITE}{u}</loc><lastmod>{pages[u][0].get('_modified', TODAY)}</lastmod>{imgs(u)}</url>\n" for u in sorted(public)) + "</urlset>\n")
 
     # robots: search engines and AI answer engines named and welcomed on a public build (decision D2)
     bots = ["Googlebot", "Bingbot", "OAI-SearchBot", "ChatGPT-User", "GPTBot", "ClaudeBot", "Claude-SearchBot", "Claude-User",

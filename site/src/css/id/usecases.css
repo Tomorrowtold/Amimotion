@@ -1,18 +1,18 @@
 /* /use-cases/: one junction. The floor from straight above on a dark band; four errands cross at one point. */
-.head{margin:var(--s-3) calc(-1 * var(--margin) + 12px) 0;padding:var(--s-8) var(--margin) 0;border-radius:28px;background:#0d1a26;color:#fff;overflow:hidden}
+.head{margin:var(--s-3) calc(-1 * var(--margin) + 12px) 0;padding:var(--s-8) var(--margin) 0;border-radius:28px;background:#121418;color:#fff;overflow:hidden}
 .head .crumbs,.head .crumbs a{color:rgba(255,255,255,.6)}
 .head h1{color:#fff;font-size:clamp(3rem,1.4rem + 5vw,7.4rem)}
-.head h1 span+span{color:#7fd6c4}
+.head h1 span+span{color:#c9ccd3!important}
 .head .words{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);grid-column:1 / -1}
 .head .lede{grid-column:1 / span 5;color:rgba(255,255,255,.8)}
-.head .short-answer{grid-column:7 / -1;margin-top:0!important;background:#13283a!important;color:#e3eef0!important;box-shadow:none!important}
-.head .more{grid-column:7 / -1}.head .more a{color:#7fd6c4}
+.head .short-answer{grid-column:7 / -1;margin-top:0!important;background:#16181d!important;color:#eef0f3!important;box-shadow:none!important}
+.head .more{grid-column:7 / -1}.head .more a{color:#c9ccd3}
 .head-pic{grid-column:1 / -1;margin:var(--s-7) calc(-1 * var(--margin)) 0!important}
 .uc-top{position:relative;margin:0}
 .uc-top img{width:100%;aspect-ratio:21/9;object-fit:cover;opacity:.85}
 .uc-paths{position:absolute;inset:0;width:100%;height:100%}
 .uc-paths path{fill:none;stroke-width:10;stroke-linecap:round;stroke-dasharray:3000;stroke-dashoffset:0}
-.uc-paths .a{stroke:#1f6bff}.uc-paths .b{stroke:#ffb020}.uc-paths .c{stroke:#7fd6c4}.uc-paths .d{stroke:#b8b2ff}
+.uc-paths .a{stroke:#66a5fa}.uc-paths .b{stroke:#f0a43a}.uc-paths .c{stroke:#c9ccd3}.uc-paths .d{stroke:#c9ccd3}
 .uc-paths circle{fill:#fff}
 @supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
   .uc-paths path{animation:uc-draw linear both;animation-timeline:view();animation-range:entry 0% cover 50%}
@@ -30,7 +30,7 @@
 .parts.c2 .pic img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease-ds)}
 .parts.c2 h3 a::before{content:"";position:absolute;inset:0;border-radius:22px}
 .parts.c2 h3 a::after{content:"";display:inline-block;width:.38em;height:.38em;margin-left:.5em;border-top:2px solid currentColor;border-right:2px solid currentColor;transform:translateY(-.1em) rotate(45deg);transition:transform .2s var(--ease-ds)}
-.parts.c2>li:hover{box-shadow:0 1px 0 var(--hairline),0 30px 60px -40px rgba(11,18,56,.35)}
+.parts.c2>li:hover{box-shadow:0 1px 0 var(--hairline),0 30px 60px -40px rgba(11,13,18,.35)}
 .parts.c2>li:hover .pic img{transform:scale(1.03)}
 .parts.c2>li:hover h3 a{color:var(--link);text-decoration:none}
 .parts.c2>li:hover h3 a::after{transform:translate(3px,-.1em) rotate(45deg)}

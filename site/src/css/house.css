@@ -1,0 +1,126 @@
+/* house.css: one house style for every inner and product page (thread "Audit the whole website against
+   references", 12 Nov 2026). Loaded last by build.py styles(), so it settles the tokens every older layer
+   (core, inner, worlds, kit, id/*, products/*) reads, and removes the patterns the brand rules ban.
+   Brand rule (AGENTS.md): black and white interface, colour only from pictures; brand blue #66a5fa means
+   located, amber #f0a43a means waiting. One type family (AmI Sans): no serif voice, no italics in headings,
+   no gradient text, no glow, no eyebrows, no decorative rules or accent rails. The homepage does not load it. */
+
+/* ---------- tokens ---------- */
+.ds{
+  --ground:#ffffff; --surface:#ffffff; --pressed:#eef0f3;
+  --ink:#0b0d12; --ink-soft:#4b515d; --ink-hover:#262a33; --on-ink:#ffffff;
+  --action:#0b0d12; --action-hover:#2b303b; --on-action:#ffffff;
+  --link:#0b0d12; --focus:#0b0d12;
+  --brand:#66a5fa; --located:#66a5fa; --waiting:#f0a43a; --waiting-edge:#8f5c00;
+  --hairline:rgba(11,13,18,.12);
+  /* the serif voice is retired: every rule that asked for it now gets the display face */
+  --font-serif:var(--font-display); --serif:var(--font-display); --n-serif:var(--font-display);
+  /* AmI Sans ships no italic: never fake one, never fake a weight */
+  font-synthesis:none;
+}
+/* the located colour is too light for text on white: text that wore it reads in ink, graphics keep the blue */
+.ds .w-accent-text{color:var(--ink)}
+
+/* ---------- one ground for every world ---------- */
+.ds[data-world]{--w-ground:#ffffff;--w-band:#0b0d12;--w-accent:var(--ink);--w-plate:#f2f3f5;--w-rule:var(--hairline)}
+body.ds[data-world]{background:#ffffff}
+body.ds[data-world] .band.surface{background:#f5f6f7}
+
+/* ---------- headings: one face, the second line in a quieter ink, never italic ---------- */
+.ds h1,.ds h2,.ds h3,.ds h1 *,.ds h2 *,.ds h3 *{font-style:normal}
+.ds .head h1 span+span,.ds .sec>h2 span+span,.ds .close p>span:first-child span+span{color:var(--ink-soft)}
+.look-serif-all .head h1,.look-serif-all .sec>h2,.look-card .head h1,.look-cover .head h1{font-weight:600;letter-spacing:-.035em;line-height:1.02}
+.look-guide .read .prose h3,.ds .read .prose h2,.ds .read .prose h3{font-weight:600;letter-spacing:-.015em}
+
+/* no decorative rule above every section heading */
+.ds[data-world] .sec>h2::before{content:none}
+
+/* ---------- the short answer: a plain card, a sentence-case label, no accent rail ---------- */
+.ds .head .short-answer{border-radius:8px;box-shadow:none;border:1px solid var(--hairline);padding-left:var(--s-5)}
+.ds .head .short-answer::before{font:500 .875rem/1.2 var(--font-text);letter-spacing:0;text-transform:none;color:var(--ink-soft)}
+.ds .head .short-answer::after{content:none}
+
+/* ---------- field guides: one series, one look (photo and words), no coloured covers or clip art ---------- */
+.look-cover .head{margin:0;padding:0;border-radius:0;background:transparent;color:var(--ink);overflow:visible}
+.look-cover .head::before{content:none}
+.look-cover .head .crumbs,.look-cover .head .crumbs a{color:var(--ink-soft)}
+.look-cover .head h1{color:var(--ink);font-size:var(--size-h2)}
+.look-cover .head h1 span+span{color:var(--ink-soft)}
+.look-cover .head .lede{color:var(--ink)}
+.look-cover .head .short-answer{background:var(--surface)!important}
+.look-cover .head .more a{color:var(--ink)}
+.look-cover .head-pic{display:block}
+.cv-glyph{display:none}
+.look-card .head h1 span+span{color:var(--ink-soft)}
+/* the guide shelf: photo tiles on the page ground instead of coloured book covers */
+.ds[data-world] .related.tiles li[style*="--cv"]>a{min-height:0;padding:0;border-radius:0;background:transparent;color:var(--ink)!important;transform:none!important}
+.ds[data-world] .related.tiles li[style*="--cv"]>a::before{content:none}
+.ds[data-world] .related.tiles li[style*="--cv"] .pic{display:block}
+.ds[data-world] .related.tiles li[style*="--cv"] b{font:600 clamp(1.25rem,1rem + .6vw,1.6rem)/1.15 var(--font-display)!important;color:var(--ink)!important;letter-spacing:-.015em}
+.ds[data-world] .related.tiles li[style*="--cv"]>a span{color:var(--ink-soft)!important}
+.ds[data-world] .related:not(.tiles) li[style*="--cv"]::before{background:var(--ink)}
+.k-progress{background:var(--ink)!important}
+
+/* ---------- one ending: the page's own close is a quiet line on the ground, not a coloured band ---------- */
+.ds .close{background:transparent!important;color:var(--ink)}
+.ds .close p>span:first-child{color:var(--ink);font-family:var(--font-display);font-weight:600}
+.ds .close .sub{color:var(--ink-soft)}
+.ds .close a:not(.go){background:var(--action);color:var(--on-action)!important;box-shadow:none}
+.ds .close a:not(.go):hover{background:var(--action-hover)}
+
+/* ---------- motion: everything readable at rest; nothing waits at opacity 0 for an observer ---------- */
+@media (prefers-reduced-motion:no-preference){
+  .ds [data-reveal],.ds .rv,.ds .k-fade,.ds .reveal{opacity:1!important;transform:none!important;filter:none!important}
+}
+
+/* ---------- phone: headlines fit in about two or three lines ---------- */
+@media (max-width:599px){
+  .ds .head h1,.pl .p-hero h1,.pl .p-h1{font-size:clamp(2.1rem,1.4rem + 3.4vw,2.6rem)!important;line-height:1.04!important;letter-spacing:-.03em}
+}
+
+/* ---------- headline size: one display size for every inner page, two lines at 1440 ---------- */
+.ds{--inner-display:clamp(2.6rem,1.4rem + 3.6vw,5.25rem)}
+.ds .look-giant .head h1,.look-giant .head h1,.look-cover .head h1,.look-card .head h1{font-size:var(--inner-display)}
+
+/* ---------- no invented numbers over photographs: the WIP timers were decoration, not data ---------- */
+.wip-clocks{display:none!important}
+
+/* ---------- the spatial intelligence guide: house ink and ground, words not read-outs ---------- */
+.site-isi{--p-bg:#ffffff;--p-fg:#0b0d12;--p-soft:#4b515d;--p-mute:#5b616c;--p-line:rgba(11,13,18,.12);--p-accent:#0b0d12;--mono:var(--font-text);--blue:#66a5fa;--amber:#f0a43a}
+.site-isi .si-kicker{display:none}
+.site-isi .si-live-bar .si-clock,.site-isi .si-read,.site-isi .si-live .mv text,.site-isi .si-live .wt text,.site-isi .si-live .mv .h{display:none}
+.site-isi .si-live{box-shadow:0 0 0 1px var(--hairline)!important}
+.site-isi .si-live .zt text{letter-spacing:0;text-transform:none}
+.site-isi .si-compare thead th{letter-spacing:0;text-transform:none}
+.site-isi a{color:var(--ink)}
+
+/* the shelf: plain photo tiles, no book bindings, shadows or title rules */
+.ds[data-world] .related.tiles li[style*="--cv"]>a,.ds[data-world] .related.tiles li[style*="--cv"]>a:hover{box-shadow:none!important}
+.ds[data-world] .related.tiles li[style*="--cv"]>a::after,.ds[data-world] .related.tiles li[style*="--cv"] b::after{content:none!important}
+@media (min-width:600px){body.ds .head h1{font-size:min(var(--inner-display),calc((100vw - 2 * var(--margin,24px)) / 7.2))!important}}
+
+/* ---------- small labels in sentence case, never spaced capitals ---------- */
+.w-poster .w-credit{letter-spacing:0;text-transform:none;font-size:.8125rem}
+/* the footer speaks in the one face, upright */
+.ds footer em,.ds .ft-line em,.ds .ft-roles p{font-style:normal;font-family:inherit}
+.w-lab .read dt{letter-spacing:0;text-transform:none;font-size:.8125rem}
+
+/* the films page plays its film where the stand-in still was */
+.pic.r11-pic.film video{width:100%;aspect-ratio:1;height:auto;object-fit:cover;background:#f2f3f5}
+
+/* the second headline line in the quieter ink, on every light page; dark pages and photo heads keep their own */
+body.ds:not(.pl) .head:not(.w-poster):not(.has-bleed) h1 span+span{color:var(--ink-soft)}
+
+/* the guide headline's question and answer both read at rest; nothing clips or fades with scroll */
+.motion .qa>span:first-child{transform:none!important;clip-path:none!important}
+.motion .qa>span:last-child{opacity:1!important}
+/* located blue marks graphics only; text that wore it reads in ink */
+.amr-rec time{color:var(--ink);font-family:var(--font-display);font-weight:600}
+.site-isi .si-cap span:first-child{color:var(--ink)}
+.site-isi .rv{animation:none!important;opacity:1!important;transform:none!important}
+.site-isi .si-rec.arm dl>div{opacity:1;transform:none}
+.site-isi .si-row-on th{color:var(--ink)!important}
+body.ds[style*="--cv"] .head h1 span+span{color:var(--ink-soft)!important}
+/* heads set over a photograph keep a light second line */
+body.ds .head.w-poster h1 span+span,body.ds[style*="--cv"] .head.w-poster h1 span+span{color:rgba(255,255,255,.78)!important}
+.look-giant .head h1{line-height:1.02!important;letter-spacing:-.035em}
