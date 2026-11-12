@@ -1,5 +1,6 @@
 /* "Can you see it?" : the section after the hero. One floor, four scrolls.
    Without script it is one picture and four captions. With script (.see.live) the stage pins and the scroll drives it. */
+@font-face{font-family:"Instrument Serif";src:url(../assets/fonts/InstrumentSerif-italic.woff2) format("woff2");font-style:italic;font-weight:400;font-display:swap}
 
 .see{--see-ink:#0b1238;--see-night:#05070d;--see-blue:#66a5fa;--see-amber:#f0a43a;--see-ground:#f0f6ff;position:relative;background:var(--see-night);color:#fff}
 .see-stage{position:relative;overflow:hidden;height:100vh;height:100svh;background:var(--see-night)}
@@ -61,7 +62,7 @@
 .see-h,.see-p,.see-k{margin:0}
 .see-h,.see-p{text-shadow:0 2px 28px rgba(5,7,13,.55)}
 .see-h{font:600 clamp(1.9rem,1rem + 2.7vw,4.1rem)/1.02 var(--display,"AmI Display",Arial,sans-serif);letter-spacing:-.045em;text-wrap:balance;max-width:17em}
-.see-h em{font:inherit;font-style:normal}   /* one family: the important words carry colour, not a second typeface */
+.see-h em{font:italic 400 1.1em/1 "Instrument Serif",Georgia,serif;letter-spacing:-.02em;font-style:italic;padding-right:.04em}
 .see .see-p{font:400 clamp(1.05rem,.9rem + .55vw,1.5rem)/1.4 var(--text,"AmI Text",Arial,sans-serif);max-width:32em;text-wrap:balance}
 .see-k{font:500 clamp(.8rem,.74rem + .2vw,1rem)/1 var(--text,"AmI Text",Arial,sans-serif);letter-spacing:.16em;font-variant-numeric:tabular-nums}
 .see-k i{font-style:normal;animation:see-blink 1.2s steps(1) infinite}
@@ -69,7 +70,7 @@
 .see-w1 .see-h em{color:#fff;background:linear-gradient(var(--see-amber),var(--see-amber)) 0 94%/100% .07em no-repeat}
 .see-w2 .see-h em{color:var(--see-blue)}
 .see-w3 .see-h em,.see-w4 .see-h em{color:var(--see-amber)}
-.see-p{color:#e4e8ef}
+.see-p{color:#d3dcec}
 .see-q{font:400 clamp(1.1rem,.9rem + .8vw,1.8rem)/1.2 var(--text,"AmI Text",Arial,sans-serif);color:#fff;padding:.5em 1em .55em;border-radius:999px;border:1px solid rgba(255,255,255,.34);min-height:2.3em}
 .see-q::after{content:"";display:inline-block;width:1.5px;height:1em;margin-left:3px;vertical-align:-.14em;background:#fff;animation:see-blink 1s steps(1) infinite}
 .see-q{transition:opacity .4s}
