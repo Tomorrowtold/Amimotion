@@ -27,9 +27,10 @@ const glide = { on: false, to: 0, end: 0, hero: false };   // hero: the glide is
 const filmStart = () => { const s = storySec; if (!s) return 0; const top = s.getBoundingClientRect().top + scrollY, len = s.offsetHeight - innerHeight; return Math.round(top + len * (s.hasAttribute('data-pull') ? .2 : 0)); };   // one gesture: the camera backs away from the tag and the floor turns real
 let fsCache = 0; const fsNow = () => fsCache || (fsCache = filmStart());
 addEventListener('resize', () => { fsCache = 0; }); addEventListener('load', () => { fsCache = 0; });
-const glideTo = (to, ms = 1050, hero = false) => {
+const glideTo = (to, ms = 1050, hero = false, out = false) => {
   if (glide.on) return; glide.on = true; glide.hero = hero; const from = scrollY, t0 = performance.now(); document.documentElement.classList.add('gliding');
-  const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  // out: the move answers the finger at once and settles softly (the guides' steps); otherwise a symmetric glide (the hero)
+  const ease = out ? (x) => 1 - Math.pow(1 - x, 4) : (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
   const step = (now) => { const k = Math.min(1, (now - t0) / ms); scrollTo(0, from + (to - from) * ease(k)); if (k < 1) requestAnimationFrame(step); else { glide.on = false; glide.end = performance.now(); document.documentElement.classList.remove('gliding'); } };
   requestAnimationFrame(step);
 };
@@ -238,10 +239,21 @@ kick();
 const idle = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 1200 }) : (f) => setTimeout(f, 200);
 // the hero's tag starts at once, so it is there on the very first visit; the fallback picture only shows if it cannot run
 const tagFb = $('#tagFallback');
-if (!slow && !reduce && window.WebGLRenderingContext) {
-  document.documentElement.classList.add('tag-live');
+// phones and tablets (12 Nov): the hero paints at once from its resting frame, which is the 3D tag at rest, and the live tag
+// cross-fades in over it at the first touch or a few seconds after load, so the first view never waits on 3D
+const touchFirst = !matchMedia('(pointer: fine)').matches;
+const startTag = () => {
+  const live = document.documentElement.classList.contains('tag-live');
   import('./tag.js').then((m) => m.init($('#tagGL'), tagFb, $('#hero'))).catch(() => document.documentElement.classList.remove('tag-live'));
-  setTimeout(() => { if (!$('#tagGL').classList.contains('ready')) document.documentElement.classList.remove('tag-live'); }, 3000);
+  if (live) setTimeout(() => { if (!$('#tagGL').classList.contains('ready')) document.documentElement.classList.remove('tag-live'); }, 3000);
+};
+if (!slow && !reduce && window.WebGLRenderingContext) {
+  if (!touchFirst) { document.documentElement.classList.add('tag-live'); startTag(); }
+  else {
+    let go = false; const once = () => { if (go) return; go = true; ['touchstart', 'scroll', 'pointerdown', 'keydown'].forEach((t) => removeEventListener(t, once)); startTag(); };
+    ['touchstart', 'scroll', 'pointerdown', 'keydown'].forEach((t) => addEventListener(t, once, { passive: true, once: true }));
+    addEventListener('load', () => setTimeout(once, 6000), { once: true });
+  }
 }
 addEventListener('load', () => idle(() => {
   startGL();
@@ -292,6 +304,8 @@ if (simSec) {
       card.style.setProperty('--mx', (mx + .5) * 100 + '%'); card.style.setProperty('--my', (my + .5) * 100 + '%');
       card.style.setProperty('--ry', (mx * 5).toFixed(2) + 'deg'); card.style.setProperty('--rx', (-my * 4).toFixed(2) + 'deg'); });
     card.addEventListener('pointerleave', () => { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); });
+    // final audit: the poster frames load a screen ahead of the floors, not with the hero
+    new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { io.disconnect(); if (v.dataset.poster) v.poster = v.dataset.poster; } }, { rootMargin: '1200px 0px' }).observe(card);
     if (lowData || reduce) return;   // the poster frame stays
     new IntersectionObserver((es) => {
       if (es[0].isIntersecting) { if (!v.src) { v.src = v.dataset.src; v.load(); } const p = v.play(); if (p) p.catch(() => {}); }
@@ -360,13 +374,19 @@ if (simSec) {
     const phone = innerWidth <= 860, R = cw * (phone ? .6 : .8), DY = ch * (phone ? .52 : .46);
     cards.forEach((c, i) => {
       const d = i - p + fan * (i ? 1.6 : 0), a = d * STEP, ad = Math.abs(d), front = (Math.cos(a) + 1) / 2;
-      c.style.setProperty('--x', (R * Math.sin(a)).toFixed(1) + 'px'); c.style.setProperty('--y', (d * DY).toFixed(1) + 'px');
-      c.style.setProperty('--z', (R * (Math.cos(a) - 1) - ad * 30).toFixed(1) + 'px');
-      c.style.setProperty('--a', (a * .3 * 180 / Math.PI).toFixed(2) + 'deg');
-      c.style.setProperty('--o', (clamp(.34 + .66 * front) * clamp(1.9 - ad * .28) * (i ? 1 - fan : (phase === 3 ? 1 : clamp((rk - .86) / .1)))).toFixed(3));
-      c.style.setProperty('--d', clamp((1 - front) * .55 + Math.min(ad, 1) * .2, 0, .75).toFixed(3));
-      c.style.zIndex = String(Math.round(front * 100) + (ad < .5 ? 50 : 0));
-      c.style.pointerEvents = ad < .3 ? 'auto' : 'none';
+      // final audit: one transform string per card instead of four custom properties (no style recalc of the card's insides),
+      // and the stacking order and hit testing are written only when they change, so a moving spiral never re-layers or repaints
+      const was = c._s || (c._s = {});
+      const tf = `translate3d(${(R * Math.sin(a)).toFixed(1)}px,${(d * DY).toFixed(1)}px,${(R * (Math.cos(a) - 1) - ad * 30).toFixed(1)}px) rotateY(${(a * .3 * 180 / Math.PI).toFixed(2)}deg)`;
+      if (tf !== was.tf) { c.style.transform = tf; was.tf = tf; }
+      const o = (clamp(.34 + .66 * front) * clamp(1.9 - ad * .28) * (i ? 1 - fan : (phase === 3 ? 1 : clamp((rk - .86) / .1)))).toFixed(3);
+      if (o !== was.o) { c.style.opacity = o; was.o = o; }
+      const dd = clamp((1 - front) * .55 + Math.min(ad, 1) * .2, 0, .75).toFixed(3);
+      if (dd !== was.d) { (c._sh || (c._sh = c.querySelector('.bs-shade'))).style.opacity = dd; was.d = dd; }
+      const z = String(Math.round(front * 8) + (ad < .5 ? 10 : 0));
+      if (z !== was.z) { c.style.zIndex = z; was.z = z; }
+      const pe = ad < .3 ? 'auto' : 'none';
+      if (pe !== was.pe) { c.style.pointerEvents = pe; was.pe = pe; }
     });
     const k = clamp(Math.round(p), 0, N - 1);
     if (k !== active) {
@@ -376,11 +396,21 @@ if (simSec) {
       cards.forEach((c, i) => {
         const vid = c.querySelector('video'), img = c.querySelector('img'), near = Math.abs(i - k);
         if (img) c.style.setProperty('--kb', near === 0 ? '1.12' : '1.04');
-        if (!vid || lowData || reduce) return;
-        if (near <= 1 && !vid.src && seen) { vid.src = vid.dataset.src; vid.preload = near ? 'metadata' : 'auto'; }
-        if (near === 0 && seen && phase === 3) { const pr = vid.play(); if (pr) pr.catch(() => {}); } else if (vid.src && !vid.paused) vid.pause();
+        if (vid && i !== k && vid.src && !vid.paused) vid.pause();
       });
+      settled = false;
     }
+  };
+  // final audit: films load and start only once the spiral has landed, so no video decoder starts in the middle of a move
+  let settled = false;
+  const settle = () => {
+    if (settled || !seen || phase !== 3) return; settled = true;
+    if (lowData || reduce) return;
+    cards.forEach((c, i) => {
+      const vid = c.querySelector('video'), near = Math.abs(i - active); if (!vid) return;
+      if (near <= 1 && !vid.src) { vid.src = vid.dataset.src; vid.preload = near ? 'metadata' : 'auto'; }
+      if (near === 0) { const pr = vid.play(); if (pr) pr.catch(() => {}); }
+    });
   };
   const finish = () => {
     phase = 3; fan = 0; doneAt = performance.now(); sec.classList.add('done'); sec.style.setProperty('--pool', 1);
@@ -410,6 +440,7 @@ if (simSec) {
     if (reduce || still) { p = target; v = 0; }
     else { const w = 13, z = .68; v += (w * w * (target - p) - 2 * z * w * v) * dt; p += v * dt; if (Math.abs(target - p) < .0004 && Math.abs(v) < .002) { p = target; v = 0; } }
     if (p !== cur || phase === 2) { cur = p; place(); }
+    if (phase === 3 && !glide.on && Math.abs(target - p) < .02 && Math.abs(v) < .05) settle();
     if (seen && (phase < 3 || p !== target || v !== 0 || glide.on)) requestAnimationFrame(tick); else ticking = false;
   };
   let ticking = false;
@@ -423,7 +454,7 @@ if (simSec) {
     const go = (dir) => {   // true when the guides took the gesture
       if (phase < 3 || performance.now() - doneAt < 450) { if (dir < 0 && phase < 3) return false; if (phase === 1 && smiled(performance.now())) rise(); if (phase < 3 && scrollY < posOf(0) - 2) glideTo(posOf(0), 900); lastStep = performance.now(); return true; }
       const next = gi + dir; if (next < 0 || next > N - 1) return false;   // past the first or last guide the page scrolls on as usual
-      gi = next; lastStep = performance.now(); glideTo(posOf(next), 720); haptic(); land(); return true;
+      gi = next; lastStep = performance.now(); glideTo(posOf(next), 760, false, true); haptic(); land(); return true;
     };
     let stream = 0, pinSeen = 0;   // the gesture under way: once it has moved a guide, the rest of it (and its momentum) is absorbed
     const onWheel = (e) => {
@@ -461,7 +492,8 @@ if (simSec) {
   addEventListener('resize', () => { measure(); cur = -1; active = -1; place(); if (phase < 2) setIntro(0); });
   new IntersectionObserver((es) => {
     const was = seen; seen = es[0].isIntersecting;
-    if (seen && !was) { active = -1; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.preload = 'auto'; } wake(); }
+    if (seen && !was) { if (!sec.dataset.posters) { sec.dataset.posters = '1'; $$('video[data-poster]', sec).forEach((v) => { v.poster = v.dataset.poster; }); }   // the films' first frames load only as the guides come near
+      active = -1; if (phase === 0 && !iv.src) { iv.src = iv.dataset.src; iv.preload = 'auto'; } wake(); }
     if (!seen) { cards.forEach((c) => { const vid = c.querySelector('video'); if (vid && vid.src && !vid.paused) vid.pause(); }); if (phase === 1) { iv.pause(); phase = 0; } }
   }, { rootMargin: '400px' }).observe(sec);
 })();

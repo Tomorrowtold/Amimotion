@@ -470,7 +470,8 @@ def footer_html(url="/", world=None):
     vb, paths = word.group(1), word.group(2).replace('fill="currentColor"', 'fill="url(#ft-wg)"')
     at = door_index(url, world)
     bays = "".join(
-        f'<div class="ft-bay"{" data-here" if i == at else ""}>{A(s["url"], s["label"], " class=\"ft-door\"")}<ul>'
+        f'<div class="ft-bay"{" data-here" if i == at else ""}>{A(s["url"], s["label"], " class=\"ft-door\"")}'
+        f'<button class="ft-fold" type="button" aria-expanded="false" aria-controls="ft-b{i}"><span class="ft-sr">Show {html.escape(s["label"])} links</span></button><ul id="ft-b{i}"><li class="ft-all">{A(s["url"], "Overview")}</li>'
         + "".join(f"<li>{A(u, l)}</li>" for l, u, _ in s["items"]) + "</ul></div>" for i, s in enumerate(NAV["sections"]))
     chips = "".join(f'<li>{A(roles[r][0][1], r)}</li>' for r in ROLE_ORDER)
     style = f' style="--at:{at}"' if at is not None else ""
