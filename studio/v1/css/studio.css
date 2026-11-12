@@ -1163,3 +1163,19 @@ html.tag-live .hero .lede.k-fade{transition:opacity .9s var(--ease),transform 1.
 .trio-team{--sheet:clamp(26px,3vw,44px);z-index:3;margin-top:calc(var(--sheet) * -1);border-radius:var(--sheet) var(--sheet) 0 0;
   padding:clamp(56px,7vw,112px) 0 calc(var(--sheet) + clamp(48px,6vw,96px));box-shadow:0 -24px 60px -30px rgb(5 6 13 / .6)}
 .trio-team + .start{box-shadow:0 -24px 60px -40px rgba(11,18,56,.22)}
+
+/* ===== guides, final audit (12 Nov): the spiral moves on the compositor only. Each card's dimming is its own layer, so changing
+   it never repaints the film under it; the cards keep their own layout, so a moving card never relayouts its neighbours. ===== */
+.bs-shade{will-change:opacity}
+.bs-card{contain:layout style}
+/* the words fade on their own layers; the rail's marks grow by transform, not width, so a step never relayouts */
+.bs-post{will-change:opacity,transform}
+.bs-rail i,.bs-rail i.on{width:34px;transform:scaleX(.353);transition:transform .6s var(--ease-out),background .4s}
+.bs-rail i.on{transform:none}
+.bs-rail i.on.land{animation:bs-land2 .55s var(--ease-out)}
+@keyframes bs-land2{0%{transform:scaleY(1)}35%{transform:scaleY(3)}100%{transform:scaleY(1)}}
+@media (max-width:860px){
+  .bs-rail{gap:6px}
+  .bs-rail i,.bs-rail i.on{width:18px;margin:0;transform:none;height:2px;border-radius:1px}
+}
+@media (prefers-reduced-motion:reduce){.bs-rail i,.bs-rail i.on{transition:none}.bs-rail i.on.land{animation:none}}
