@@ -56,11 +56,11 @@ window.SeeSound = function (AC) {
       if (st.told && !p0.told) { tone(587, 1.5, .11, [.5, .5]); setTimeout(() => tone(880, 2.0, .11, st.heroAt), 140); }
       // scroll 1, the game: each trolley's light comes on with a soft note of one chord; the light under the cursor answers with
       // the faintest tick; a miss is a muted knock where it was picked; the hit (or the answer) is the chord resolving
-      if (st.pkLit > p0.pkLit && st.pickAt) tone(SCALE[st.pkLit % SCALE.length] / 2, 1.1, .045, st.pickAt);
+      if (st.pkLit > p0.pkLit && st.pickAt) { tick(2600, .018, .07, st.pickAt); tone(SCALE[st.pkLit % SCALE.length] / 2, 1.2, .042, st.pickAt); }   // a lamp: the relay, then its note
       if (st.hotN > p0.hotN && st.pickAt && performance.now() - lastHot > 70) { lastHot = performance.now(); tick(5200, .014, .05, st.pickAt); }
       const g = st.guess - p0.guess;
-      if (g > 0 && g < 50) { tick(1100, .06, .22, st.pickAt); tone(150, .45, .14, st.pickAt, 'sine', 96); }
-      if (g >= 50) { const at = st.heroAt; [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, 1.8 - i * .2, g >= 100 ? .09 : .06, at, i ? 'sine' : 'triangle'), i * 85)); tone(131, 2.2, .1, at); }
+      if (g > 0 && g < 50) { tick(1100, .06, .22, st.pickAt); tone(150, .5, .15, st.pickAt, 'sine', 92); tone(233, .28, .035, st.pickAt, 'triangle', 196); }   // the lamp fails: a knock, and the pitch sags
+      if (g >= 50) { const at = st.heroAt; [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, 1.8 - i * .2, g >= 100 ? .09 : .06, at, i ? 'sine' : 'triangle'), i * 85)); tone(131, 2.2, .1, at); tone(62, 1.1, .22, [.5, .5], 'sine', 40); }   // every other light goes out under the chord
     }
   };
 };

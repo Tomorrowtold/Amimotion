@@ -72,16 +72,19 @@
       })
     };
     order = [...els.tags].sort((a, b) => a.at - b.at);
-    // scroll 1: a pool of light under every trolley, larger where the floor is nearer; a ring and a word arrive when one is picked
+    // scroll 1: a pool of light on every trolley, larger where the floor is nearer; a ring and its minutes arrive when one is picked.
+    // What has been picked is kept by the trolley's id, so turning the phone (which redraws all of this) loses nothing.
     els.tags.forEach((o, i) => {
       if (o.t.kind !== 'Trolley') return; const [x, y] = o.t.xy, k = .62 + .76 * y, flip = x > (V === 'P' ? .6 : .72);
-      const g = mk('g', { transform: `translate(${(x * W).toFixed(1)} ${(y * H).toFixed(1)})` }, gK); g.style.setProperty('--d', (i * .73 % 4.8).toFixed(2));
+      const g = mk('g', { transform: `translate(${(x * W).toFixed(1)} ${(y * H).toFixed(1)})` }, gK);
       const top = -(y * H) + H * .03; mk('polygon', { class: 'pk-beam', points: `${-10 * k},${top} ${10 * k},${top} ${70 * k},${26 * k} ${-70 * k},${26 * k}` }, g);
       mk('ellipse', { class: 'pk-pool', cx: 0, cy: (26 * k).toFixed(1), rx: (78 * k).toFixed(1), ry: (52 * k).toFixed(1) }, g);
-      mk('circle', { class: 'pk-ring', r: (24 * k).toFixed(1) }, g); mk('circle', { class: 'pk-dot', r: 2.6 }, g);
-      const l = mk('text', { class: 'pk-l', x: (30 * k + 8) * (flip ? -1 : 1), y: 6, 'text-anchor': flip ? 'end' : 'start' }, g);
-      o.pk = g; o.pl = l;
+      mk('circle', { class: 'pk-ring', cy: (20 * k).toFixed(1), r: (38 * k).toFixed(1) }, g); mk('circle', { class: 'pk-dot', r: 2.6 }, g);
+      const l = mk('text', { class: 'pk-l', x: (38 * k + 12) * (flip ? -1 : 1), y: (20 * k + 6).toFixed(1), 'text-anchor': flip ? 'end' : 'start' }, g);
+      o.pk = g; o.pl = l; const was = picked[o.t.id];
+      g.style.setProperty('--w', (y * 1.3).toFixed(2)); if (was) { g.classList.add(was, 'lit'); l.textContent = was === 'yes' ? '42 min' : ago(o) + ' min'; }
     });
+    hot = null; if (armed) requestAnimationFrame(() => { litIds.clear(); game = new Set(inView().map(o => o.t.id)); els.tags.forEach(o => { if (o.pk) o.pk.classList.toggle('lit', game.has(o.t.id) || !!picked[o.t.id]); if (game.has(o.t.id)) litIds.add(o.t.id); }); spots(); buildKeys(); declash(); });
     hi = D.eye.tags.findIndex(t => t.mins === 42); const hero = D.eye.tags[hi].xy; box.style.transformOrigin = `${hero[0] * 100}% ${hero[1] * 100}%`;
     if (PULL) for (let i = 0; i <= D.pull; i++) pframes.push(image(`${base}${V}/pull/${pad(i)}.webp`, () => { if (pdrawn < 0 || i === Math.round(seg(cur, 0, PULL * FLY) * D.pull)) { pdrawn = -1; paint(true); } }));
     shown = -1; paint(true);
@@ -179,9 +182,9 @@
   }
 
   // the nearest thing of a kind to the cursor or finger, within reach
-  function pick(ev, reach, kind) {
+  function pick(ev, reach, kind, ok) {
     const b = ev._b || (ev._b = box.getBoundingClientRect()); let best = null, bd = reach;
-    els.tags.forEach(o => { if (kind && o.t.kind !== kind) return; const x = b.left + o.t.xy[0] * b.width, y = b.top + o.t.xy[1] * b.height, d = Math.hypot(ev.clientX - x, ev.clientY - y); if (d < bd) { bd = d; best = [o, x, y]; } });
+    els.tags.forEach(o => { if ((kind && o.t.kind !== kind) || (ok && !ok(o))) return; const x = b.left + o.t.xy[0] * b.width, y = b.top + o.t.xy[1] * b.height, d = Math.hypot(ev.clientX - x, ev.clientY - y); if (d < bd) { bd = d; best = [o, x, y]; } });
     return best;
   }
   function say(best, text, cls) {
@@ -198,51 +201,77 @@
   // Scroll 1 is a game with three picks. The hall's lights come down, the trolleys light up one by one, and the visitor
   // picks the one that has waited 42 minutes. Almost everyone misses, and every miss shows the point: they all look the same,
   // waiting cannot be seen. A hit (or the third miss, which shows the answer) carries the visitor straight into the next scene.
-  const sayEl = root.querySelector('.see-say'), lives = [...root.querySelectorAll('.see-lives i')], livesEl = root.querySelector('.see-lives');
-  let tries = 0, found = false, hot = null, lit0 = false, pkLit = 0, pickAt = null, hotN = 0;
-  const N_TRY = 3;
+  // It can be played with a mouse, a finger or the keyboard (a hidden row of buttons, one per trolley in view).
+  const sayEl = root.querySelector('.see-say'), lives = [...root.querySelectorAll('.see-lives i')], livesEl = root.querySelector('.see-lives'), keys = root.querySelector('.see-keys');
+  const picked = {}, N_TRY = 3, litIds = new Set(), spot = root.querySelector('.see-spot');
+  // which trolleys stand in light: an opening in the dark for each one that is on (a missed one goes dark; after the answer, only it stays lit)
+  function spots() {
+    if (!spot || !els) return;
+    const m = els.tags.filter(o => o.pk && litIds.has(o.t.id) && picked[o.t.id] !== 'no' && (!found || o.hero)).map(o => { const k = .62 + .76 * o.t.xy[1]; return `radial-gradient(ellipse ${(88 * k / W * 100).toFixed(2)}% ${(62 * k / H * 100).toFixed(2)}% at ${(o.t.xy[0] * 100).toFixed(2)}% ${((o.t.xy[1] * H + 24 * k) / H * 100).toFixed(2)}%,#000 34%,transparent 100%)`; }).join(',') || 'linear-gradient(transparent,transparent)';
+    spot.style.webkitMaskImage = m; spot.style.maskImage = m;
+  }
+  let tries = 0, found = false, hot = null, lit0 = false, armed = false, pkLit = 0, pickAt = null, hotN = 0, bankOff = 0, nudge = 0;
   const tell = html => { if (!sayEl) return; sayEl.classList.add('swap'); setTimeout(() => { sayEl.innerHTML = html; sayEl.classList.remove('swap'); }, 200); };
-  const ago = o => o.t.mins && o.t.mins !== 42 ? o.t.mins : 2 + o.i * 7 % 9;
-  let bankOff = 0;
+  function ago(o) { return o.t.mins && o.t.mins !== 42 ? o.t.mins : 2 + o.i * 7 % 9; }
+  // only the trolleys the visitor can actually see are in the game (a phone shows fewer of them than a laptop)
+  // (and not one the words sit on, nor T-02, which the photograph hides behind a column)
+  const inView = () => { const b = box.getBoundingClientRect(), s = stage.getBoundingClientRect(), wr = words[0].getBoundingClientRect(), floor = Math.min(s.bottom - 14, (wr.height ? wr.top : s.bottom) - 18); return els.tags.filter(o => { if (!o.pk || o.t.id === 'T-02') return false; const x = b.left + o.t.xy[0] * b.width, y = b.top + o.t.xy[1] * b.height; return o.hero || (x > s.left + 14 && x < s.right - 14 && y > s.top + 70 && y < floor); }); };
+  let game = new Set();
+  const setHot = o => { if (o === hot) return; if (hot) hot.pk.classList.remove('hot'); hot = o; if (o) { o.pk.classList.add('hot'); hotN++; pickAt = o.t.xy; if (sound) paint(); } };
+  function buildKeys() {
+    if (!keys || !armed) return; keys.textContent = ''; const list = els.tags.filter(o => game.has(o.t.id)).sort((a, b) => a.t.xy[0] - b.t.xy[0]);
+    list.forEach((o, i) => { const bt = document.createElement('button'); bt.type = 'button'; bt.textContent = `Trolley ${i + 1} of ${list.length}`; bt.disabled = found || !!picked[o.t.id]; bt.onfocus = () => setHot(found || picked[o.t.id] ? null : o); bt.onblur = () => setHot(null); bt.onclick = ev => { ev.stopPropagation(); choose(o); }; o.key = bt; keys.append(bt); });
+  }
   function lightUp() {            // the hall's lights go off bank by bank, far to near; then the trolleys' lights come on, each with a note
-    lit0 = true; const list = els.tags.filter(o => o.pk).sort((a, b) => a.t.xy[1] - b.t.xy[1]);
+    lit0 = true; const list = inView().sort((a, b) => a.t.xy[1] - b.t.xy[1]), t0 = calm ? 0 : 1500, gap = calm ? 0 : 90; game = new Set(list.map(o => o.t.id));
     [1, 2, 3].forEach(b => setTimeout(() => { root.classList.add('pk-b' + b); bankOff = b; if (sound) paint(); }, calm ? 0 : 200 + (b - 1) * 420));
-    list.forEach((o, i) => setTimeout(() => { o.pk.classList.add('lit'); pkLit++; pickAt = o.t.xy; if (sound) paint(); }, calm ? 0 : 1500 + i * 90));
+    list.forEach((o, i) => setTimeout(() => { o.pk.classList.add('lit'); litIds.add(o.t.id); spots(); pkLit++; pickAt = o.t.xy; if (sound) paint(); }, t0 + i * gap));
+    setTimeout(() => {
+      armed = true; list.forEach(o => { o.pk.classList.add('lit'); litIds.add(o.t.id); }); spots(); root.classList.add('pk-ready'); buildKeys();
+    }, t0 + list.length * gap + 120);
+    setTimeout(() => {
+      // nobody has picked yet: one slow wave of light across the trolleys says they can be
+      nudge = setTimeout(() => { if (!tries && !found && root.classList.contains('see-ask')) { root.classList.add('pk-wave'); setTimeout(() => root.classList.remove('pk-wave'), 2600); } }, 6500);
+    }, t0 + list.length * gap + 140);
   }
   const red = root.querySelector('.see-red');
   // straight on into scene 2: the lights go down and every tag comes on, played by a glide rather than the visitor's wheel
   function carryOn(delay) {
     setTimeout(() => {
-      const span = root.offsetHeight - innerHeight, top = root.getBoundingClientRect().top + scrollY, to = top + span * (PULL + (1 - PULL) * .3);
+      if (!root.classList.contains('see-ask') || document.hidden) return;   // the visitor has already moved on by themselves
+      const span = root.offsetHeight - innerHeight, top = root.getBoundingClientRect().top + scrollY, to = Math.round(top + span * (PULL + (1 - PULL) * .3));
       if (scrollY >= to - 2) return; if (calm) return scrollTo(0, to);
-      const from = scrollY, t0 = performance.now(), ms = 1900; let stop = false; const halt = () => { stop = true; };
-      ['wheel', 'touchstart', 'keydown'].forEach(e => addEventListener(e, halt, { once: true, passive: true }));
+      const from = scrollY, t0 = performance.now(), ms = 1900; let stop = false; const halt = () => { stop = true; off(); }, EV = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
+      const off = () => EV.forEach(e => removeEventListener(e, halt)); EV.forEach(e => addEventListener(e, halt, { passive: true }));
       const e2 = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-      const step = now => { if (stop) return; const k = Math.min(1, (now - t0) / ms); scrollTo(0, from + (to - from) * e2(k)); if (k < 1) requestAnimationFrame(step); };
+      const step = now => { if (stop) return; const k = Math.min(1, (now - t0) / ms); scrollTo(0, from + (to - from) * e2(k)); if (k < 1) requestAnimationFrame(step); else off(); };
       requestAnimationFrame(step);
     }, delay);
   }
+  // a miss's small label never sits under the answer's
+  function declash() { if (!els || !found) return; const h = els.tags[hi], a = h.pl.getBoundingClientRect(); els.tags.forEach(o => { if (o === h || !o.pl || picked[o.t.id] !== 'no') return; const b = o.pl.getBoundingClientRect(); o.pk.classList.toggle('clash', b.left < a.right + 8 && b.right > a.left - 8 && b.top < a.bottom + 6 && b.bottom > a.top - 6); }); }
   function reveal(won) {
-    found = true; const h = els.tags[hi]; h.pk.classList.remove('hot', 'no'); h.pk.classList.add('yes', 'lit'); h.pl.textContent = '42 min'; root.classList.add('see-found');
-    if (livesEl) livesEl.classList.toggle('won', won); guessed += won ? 100 : 50; pickAt = h.t.xy; paint();
-    carryOn(won ? 1300 : 2300);
+    found = true; const h = els.tags[hi]; picked[h.t.id] = 'yes'; h.pk.classList.remove('hot', 'no'); h.pk.classList.add('yes', 'lit'); h.pl.textContent = '42 min'; root.classList.add('see-found'); spots();
+    requestAnimationFrame(declash);
+    if (livesEl) livesEl.classList.toggle('won', won); guessed += won ? 100 : 50; pickAt = h.t.xy; setHot(null); paint();
+    if (keys) keys.querySelectorAll('button').forEach(b => { b.disabled = true; });
+    carryOn(won ? 1400 : 2400);
   }
-  function guess(ev) {
-    if (!els || !root.classList.contains('see-ask') || ev.target.closest('.see-snd') || found) return;
-    const best = pick(ev, 80, 'Trolley'); if (!best) return; const o = best[0];
-    if (!o.pk || o.pk.classList.contains('no')) return;
-    const n = els.tags.filter(t => t.t.kind === 'Trolley').length; tries++; if (lives[tries - 1] && !o.hero) lives[tries - 1].classList.add('out');
+  function choose(o) {
+    if (!els || !armed || found || !o || !game.has(o.t.id) || picked[o.t.id] || !root.classList.contains('see-ask')) return;
+    clearTimeout(nudge); const n = game.size; tries++;
     if (o.hero) { reveal(true); return tell(tries === 1 ? `That's the one. First pick, one chance in ${n}. <b>AmIMotion never needs the luck.</b>` : `That's the one, on pick ${tries}. On a real floor every pick is a walk. <b>AmIMotion never needs one.</b>`); }
-    guessed += 1; pickAt = o.t.xy; o.pk.classList.remove('hot'); o.pk.classList.add('no'); if (red && !calm) { red.classList.remove('on'); void red.offsetWidth; red.classList.add('on'); } o.pl.textContent = ago(o) + ' min';
-    if (tries >= N_TRY) { tell(`It was this one: <b>42 minutes, and it looked like all the rest.</b>`); return setTimeout(() => reveal(false), 450); }
+    if (lives[tries - 1]) lives[tries - 1].classList.add('out');
+    picked[o.t.id] = 'no'; guessed += 1; pickAt = o.t.xy; if (hot === o) setHot(null); o.pk.classList.add('no'); spots(); o.pl.textContent = ago(o) + ' min'; if (o.key) o.key.disabled = true;
+    if (red && !calm) { red.classList.remove('on'); void red.offsetWidth; red.classList.add('on'); }
+    if (tries >= N_TRY) { tell(`It was this one: <b>42 minutes, and it looked like all the rest.</b>`); paint(); return setTimeout(() => reveal(false), 500); }
     tell(tries === 1 ? `Not this one. It got here ${ago(o)} minutes ago. <b>They all look the same.</b>` : `Not this one either. <b>Your eyes can't see how long something has waited.</b>`);
     paint();
   }
-  // under the cursor, a trolley's light comes up: it is the thing to pick
-  function lift(ev) {
-    let o = null; if (els && root.classList.contains('see-ask') && !found) { const b = pick(ev, 80, 'Trolley'); o = b && b[0].pk && !b[0].pk.classList.contains('no') ? b[0] : null; }
-    if (o !== hot) { if (hot) hot.pk.classList.remove('hot'); hot = o; if (o) { o.pk.classList.add('hot'); hotN++; pickAt = o.t.xy; if (sound) paint(); } }
-  }
+  const under = ev => { if (!els || !armed || found || !root.classList.contains('see-ask')) return null; const b = pick(ev, ev.pointerType === 'touch' ? 64 : 80, 'Trolley', o => game.has(o.t.id) && !picked[o.t.id]); return b ? b[0] : null; };
+  function guess(ev) { if (!ev.target.closest('.see-snd')) choose(under(ev)); }
+  // under the cursor or the finger, a trolley's light comes up: it is the thing to pick
+  function lift(ev) { setHot(under(ev)); }
 
   // Sound is on by default. No browser lets a page make a sound before the visitor's first tap, click or key (a scroll is not
   // enough), so the button says "Tap for sound" until then, and the very first touch anywhere starts it. The audio context is
@@ -277,6 +306,7 @@
   load().then(() => { measure(); cur = want; paint(true); });
   addEventListener('scroll', measure, { passive: true }); addEventListener('resize', () => { measure(); paint(); });
   tall.addEventListener('change', () => load().then(measure));
+  stage.addEventListener('pointerdown', lift); ['pointerup', 'pointercancel', 'pointerleave'].forEach(e => stage.addEventListener(e, ev => { if (ev.pointerType !== 'mouse' || e === 'pointerleave') setTimeout(() => setHot(null), 260); }));
   stage.addEventListener('pointermove', ev => { hover(ev); lift(ev); if (ev.pointerType === 'mouse') { tx = ev.clientX / innerWidth - .5; ty = ev.clientY / innerHeight - .5; if (!raf) raf = requestAnimationFrame(tick); } });
   stage.addEventListener('click', guess); stage.addEventListener('pointerleave', () => { if (!tip.classList.contains('say')) tip.classList.remove('on'); });
 })();
