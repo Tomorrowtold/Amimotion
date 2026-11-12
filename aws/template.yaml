@@ -1,0 +1,274 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  amimotion.com on AWS. Private S3 bucket for the pages, CloudFront in front, and one Lambda for /api/*
+  (Ask AmIMotion, the lead form, the founders' desk). Deploy with aws/deploy.sh, which builds the site and uploads it.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: ''
+    Description: The bare domain, for example amimotion.com. Leave empty for a first test on the cloudfront.net address.
+  CertificateArn:
+    Type: String
+    Default: ''
+    Description: ACM certificate in us-east-1 covering the domain and www.<domain>. Needed only when DomainName is set.
+  LambdaCodeBucket:
+    Type: String
+    Description: S3 bucket holding the Lambda zip (deploy.sh creates and fills it).
+  LambdaCodeKey:
+    Type: String
+    Description: S3 key of the Lambda zip (deploy.sh sets it).
+  GitHubRepo:
+    Type: String
+    Default: ''
+    Description: Optional, for example amimotion/Amimotion. Creates a role GitHub Actions can use to deploy every push to main.
+  CreateGitHubOidcProvider:
+    Type: String
+    Default: 'yes'
+    AllowedValues: ['yes', 'no']
+    Description: Say no if this AWS account already has the token.actions.githubusercontent.com identity provider.
+
+Conditions:
+  HasDomain: !And [!Not [!Equals [!Ref DomainName, '']], !Not [!Equals [!Ref CertificateArn, '']]]
+  HasGitHub: !Not [!Equals [!Ref GitHubRepo, '']]
+  MakeOidc: !And [!Condition HasGitHub, !Equals [!Ref CreateGitHubOidcProvider, 'yes']]
+
+Resources:
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      PublicAccessBlockConfiguration: { BlockPublicAcls: true, BlockPublicPolicy: true, IgnorePublicAcls: true, RestrictPublicBuckets: true }
+      BucketEncryption: { ServerSideEncryptionConfiguration: [{ ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 } }] }
+      VersioningConfiguration: { Status: Enabled }
+      LifecycleConfiguration:
+        Rules: [{ Id: old-versions, Status: Enabled, NoncurrentVersionExpiration: { NoncurrentDays: 30 } }]
+
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: { Service: cloudfront.amazonaws.com }
+            Action: s3:GetObject
+            Resource: !Sub '${SiteBucket.Arn}/*'
+            Condition: { StringEquals: { 'AWS:SourceArn': !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}' } }
+          - Effect: Allow
+            Principal: { Service: cloudfront.amazonaws.com }
+            Action: s3:ListBucket
+            Resource: !GetAtt SiteBucket.Arn
+            Condition: { StringEquals: { 'AWS:SourceArn': !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}' } }
+
+  SiteOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${AWS::StackName}-site'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  ApiRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement: [{ Effect: Allow, Principal: { Service: lambda.amazonaws.com }, Action: sts:AssumeRole }]
+      ManagedPolicyArns: [arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole]
+
+  ApiFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: AmIMotion website API (Ask AmIMotion, leads, desk). Add secrets under Configuration > Environment variables.
+      Runtime: nodejs22.x
+      Architectures: [arm64]
+      Handler: index.handler
+      MemorySize: 512
+      Timeout: 60
+      Role: !GetAtt ApiRole.Arn
+      Code: { S3Bucket: !Ref LambdaCodeBucket, S3Key: !Ref LambdaCodeKey }
+      Environment:
+        Variables:
+          ALLOWED_ORIGINS: !If [HasDomain, !Sub 'https://${DomainName},https://www.${DomainName}', '']
+
+  ApiLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${ApiFunction}'
+      RetentionInDays: 30
+
+  ApiUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !GetAtt ApiFunction.Arn
+      AuthType: NONE
+
+  ApiUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ApiFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: '*'
+      FunctionUrlAuthType: NONE
+
+  ApiInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ApiFunction
+      Action: lambda:InvokeFunction
+      Principal: '*'
+      InvokedViaFunctionUrl: true
+
+  # Pretty URLs (/products/ -> /products/index.html), /page -> /page/, apex -> www, and the visitor's host for the API.
+  EdgeRequest:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: !Sub '${AWS::StackName}-request'
+      AutoPublish: true
+      FunctionConfig: { Comment: 'pretty URLs, www redirect, host for /api', Runtime: cloudfront-js-2.0 }
+      FunctionCode: !Sub
+        - |
+          var APEX = '${Apex}';
+          function qs(q) {
+            var out = [];
+            for (var k in q) {
+              var v = q[k];
+              if (v.multiValue) { for (var i = 0; i < v.multiValue.length; i++) out.push(k + '=' + v.multiValue[i].value); }
+              else out.push(v.value === '' ? k : k + '=' + v.value);
+            }
+            return out.length ? '?' + out.join('&') : '';
+          }
+          function go(loc) { return { statusCode: 301, statusDescription: 'Moved Permanently', headers: { location: { value: loc }, 'cache-control': { value: 'public, max-age=3600' } } }; }
+          function handler(event) {
+            var r = event.request, host = r.headers.host ? r.headers.host.value : '', uri = r.uri;
+            if (APEX && host === APEX) return go('https://www.' + APEX + uri + qs(r.querystring));
+            if (uri === '/api' || uri.indexOf('/api/') === 0) { r.headers['x-site-host'] = { value: host }; return r; }
+            if (uri === '/index.html') return go('/' + qs(r.querystring));
+            if (uri.length > 11 && uri.slice(-11) === '/index.html') return go(uri.slice(0, -10) + qs(r.querystring));
+            if (uri.slice(-1) === '/') { r.uri = uri + 'index.html'; return r; }
+            if (uri.lastIndexOf('.') < uri.lastIndexOf('/')) return go(uri + '/' + qs(r.querystring));
+            return r;
+          }
+        - Apex: !If [HasDomain, !Ref DomainName, '']
+
+  # Keep the test address and the desk out of search engines (the real domain stays indexable).
+  EdgeResponse:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: !Sub '${AWS::StackName}-response'
+      AutoPublish: true
+      FunctionConfig: { Comment: 'noindex on cloudfront.net and /desk/', Runtime: cloudfront-js-2.0 }
+      FunctionCode: |
+        function handler(event) {
+          var r = event.request, res = event.response, host = r.headers.host ? r.headers.host.value : '';
+          if (/\.cloudfront\.net$/.test(host) || r.uri.indexOf('/desk/') === 0) res.headers['x-robots-tag'] = { value: 'noindex, nofollow' };
+          if (/\.txt$/.test(r.uri)) res.headers['content-type'] = { value: 'text/plain; charset=utf-8' };
+          return res;
+        }
+
+  Headers:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: !Sub '${AWS::StackName}-headers'
+        SecurityHeadersConfig:
+          ContentSecurityPolicy:
+            Override: true
+            ContentSecurityPolicy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob:; connect-src 'self' https://api.hsforms.com; frame-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'; upgrade-insecure-requests"
+          ContentTypeOptions: { Override: true }
+          FrameOptions: { FrameOption: SAMEORIGIN, Override: true }
+          ReferrerPolicy: { ReferrerPolicy: strict-origin-when-cross-origin, Override: true }
+          StrictTransportSecurity: { AccessControlMaxAgeSec: 31536000, IncludeSubdomains: true, Override: true }
+        CustomHeadersConfig:
+          Items:
+            - { Header: Permissions-Policy, Value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()', Override: true }
+            - { Header: Cross-Origin-Opener-Policy, Value: same-origin, Override: true }
+            - { Header: Cross-Origin-Resource-Policy, Value: same-origin, Override: true }
+            - { Header: X-DNS-Prefetch-Control, Value: 'on', Override: true }
+            - { Header: Link, Value: '</llms.txt>; rel="alternate"; type="text/plain"; title="AmIMotion for AI assistants", </sitemap.xml>; rel="sitemap"', Override: true }
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: amimotion.com website
+        HttpVersion: http2and3
+        PriceClass: PriceClass_200
+        Aliases: !If [HasDomain, [!Ref DomainName, !Sub 'www.${DomainName}'], !Ref AWS::NoValue]
+        ViewerCertificate: !If
+          - HasDomain
+          - { AcmCertificateArn: !Ref CertificateArn, SslSupportMethod: sni-only, MinimumProtocolVersion: TLSv1.2_2021 }
+          - { CloudFrontDefaultCertificate: true }
+        Origins:
+          - Id: site
+            DomainName: !GetAtt SiteBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt SiteOAC.Id
+            S3OriginConfig: { OriginAccessIdentity: '' }
+          - Id: api
+            DomainName: !Select [2, !Split ['/', !GetAtt ApiUrl.FunctionUrl]]
+            CustomOriginConfig: { OriginProtocolPolicy: https-only, OriginSSLProtocols: [TLSv1.2], OriginReadTimeout: 60 }
+        DefaultCacheBehavior:
+          TargetOriginId: site
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6            # Managed-CachingOptimized (follows the files' Cache-Control)
+          ResponseHeadersPolicyId: !Ref Headers
+          FunctionAssociations:
+            - { EventType: viewer-request, FunctionARN: !GetAtt EdgeRequest.FunctionMetadata.FunctionARN }
+            - { EventType: viewer-response, FunctionARN: !GetAtt EdgeResponse.FunctionMetadata.FunctionARN }
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: api
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE]
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad          # Managed-CachingDisabled
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac  # Managed-AllViewerExceptHostHeader
+            ResponseHeadersPolicyId: !Ref Headers
+            FunctionAssociations:
+              - { EventType: viewer-request, FunctionARN: !GetAtt EdgeRequest.FunctionMetadata.FunctionARN }
+        CustomErrorResponses:
+          - { ErrorCode: 403, ResponseCode: 404, ResponsePagePath: /404.html, ErrorCachingMinTTL: 60 }
+          - { ErrorCode: 404, ResponseCode: 404, ResponsePagePath: /404.html, ErrorCachingMinTTL: 60 }
+
+  GitHubOidc:
+    Type: AWS::IAM::OIDCProvider
+    Condition: MakeOidc
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: [sts.amazonaws.com]
+
+  GitHubDeployRole:
+    Type: AWS::IAM::Role
+    Condition: HasGitHub
+    Properties:
+      Description: Lets GitHub Actions on the main branch deploy the website, and nothing else.
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: { Federated: !Sub 'arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com' }
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals: { 'token.actions.githubusercontent.com:aud': sts.amazonaws.com, 'token.actions.githubusercontent.com:sub': !Sub 'repo:${GitHubRepo}:ref:refs/heads/main' }
+      Policies:
+        - PolicyName: deploy-website
+          PolicyDocument:
+            Statement:
+              - { Effect: Allow, Action: [s3:ListBucket, s3:GetObject, s3:PutObject, s3:DeleteObject], Resource: [!GetAtt SiteBucket.Arn, !Sub '${SiteBucket.Arn}/*', !Sub 'arn:aws:s3:::${LambdaCodeBucket}', !Sub 'arn:aws:s3:::${LambdaCodeBucket}/*'] }
+              - { Effect: Allow, Action: [lambda:UpdateFunctionCode, lambda:GetFunction], Resource: !GetAtt ApiFunction.Arn }
+              - { Effect: Allow, Action: [cloudfront:CreateInvalidation, cloudfront:GetInvalidation], Resource: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}' }
+              - { Effect: Allow, Action: [cloudformation:DescribeStacks], Resource: !Sub 'arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*' }
+
+Outputs:
+  SiteBucket: { Value: !Ref SiteBucket }
+  ApiFunction: { Value: !Ref ApiFunction }
+  DistributionId: { Value: !Ref Distribution }
+  TestAddress: { Value: !Sub 'https://${Distribution.DomainName}' }
+  DnsTarget:
+    Description: Point amimotion.com and www.amimotion.com here (Route 53 Alias A records to this CloudFront distribution).
+    Value: !GetAtt Distribution.DomainName
+  GitHubDeployRoleArn:
+    Condition: HasGitHub
+    Value: !GetAtt GitHubDeployRole.Arn
