@@ -12,8 +12,9 @@
 :root{--display:"AmI Display",Arial,sans-serif;--text:"AmI Text",Arial,sans-serif}
 *{box-sizing:border-box}html,body{margin:0}body{background:#f0f6ff;color:#0b1238;font-family:var(--text);-webkit-font-smoothing:antialiased}
 .pad{height:34vh;display:grid;place-items:center;font:500 14px var(--text);letter-spacing:.14em;text-transform:uppercase;color:#7f8ab0}
-.standin{position:absolute;left:clamp(20px,6vw,110px);bottom:clamp(40px,12vh,130px);z-index:2;margin:0;font:600 clamp(2.4rem,1rem + 5vw,5.6rem)/.98 var(--display);letter-spacing:-.05em;color:#0b1238;opacity:var(--lede,0);translate:0 calc((1 - var(--lede,0))*-30px);pointer-events:none}
 </style>
+<link rel="preload" href="assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/InstrumentSerif-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/see.css">
 </head>
 <body>
@@ -34,7 +35,6 @@
     <div class="see-grain"></div>
     <div class="see-shade"></div>
     <div class="see-tip" aria-hidden="true"></div>
-    <p class="standin" aria-hidden="true">Where work is.<br>Where it waits.</p>
 
     <div class="see-words">
       <div class="see-w see-w1">
@@ -60,7 +60,6 @@
   </div>
 </section>
 
-<div class="pad">The rest of the page follows.</div>
 <script src="js/see.js" defer></script>
 </body>
 </html>

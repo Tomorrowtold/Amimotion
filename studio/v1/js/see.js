@@ -7,6 +7,7 @@
   const $ = s => root.querySelector(s), NS = 'http://www.w3.org/2000/svg';
   const stage = $('.see-stage'), box = $('.see-box'), svg = $('.see-ov'), cv = $('.see-rise'), pv = $('.see-pull'), tip = $('.see-tip'), sndBtn = $('.see-snd');
   const words = [...root.querySelectorAll('.see-w')], ticks = [...root.querySelectorAll('.see-ticks i')], q = $('.see-q');
+  const lay = { dim: $('.see-dim'), blue: $('.see-blue'), amber: $('.see-amber'), vig: $('.see-vig') };
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const tall = matchMedia('(max-aspect-ratio: 4/5)');
   const base = root.dataset.assets || 'assets/see/';
@@ -18,6 +19,12 @@
   const ease = t => t * t * (3 - 2 * t);
   const mk = (n, a, parent) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); (parent || svg).appendChild(e); return e; };
   const pad = i => String(i).padStart(2, '0');
+  // the page is only written to when a value has really changed, so a still frame costs nothing
+  let memo = {};
+  const V$ = (k, v) => { if (memo[k] !== v) { memo[k] = v; root.style.setProperty(k, v); } };
+  const A$ = (e, k, v) => { const c = e._c || (e._c = {}); if (c[k] !== v) { c[k] = v; e.setAttribute(k, v); } };
+  const L$ = () => {};
+  const O$ = (e, v) => { v = Math.round(v * 200) / 200; if (e._o !== v) { e._o = v; e.style.opacity = v; } };
 
   // The pull-back takes the first fifth of the scroll when it is on. Everything after is a fraction of what is left.
   const PULL = pv && root.hasAttribute('data-pull') ? .2 : 0, FLY = .74;
@@ -36,13 +43,13 @@
     const f = document.createDocumentFragment(); wrap(h, f); h.setAttribute('aria-label', h.textContent); h.textContent = ''; h.append(f); h.nextElementSibling && h.nextElementSibling.style.setProperty('--i', i);
   });
 
-  const image = (src, done) => { const im = new Image(); im.decoding = 'async'; im.onload = done; im.src = src; return im; };
+  const image = (src, done) => { const im = new Image(); im.decoding = 'async'; im.src = src; (im.decode ? im.decode() : Promise.reject()).then(done, () => { im.complete ? done() : (im.onload = done); }); return im; };
   const ready = im => im && im.complete && im.naturalWidth;
 
   async function load() {
     V = tall.matches ? 'P' : 'L'; W = V === 'P' ? 900 : 1600; H = V === 'P' ? 1600 : 900;
     D = await (await fetch(base + V + '/data.json')).json();
-    svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.textContent = ''; frames = []; pframes = []; drawn = pdrawn = -1;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.textContent = ''; frames = []; pframes = []; drawn = pdrawn = -1; memo = {};
     cv.width = D.frame[0]; cv.height = D.frame[1]; if (pv) { pv.width = D.frame[0]; pv.height = D.frame[1]; }
     const defs = mk('defs', {});   // soft glows as gradients: no filters, so nothing is re-blurred while the camera rises
     for (const [id, c] of [['see-gb', '102,165,250'], ['see-ga', '240,164,58']]) { const g = mk('radialGradient', { id }, defs); [[0, .9], [.35, .42], [1, 0]].forEach(([o, a]) => mk('stop', { offset: o, 'stop-color': `rgba(${c},${a})` }, g)); }
@@ -76,50 +83,52 @@
 
   function paint(force) {
     if (!els) return;
-    const s = root.style, pull = PULL ? seg(cur, 0, PULL) : 1, p = rest(cur), w = rest(want);
+    const pull = PULL ? seg(cur, 0, PULL) : 1, p = rest(cur), w = rest(want);
     const fly = seg(pull, 0, FLY), real = PULL ? ease(seg(pull, FLY, 1)) : 1;
     if (PULL) {   // the camera backs away from the hero's tag; then the real floor spreads out from that tag
       const f = Math.round(fly * D.pull);
       if (f !== pdrawn && ready(pframes[f])) { pctx.drawImage(pframes[f], 0, 0, pv.width, pv.height); pdrawn = f; }
-      s.setProperty('--rr', (real * 190).toFixed(1) + '%'); s.setProperty('--in', seg(pull, .84, 1).toFixed(3)); s.setProperty('--lede', (1 - seg(pull, 0, .09)).toFixed(3));
+      V$('--rr', (real * 190).toFixed(1) + '%'); V$('--in', seg(pull, .84, 1).toFixed(3)); V$('--lede', (1 - seg(pull, 0, .09)).toFixed(3));
       pv.style.visibility = real >= 1 ? 'hidden' : 'visible';
     }
     if (!calm) {   // depth: the camera never quite stops. It drifts in on the floor until it lifts off, and leans a hair with the cursor
       const z = 1 + PUSH * (1 - ease(seg(p, ...T.push))), k = (z - 1) / PUSH * (PULL ? real : 1);
       box.style.scale = z > 1.0005 ? z.toFixed(4) : ''; box.style.translate = k > .01 ? `${(-px * 9 * k).toFixed(1)}px ${(-py * 6 * k).toFixed(1)}px` : '';
-      s.setProperty('--wx', (px * 4 * k).toFixed(1) + 'px');
+      V$('--wx', (px * 4 * k).toFixed(1) + 'px');
     }
     const dip = seg(p, ...T.dip), pts = seg(p, ...T.pts), tr = seg(p, ...T.trail), amb = ease(seg(p, ...T.amber)), rise = seg(p, ...T.rise), ans = ease(seg(p, ...T.ans));
     const f = Math.round(rise * (D.rise.length - 1)), mix = ease(seg(rise, 0, .1));
-    s.setProperty('--dip', ease(dip).toFixed(3)); s.setProperty('--m0', (dip * 160 - 60).toFixed(1) + '%'); s.setProperty('--m1', (dip * 160).toFixed(1) + '%');
-    s.setProperty('--blue', (ease(pts) * (1 - .5 * amb) * (1 - mix)).toFixed(3)); s.setProperty('--amb', (amb * (1 - mix)).toFixed(3));
-    s.setProperty('--rise', mix.toFixed(3)); s.setProperty('--ans', ans.toFixed(3));
+    V$('--dip', ease(dip).toFixed(3)); V$('--m0', (dip * 160 - 60).toFixed(1) + '%'); V$('--m1', (dip * 160).toFixed(1) + '%');
+    V$('--blue', (ease(pts) * (1 - .5 * amb) * (1 - mix)).toFixed(3)); V$('--amb', (amb * (1 - mix)).toFixed(3));
+    V$('--rise', mix.toFixed(3)); V$('--ans', ans.toFixed(3));
+    // a layer that adds nothing is taken out of the picture, so the browser has less to blend
+    L$(lay.dim, dip > 0); L$(lay.blue, pts > 0 && mix < 1); L$(lay.amber, amb > 0 && mix < 1); L$(cv, mix > 0); L$(lay.vig, dip > 0);
     if (rise > 0 && f !== drawn && ready(frames[f])) { ctx.drawImage(frames[f], 0, 0, cv.width, cv.height); drawn = f; }
     // where things are on screen at this moment of the rise
     const F = rise > 0 ? D.rise[f] : null, at = (i) => F ? F.tags[i] : D.eye.tags[i].xy;
-    const hxy = at(hi); s.setProperty('--hx', (hxy[0] * 100).toFixed(2) + '%'); s.setProperty('--hy', (hxy[1] * 100).toFixed(2) + '%');
-    s.setProperty('--spot', Math.max(.5 * ease(seg(amb, .5, 1)) * (1 - mix), ans).toFixed(3)); s.setProperty('--grid', (seg(rise, .8, 1) * (1 - .35 * ans)).toFixed(3));
+    const hxy = at(hi); V$('--hx', (hxy[0] * 100).toFixed(2) + '%'); V$('--hy', (hxy[1] * 100).toFixed(2) + '%');
+    V$('--spot', Math.max(.5 * ease(seg(amb, .5, 1)) * (1 - mix), ans).toFixed(3)); V$('--grid', (seg(rise, .8, 1) * (1 - .35 * ans)).toFixed(3));
     els.tags.forEach((o, i) => {
       const xy = at(i), on = ease(seg(pts, o.at * .7, o.at * .7 + .3)), a = o.wait ? amb : 0;
       const big = 1 + (.62 + .76 * D.eye.tags[i].xy[1] - 1) * (1 - ease(rise));   // near things are larger, until the view is from straight above
-      o.g.setAttribute('transform', `translate(${(xy[0] * W).toFixed(1)} ${(xy[1] * H).toFixed(1)}) scale(${big.toFixed(3)})`);
+      A$(o.g, 'transform', `translate(${(xy[0] * W).toFixed(1)} ${(xy[1] * H).toFixed(1)}) scale(${big.toFixed(3)})`);
       const quiet = 1 - ans * (o.hero ? 0 : .6);
-      o.pg.style.opacity = .8 * on * (1 - a) * (1 - .45 * amb) * quiet; o.pc.style.opacity = on * (1 - a) * (1 - .35 * amb) * quiet;
-      o.pc.setAttribute('r', (3.6 * (.6 + .4 * on)).toFixed(2));
+      O$(o.pg, .8 * on * (1 - a) * (1 - .45 * amb) * quiet); O$(o.pc, on * (1 - a) * (1 - .35 * amb) * quiet);
+      A$(o.pc, 'r', (3.6 * (.6 + .4 * on)).toFixed(2));
       if (o.wait) {
-        o.ag.style.opacity = .9 * a * quiet; o.ac.style.opacity = a * quiet; o.tx.style.opacity = ease(seg(amb, .25, .7)) * (o.hero ? 1 : 1 - ans); if (o.lock) o.lock.style.opacity = ans;
+        O$(o.ag, .9 * a * quiet); O$(o.ac, a * quiet); O$(o.tx, ease(seg(amb, .25, .7)) * (o.hero ? 1 : 1 - ans)); if (o.lock) O$(o.lock, ans);
         const m = Math.round(o.t.mins * ease(seg(amb, .25, 1))); if (m !== o.shown) { o.shown = m; o.tx.textContent = m + ' min'; }
       }
     });
     els.trails.forEach((o, i) => {
-      const pts2 = (F ? F.paths[o.k] : D.eye.paths[o.k]).map(q => (q[0] * W).toFixed(1) + ',' + (q[1] * H).toFixed(1)).join(' ');
-      const d = 1 - ease(seg(tr, i * .06, i * .06 + .6)), op = (1 - .6 * ans);
-      for (const e of [o.g, o.l]) { e.setAttribute('points', pts2); e.setAttribute('stroke-dashoffset', d); }
-      o.l.style.opacity = .9 * op; o.g.style.opacity = .16 * op;
-      const run = 1 - d; if (run > .001 && run < .999) { const L = o.l.getTotalLength(), pt = o.l.getPointAtLength(L * run); o.h.setAttribute('cx', pt.x); o.h.setAttribute('cy', pt.y); o.h.style.opacity = 1; } else o.h.style.opacity = 0;
+      const fk = F ? f : -1; if (o.fk !== fk) { o.fk = fk; o.len = 0; const pts2 = (F ? F.paths[o.k] : D.eye.paths[o.k]).map(q => (q[0] * W).toFixed(1) + ',' + (q[1] * H).toFixed(1)).join(' '); o.g.setAttribute('points', pts2); o.l.setAttribute('points', pts2); }
+      const d = +(1 - ease(seg(tr, i * .06, i * .06 + .6))).toFixed(4), op = (1 - .6 * ans);
+      A$(o.g, 'stroke-dashoffset', d); A$(o.l, 'stroke-dashoffset', d);
+      O$(o.l, .9 * op); O$(o.g, .16 * op);
+      const run = 1 - d; if (run > .001 && run < .999) { const L = o.len || (o.len = o.l.getTotalLength()), pt = o.l.getPointAtLength(L * run); o.h.setAttribute('cx', pt.x); o.h.setAttribute('cy', pt.y); O$(o.h, 1); } else O$(o.h, 0);
     });
     const last = D.rise[D.rise.length - 1];
-    els.zones.forEach(o => { const xy = last.zones[o.k]; o.e.setAttribute('x', xy[0] * W); o.e.setAttribute('y', xy[1] * H); o.e.style.opacity = .9 * seg(rise, .92, 1) * (1 - .5 * ans); });
+    els.zones.forEach(o => { const xy = last.zones[o.k]; A$(o.e, 'x', xy[0] * W); A$(o.e, 'y', xy[1] * H); O$(o.e, .9 * seg(rise, .92, 1) * (1 - .5 * ans)); });
     // words come in on their own once you reach them; the scroll itself carries them away
     const step = SHOW.findIndex(r => w >= r[0] && w < r[2]);
     words.forEach((el, i) => { const r = SHOW[i], out = seg(p, r[1], r[2]); el.classList.toggle('on', i === step && (i > 0 || seen)); el.style.opacity = out > 0 ? (1 - out).toFixed(3) : ''; el.style.setProperty('--out', out.toFixed(3)); });
@@ -142,7 +151,7 @@
     const r = root.getBoundingClientRect(), span = r.height - innerHeight;
     want = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
     near = r.top < innerHeight * 2.5 && r.bottom > -innerHeight; root.classList.toggle('near', near); if (!seen && r.top < innerHeight * .5) { seen = true; shown = -1; }
-    if (near) preload();
+    if (near && rest(want) > .2) preload();
     if (!raf && near) raf = requestAnimationFrame(tick);
   }
   function tick() {
