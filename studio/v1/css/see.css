@@ -42,7 +42,7 @@
 .see-ov .ag{fill:url(#see-ga)}
 .see-ov .ac{fill:#ffe2ad}
 .see-ov .mins{font:500 17px var(--text,"AmI Text",Arial,sans-serif);fill:#f6c888;letter-spacing:.01em}
-.see-ov .mins.big{font:600 24px var(--display,"AmI Display",Arial,sans-serif);fill:#fff;letter-spacing:-.02em}
+.see-ov .mins.mins-big{font:600 24px var(--display,"AmI Display",Arial,sans-serif);fill:#fff;letter-spacing:-.02em}
 .see-ov .zone{font:500 12px var(--text,"AmI Text",Arial,sans-serif);fill:#93a0b8;letter-spacing:.2em;text-transform:uppercase;text-anchor:middle}
 .see-ov .lock{fill:none;stroke:#fff;stroke-width:1.5}
 .see-tip{position:absolute;left:0;top:0;z-index:3;pointer-events:none;padding:5px 10px 6px;border-radius:6px;background:rgba(5,7,13,.86);font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);color:#eaf2ff;white-space:nowrap;opacity:0;transition:opacity .2s}
@@ -63,7 +63,7 @@
 .see-h,.see-p{text-shadow:0 2px 28px rgba(5,7,13,.55)}
 .see-h{font:600 clamp(1.9rem,1rem + 2.7vw,4.1rem)/1.02 var(--display,"AmI Display",Arial,sans-serif);letter-spacing:-.045em;text-wrap:balance;max-width:17em}
 .see-h em{font:italic 400 1.1em/1 "Instrument Serif",Georgia,serif;letter-spacing:-.02em;font-style:italic;padding-right:.04em}
-.see-p{font:400 clamp(1.05rem,.9rem + .55vw,1.5rem)/1.4 var(--text,"AmI Text",Arial,sans-serif);max-width:32em;text-wrap:balance}
+.see .see-p{font:400 clamp(1.05rem,.9rem + .55vw,1.5rem)/1.4 var(--text,"AmI Text",Arial,sans-serif);max-width:32em;text-wrap:balance}
 .see-k{font:500 clamp(.8rem,.74rem + .2vw,1rem)/1 var(--text,"AmI Text",Arial,sans-serif);letter-spacing:.16em;font-variant-numeric:tabular-nums}
 .see-k i{font-style:normal;animation:see-blink 1.2s steps(1) infinite}
 @keyframes see-blink{50%{opacity:.25}}
@@ -111,7 +111,7 @@
   .see-words{padding-bottom:clamp(36px,9vh,80px)}
   .see-h{font-size:clamp(1.9rem,1rem + 5.4vw,3.2rem);line-height:1.02}
   .see-ticks{right:10px}
-  .see-ov .mins{font-size:22px}.see-ov .mins.big{font-size:30px}.see-ov .zone{font-size:15px}
+  .see-ov .mins{font-size:22px}.see-ov .mins.mins-big{font-size:30px}.see-ov .zone{font-size:15px}
   .see:not(.live) .see-stage{aspect-ratio:9/16}
 }
 @media (prefers-reduced-motion:reduce){
