@@ -185,8 +185,9 @@ if (bookDlg && bookDlg.showModal) {
 }
 
 /* ---------- details open with a soft height animation ---------- */
-$$('details').forEach((d) => {
+$$('main details').forEach((d) => {   // the page's own details only: the nav's doors run their own script
   const sum = d.querySelector('summary'), more = d.querySelector('.more');
+  if (!sum || !more) return;
   sum.addEventListener('click', (e) => {
     if (reduce) return; e.preventDefault();
     if (d.open) { const h = more.offsetHeight; more.animate([{ height: h + 'px', opacity: 1 }, { height: '0px', opacity: 0 }], { duration: 380, easing: 'cubic-bezier(.22,.7,.2,1)' }).onfinish = () => { d.open = false; }; }
