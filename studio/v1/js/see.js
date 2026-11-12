@@ -5,7 +5,7 @@
   const root = document.getElementById('see'); if (!root) return;
   const here = document.currentScript ? document.currentScript.src : '';
   const $ = s => root.querySelector(s), NS = 'http://www.w3.org/2000/svg';
-  const stage = $('.see-stage'), box = $('.see-box'), svg = $('.see-ov'), cv = $('.see-rise'), pv = $('.see-pull'), tip = $('.see-tip');
+  const stage = $('.see-stage'), box = $('.see-box'), svg = $('.see-ov'), cv = $('.see-rise'), pv = $('.see-pull'), tip = $('.see-tip'), sndBtn = $('.see-snd');
   const words = [...root.querySelectorAll('.see-w')], ticks = [...root.querySelectorAll('.see-ticks i')], q = $('.see-q');
   const lay = { dim: $('.see-dim'), blue: $('.see-blue'), amber: $('.see-amber'), vig: $('.see-vig') };
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -23,7 +23,7 @@
   let memo = {};
   const V$ = (k, v) => { if (memo[k] !== v) { memo[k] = v; root.style.setProperty(k, v); } };
   const A$ = (e, k, v) => { const c = e._c || (e._c = {}); if (c[k] !== v) { c[k] = v; e.setAttribute(k, v); } };
-  const L$ = () => {};
+  const L$ = (e, on) => { if (e && e._v !== on) { e._v = on; e.classList.toggle('see-off', !on); } };   // a layer that adds nothing leaves the picture
   const O$ = (e, v) => { v = Math.round(v * 200) / 200; if (e._o !== v) { e._o = v; e.style.opacity = v; } };
 
   // The pull-back takes the first fifth of the scroll when it is on. Everything after is a fraction of what is left.
@@ -103,6 +103,7 @@
     V$('--rise', mix.toFixed(3)); V$('--ans', ans.toFixed(3));
     // a layer that adds nothing is taken out of the picture, so the browser has less to blend
     L$(lay.dim, dip > 0); L$(lay.blue, pts > 0 && mix < 1); L$(lay.amber, amb > 0 && mix < 1); L$(cv, mix > 0); L$(lay.vig, dip > 0);
+    const glow = pts > 0 && mix < 1 && ans < 1; if (glow !== root._glow) { root._glow = glow; root.classList.toggle('see-glow', glow); }   // the points breathe only while you can see them
     if (rise > 0 && f !== drawn && ready(frames[f])) { ctx.drawImage(frames[f], 0, 0, cv.width, cv.height); drawn = f; }
     // where things are on screen at this moment of the rise
     const F = rise > 0 ? D.rise[f] : null, at = (i) => F ? F.tags[i] : D.eye.tags[i].xy;
@@ -150,16 +151,19 @@
   function measure() {
     const r = root.getBoundingClientRect(), span = r.height - innerHeight;
     want = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
-    near = r.top < innerHeight * 2.5 && r.bottom > -innerHeight; root.classList.toggle('near', near); if (!seen && r.top < innerHeight * .5) { seen = true; shown = -1; }
+    const wasNear = near; near = r.top < innerHeight * 2.5 && r.bottom > -innerHeight; root.classList.toggle('near', near);
+    if (near !== wasNear) { if (near) fetchScore(); if (sound) paint(); idle(); } if (!seen && r.top < innerHeight * .5) { seen = true; shown = -1; }
     if (near && rest(want) > .2) preload();
     if (!raf && near) raf = requestAnimationFrame(tick);
   }
-  function tick() {
-    raf = 0;
-    const d = want - cur; vel += (Math.abs(d) - vel) * .2; cur = calm || Math.abs(d) < .0004 ? want : cur + d * .16;
-    px += (tx - px) * .08; py += (ty - py) * .08;
+  // the picture follows the scroll with a little weight. Time-based, so it feels the same at 60, 90 or 120 frames a second
+  let lastT = 0;
+  function tick(now) {
+    raf = 0; const dt = lastT ? Math.min(64, now - lastT) : 16.7; lastT = now; const k = 1 - Math.pow(1 - .16, dt / 16.7), kp = 1 - Math.pow(1 - .08, dt / 16.7);
+    const d = want - cur; vel += (Math.abs(d) - vel) * .2; cur = calm || Math.abs(d) < .0004 ? want : cur + d * k;
+    px += (tx - px) * kp; py += (ty - py) * kp;
     paint();
-    if (cur !== want || Math.abs(tx - px) + Math.abs(ty - py) > .002 || (sound && vel > .0004)) raf = requestAnimationFrame(tick);
+    if (cur !== want || Math.abs(tx - px) + Math.abs(ty - py) > .002 || (sound && vel > .0004)) raf = requestAnimationFrame(tick); else lastT = 0;
   }
 
   // the nearest thing of a kind to the cursor or finger, within reach
@@ -181,13 +185,40 @@
   }
   // scroll 1: the visitor guesses. Almost everyone is wrong, which is the point.
   function guess(ev) {
-    if (!els || !root.classList.contains('see-ask') ) return;
+    if (!els || !root.classList.contains('see-ask') || ev.target.closest('.see-snd')) return;
     const best = pick(ev, 70, 'Trolley'); if (!best) return;
     const n = els.tags.filter(o => o.t.kind === 'Trolley').length; guessed += best[0].hero ? 100 : 1;
     say(best, best[0].hero ? `Yes, this one. A lucky guess: one in ${n}.` : `Not this one. It got here ${2 + best[0].i * 7 % 9} minutes ago.`, true); paint();
   }
 
-  // No sound on the site (founders' rule; Shiv, 12 Nov): the score in see-sound.js is never fetched.
+  // Sound is on by default. No browser lets a page make a sound before the visitor's first tap, click or key (a scroll is not
+  // enough), so the button says "Tap for sound" until then, and the very first touch anywhere starts it. The audio context is
+  // made inside that touch (iPhones refuse one made later); the score itself is fetched as the section comes near.
+  let muted = false, AC = null; try { muted = localStorage.getItem('see-mute') === '1'; } catch (e) {}
+  const playing = () => !!(sound && AC && AC.state === 'running' && !muted);
+  const label = () => { if (!sndBtn) return; const on = playing(); sndBtn.setAttribute('aria-pressed', on); sndBtn.classList.toggle('wait', !muted && !on); sndBtn.lastElementChild.textContent = muted ? 'Sound off' : on ? 'Sound on' : 'Tap for sound'; };
+  let score = null;
+  const fetchScore = () => score || (score = new Promise(res => { const sc = document.createElement('script'); sc.src = here.replace(/see\.js(\?.*)?$/, 'see-sound.js'); sc.onload = sc.onerror = res; document.head.append(sc); }));
+  function start() {                 // only ever called inside a tap, click or key
+    if (muted) return;
+    if (AC) { if (AC.state !== 'running') AC.resume().then(label, label); return; }
+    try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+    try { const b = AC.createBuffer(1, 1, 22050), s = AC.createBufferSource(); s.buffer = b; s.connect(AC.destination); s.start(0); } catch (e) {}   // older iPhones unlock on a played sample
+    AC.resume().then(label, label); AC.onstatechange = label;
+    fetchScore().then(() => { try { sound = window.SeeSound(AC); sound.set(true); was = null; paint(); } catch (e) { sound = null; } label(); });
+  }
+  const gesture = ev => { if (ev.target && ev.target.closest && ev.target.closest('.see-snd')) return; if (!playing()) start(); };
+  ['pointerdown', 'pointerup', 'touchend', 'keydown'].forEach(e => addEventListener(e, gesture, { passive: true, capture: true }));
+  if (sndBtn) sndBtn.addEventListener('click', () => {
+    if (playing()) { muted = true; sound.set(false); }
+    else { muted = false; if (sound) sound.set(true); start(); }
+    try { localStorage.setItem('see-mute', muted ? '1' : '0'); } catch (e) {} was = null; paint(); label();
+  });
+  // a hidden tab, or a page scrolled well away from the floor, is silent and costs nothing
+  let nap = 0;
+  const idle = () => { if (!AC) return; clearTimeout(nap); const away = document.hidden || !near; if (away) nap = setTimeout(() => { if (AC.state === 'running') AC.suspend(); }, 1500); else if (!muted && AC.state === 'suspended') AC.resume().then(label, label); };
+  document.addEventListener('visibilitychange', idle);
+  label();
 
   root.classList.add('live');
   load().then(() => { measure(); cur = want; paint(true); });

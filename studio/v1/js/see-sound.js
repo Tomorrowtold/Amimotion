@@ -5,8 +5,8 @@
 //   The lights go off in three banks, far to near. Each breaker takes a third of the hum with it.
 //   In the quiet, every tag answers from where it stands: left or right, near and dry or far and echoing.
 // One reverb models the hall, so every sound sits in the same room.
-window.SeeSound = function () {
-  const AC = new (window.AudioContext || window.webkitAudioContext)(), sr = AC.sampleRate;
+window.SeeSound = function (AC) {
+  AC = AC || new (window.AudioContext || window.webkitAudioContext)(); const sr = AC.sampleRate;
   const master = AC.createGain(), comp = AC.createDynamicsCompressor(), hall = AC.createConvolver(), hallG = AC.createGain();
   master.gain.value = 0; comp.threshold.value = -20; comp.knee.value = 18; comp.ratio.value = 3; comp.attack.value = .004; comp.release.value = .22;
   master.connect(comp).connect(AC.destination);
