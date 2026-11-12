@@ -303,9 +303,14 @@
   label();
 
   root.classList.add('live');
-  load().then(() => { measure(); cur = want; paint(true); });
+  // the floor's data waits for the hero: it is fetched when the section first shows, or once the page has loaded and gone quiet
+  let booted = false;
+  const boot = () => { if (booted) return; booted = true; load().then(() => { measure(); cur = want; paint(true); }); };
+  if ('IntersectionObserver' in window) { const io = new IntersectionObserver(e => { if (e.some(x => x.isIntersecting)) { io.disconnect(); boot(); } }, { rootMargin: '0px' }); io.observe(root); } else boot();
+  const later = () => (window.requestIdleCallback || setTimeout)(boot, { timeout: 1200 });
+  if (document.readyState === 'complete') later(); else addEventListener('load', later, { once: true });
   addEventListener('scroll', measure, { passive: true }); addEventListener('resize', () => { measure(); paint(); });
-  tall.addEventListener('change', () => load().then(measure));
+  tall.addEventListener('change', () => { if (booted) load().then(measure); });
   stage.addEventListener('pointerdown', lift); ['pointerup', 'pointercancel', 'pointerleave'].forEach(e => stage.addEventListener(e, ev => { if (ev.pointerType !== 'mouse' || e === 'pointerleave') setTimeout(() => setHot(null), 260); }));
   stage.addEventListener('pointermove', ev => { hover(ev); lift(ev); if (ev.pointerType === 'mouse') { tx = ev.clientX / innerWidth - .5; ty = ev.clientY / innerHeight - .5; if (!raf) raf = requestAnimationFrame(tick); } });
   stage.addEventListener('click', guess); stage.addEventListener('pointerleave', () => { if (!tip.classList.contains('say')) tip.classList.remove('on'); });
