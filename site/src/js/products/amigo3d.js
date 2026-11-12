@@ -102,7 +102,7 @@ async function init() {
   meta.top_cover = meta.tag_top; meta.bottom_cover = meta.tag_bottom;
   const [gTop, gBot] = await Promise.all([mesh('tag_top', meta), mesh('tag_bottom', meta)]);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 640 ? 1.5 : 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene(); scene.environment = studioEnv(renderer); scene.environmentIntensity = 1.0;
@@ -133,11 +133,19 @@ async function init() {
   };
   size(); new ResizeObserver(size).observe(canvas);
   let px = 0, py = 0, tx = 0, ty = 0, on = true, lift = 0; const t0 = performance.now();
-  addEventListener('pointermove', (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, { passive: true });
-  new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on) requestAnimationFrame(loop); }).observe(stage);
+  // render on demand: the intro and one full path cycle play, then the tag rests until the visitor moves or scrolls
+  // (a WebGL loop that never idles keeps a phone's main thread busy while someone is only reading)
+  const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let running = false, lastPoke = performance.now(), lastFrame = 0;
+  const poke = () => { lastPoke = performance.now(); if (on && !running) { running = true; requestAnimationFrame(loop); } };
+  addEventListener('pointermove', (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; poke(); }, { passive: true });
+  addEventListener('scroll', poke, { passive: true });
+  new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on) poke(); }).observe(stage);
   const CYCLE = 13, START = .6;
   function loop(now) {
-    if (!on) return;
+    if (!on) { running = false; return; }
+    if (now - lastFrame < 31) { requestAnimationFrame(loop); return; }   // 30 fps is plenty for a slow ambient move
+    lastFrame = now;
     const t = (now - t0) / 1000;
     const r = stage.getBoundingClientRect(); const sp = clamp((innerHeight * .5 - r.top) / r.height);
     px = lerp(px, tx, .05); py = lerp(py, ty, .05);
@@ -159,7 +167,10 @@ async function init() {
     shadow.material.opacity = clamp(1 - tag.position.y / 80);
     const d = dist; cam.position.set(Math.sin(.15 + px * .05) * d, d * .62, Math.cos(.15 + px * .05) * d); cam.lookAt(0, -4, 0);
     renderer.render(scene, cam);
+    const settled = REDUCED ? t > 1.5 : t > START + CYCLE;
+    if (settled && now - lastPoke > 1500) { running = false; return; }
     requestAnimationFrame(loop);
   }
+  running = true;
   requestAnimationFrame((n) => { loop(n); canvas.classList.add('ready'); if (fallback) fallback.classList.add('gone'); });
 }

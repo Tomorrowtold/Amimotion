@@ -1,12 +1,12 @@
 /* /films/: the screening room. A dark page; the film is the only light. */
-body.ds[data-world]{background:#0c0a14}
-main{--ink:#efeaf2;--ink-soft:#a79fb3;--surface:#17131f;--link:#c8b8ff;color:var(--ink)}
-main .crumbs,main .crumbs a{color:#8d859a}
+html body.ds[data-world]{background:#0b0d12}
+main{--ink:#f2f3f5;--ink-soft:#a3a8b2;--surface:#16181d;--link:#a3a8b2;color:var(--ink)}
+main .crumbs,main .crumbs a{color:#9a9fa9}
 .head h1{font-size:clamp(3.4rem,1.4rem + 6vw,8.6rem);color:#fff}
-.head h1 span+span{color:#c8b8ff}
-.head .short-answer{background:#17131f!important;color:#e6e0ee!important;box-shadow:none!important}
+.head h1 span+span{color:#a3a8b2}
+.head .short-answer{background:#16181d!important;color:#e9ebef!important;box-shadow:none!important}
 .head-pic{grid-column:1 / -1}
 .head-pic img{border-radius:18px}
-.band{background:#120f19!important}
+.band{background:#121418!important}
 /* phones: the logo sits on the screening room's dark ground, so its wordmark takes the page's ink, not navy */
-@media (max-width:1023px){.top .plogo{color:#efeaf2}}
+@media (max-width:1023px){.top .plogo{color:#f2f3f5}}
