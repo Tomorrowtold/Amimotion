@@ -20,7 +20,7 @@
     1: [[[234, 16, 9], [80, 58, 1], 22], [[206, 22, 7.5], [110, 50, 1.5], 24]],
     2: [[[206, 22, 7.5], [110, 50, 1.5], 24], [[146, 9, 6], [131.5, 25.7, 1.4], 32]],
     3: [[[146, 9, 6], [131.5, 25.7, 1.4], 32], [[172, 30, 11], [90, 52, 2], 20]],
-    4: [[[172, 30, 11], [90, 52, 2], 20], [[150, 40, 2], [110, 52, 14], 16]]
+    4: [[[172, 30, 11], [90, 52, 2], 20], [[176, 48, 3], [110, 48, 14], 16]]
   };
   let FW = 1920, FH = 1080, SENSOR = 36, TARGET = [131.5, 25.7, 1.2], TAGS = [];
   const ANCH = [[120, 24, 6.2, 'r'], [144, 24, 6.2, 'g'], [144, 72, 6.2, 'b']];
@@ -113,6 +113,8 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalAlpha = 1;
         ctx.drawImage(A, fit.x, fit.y, FW * fit.s, FH * fit.s);
         if (B !== A && B.ok && pr[2] > .01) { ctx.globalAlpha = pr[2]; ctx.drawImage(B, fit.x, fit.y, FW * fit.s, FH * fit.s); ctx.globalAlpha = 1; }
+        // the roof turns to a mirror between scrolls 3 and 4: dissolve from the last clear frame instead of cutting
+        if (s === 4 && t < .14) { const L3 = have[3], C = L3.length && img(3, L3[L3.length - 1]), k = 1 - R(t, 0, .14); if (C && C.ok && k > .01) { ctx.globalAlpha = k; ctx.drawImage(C, fit.x, fit.y, FW * fit.s, FH * fit.s); ctx.globalAlpha = 1; } }
         if (!ready) { ready = true; root.classList.add('ready'); }
       }
     }
