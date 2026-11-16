@@ -25,7 +25,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob:; connect-src 'self' https://api.hsforms.com; frame-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'sha256-IGAlkvVYE4T3emewGeuMJ11KOgIpT5obpfT6RvdRbns=' 'sha256-Jvr1OrNhvPEWdcClEiVxeu2pcyeygIoofDVcpPsVlCQ=' 'sha256-a+/9YcOLxL6r3jXfSEOgYRBfkJ0jjUmx5eKVOAL1DG0=' 'sha256-dK0qMuLZwrYSmEmypb7CynWPhjlJ+4DMUwg82ad5yp8=' 'sha256-gGXmJFXyK+OowxojaKuTHMkAO+zIsAW7xuZqjS9o5+Q=' 'sha256-iug9J2deVhdFKBFzeUnZ4MoxNvhF2Uxuodh5n44jRNs=' 'sha256-vSzk3YbIZ9k8FzMa0tqdxIUPMhiaf+H8WXXNjGq9wm0=' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob:; connect-src 'self' https://api.hsforms.com; frame-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'; upgrade-insecure-requests"
         },
         {
           "key": "X-Frame-Options",
