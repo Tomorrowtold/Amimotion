@@ -282,6 +282,6 @@ html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic img[src*="pair-"],html
 html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic .hall-lines-pic img{object-fit:cover!important;padding:0}
 
 /* guides: the day they were last changed */
-html body.ds main .updated{margin:14px 0 0;font-size:.875rem;line-height:1.4;color:var(--u-mute)}
+html body.ds main .updated{display:block;margin:12px 0 0;font-size:.8125rem;line-height:1.4;color:var(--u-mute)}
 /* crumbs over a photo stay readable on bright windows and skies */
 html body.ds .head.w-poster .crumbs,html body.ds .head.w-poster .crumbs a{text-shadow:0 1px 2px rgba(0,0,0,.5),0 0 18px rgba(0,0,0,.45)}

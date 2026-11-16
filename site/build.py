@@ -822,7 +822,7 @@ def build():
         if url.startswith("/learn/") and url != "/learn/" and 'class="short-answer"' in body:
             dm = meta.get("_modified", TODAY); y, mo, dd = dm.split("-")
             when = f"{int(dd)} {['January','February','March','April','May','June','July','August','September','October','November','December'][int(mo) - 1]} {y}"
-            body = re.sub(r'(<p class="short-answer"[^>]*>.*?</p>)', lambda m: m.group(1) + f'<p class="updated">Updated <time datetime="{dm}">{when}</time></p>', body, count=1, flags=re.S)
+            body = re.sub(r'(<p class="short-answer"[^>]*>.*?)(</p>)', lambda m: m.group(1) + f'<span class="updated">Updated <time datetime="{dm}">{when}</time></span>' + m.group(2), body, count=1, flags=re.S)
         header = header_html(url, meta.get("world"), over_photo(meta, body))
         page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main" tabindex="-1">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
         page = phone_dpr_cap(page)
