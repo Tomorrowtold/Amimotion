@@ -16,7 +16,7 @@ SODIUM = np.array([1.0, .62, .08], np.float32)
 
 def sodium(g):
     """One yellow frequency: the lamps' light as luminance only, dim and deep (same in scroll 1 and the start of 2)."""
-    return (lum(g('lamps') + .15 * g('cove')) + .02 * lum(g('sky')))[..., None] * SODIUM * .57
+    return (lum(g('lamps') + .15 * g('cove')) + .02 * lum(g('sky')))[..., None] * SODIUM * .17
 
 def mix(P, seg, t):
     g = lambda k: P.get('Combined_' + k, 0)
