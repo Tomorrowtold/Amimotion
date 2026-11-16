@@ -74,7 +74,7 @@
     // watch the frame time; a device that can't keep up gets fewer pixels
     if (lastT && !still) { const dt = now - lastT; frames++; if (dt > 30) slow++; if (frames >= 45) { if (slow > 18 && step < STEPS.length - 1) { step++; size(); } frames = slow = 0; } }
     lastT = now;
-    if (near && !document.hidden) raf = requestAnimationFrame(draw); else lastT = 0;
+    if (near && !document.hidden && !window.__seeManual) raf = requestAnimationFrame(draw); else lastT = 0;
   }
   const kick = () => { if (!raf && E) raf = requestAnimationFrame(draw); };
 
@@ -92,7 +92,7 @@
     requestAnimationFrame((n) => { draw(n); root.classList.add('ready'); });
     addEventListener('resize', () => { size(); kick(); });
     document.addEventListener('visibilitychange', kick);
-    window.__see = { E, at };
+    window.__see = { E, at, draw: () => draw(performance.now()) };   // for captures
   }
   const io = new IntersectionObserver(es => es.forEach(e => {
     near = e.isIntersecting; if (S) S.room(near);
