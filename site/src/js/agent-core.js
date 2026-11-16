@@ -259,7 +259,7 @@ export function askSamplePlant(i = {}) {
   else if (op === 'waiting') rows = PLANT.carriers.map(carrierRow).filter((r) => (!i.zone || r.zone.toLowerCase() === String(i.zone).toLowerCase()) && r.dwell_min >= (Number(i.min_minutes) || 0)).sort((a, b) => b.dwell_min - a.dwell_min);
   else rows = PLANT.carriers.map(carrierRow).filter((r) => r.over_rule);
   const call = op === 'locate' ? `locate_carrier("${String(i.id || '').toUpperCase()}")` : op === 'waiting' ? `list_waiting(${i.zone ? `"${i.zone}"` : ''}${i.min_minutes ? `, ${i.min_minutes}` : ''})` : 'list_exceptions()';
-  return { type: 'plant', simulation: true, call, snapshot: PLANT.snapshot, rows, note: 'Simulation. Illustrative data for one morning, read over MCP the way an assistant would.', page: '/use-cases/ask-your-plant/' };
+  return { type: 'plant', simulation: true, call, snapshot: PLANT.snapshot, rows, note: 'Simulation. Illustrative data for one morning, read over MCP the way an assistant would.', page: '/use-cases/ask-your-floor/' };
 }
 
 // Claude tool definitions (strict JSON schema) and one executor shared by every engine

@@ -36,6 +36,10 @@ if args.out: DIST = Path(args.out).resolve()
 SITE, SHARE, BRIEF, TODAY = args.base_url.rstrip("/"), args.share, not args.no_brief, date.today().isoformat()
 ENTITY = json.loads((SRC / "data" / "entity.json").read_text())
 NAV = json.loads((SRC / "data" / "nav.json").read_text())
+# the information architecture plan (thread "Design the AmIMotion site architecture", 16 Nov 2026): each page's
+# breadcrumb parent, its next step towards a pilot and the links it must carry. See ia_links() and tools/ia_check.py.
+_IA = json.loads((SRC / "data" / "ia.json").read_text())
+IA, TERMS = _IA["pages"], _IA.get("terms", {})
 # one label per URL (homepage-final.md, Nav panels): bar, sheet, footer, section bars, breadcrumbs and llms.txt
 LABEL = {s["url"]: s["label"] for s in NAV["sections"]}
 for _s in NAV["sections"]:
@@ -131,8 +135,8 @@ def videos_of(body, url):
 
 # HowTo only where the page itself sets out steps a buyer follows, in order (not where it explains how the system works):
 # url -> the <h2> the steps sit under. The HowTo is named by the page title (the question the steps answer).
-HOWTO = {"/pilot/": "Five steps, in order.", "/how-to-buy/": "Four steps.",
-         "/learn/anchor-planning/": "How to get to a number", "/learn/value-without-mes/": "A pilot plan that works"}
+# 16 Nov 2026 (site architecture): HowTo no longer earns anything in search, so no page carries it. Kept as a hook.
+HOWTO = {}
 
 
 def howto_of(meta, url, body):
@@ -385,7 +389,11 @@ def still(u):
 
 
 def panel_group(name, kind, items, cur, where):
-    """One group of a panel. Every link is plain HTML, so crawlers and answer engines read the whole tree."""
+    """One group of a panel. Every link is plain HTML, so crawlers and answer engines read the whole tree.
+    A group may name its own hub page (nav.json groups [name, count, kind, url]): its name then links there, the way the
+    field-guide shelf's name links to /learn/, so hubs like Industries and Use cases are one click from every page."""
+    hub = None
+    if isinstance(name, tuple): name, hub = name
     a = lambda l, u, line, cls="": (f'<a class="{cls}" href="{u}"{cur(u)} data-nav-id="{where}.{slug(name)}.{slug(l)}">'
                                      f'{still(u) if cls else ""}<b>{html.escape(l)}</b><span>{html.escape(line)}</span>'
                                      f'{"" if cls else CHEV}</a>')
@@ -396,7 +404,8 @@ def panel_group(name, kind, items, cur, where):
                 f'<ul class="guides">{rows}</ul></div>')
     cls = {"plinths": "plinth", "photos": "photo", "feature": "photo feature"}.get(kind, "")
     body = "".join(f"<li>{a(*it, cls)}</li>" for it in items)
-    return f'<div class="grp g-{kind}"><p class="grp-name">{html.escape(name)}</p><ul class="{kind}">{body}</ul></div>'
+    nm = f'<a href="{hub}"{cur(hub)} data-nav-id="{where}.{slug(name)}.hub">{html.escape(name)}{CHEV}</a>' if hub else html.escape(name)
+    return f'<div class="grp g-{kind}"><p class="grp-name">{nm}</p><ul class="{kind}">{body}</ul></div>'
 
 
 def over_photo(meta, body):
@@ -420,7 +429,7 @@ def header_html(url="/", world=None, over=False):
     cur = lambda u: ' aria-current="page"' if u == url else ""
     doors, panes = [], []
     for s in NAV["sections"]:
-        sl = slug(s["label"]); gs = [(n, k, its) for (n, _, k), (_, its) in zip(s["groups"], grouped(s))]
+        sl = slug(s["label"]); gs = [((n, g[3]) if len(g) > 3 else n, g[2], its) for g, (n, its) in zip(s["groups"], grouped(s))]
         groups = "".join(panel_group(n, k, its, cur, f"header.{sl}") for n, k, its in gs)
         foot = f'<p class="drop-foot"><a class="drop-hub" href="{s["url"]}"{cur(s["url"])} data-nav-id="header.{sl}.hub">{html.escape(s["hub"])}{CHEV}</a></p>'
         kinds = " ".join(sorted({k for _, k, _ in gs}))
@@ -503,9 +512,9 @@ MAGNETS = {
     "floor": ["/technology/", "/learn/accuracy/", "/learn/anchor-planning/", "/learn/uwb-vs-rfid/", "/learn/rtls/", "/specs/", "/learn/location-data-quality/",
               "/learn/uwb-rtls-india/", "/learn/alternatives/", "/faq/", "/glossary/"],
     "exchange": ["/platform/", "/learn/value-without-mes/", "/learn/association/", "/learn/omlox/"],
-    "tags": ["/solutions/assets/", "/use-cases/find-the-asset/", "/industries/robotics/", "/use-cases/amr-hand-off/"],
+    "tags": ["/solutions/tools-and-vehicles/", "/use-cases/find-the-asset/", "/industries/robotics/", "/use-cases/amr-hand-off/"],
     "committee": ["/how-to-buy/", "/pilot/", "/start/", "/learn/pilot-baseline/", "/company/", "/trust/", "/trust/people/", "/resources/"],
-    "plant": ["/use-cases/ask-your-plant/", "/learn/mcp-location-data/", "/developers/", "/use-cases/"],
+    "plant": ["/use-cases/ask-your-floor/", "/learn/mcp-location-data/", "/developers/", "/use-cases/"],
 }
 MAGNET_OF = {u: k for k, us in MAGNETS.items() for u in us}
 
@@ -548,6 +557,46 @@ def relativise(page, url):
     page = page.replace('"three":"/assets/', f'"three":"{pre}assets/')
     page = page.replace("url(\"/assets/", f"url(\"{pre}assets/")
     return page.replace('<html lang="en-IN"', f'<html lang="en-IN" data-root="{pre}" data-index="index.html"', 1)
+
+
+def crumb_trail(url, titles):
+    """The breadcrumb from ia.json: each parent up to Home, named by its menu label (or its own crumb), so the trail,
+    the bar and the BreadcrumbList always agree."""
+    chain, u = [], IA.get(url, {}).get("parent")
+    while u and u != "/":
+        chain.insert(0, u); u = IA.get(u, {}).get("parent")
+    name = lambda x: IA.get(x, {}).get("label") or LABEL.get(x) or titles.get(x, "")
+    sep = '<span aria-hidden="true"> / </span>'
+    return ('<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a>' + "".join(f'{sep}<a href="{x}">{html.escape(name(x))}</a>' for x in chain)
+            + f'{sep}<span aria-current="page">{html.escape(name(url))}</span></nav>')
+
+
+def full_stop(t):
+    """Lines under related links end like the hand-written ones do."""
+    return t if not t or t[-1] in ".?!" else t + "."
+
+
+def ia_links(body, url, titles, lines):
+    """Adds the links a page must carry (ia.json 'related', most important first) that its text does not have yet, to
+    its own Related pages list, so they look exactly like the links already there. A page without a plain list gets the
+    site's usual Read next section above the closing band. The list stays a whole number of rows of three."""
+    plan = IA.get(url)
+    if not plan: return body
+    text = re.sub(r'<nav class="crumbs".*?</nav>', "", body, flags=re.S)
+    have = set(re.findall(r'href="(/[^"#?]*)"', text))
+    cands = [u for u in plan.get("related", []) if u not in have and u in titles]
+    if not cands: return body
+    lists = list(re.finditer(r'<nav class="related" aria-label="Related pages"><ul>(.*?)</ul></nav>', body, re.S))
+    target = next((m for m in lists if 'id="read-next"' in body[max(0, m.start() - 160):m.start()]), lists[-1] if lists else None)
+    n = len(re.findall(r"<li\b", target.group(1))) if target else 0
+    k = next((k for k in (3, 2, 1) if k <= len(cands) and (n + k) % 3 == 0), min(3, len(cands)))
+    li = "".join(f'<li><a href="{u}">{html.escape(LABEL.get(u) or titles[u])}</a> <span>{html.escape(full_stop(lines.get(u, "")))}</span></li>' for u in cands[:k])
+    if target:
+        return body[:target.end(1)] + li + body[target.end(1):]
+    block = ('<section class="sec" aria-labelledby="read-next">\n<h2 id="read-next"><span>Read next.</span></h2>\n'
+             f'<nav class="related" aria-label="Related pages"><ul>{li}</ul></nav>\n</section>\n')
+    i = body.rfind('<section class="close"')
+    return body[:i] + block + body[i:] if i >= 0 else body + "\n" + block
 
 
 def crumb_labels(body, url=None):
@@ -612,6 +661,17 @@ def build():
         meta["_modified"] = last_changed(f)
         pages[url_for(rel) if rel.name != "404.html" else "/404.html"] = (meta, body)
     titles = {u: m.get("crumb") or m.get("title", "").split(" | ")[0] for u, (m, _) in pages.items()}
+    # one line under each added link: its menu line, else the second line of the page's own heading
+    lines = {u: l for s_ in NAV["sections"] for _l, u, l in s_["items"]}
+    for u, (m, b) in pages.items():
+        h = re.search(r'<h1[^>]*>\s*<span>.*?</span>\s*<span>(.*?)</span>', b, re.S)
+        if u not in lines and h: lines[u] = text_of(h.group(1)).strip()
+    # glossary: each term's name links to the page that explains it in full (short answer here, the full one a click away)
+    if "/glossary/" in pages:
+        m_, b_ = pages["/glossary/"]
+        pages["/glossary/"] = (m_, re.sub(r'<dt id="([^"]+)">(.*?)</dt>', lambda t: f'<dt id="{t.group(1)}"><a href="{TERMS[t.group(1)]}">{t.group(2)}</a></dt>' if t.group(1) in TERMS else t.group(0), b_))
+    pages = {u: (m, ia_links(re.sub(r'<nav class="crumbs".*?</nav>', lambda _m: crumb_trail(u, titles), b, count=1, flags=re.S) if u in IA else b, u, titles, lines))
+             for u, (m, b) in pages.items()}
     worlds = {u: m.get("world") for u, (m, _) in pages.items() if m.get("world")}
     covers = {u: m.get("cover") for u, (m, _) in pages.items() if m.get("cover")}
     def connect(body):

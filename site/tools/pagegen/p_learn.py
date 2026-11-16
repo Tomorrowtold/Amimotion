@@ -497,7 +497,7 @@ guide(slug="mcp-location-data", group="On the floor",
             ("Which assistants work with it?", "Any MCP-capable client. Each one gets its own credentials and tool scope."),
             ("Is it available today?", "The MCP server is built into AmIHub and shown in a live demo. The setup for your site is confirmed during scoping."),
             ("Does location data leave the plant?", "AmIHub and its MCP server can run on a PC inside your plant with no internet dependency. Where an assistant runs is your IT team's choice.")],
-      related=[("/use-cases/ask-your-plant/", "Ask your floor", "A supervisor asks a plain question."), "amihub", "qual"])
+      related=[("/use-cases/ask-your-floor/", "Ask your floor", "A supervisor asks a plain question."), "amihub", "qual"])
 
 guide(slug="value-without-mes", group="Proving it",
       title="Prove RTLS value without a live MES link",

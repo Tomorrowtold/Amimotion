@@ -129,6 +129,16 @@
   ],
   "redirects": [
     {
+      "source": "/use-cases/ask-your-plant/",
+      "destination": "/use-cases/ask-your-floor/",
+      "permanent": true
+    },
+    {
+      "source": "/solutions/assets/",
+      "destination": "/solutions/tools-and-vehicles/",
+      "permanent": true
+    },
+    {
       "source": "/index.html",
       "destination": "/",
       "permanent": true

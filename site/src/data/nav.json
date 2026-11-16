@@ -36,7 +36,7 @@
     ],
     [
      "Ask your floor",
-     "/use-cases/ask-your-plant/",
+     "/use-cases/ask-your-floor/",
      "AI assistants and MCP"
     ],
     [
@@ -70,7 +70,8 @@
     [
      "By industry",
      3,
-     "photos"
+     "photos",
+     "/industries/"
     ],
     [
      "By problem",
@@ -80,7 +81,8 @@
     [
      "Four jobs",
      3,
-     "list"
+     "list",
+     "/use-cases/"
     ]
    ],
    "items": [
@@ -106,7 +108,7 @@
     ],
     [
      "Tools and vehicles",
-     "/solutions/assets/",
+     "/solutions/tools-and-vehicles/",
      "Fixtures, forklifts, AMRs"
     ],
     [
@@ -150,7 +152,8 @@
     [
      "Your numbers",
      3,
-     "list"
+     "list",
+     "/tools/"
     ]
    ],
    "items": [
@@ -281,7 +284,7 @@
   "/products/amigo/": "n:amigo-studio-800",
   "/products/amimo/": "n:amimo-studio-800",
   "/products/amihub/": "n:hublive-800",
-  "/use-cases/ask-your-plant/": "n:asklive-800",
+  "/use-cases/ask-your-floor/": "n:asklive-800",
   "/industries/manufacturing/": "w:mfg-hero",
   "/industries/warehousing/": "w:wh-hero",
   "/industries/robotics/": "w:rob-hero",

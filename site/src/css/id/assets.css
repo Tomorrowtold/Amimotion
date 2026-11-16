@@ -1,4 +1,4 @@
-/* /solutions/assets/: the finder. A square frame with a lock-on mark and the answer chip, the way a phone finds a thing. */
+/* /solutions/tools-and-vehicles/: the finder. A square frame with a lock-on mark and the answer chip, the way a phone finds a thing. */
 @media (min-width:1024px){
   .head{grid-template-rows:auto auto 1fr;align-items:start}
   .head .crumbs{grid-column:1 / span 6}
