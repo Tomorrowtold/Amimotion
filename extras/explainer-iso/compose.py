@@ -14,15 +14,17 @@ def R(t, a, b):
 
 SODIUM = np.array([1.0, .62, .08], np.float32)
 
+def sodium(g):
+    """One yellow frequency: the lamps' light as luminance only, dim and deep (same in scroll 1 and the start of 2)."""
+    return (lum(g('lamps') + .15 * g('cove')) + .02 * lum(g('sky')))[..., None] * SODIUM * .57
+
 def mix(P, seg, t):
     g = lambda k: P.get('Combined_' + k, 0)
     if seg == 1:
-        sod = lum(g('lamps') + .3 * g('cove'))[..., None] * SODIUM * 1.5
-        return sod + .04 * lum(g('sky'))[..., None] * SODIUM, -.4
+        return sodium(g), -.2
     if seg == 2:
         k = 1 - R(t, .0, .35) * .96
-        sod = lum(g('lamps'))[..., None] * SODIUM * 1.5 * k
-        img = sod + 6 * (R(t, .35, .55) * g('r') + R(t, .5, .7) * g('g') + R(t, .65, .85) * g('b'))
+        img = sodium(g) * k + 6 * (R(t, .35, .55) * g('r') + R(t, .5, .7) * g('g') + R(t, .65, .85) * g('b'))
         img = img + R(t, .82, .95) * 3 * g('wait') + .06 * g('cove')
         return img, -.2
     if seg == 3:
