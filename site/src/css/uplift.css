@@ -290,3 +290,13 @@ html body.ds.page-contact .head .head-pic{display:none}
 html body.ds.page-contact .head{padding-bottom:clamp(20px,3vh,36px)}
 html body.ds.page-contact .head+.ia-strip+.sec,html body.ds.page-contact main>.sec:first-of-type{padding-top:clamp(28px,4vh,48px)}
 @media (min-width:900px){html body.ds.page-contact main>.head:not(.w-poster):has(>.head-pic) .short-answer{grid-column:8 / -1;grid-row:2 / span 2;align-self:end;margin-top:0}}
+/* the end of the page reads as one composed block: the route is a panel as tall as the next-step card, and the
+   related cards share the full width whatever their number */
+@media (min-width:900px){
+  .ia-next .ia-route{align-self:stretch;align-content:end;padding:clamp(24px,2.2vw,36px);border-radius:var(--u-r);background:var(--u-tone)}
+  .ia-next .ia-route li::after{background:var(--u-tone)}
+  .ia-next .ia-route li.on::after,.ia-next .ia-route li.to::after{background:#66a5fa}
+  .ia-next .ia-end:not(:has(.ia-go)) .ia-route{grid-column:1 / -1}
+}
+html body.ds:not(.pl) main .sec.ia-next .related:not(.tiles) ul{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))!important}
+html body.ds:not(.pl) main .sec.ia-next .related:not(.tiles) li{width:auto!important;max-width:none!important}
