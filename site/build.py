@@ -359,7 +359,7 @@ def ask_form(i, hint="Ask about tags, anchors, pilots or data"):
             '</form><p class="vh" role="status" data-ask-status></p><div class="nask-out"></div>')
 
 
-WORLD_DOOR = {"steel": "Products", "shift": "Solutions", "floor": "Solutions", "morning": "Start small", "paper": "Resources", "studio": "Company"}
+WORLD_DOOR = {"steel": "Products", "shift": "Solutions", "floor": "Solutions", "morning": "Pilot", "paper": "Resources", "studio": "Company"}
 GUIDES = []   # every field guide as [url, short title, cover colour]; build() fills it from the pages before rendering
 CHEV = '<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5"/></svg>'
 DOWN = '<svg class="down" viewBox="0 0 12 12" aria-hidden="true"><path d="m3 4.75 3 3 3-3"/></svg>'

@@ -186,7 +186,7 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
 .list a:hover b,.list a[aria-current] b{color:var(--ink)}
 /* picture cards */
 .plinths,.photos,.feature{display:grid;gap:14px}
-.plinths{grid-template-columns:repeat(4,minmax(0,1fr))}
+.plinths{grid-template-columns:repeat(3,minmax(0,1fr))}
 .photos{grid-template-columns:repeat(3,minmax(0,1fr))}
 .feature{grid-template-columns:1fr}
 .plinth,.photo{display:block;position:relative}

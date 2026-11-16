@@ -6,6 +6,7 @@
    "next": "/what-is-amimotion/",
    "related": [
     "/what-is-amimotion/",
+    "/partners/",
     "/industrial-spatial-intelligence/",
     "/platform/",
     "/trust/",
@@ -30,6 +31,7 @@
    "next": "/pilot/",
    "related": [
     "/pilot/",
+    "/partners/",
     "/platform/",
     "/products/amihub/",
     "/learn/mcp-location-data/",
@@ -104,6 +106,8 @@
    "next": "/contact/",
    "related": [
     "/contact/",
+    "/partners/",
+    "/proof/",
     "/start/",
     "/pilot/",
     "/tools/pilot/",
@@ -218,6 +222,7 @@
    "next": "/specs/",
    "related": [
     "/specs/",
+    "/proof/",
     "/learn/",
     "/learn/anchor-planning/",
     "/learn/location-data-quality/",
@@ -325,6 +330,7 @@
    "next": "/pilot/",
    "related": [
     "/pilot/",
+    "/proof/",
     "/learn/",
     "/solutions/wip/",
     "/learn/dwell-time/",
@@ -407,6 +413,7 @@
    "next": "/contact/",
    "related": [
     "/contact/",
+    "/proof/",
     "/start/",
     "/solutions/wip/",
     "/how-to-buy/",
@@ -515,6 +522,7 @@
    "next": "/learn/",
    "related": [
     "/learn/",
+    "/proof/",
     "/films/",
     "/tools/",
     "/industrial-spatial-intelligence/",
@@ -585,6 +593,7 @@
    "next": "/pilot/",
    "related": [
     "/pilot/",
+    "/proof/",
     "/platform/",
     "/products/amigo/",
     "/products/amimo/",
@@ -788,6 +797,35 @@
     "/products/amimo/",
     "/products/amihub/",
     "/contact/"
+   ]
+  },
+  "/proof/": {
+   "parent": "/resources/",
+   "next": "/pilot/",
+   "related": [
+    "/pilot/",
+    "/learn/pilot-baseline/",
+    "/learn/accuracy/",
+    "/specs/",
+    "/trust/people/",
+    "/how-to-buy/",
+    "/solutions/wip/",
+    "/tools/pilot/"
+   ]
+  },
+  "/partners/": {
+   "parent": "/company/",
+   "next": "/contact/",
+   "related": [
+    "/contact/",
+    "/developers/",
+    "/learn/association/",
+    "/learn/omlox/",
+    "/how-to-buy/",
+    "/trust/",
+    "/products/amihub/",
+    "/learn/mcp-location-data/",
+    "/use-cases/ask-your-floor/"
    ]
   }
  },
