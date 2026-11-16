@@ -48,8 +48,10 @@
 .lfs-on .lfs-word,.lfs-on .lfs-lines p,.lfs-on .lfs-facts li,.lfs-on .lfs-count,.lfs-on .lfs-close{opacity:0;will-change:opacity,transform}
 .lfs-on .lfs-facts{position:absolute;inset:0;z-index:4;margin:0;padding:0}
 .lfs-on .lfs-facts li{position:absolute;left:0;top:0;width:0;height:0;margin:0}
-.lfs-on .lfs-facts li>span{position:absolute;white-space:nowrap;text-shadow:0 0 14px rgba(5,6,13,.9),0 0 3px rgba(5,6,13,.8)}
-.lfs-hair{position:absolute;left:0;top:0;height:1px;background:rgba(255,255,255,.4);transform-origin:0 50%}
+.lfs-on .lfs-facts li>span{position:absolute;white-space:nowrap;color:#f4f6fa;z-index:0;text-shadow:0 0 12px rgba(5,6,13,.95),0 0 3px rgba(5,6,13,.9)}
+/* a label stands in its own soft patch of dark, with no edge: not a card */
+.lfs-on .lfs-facts li>span::before{content:"";position:absolute;z-index:-1;inset:-12px -20px;border-radius:30px;background:rgba(5,6,13,.74);filter:blur(13px)}
+.lfs-hair{position:absolute;left:0;top:0;height:1px;background:rgba(255,255,255,.62);transform-origin:0 50%}
 .lfs-dot{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:var(--lfs-blue)}
 .lfs-wait .lfs-dot{background:var(--lfs-amber)}
 .lfs-on .lfs-end{position:absolute;z-index:4;left:var(--lfs-m);top:calc(var(--sv)*.3);padding:0;width:min(60vw,820px)}

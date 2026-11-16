@@ -20,7 +20,13 @@
     return { el: el, k: el.getAttribute('data-k'), plate: el.getAttribute('data-plate'), a: r[0], b: r[1], img: $('img', el), o: -1 };
   });
   var FADE = .013;     /* scenes meet and cross-fade: there is never an empty screen between them */
-  function fadeOf(f, p) { return (f.a <= 0 ? 1 : ss(f.a - FADE, f.a + FADE, p)) * (f.b >= 1 ? 1 : 1 - ss(f.b - FADE, f.b + FADE, p)); }
+  /* into and out of the tag close-up the picture dips: the plant dims first, then the tag arrives (no ghost of one over the other) */
+  function fadeOf(f, p) {
+    var di = f.k === 'tag' || f.k === 'found', dout = f.k === 'isl' || f.k === 'tag';
+    var i = f.a <= 0 ? 1 : di ? ss(f.a - FADE * .4, f.a + FADE * 2.4, p) : ss(f.a - FADE, f.a + FADE, p);
+    var o = f.b >= 1 ? 1 : dout ? 1 - ss(f.b - FADE * 2.4, f.b + FADE * .4, p) : 1 - ss(f.b - FADE, f.b + FADE, p);
+    return i * o;
+  }
   var texts = $$('[data-p]').filter(function (el) { return !el.classList.contains('lfs-f'); }).map(function (el) {
     var fr = el.closest('.lfs-f'), li = el.tagName === 'LI';
     var t = { el: el, li: li, plate: fr.getAttribute('data-plate'), at: el.getAttribute('data-at'), o: -1, x: -1, y: -1 };
@@ -94,7 +100,7 @@
       snd.blink(t);
     } else if (f.k === 'found') {
       var cone = ss(.5, .66, q), run = q > .1;
-      u.sod[0] = mix(.34, .1, cone); u.col[0] = cone * 1.7; u.zoom = 1.035 + .03 * q;
+      u.sod[0] = mix(.46, .1, cone); u.col[0] = cone * 1.7; u.zoom = 1.035 + .03 * q;
       var ph = t % PERIOD, n = Math.floor(t / PERIOD);
       if (n !== pulse.n) { pulse.n = n; pulse.hit = [0, 0, 0]; if (run) snd.tick(); }
       var r = ph * SPEED; pulse.r = r;
@@ -318,7 +324,7 @@
           var c = [[dx, dy], [-dx, dy], [dx, -dy], [-dx, -dy]], ok = false;
           for (var ci = 0; ci < 4 && !ok; ci++) {
             var l = X + (c[ci][0] > 0 ? c[ci][0] : c[ci][0] - x.w), tp = Y + (c[ci][1] > 0 ? c[ci][1] : c[ci][1] - x.h + 20);
-            ok = l > 12 && l + x.w < sw - 12 && tp > 12 && tp + x.h < (tall ? zone : sh - 60) && !(tz && l < tz.r + 16 && l + x.w > tz.l - 16 && tp < tz.b + 12 && tp + x.h > tz.t - 12);
+            ok = l > 12 && l + x.w < sw - 12 && tp > (tall ? 70 : 100) && tp + x.h < (tall ? zone : sh - 60) && !(tz && l < tz.r + 16 && l + x.w > tz.l - 16 && tp < tz.b + 12 && tp + x.h > tz.t - 12);
             if (ok) { dx = c[ci][0]; dy = c[ci][1]; }
           }
           if (!ok) { set(x, 0); return; }
