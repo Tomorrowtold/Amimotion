@@ -97,7 +97,8 @@ def box(name, size, loc, m, bevel=.004, parent=None, segs=3):
     if bevel:
         md = o.modifiers.new('bev', 'BEVEL'); md.width = bevel; md.segments = segs; md.limit_method = 'ANGLE'
         o.modifiers.new('wn', 'WEIGHTED_NORMAL')
-    o.data.materials.append(m); bpy.ops.object.shade_smooth()
+    # an unbevelled box stays flat-shaded: smooth shading on 8 vertices bends every face's normals, which warps reflections
+    o.data.materials.append(m); bpy.ops.object.shade_smooth() if bevel else bpy.ops.object.shade_flat()
     return link(o, parent)
 
 def cyl(name, r, h, loc, m, rot=(0, 0, 0), verts=32, bevel=.002, parent=None):
