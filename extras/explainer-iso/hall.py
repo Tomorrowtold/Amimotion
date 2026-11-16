@@ -267,9 +267,10 @@ if __name__ == '__main__':
     if mood == 'film':
         seg = int(shot); c = camera(sc, w, h, 'high')
         f0, f1 = (int(a[6]), int(a[7])) if len(a) > 7 else (0, 60)
+        st = int(a[8]) if len(a) > 8 else 1
         os.makedirs(out, exist_ok=True)
         json.dump({'film': FILM, 'w': w, 'h': h, 'movers': ms, 'target': TARGET, 'sensor': c.data.sensor_width}, open(os.path.join(out, 'meta.json'), 'w'))
-        for f in range(f0, f1):
+        for f in list(range(f0, f1, st)) + ([59] if st > 1 else []):
             fp = os.path.join(out, 's%d_%03d.exr' % (seg, f))
             if os.path.exists(fp): continue
             film_cam(c, seg, f / 59.0); sc.render.filepath = fp

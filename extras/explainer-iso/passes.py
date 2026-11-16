@@ -8,7 +8,10 @@ from PIL import Image
 os.environ['LD_LIBRARY_PATH'] = os.environ.get('LD_LIBRARY_PATH', '')
 import ctypes, glob
 for so in sorted(glob.glob('/usr/local/lib/python3.13/dist-packages/oidn/lib.linux.x64/libtbb*')): ctypes.CDLL(so, mode=ctypes.RTLD_GLOBAL)
-import oidn
+try:
+    import oidn
+except Exception:
+    oidn = None   # no OIDN here: fall back to borrowing the denoised Combined (see read)
 
 def denoise(color, albedo=None, normal=None):
     h, w, _ = color.shape
@@ -45,8 +48,12 @@ def read(path, fog=.55):
     alb, nrm = out.get('Denoising Albedo'), out.get('Denoising Normal')
     keys = [k for k in out if k.startswith('Combined_')]
     w = next(iter(out.values())).shape[1]
+    C = out.get('Combined'); tot = None
+    if oidn is None and C is not None:
+        tot = blur(sum(out[k] for k in keys) + 1e-6, max(1, w // 900))
     for k in keys:
-        v = denoise(out[k], alb, nrm)
+        if oidn is not None: v = denoise(out[k], alb, nrm)
+        else: v = C * np.clip(blur(out[k], max(1, w // 900)) / tot, 0, 1)
         # light scattered in the air: each light's own glow, stronger with distance (Eliasson's haze, done in post)
         if mist is not None and fog:
             t = np.clip(mist, 0, 1)[..., None] ** .8 * fog
