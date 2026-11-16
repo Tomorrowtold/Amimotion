@@ -1210,3 +1210,10 @@ html.tag-live .hero .hx-act.k-fade,html.tag-live .hero .hx-facts.k-fade{transiti
 }
 @media (prefers-reduced-motion:reduce){.hero .hx-link,.hero .hx-link svg{transition:none}}
 @media (max-width:400px){.hero .hx-act{flex-wrap:nowrap;gap:14px}.hero .hx-act .btn{padding:0 18px;font-size:.95rem}.hero .hx-link{font-size:.95rem;white-space:nowrap}}
+/* hero v3.1: the headline gets air under the bar on phones and tablets; tablets show all four facts */
+@media (max-width:900px){.hero #h1{margin-top:clamp(12px,2.4svh,26px)}}
+@media (min-width:640px) and (max-width:900px) and (min-height:700px){
+  .hero .hx-facts{grid-template-columns:repeat(4,auto);font-size:.84rem}
+  .hero .hx-facts li:nth-child(n+3){display:block}
+  .hero .hx-facts li:nth-child(2){padding-left:clamp(14px,1.4vw,22px)}
+}
