@@ -168,3 +168,10 @@
     });
   });
 })();
+
+/* footer on a phone: a group's row opens and closes its links */
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('.ft-fold'); if (!b) return;
+  const bay = b.closest('.ft-bay'), open = !bay.classList.contains('open');
+  bay.classList.toggle('open', open); b.setAttribute('aria-expanded', String(open));
+});

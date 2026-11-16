@@ -1,0 +1,208 @@
+/* "Can you see it?" : the section after the hero. One floor, four scrolls.
+   Without script it is one picture and four captions. With script (.see.live) the stage pins and the scroll drives it. */
+@font-face{font-family:"Instrument Serif";src:url(../assets/fonts/InstrumentSerif-italic.woff2) format("woff2");font-style:italic;font-weight:400;font-display:swap}
+
+.see{--see-ink:#0b1238;--see-night:#05070d;--see-blue:#66a5fa;--see-amber:#f0a43a;--see-ground:#f0f6ff;position:relative;background:var(--see-night);color:#fff}
+.see-stage{position:relative;overflow:hidden;height:100vh;height:100svh;background:var(--see-night)}
+.see.live{height:440vh}
+.see.live[data-pull]{height:540vh}
+.see.live .see-stage{position:sticky;top:0}
+/* the camera's slow push-in moves the whole picture: it is drawn once and moved by the graphics chip, not redrawn every frame.
+   The drawn points change every frame, so they get their own sheet and never make the photo underneath be redrawn */
+.see.live .see-box{will-change:transform}
+.see.live .see-ov{will-change:transform}
+/* the night shade and the two glows change only in strength and reach: each is its own sheet, blended by the graphics chip */
+.see.live .see-dim,.see.live .see-blue,.see.live .see-amber{will-change:opacity}
+
+/* the picture: always covers the stage, and every layer shares one box so the drawn points stay on their objects */
+.see-stage{--bw:max(100vw,calc(100vh*16/9));--bw:max(100vw,calc(100svh*16/9));--bh:calc(var(--bw)*9/16)}
+.see-box{position:absolute;left:calc(50% - var(--bw)/2);top:calc(50% - var(--bh)/2);width:var(--bw);height:var(--bh)}
+.see-box img,.see-box canvas,.see-box svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.see-box img{object-fit:cover}
+.see-dim{mix-blend-mode:multiply;-webkit-mask-image:linear-gradient(to bottom,#000 var(--m0,-60%),transparent var(--m1,0%));mask-image:linear-gradient(to bottom,#000 var(--m0,-60%),transparent var(--m1,0%))}
+.see:not(.live) .see-dim{display:none}
+.see-blue,.see-amber{mix-blend-mode:screen}
+.see-blue{opacity:var(--blue,0)}
+.see-amber{opacity:var(--amb,0)}
+.see-rise{opacity:var(--rise,0)}
+.see-veil{position:absolute;inset:0;pointer-events:none;opacity:var(--spot,0);background:radial-gradient(circle at var(--hx,50%) var(--hy,50%),rgba(5,7,13,0) 0,rgba(5,7,13,0) 6%,rgba(5,7,13,.66) 34%)}
+/* the map's own grid arrives only once the view is from straight above */
+.see-grid{position:absolute;inset:0;pointer-events:none;opacity:var(--grid,0);background:linear-gradient(rgba(102,165,250,.11) 1px,transparent 1px) 0 0/100% 6.25%,linear-gradient(90deg,rgba(102,165,250,.11) 1px,transparent 1px) 0 0/3.515% 100%}
+/* the way in: the camera backs away from the hero's tag through a white model of the plant (a sequence of frames on a canvas),
+   then the model turns real: the canvas opens in a circle that spreads from the trolley the story is about */
+.see-box .see-pull{display:none;background:#eef2fa;-webkit-mask-image:radial-gradient(circle at var(--hx,50%) var(--hy,50%),transparent calc(var(--rr,0%) - 9%),#000 var(--rr,0%));mask-image:radial-gradient(circle at var(--hx,50%) var(--hy,50%),transparent calc(var(--rr,0%) - 9%),#000 var(--rr,0%))}
+.see.live[data-pull] .see-pull{display:block}
+.see-shade{position:absolute;inset:auto 0 0 0;height:52%;pointer-events:none;opacity:calc((.72 + .28*var(--dip,0))*var(--in,1));background:linear-gradient(to top,rgba(5,7,13,.86),rgba(5,7,13,.5) 38%,rgba(5,7,13,0))}
+.see-grain{position:absolute;inset:0;pointer-events:none;background:url(../assets/see/grain.png) 0 0/256px 256px;mix-blend-mode:overlay;opacity:.24}
+.see-vig{position:absolute;inset:0;pointer-events:none;opacity:var(--dip,0);background:radial-gradient(ellipse at 50% 46%,rgba(5,7,13,0) 46%,rgba(5,7,13,.42) 100%)}
+
+/* what the system draws on the floor */
+.see-ov{overflow:visible}
+.see-ov .tr{fill:none;stroke:#a9cdfd;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.see-ov .trg{fill:none;stroke:#2f7bff;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;opacity:.16}
+.see-ov .pg{fill:url(#see-gb)}
+.see-ov .pc{fill:#eaf3ff}
+.see-ov .trh{fill:#fff;opacity:0}
+.see.near.see-glow .see-ov .pts{animation:see-breathe 3.6s ease-in-out infinite}
+/* a layer that adds nothing to the picture right now is taken out, blend and all, so the browser composites less */
+.see .see-off{visibility:hidden;mix-blend-mode:normal}
+@keyframes see-breathe{50%{opacity:.8}}
+.see-ov .ag{fill:url(#see-ga)}
+.see-ov .ac{fill:#ffe2ad}
+.see-ov .mins{font:500 17px var(--text,"AmI Text",Arial,sans-serif);fill:#f6c888;letter-spacing:.01em}
+.see-ov .mins.mins-big{font:600 24px var(--display,"AmI Display",Arial,sans-serif);fill:#fff;letter-spacing:-.02em}
+.see-ov .zone{font:500 12px var(--text,"AmI Text",Arial,sans-serif);fill:#93a0b8;letter-spacing:.2em;text-transform:uppercase;text-anchor:middle}
+.see-ov .lock{fill:none;stroke:#fff;stroke-width:1.5}
+.see-tip{position:absolute;left:0;top:0;z-index:3;pointer-events:none;padding:5px 10px 6px;border-radius:6px;background:rgba(5,7,13,.86);font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);color:#eaf2ff;white-space:nowrap;opacity:0;transition:opacity .2s}
+.see-tip.on{opacity:1}
+.see-tip.say{padding:9px 14px 10px;font-size:15px;background:#fff;color:var(--see-ink)}
+/* scroll 1: the hall's lights come down a touch and every trolley stands in its own pool of light, waiting to be picked */
+/* The hall's lights go off in three banks, far to near (a breaker each), and the picture is graded down to a cold,
+   half-drained night. What is left lit is what matters: the trolleys, each under its own warm light. */
+.see-hush{position:absolute;inset:0;pointer-events:none;opacity:var(--hn,0)}
+.see.see-night .see-hush{will-change:opacity}
+.see-hush i{position:absolute;inset:0;background:rgba(9,13,24,.66);opacity:0;transition:opacity .9s ease}
+.see-hush i:nth-child(1){-webkit-mask-image:linear-gradient(#000 0 36%,transparent 44%);mask-image:linear-gradient(#000 0 36%,transparent 44%)}
+.see-hush i:nth-child(2){-webkit-mask-image:linear-gradient(transparent 36%,#000 44% 64%,transparent 72%);mask-image:linear-gradient(transparent 36%,#000 44% 64%,transparent 72%)}
+.see-hush i:nth-child(3){-webkit-mask-image:linear-gradient(transparent 64%,#000 72%);mask-image:linear-gradient(transparent 64%,#000 72%)}
+.see.pk-b1 .see-hush i:nth-child(1),.see.pk-b2 .see-hush i:nth-child(2),.see.pk-b3 .see-hush i:nth-child(3){opacity:1;animation:see-breaker .42s steps(1) both}
+@keyframes see-breaker{0%{opacity:.85}18%{opacity:.35}30%{opacity:1}52%{opacity:.7}64%{opacity:1}}
+.see-mono{position:absolute;inset:0;pointer-events:none;background:#7d8288;mix-blend-mode:saturation;opacity:0;transition:opacity 1.6s ease}
+.see.pk-b3 .see-mono{opacity:.62}
+.see.see-found .see-mono{opacity:.4}
+/* a miss: the edges of the frame warm to a faint red, and fade */
+.see-red{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 50%,rgba(90,10,10,0) 52%,rgba(90,12,10,.36) 100%);will-change:opacity}
+.see-red.on{animation:see-red 1.5s ease-out}
+@keyframes see-red{12%{opacity:1}100%{opacity:0}}
+.see:not(.see-ask) .see-mono{opacity:0;transition-duration:.6s}
+.see-ov .pk{opacity:0;transition:opacity .9s ease}
+.see.see-ask .see-ov .pk{opacity:1}
+.see-ov .pk g{opacity:0;transition:opacity .7s ease}
+.see-ov .pk g.lit{opacity:1}
+/* The light on each trolley is the photograph itself: the same picture, undimmed and in full colour, showing through a soft
+   opening over each trolley. So a lit trolley is lit exactly as the camera saw it; nothing is painted over it. */
+.see-box .see-spot{opacity:0;transition:opacity .8s ease;-webkit-mask-image:linear-gradient(transparent,transparent);mask-image:linear-gradient(transparent,transparent)}
+.see.see-ask .see-spot{opacity:1;will-change:opacity}
+.see:not(.live) .see-spot{display:none}
+/* over it, only a breath of warm bloom */
+.see-ov .pk-pool{fill:url(#see-gw);opacity:.3;transition:opacity .45s ease}
+/* the light from above: a soft shaft from the roof to whatever is under the cursor */
+.see-ov .pk-beam{fill:url(#see-gbeam);opacity:0;transition:opacity .5s ease}
+.see-ov .hot .pk-beam{opacity:1}
+.see-ov .yes .pk-beam{fill:url(#see-gbeam-a);opacity:.9}
+.see-ov .no .pk-beam{opacity:0}
+.see-ov .pk-ring{fill:none;stroke:#fff;stroke-width:1.2;opacity:0;transform:scale(.82);transform-box:fill-box;transform-origin:center;transition:opacity .35s,transform .5s cubic-bezier(.19,.9,.22,1)}
+.see-ov .pk-dot{fill:#fff;opacity:.95}
+.see-ov .pk-l{font:500 16px var(--text,"AmI Text",Arial,sans-serif);fill:#eaf2ff;opacity:0;transition:opacity .4s;paint-order:stroke;stroke:rgba(5,7,13,.72);stroke-width:5px;stroke-linejoin:round}
+.see-ov .hot .pk-pool{opacity:.62;fill:url(#see-gh)}
+.see-ov .hot .pk-ring{opacity:.9;transform:none}
+.see-ov .no .pk-pool{animation:see-fail 1.1s steps(1) both;fill:url(#see-gr);opacity:.42}
+@keyframes see-fail{0%{opacity:.9}14%{opacity:.2}24%{opacity:.75}40%{opacity:.1}56%{opacity:.5}}
+.see-ov .no .pk-dot{opacity:.45}
+.see-ov .no .pk-l{opacity:.95;fill:#f4c3ba}
+.see-ov .yes .pk-pool{opacity:.8;fill:url(#see-ga)}
+.see-ov .yes .pk-ring{opacity:1;transform:none;stroke:var(--see-amber);stroke-width:2}
+.see-ov .yes .pk-l{opacity:1;fill:#fff;font:600 22px var(--display,"AmI Display",Arial,sans-serif)}
+.see.see-found .see-ov .pk g.lit:not(.yes):not(.no){opacity:0}
+.see.see-found .see-ov .pk g.no{opacity:.5}
+.see.see-found .see-ov .pk g.no.clash .pk-l{opacity:0}
+.see.see-found .see-ov .pk g:not(.yes) .pk-pool{opacity:0}
+.see.see-ask .see-stage{cursor:pointer}
+/* one slow wave of light, once, if nobody has picked: far to near */
+.see.pk-wave .see-ov .pk g:not(.no) .pk-pool{animation:see-wave 1.5s ease-in-out both;animation-delay:calc(var(--w,0)*1s)}
+@keyframes see-wave{40%{opacity:.7;fill:url(#see-gh)}}
+/* the keyboard's way in: one button per trolley in view, out of sight; the light and ring on the floor are its focus ring */
+.see-keys{position:absolute;left:0;top:0;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.see:not(.see-ask) .see-keys{display:none}
+.see-say{display:inline-block;transition:opacity .3s,transform .5s cubic-bezier(.19,.9,.22,1)}
+.see-say.swap{opacity:0;transform:translateY(6px)}
+.see-say b{font-weight:600;color:#fff}
+/* three picks, shown as three small lights that go out one by one */
+.see-lives{display:inline-flex;gap:7px;margin-left:12px;vertical-align:.08em}
+.see-lives i{width:8px;height:8px;border-radius:50%;background:#fff3e2;box-shadow:0 0 10px rgba(255,236,205,.8);transition:background .4s,box-shadow .4s,transform .4s}
+.see-lives i.out{background:transparent;box-shadow:inset 0 0 0 1.2px rgba(255,255,255,.4);transform:scale(.85)}
+.see-lives.won i{background:var(--see-amber);box-shadow:0 0 12px rgba(240,164,58,.9)}
+.see-lives.won i.out{background:transparent;box-shadow:inset 0 0 0 1.2px rgba(255,255,255,.4)}
+@media (max-aspect-ratio:4/5){.see-ov .pk-l{font-size:22px}.see-ov .yes .pk-l{font-size:30px}}
+@media (prefers-reduced-motion:reduce){.see-ov .pk-pool{animation:none!important}}
+
+/* the words */
+.see-words{position:absolute;inset:auto 0 0 0;z-index:2;padding:0 clamp(20px,5vw,96px) clamp(40px,8vh,96px);pointer-events:none}
+.see-w{position:absolute;inset:auto 0 0 0;padding:inherit;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,1.4vh,18px);text-align:center;visibility:hidden;transform:translate(var(--wx,0),calc(var(--out,0)*-28px))}
+.see-w.on{visibility:visible}
+.see-h .wd{display:inline-block;overflow:hidden;vertical-align:top;padding:.06em .07em .16em;margin:-.06em -.07em -.16em}
+.see-h .wd b{display:inline-block;font:inherit;transform:translateY(118%);transition:transform .9s cubic-bezier(.19,.9,.22,1);transition-delay:calc(var(--i,0)*42ms)}
+.see-w.on .see-h .wd b{transform:none}
+.see-p{opacity:0;transform:translateY(10px);transition:opacity .7s,transform .8s cubic-bezier(.19,.9,.22,1);transition-delay:calc(var(--i,6)*42ms + 120ms)}
+.see-w.on .see-p{opacity:1;transform:none}
+.see-h,.see-p,.see-k{margin:0}
+.see-h,.see-p{text-shadow:0 2px 28px rgba(5,7,13,.55)}
+.see-h{font:600 clamp(1.9rem,1rem + 2.7vw,4.1rem)/1.02 var(--display,"AmI Display",Arial,sans-serif);letter-spacing:-.045em;text-wrap:balance;max-width:17em}
+.see-h em{font:italic 400 1.1em/1 "Instrument Serif",Georgia,serif;letter-spacing:-.02em;font-style:italic;padding-right:.04em}
+.see .see-p{font:400 clamp(1.05rem,.9rem + .55vw,1.5rem)/1.4 var(--text,"AmI Text",Arial,sans-serif);max-width:32em;text-wrap:balance}
+.see-k{font:500 clamp(.8rem,.74rem + .2vw,1rem)/1 var(--text,"AmI Text",Arial,sans-serif);letter-spacing:.16em;font-variant-numeric:tabular-nums}
+.see-k i{font-style:normal;animation:see-blink 1.2s steps(1) infinite}
+@keyframes see-blink{50%{opacity:.25}}
+.see-w1 .see-h em{color:#fff;background:linear-gradient(var(--see-amber),var(--see-amber)) 0 94%/100% .07em no-repeat}
+.see-w2 .see-h em{color:var(--see-blue)}
+.see-w3 .see-h em,.see-w4 .see-h em{color:var(--see-amber)}
+.see-p{color:#d3dcec}
+.see-q{font:400 clamp(1.1rem,.9rem + .8vw,1.8rem)/1.2 var(--text,"AmI Text",Arial,sans-serif);color:#fff;padding:.5em 1em .55em;border-radius:999px;border:1px solid rgba(255,255,255,.34);min-height:2.3em}
+.see-q::after{content:"";display:inline-block;width:1.5px;height:1em;margin-left:3px;vertical-align:-.14em;background:#fff;}
+.see-w.on .see-q::after{animation:see-blink 1s steps(1) infinite}
+.see-q{transition:opacity .4s}
+.see-w4:not(.told) .see-h .wd b{transform:translateY(118%)}
+.see-w4:not(.told) .see-p{opacity:0;transform:translateY(10px)}
+
+/* sound: on by default; it starts on the visitor's first tap, click or key, and one tap on this turns it off */
+.see-snd{position:absolute;left:clamp(14px,2.2vw,36px);bottom:clamp(14px,2.6vh,30px);z-index:3;display:none;align-items:center;gap:8px;padding:8px 2px;border:0;background:none;color:color-mix(in srgb,#fff calc(var(--in,1)*100%),var(--see-ink));font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);letter-spacing:.02em;opacity:.72;cursor:pointer;transition:opacity .25s}
+.see.live .see-snd{display:flex}
+.see-snd:hover,.see-snd:focus-visible,.see-snd[aria-pressed=true]{opacity:1}
+.see-snd:focus-visible{outline:1px solid #fff;outline-offset:4px}
+.see-snd i{display:flex;align-items:center;gap:2px;height:12px}
+.see-snd i::before,.see-snd i::after,.see-snd i b{content:"";width:2px;height:4px;border-radius:1px;background:currentColor;transition:height .3s}
+.see-snd[aria-pressed=true] i::before{height:8px}.see-snd[aria-pressed=true] i b{height:12px}.see-snd[aria-pressed=true] i::after{height:6px}
+/* playing: the bars move like a level meter while the page moves (that is when the floor makes its sounds);
+   waiting for the first tap: they breathe four times, asking for it, then rest so a still page redraws nothing */
+.is-scrolling .see-snd[aria-pressed=true] i::before,.is-scrolling .see-snd[aria-pressed=true] i b,.is-scrolling .see-snd[aria-pressed=true] i::after{animation:see-eq .55s ease-in-out infinite alternate}
+.see-snd[aria-pressed=true] i b{animation-delay:-.2s}.see-snd[aria-pressed=true] i::after{animation-delay:-.37s}
+@keyframes see-eq{0%{transform:scaleY(.45)}100%{transform:scaleY(1)}}
+.see-snd.wait{opacity:.92}
+.see-snd.wait i::before,.see-snd.wait i b,.see-snd.wait i::after{animation:see-ask 1.8s ease-in-out 4}
+.see-snd.wait i b{animation-delay:.15s}.see-snd.wait i::after{animation-delay:.3s}
+@keyframes see-ask{50%{transform:scaleY(2.4)}}
+@media (prefers-reduced-motion:reduce){.see-snd i::before,.see-snd i b,.see-snd i::after{animation:none!important}}
+
+/* four ticks: where you are */
+.see-ticks{position:absolute;right:clamp(14px,2.2vw,36px);top:50%;z-index:2;display:flex;flex-direction:column;gap:8px;transform:translateY(-50%)}
+.see-ticks i{width:2px;height:22px;border-radius:2px;background:currentColor;opacity:.28;transition:opacity .4s,height .4s}
+.see-ticks i.on{opacity:.95;height:34px}
+.see-ticks{color:#fff}
+.see.live[data-pull] .see-ticks{opacity:var(--in,1)}
+
+/* no script: one picture, then the four captions as plain text */
+.see:not(.live) .see-words{position:relative;padding-block:48px;display:flex;flex-direction:column;gap:40px}
+.see:not(.live) .see-w{position:static;visibility:visible;transform:none;color:#fff;padding:0}
+.see:not(.live) .see-p{opacity:1;transform:none}
+.see:not(.live) .see-ticks,.see:not(.live) .see-q::after,.see:not(.live) .see-shade{display:none}
+.see:not(.live) .see-stage{height:auto;aspect-ratio:16/9}
+.see:not(.live) .see-box{position:relative;left:0;top:0;width:100%;height:100%}
+
+@media (max-aspect-ratio:4/5){
+  .see-grid{background-size:100% 3.515%,6.25% 100%}
+  .see-stage{--bw:max(100vw,calc(100vh*9/16));--bw:max(100vw,calc(100svh*9/16));--bh:calc(var(--bw)*16/9)}
+  .see-box{left:auto;right:0}
+  .see-ov .mins.flip{text-anchor:end}
+  .see.live{height:420vh}
+  .see.live[data-pull]{height:510vh}
+  .see-words{padding-bottom:clamp(36px,9vh,80px)}
+  .see-h{font-size:clamp(1.9rem,1rem + 5.4vw,3.2rem);line-height:1.02}
+  .see-ticks{right:10px}
+  .see-ov .mins{font-size:22px}.see-ov .mins.mins-big{font-size:30px}.see-ov .zone{font-size:15px}
+  .see:not(.live) .see-stage{aspect-ratio:9/16}
+}
+@media (prefers-reduced-motion:reduce){
+  .see-h .wd b,.see-p{transition:none}
+  .see-ov .pts{animation:none}
+  .see-k i,.see-q::after{animation:none}
+}
