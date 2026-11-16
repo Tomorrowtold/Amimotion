@@ -14,6 +14,10 @@ def load(src):
         for nm, im in (('color', img), ('albedo', np.ascontiguousarray(alb)), ('normal', np.ascontiguousarray(nrm)), ('output', res)): oidn.SetSharedFilterImage(flt, nm, im, oidn.FORMAT_FLOAT3, w, h)
         _L.oidnSetFilter1b(flt, b'hdr', True); oidn.CommitFilter(flt); oidn.ExecuteFilter(flt); oidn.ReleaseFilter(flt); return res
     G = {n[9:]: denoise(a) for n, a in P.items() if n.startswith('Combined_')}
+    zf = src.replace('.exr', '_z.exr')
+    if os.path.exists(zf):
+        for p in OpenEXR.File(zf).parts:
+            if 'Depth' in p.header.get('name', ''): P['Depth'] = np.ascontiguousarray(list(p.channels.values())[0].pixels.astype(np.float32))
     d = P['Depth']; d = d[..., 0] if d.ndim == 3 else d
     return G, d
 def tm(x, ex=1.): x = x * ex; x = x * (1 + x / 16.) / (1 + x); return np.clip(x, 0, 1) ** (1 / 2.2)

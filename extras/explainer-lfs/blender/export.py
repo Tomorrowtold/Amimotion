@@ -1,7 +1,7 @@
 # Turn a layered render into the web plate: denoised light layers (display-encoded WebP), depth and distance maps, and its numbers.
 # usage: export.py <A|B|C|D> in.exr outdir   (outdir = .../assets/lfs/L or P)
 import sys, os, json, numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter
 import comp
 S, src, out = sys.argv[1], sys.argv[2], sys.argv[3]; os.makedirs(out, exist_ok=True); s = S.lower()
 G, d = comp.load(src); meta = json.load(open(src.replace('.exr', '.json'))); H, W = d.shape
@@ -11,13 +11,14 @@ GAIN = dict(A=dict(lamps=2.2), B=dict(isl=6., lamps=2.2, amber=3., slot=2.4, poo
 COLOUR = dict(B=('slot', 'pools'), C=('cone',)).get(S, ())
 def save(name, a, q=82, half=False):
     im = Image.fromarray((np.clip(a, 0, 1) * 255 + .5).astype(np.uint8))
-    if half: im = im.resize((W // 2, H // 2), Image.LANCZOS)
+    if half:      # geometry maps: a median takes out single stray samples, a light blur keeps the parallax and the pulse from tearing at edges
+        im = im.filter(ImageFilter.MedianFilter(5)).resize((W // 2, H // 2), Image.LANCZOS).filter(ImageFilter.GaussianBlur(1.2))
     p = os.path.join(out, f'{s}_{name}.webp'); im.save(p, 'WEBP', quality=q, method=6); return os.path.getsize(p)
 sizes = {}
 for k, g in GAIN.items():
     a = G[k] if k != 'pools' else G['pools'] + G.get('cone', 0) * .5
     a = a * g
-    sizes[k] = save(k, (a if k in COLOUR else lum(a)) ** (1 / 2.2), 84 if k in COLOUR else 82)
+    sizes[k] = save(k, (a if k in COLOUR else lum(a)) ** (1 / 2.2), 88)
 # geometry: where every pixel is
 mat = np.array(meta['mat']); lens = meta['lens']; sw = 36. if meta['fit'] == 'HORIZONTAL' else 36. * W / H
 u, v = np.meshgrid((np.arange(W) + .5) / W, (np.arange(H) + .5) / H)
@@ -37,6 +38,8 @@ info = dict(w=W, h=H, near=near, pts=meta['pts'], counts=meta['counts'], gain=GA
 if S in 'BC':
     c = np.array(meta['world']['herofloor' if S == 'B' else 'tag']); DM = 160. if S == 'B' else 70.
     dist = np.linalg.norm((world - c)[..., :2] if S == 'B' else world - c, axis=-1); dist[far] = DM
-    sizes['dist'] = save('dist', np.sqrt(np.clip(dist / DM, 0, 1)), 90, half=True); info['dmax'] = DM
+    # the distance map drives thresholds (the pulse front, light spreading), so it is stored without loss, at a third of the size
+    dm = Image.fromarray((np.sqrt(np.clip(dist / DM, 0, 1)) * 255 + .5).astype(np.uint8)).filter(ImageFilter.MedianFilter(5)).resize((W // 3, H // 3), Image.BOX).filter(ImageFilter.GaussianBlur(.8))
+    pth = os.path.join(out, f'{s}_dist.webp'); dm.save(pth, 'WEBP', lossless=True, method=6); sizes['dist'] = os.path.getsize(pth); info['dmax'] = DM
     if S == 'C': info['adist'] = [float(np.linalg.norm(np.array(meta['world'][a]) - c)) for a in ('a0', 'a1', 'a2')]
 json.dump(info, open(os.path.join(out, f'{s}.json'), 'w')); print(S, sizes, sum(sizes.values()) // 1024, 'KB')

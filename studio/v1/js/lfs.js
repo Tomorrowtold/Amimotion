@@ -54,7 +54,7 @@
   window.addEventListener('pointermove', function (e) { if (e.pointerType === 'mouse') { ptr.x = e.clientX / innerWidth - .5; ptr.y = e.clientY / innerHeight - .5; } }, { passive: true });
 
   /* ---------- where a point of the picture lands on the stage ---------- */
-  var FOCUS = { a: [.5, .5], b: [.5, .5], c: [.62, .55], d: [.5, .5] };
+  var FOCUS = { a: [.5, .5], b: [.5, .5], c: [.62, .8], d: [.5, .5] };
   var view = { su: 1, sv: 1, cu: .5, cv: .5, px: 0, py: 0, foc: .3 };
   function fit(plate, zoom) {
     var d = data && data[O][plate], ap = d ? d.w / d.h : (tall ? 9 / 16 : 16 / 9), as = sw / sh, su, sv, f = FOCUS[plate];
@@ -72,15 +72,19 @@
   /* ---------- the look of each frame: light weights as a function of its own progress q and the world clock t ---------- */
   var BLUE = [.16, .42, 1], AMBER = [1, .52, .1];
   var U = {};                      // filled each frame
-  var pulse = { ph: 0, n: -1, hit: [0, 0, 0], line: [0, 0, 0], r: 0 };
+  var pulse = { ph: 0, n: -1, hit: [0, 0, 0], line: [0, 0, 0], r: 0 }, lost = { bank: -1 };
+  var LEVELS = [1, .7, .46, .27, .12, 0];
   var PERIOD = 4.6, SPEED = 30;    // the pulse repeats on the world clock; shown speed in metres per second (the real one is light speed)
   function blink(t) { var x = t % 2.3; return Math.exp(-x * 9) + .8 * Math.exp(-Math.max(0, x - .22) * 9) * (x > .22 ? 1 : 0); }
   function look(f, q, t) {
     var u = U; u.sod = [0, 0, 0]; u.wht = [0, 0, 0]; u.amb = [0, 0, 0]; u.blu = [0, 0, 0]; u.col = [0, 0]; u.rev = [999, 999, 999]; u.shell = [0, 1, 0]; u.glow = []; u.anc = [0, 0, 0]; u.zoom = 1.05; u.par = 1;
     var d = data[O][f.plate];
     if (f.k === 'lost') {
-      var die = ss(.8, .97, q), fl = die > 0 && die < 1 ? (Math.sin(t * 47) * Math.sin(t * 31.7) > .25 ? .55 : 1) : 1;
-      u.sod[0] = (1 - die) * fl; u.zoom = 1.05 + .07 * q; snd.level('hall', (1 - die) * fl);
+      /* the lamps go out bank by bank: the light steps down, each step a breaker thrown */
+      var die = clamp((q - .76) / .21, 0, 1), bank = Math.min(5, Math.floor(die * 5.999)), lv = LEVELS[bank], into = die * 6 - bank;
+      if (bank !== lost.bank) { if (lost.bank >= 0) snd.thunk(bank > lost.bank); lost.bank = bank; }
+      if (bank < 5 && die > 0) lv = mix(lv, LEVELS[bank + 1], ss(.82, 1, into)) * (into > .7 && Math.sin(t * 61) * Math.sin(t * 37.3) > .3 ? .8 : 1);
+      u.sod[0] = lv; u.zoom = 1.05 + .07 * q; snd.level('hall', lv);
     } else if (f.k === 'isl') {
       u.sod[0] = ss(0, .1, q) * 1.15; u.sod[2] = .05; u.zoom = 1.12 - .06 * q;
     } else if (f.k === 'tag') {
@@ -89,7 +93,7 @@
       snd.blink(t);
     } else if (f.k === 'found') {
       var cone = ss(.5, .66, q), run = q > .1;
-      u.sod[0] = mix(.13, .05, cone); u.col[0] = cone * 1.25; u.zoom = 1.05 + .04 * q;
+      u.sod[0] = mix(.14, .05, cone); u.col[0] = cone * 1.25; u.zoom = 1.035 + .03 * q;
       var ph = t % PERIOD, n = Math.floor(t / PERIOD);
       if (n !== pulse.n) { pulse.n = n; pulse.hit = [0, 0, 0]; if (run) snd.tick(); }
       var r = ph * SPEED; pulse.r = r;
@@ -107,9 +111,9 @@
       } else pulse.line = [0, 0, 0];
       if (cone > .5) snd.once('chord'); else snd.reset('chord');
     } else if (f.k === 'seen') {
-      var open = q / .24, e = 1 - Math.pow(1 - clamp(open, 0, 1), 2.2);
-      u.col = [1.1, 1.15]; u.rev[0] = e * 190 - 6; u.rev[1] = clamp(e * 1.0 - .08, 0, 1) * 190 - 6; u.rev[2] = u.rev[1];
-      u.amb[1] = 1.5 * ss(.2, .32, q); u.wht[2] = .1 * ss(.05, .3, q); u.zoom = 1.06 + .06 * (1 - ss(0, 1, q));
+      var e = Math.pow(clamp(q / .3, 0, 1), 2.1);
+      u.col = [1.9, 1.25]; u.rev[0] = e * 200 - 4; u.rev[1] = clamp(e * 1.08 - .1, 0, 1) * 200 - 4; u.rev[2] = u.rev[1];
+      u.amb[1] = 1.7 * ss(.27, .4, q); u.wht[2] = .3 * ss(.02, .3, q); u.zoom = 1.06 + .06 * (1 - ss(0, 1, q));
       snd.level('pad', ss(0, .15, q)); if (q > .02) snd.once('open'); else snd.reset('open');
     }
     if (f.k !== 'lost') snd.level('hall', 0);
@@ -220,7 +224,7 @@
     var ac = null, on = true, master, hall, pad, lv = { hall: 0, pad: 0 }, done = {}, lastBlink = -1, N = [659.25, 830.61, 987.77];
     function build() {
       var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; ac = new AC();
-      master = ac.createGain(); master.gain.value = on ? .9 : 0; master.connect(ac.destination);
+      master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
       /* the hall: air as filtered noise, and the lamps' mains hum */
       hall = ac.createGain(); hall.gain.value = 0; hall.connect(master);
       var len = ac.sampleRate * 3, buf = ac.createBuffer(1, len, ac.sampleRate), ch = buf.getChannelData(0), b = 0;
@@ -236,20 +240,24 @@
       if (!ac || !on || ac.state !== 'running') return; var t = ac.currentTime, o = ac.createOscillator(), g = ac.createGain(); o.type = type || 'sine'; o.frequency.value = f;
       g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + dur); o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + .05);
     }
-    function unlock() { if (!ac) build(); if (ac && ac.state === 'suspended') ac.resume(); }
+    function unlock() { if (!ac) build(); if (ac && ac.state === 'suspended') ac.resume().then(label, label); else label(); }
     ['pointerdown', 'keydown', 'touchend'].forEach(function (ev) { window.addEventListener(ev, unlock, { passive: true }); });
-    function label() { sndBtn.textContent = on ? 'Sound on' : 'Sound off'; sndBtn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
-    sndBtn.addEventListener('click', function () { on = !on; try { localStorage.setItem('lfs-sound', on ? '1' : '0'); } catch (e) {} unlock(); if (master) master.gain.setTargetAtTime(on ? .9 : 0, ac.currentTime, .08); label(); });
+    var touch = matchMedia('(pointer: coarse)').matches;
+    function label() { var live = ac && ac.state === 'running'; sndBtn.textContent = !on ? 'Sound off' : live ? 'Sound on' : touch ? 'Tap for sound' : 'Click for sound'; sndBtn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+    sndBtn.addEventListener('click', function () { var live = ac && ac.state === 'running'; on = live ? !on : true; try { localStorage.setItem('lfs-sound', on ? '1' : '0'); } catch (e) {} unlock(); gate = -1; label(); });
     try { if (localStorage.getItem('lfs-sound') === '0') on = false; } catch (e) {} label();
     document.addEventListener('visibilitychange', function () { if (ac) { if (document.hidden) ac.suspend(); else if (vis) ac.resume(); } });
+    var gate = -1;
     return {
+      gate: function (g) { g = on ? g : 0; if (!ac || g === gate) return; gate = g; master.gain.setTargetAtTime(.9 * g, ac.currentTime, .12); },
       level: function (k, v) { if (!ac || lv[k] === v) return; lv[k] = v; (k === 'hall' ? hall : pad).gain.setTargetAtTime(v * (k === 'hall' ? .5 : 1), ac.currentTime, k === 'hall' ? .06 : .5); },
+      thunk: function (off) { ping(off ? 62 : 90, off ? .22 : .1, off ? .35 : .2, 'sine'); ping(off ? 1400 : 2100, .02, .03, 'square'); },
       tick: function () { ping(2400, .05, .06, 'square'); ping(1200, .06, .09); },
       blink: function (t) { var n = Math.floor(t / 2.3); if (n !== lastBlink) { lastBlink = n; ping(1900, .035, .07); } },
       note: function (i) { ping(N[i], .09, 1.5); ping(N[i] * 2, .025, .8); },
       once: function (k) { if (done[k]) return; done[k] = 1; if (k === 'chord') N.forEach(function (f, i) { ping(f / 2, .07, 2.6, 'triangle'); ping(f, .05, 2.2); }); if (k === 'open') [329.63, 493.88, 659.25, 987.77].forEach(function (f, i) { setTimeout(function () { ping(f, .05, 2.4); }, i * 140); }); },
       reset: function (k) { done[k] = 0; },
-      quiet: function () { if (ac) { hall.gain.setTargetAtTime(0, ac.currentTime, .2); pad.gain.setTargetAtTime(0, ac.currentTime, .2); lv.hall = lv.pad = 0; } }
+      quiet: function () { this.gate(0); }
     };
   })();
 
@@ -312,6 +320,7 @@
     /* controls */
     var step = ps < .38 ? 0 : ps < .706 ? 1 : 2; rail.forEach(function (a, i) { a.classList.toggle('on', i === step); });
     topLink.classList.toggle('show', now - upT < 2600 && ps > .02);
+    var rc = sec.getBoundingClientRect(); snd.gate(rc.top < innerHeight * .7 && rc.bottom > innerHeight * .3 ? 1 : 0);
     if (GL) GL.next();
   }
   new IntersectionObserver(function (es) {

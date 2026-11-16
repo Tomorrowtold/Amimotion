@@ -13,10 +13,10 @@
 .lfs-lines{margin-top:18px}
 .lfs-lines p{margin:0 0 .55em;max-width:17.5em;font-size:clamp(18px,1.6vw,25px);line-height:1.3;letter-spacing:-.005em;color:var(--lfs-text);text-wrap:balance}
 .lfs-facts{list-style:none;margin:0;padding:14px var(--lfs-m) 40px}
-.lfs-facts li{margin:0 0 12px;font-weight:500;font-size:15px;line-height:1.36;color:var(--lfs-soft);font-variant-numeric:tabular-nums}
+.lfs-facts li{margin:0 0 12px;font-weight:500;font-size:clamp(15px,.94vw,18px);line-height:1.36;color:rgba(244,246,250,.78);font-variant-numeric:tabular-nums}
 .lfs-facts b{font-weight:500;color:#fff}
 .lfs-facts .lfs-wait b{color:var(--lfs-amber)}
-.lfs-names strong{font-family:"AmI Display",Arial,sans-serif;font-weight:600;font-size:20px;letter-spacing:-.01em;color:#fff}
+.lfs-names strong{font-family:"AmI Display",Arial,sans-serif;font-weight:600;font-size:clamp(20px,1.25vw,24px);letter-spacing:-.01em;color:#fff}
 .lfs-names li{font-weight:400}
 .lfs-end{padding:8px var(--lfs-m) 64px}
 .lfs-count{margin:0 0 18px;font-weight:500;font-size:clamp(15px,1.2vw,18px);line-height:1.4;color:var(--lfs-soft);font-variant-numeric:tabular-nums}

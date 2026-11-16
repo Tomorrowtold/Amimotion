@@ -56,7 +56,7 @@ elif SHOT == 'B':
     P.cutaway()
     cam = camera((70, -24, 50), (91, 46.5, 0), 34) if not TALL else camera((152, 49, 58), (92, 47.5, 0), 20)
 elif SHOT == 'C':
-    cam = camera((85.68, 47.48, 1.25), (108, 47.3, 2.4), 20 if not TALL else 12, focus=(*HERO, .9), fstop=8)
+    cam = camera((85.68, 47.48, 1.25), (108, 47.3, 2.4), 20 if not TALL else 12)
 elif SHOT == 'D':
     p = Vector(TAG) + tagn * .30 + Vector((-s * .17, c * .17, .09))
     cam = camera(p, Vector(TAG) + tagn * .01, 85 if not TALL else 42, focus=Vector(TAG) + tagn * .02, fstop=5.6)
@@ -71,7 +71,12 @@ c.volume_step_rate = 4.0; c.volume_max_steps = 128; c.use_light_tree = True; c.s
 sc.render.resolution_x, sc.render.resolution_y = W, H; sc.render.resolution_percentage = 100
 vl = bpy.context.view_layer; vl.cycles.denoising_store_passes = True; vl.use_pass_z = True
 sc.render.image_settings.media_type = 'MULTI_LAYER_IMAGE'; sc.render.image_settings.file_format = 'OPEN_EXR_MULTILAYER'; sc.render.image_settings.color_depth = '16'; sc.render.filepath = OUT
-t0 = time.time(); bpy.ops.render.render(write_still=True)
+t0 = time.time()
+if not os.environ.get('ZONLY'): bpy.ops.render.render(write_still=True)
+# a second, tiny render for geometry only: no haze, no lens blur, so the depth of every pixel is exact
+hz = bpy.data.objects.get('haze'); hz.hide_render = True; cam.data.dof.use_dof = False
+c.samples = 4; c.use_adaptive_sampling = False; c.max_bounces = 0; vl.cycles.denoising_store_passes = False
+sc.render.filepath = OUT.replace('.exr', '_z.exr'); bpy.ops.render.render(write_still=True)
 bpy.context.view_layer.update()
 mw = cam.matrix_world; fr = cam.data.view_frame(scene=sc)
 def proj(p):
