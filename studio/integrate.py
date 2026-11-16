@@ -116,7 +116,7 @@ for sub in ("js", "assets"):
 css = CRE.sub(lambda m: '.z-' + m.group(1), css)
 (sa / "css").mkdir(parents=True); (sa / "css" / "studio.css").write_text(css)
 # the section after the hero has its own small stylesheet: every rule in it already starts with .see, so it needs no scoping
-(sa / "css" / "see.css").write_text((STUDIO / "css" / "see.css").read_text().replace("url(../assets/fonts/", "url(../fonts/"))
+(sa / "css" / "see.css").write_text((STUDIO / "css" / "see.css").read_text().replace("url(../assets/fonts/", "url(../../fonts/"))   # the site's own font copies: one download, not two
 shutil.copytree(STUDIO / "assets" / "fonts", sa / "fonts")
 # studio JS fetches assets/... relative to the page: point it at assets/studio/assets/
 for f in (sa / "js").glob("*.js"):
