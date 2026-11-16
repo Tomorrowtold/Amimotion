@@ -449,10 +449,10 @@ if (simSec) {
 
   /* one scroll, one guide: armed only while the guides fill the screen */
   if (!reduce && !STILL && fixed == null) {
-    let lastWheel = 0, lastMag = 0, lastStep = 0;
+    let lastWheel = 0, lastMag = 0, lastStep = 0, asked = 0;   // asked: scrolls during the opening film; a second one means 'go on', nobody is held
     const inBand = () => { const g = geom(); return g.top <= 4 && g.top + g.h >= innerHeight - 4; };
     const go = (dir) => {   // true when the guides took the gesture
-      if (phase < 3 || performance.now() - doneAt < 450) { if (dir < 0 && phase < 3) return false; if (phase === 1 && smiled(performance.now())) rise(); if (phase < 3 && scrollY < posOf(0) - 2) glideTo(posOf(0), 900); lastStep = performance.now(); return true; }
+      if (phase < 3 || performance.now() - doneAt < 450) { if (dir < 0 && phase < 3) return false; if (phase === 1 && (smiled(performance.now()) || ++asked >= 2)) rise(); if (phase < 3 && scrollY < posOf(0) - 2) glideTo(posOf(0), 900); lastStep = performance.now(); return true; }
       const next = gi + dir; if (next < 0 || next > N - 1) return false;   // past the first or last guide the page scrolls on as usual
       gi = next; lastStep = performance.now(); glideTo(posOf(next), 760, false, true); haptic(); land(); return true;
     };
