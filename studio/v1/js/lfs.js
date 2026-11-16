@@ -318,20 +318,20 @@
         if (o > 0 && x.plate === 'b' && r[0] > newest && ps < r[1] - .014) { newest = r[0]; pan.to = data[O].b.pts[x.at][0]; }
         if (o > 0) {
           var pt = place(x.plate, x.at); if (!pt) { set(x, 0); return; }
-          var X = Math.round(pt[0]), Y = Math.round(pt[1]) + Math.round((1 - o) * 6), off = tall ? x.offm : x.off, ks = tall ? clamp(sw / 390, .9, 1.5) : clamp(sw / 1440, .85, 1.5), dx = off[0] * ks, dy = off[1] * ks;
+          var X = Math.round(pt[0]), Y = Math.round(pt[1]) + Math.round((1 - o) * 6), off = tall ? x.offm : x.off, ks = tall ? clamp(sw / 390, .9, 1.5) : clamp(sw / 1440, .85, 1.5), dx = off[0] * ks, dy = off[1] * ks, cen = off[2] === 1;   /* a third value of 1 centres the label over its point (narrow screens) */
           if (!x.w) { x.w = x.span.offsetWidth; x.h = x.span.offsetHeight; }
           /* a label never sits on the words or off the stage: try its own side first, then the others */
           var c = [[dx, dy], [-dx, dy], [dx, -dy], [-dx, -dy]], ok = false;
           for (var ci = 0; ci < 4 && !ok; ci++) {
-            var l = X + (c[ci][0] > 0 ? c[ci][0] : c[ci][0] - x.w), tp = Y + (c[ci][1] > 0 ? c[ci][1] : c[ci][1] - x.h + 20);
+            var l = cen ? X + c[ci][0] - x.w / 2 : X + (c[ci][0] > 0 ? c[ci][0] : c[ci][0] - x.w), tp = Y + (c[ci][1] > 0 ? c[ci][1] : c[ci][1] - x.h + 20);
             ok = l > 12 && l + x.w < sw - 12 && tp > (tall ? 62 : 100) && tp + x.h < (tall ? zone : sh - 60) && !(tz && l < tz.r + 16 && l + x.w > tz.l - 16 && tp < tz.b + 12 && tp + x.h > tz.t - 12);
             if (ok) { dx = c[ci][0]; dy = c[ci][1]; }
           }
           if (!ok) { set(x, 0); return; }
           if (X !== x.x || Y !== x.y || dx !== x.dx || dy !== x.dy) {
             x.x = X; x.y = Y; x.dx = dx; x.dy = dy; x.el.style.transform = 'translate3d(' + X + 'px,' + Y + 'px,0)';
-            x.span.style.left = (dx > 0 ? dx : dx - x.w) + 'px'; x.span.style.top = (dy > 0 ? dy : dy - x.h + 20) + 'px';
-            var ex = dx > 0 ? dx - 8 : dx + 8, ey = dy > 0 ? dy + 10 : dy + 10, len = Math.sqrt(ex * ex + ey * ey);
+            x.span.style.left = Math.round(cen ? dx - x.w / 2 : dx > 0 ? dx : dx - x.w) + 'px'; x.span.style.top = (dy > 0 ? dy : dy - x.h + 20) + 'px';
+            var ex = cen ? dx : dx > 0 ? dx - 8 : dx + 8, ey = dy > 0 ? dy + 10 : dy + 10, len = Math.sqrt(ex * ex + ey * ey);
             x.hair.style.width = len.toFixed(1) + 'px'; x.hair.style.transform = 'rotate(' + Math.atan2(ey, ex).toFixed(4) + 'rad)';
           }
         }

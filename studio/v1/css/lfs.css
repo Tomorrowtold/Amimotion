@@ -75,7 +75,7 @@
 @media (max-aspect-ratio:4/5){
   .lfs.lfs-on{height:440vh}
   .lfs-on .lfs-shade{background:linear-gradient(0deg,rgba(5,6,13,.86) 0,rgba(5,6,13,.6) 26%,rgba(5,6,13,0) 52%)}
-  .lfs-on .lfs-shade::before{display:none}
+  .lfs-on .lfs-shade::before{background:linear-gradient(0deg,rgba(5,6,13,.92) 0,rgba(5,6,13,.82) 34%,rgba(5,6,13,.3) 50%,rgba(5,6,13,0) 60%)}
   .lfs-on .lfs-shade::after{background:linear-gradient(0deg,rgba(5,6,13,.95) 0,rgba(5,6,13,.86) 34%,rgba(5,6,13,0) 62%)}
   .lfs-on .lfs-t{left:var(--lfs-m);right:var(--lfs-m);width:auto;top:calc(var(--sv)*.6)}
   .lfs-word{font-size:56px}
