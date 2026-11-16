@@ -827,6 +827,15 @@
     "/learn/mcp-location-data/",
     "/use-cases/ask-your-floor/"
    ]
+  },
+  "/accessibility/": {
+   "parent": "/company/",
+   "next": null,
+   "related": [
+    "/privacy/",
+    "/trust/",
+    "/contact/"
+   ]
   }
  },
  "terms": {

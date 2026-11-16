@@ -531,7 +531,7 @@ def footer_html(url="/", world=None):
             '<div class="ft-base">'
             f'<p class="ft-entity">{html.escape(ENTITY["long"])}</p>\n'
             '<address class="ft-reach"><a href="mailto:sales@amimotion.com">sales@amimotion.com</a><span>Locatepro Technologies Pvt Ltd</span><span>Bengaluru, India</span></address>\n'
-            '<ul class="ft-small">' + "".join(f"<li>{A(u, l)}</li>" for l, u in (("Privacy", "/privacy/"), ("Trust and data", "/trust/"), ("People and privacy", "/trust/people/"))) +
+            '<ul class="ft-small">' + "".join(f"<li>{A(u, l)}</li>" for l, u in (("Privacy", "/privacy/"), ("Trust and data", "/trust/"), ("People and privacy", "/trust/people/"), ("Accessibility", "/accessibility/"))) +
             '<li><a href="https://www.youtube.com/@locateprotech" rel="me noopener">YouTube</a></li><li><a href="/llms.txt">For AI assistants</a></li></ul>\n'
             f'<p class="ft-legal">© {TODAY[:4]} Locatepro Technologies Pvt Ltd. NXP and Trimension are trademarks of NXP B.V. FiRa and omlox are trademarks of their owners. Specifications are indicative. Final datasheets are shared under NDA.</p>'
             '</div>\n'
