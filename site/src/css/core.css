@@ -450,3 +450,16 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
 }
 /* a page without the closing band (the homepage) opens the footer straight on its links */
 .ft-card:not(:has(.ft-close)) .ft-map{margin-top:0}
+/* print: spec sheets, guides and the pilot page print as clean black-on-white documents */
+@media print{
+  @page{margin:16mm}
+  main::before{content:"AmIMotion  ·  www.amimotion.com  ·  sales@amimotion.com";display:block;font:500 9pt/1.4 sans-serif;color:#000;margin-bottom:8mm;padding-bottom:3mm;border-bottom:.5pt solid #000}
+  html,body{background:#fff!important;color:#000!important}
+  header,footer,nav,.scrim,.skip-link,.ia-strip,.dock,.askw,[data-ask],.nask,.k-progress,video,canvas,.close a,.cta,.more{display:none!important}
+  main,main *{color:#000!important;background:transparent!important;box-shadow:none!important;text-shadow:none!important;animation:none!important;transform:none!important;opacity:1!important}
+  main a[href^="http"]::after{content:" (" attr(href) ")";font-size:.85em}
+  h1,h2,h3{break-after:avoid}
+  li,figure,table,tr,details,.points>li{break-inside:avoid}
+  details>*{display:block!important}
+  img{max-width:100%!important;height:auto!important}
+}
