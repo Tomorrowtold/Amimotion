@@ -779,7 +779,8 @@ def build():
         if url != "/": body = with_magnet(body, url)
         header = header_html(url, meta.get("world"), over_photo(meta, body))
         page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main" tabindex="-1">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
-        page = purge.trim_page(phone_dpr_cap(page), JS_WORDS)
+        page = phone_dpr_cap(page)
+        if url != "/": page = purge.trim_page(page, JS_WORDS)   # the homepage is locked (its own thread): left whole
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
         out.parent.mkdir(parents=True, exist_ok=True); out.write_text(page)
