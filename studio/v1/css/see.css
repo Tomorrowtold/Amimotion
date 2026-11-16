@@ -1,26 +1,31 @@
-/* The explainer: one vast plant rendered in Blender, one continuous camera move in four scrolls.
-   The scroll position is the film's clock: frames are drawn to a canvas, two at a time, crossfaded.
-   Without script: the poster frame and the words as plain text. With script (.see.live) the stage pins. */
+/* The explainer: the founders' "without / with" picture, told in one plant over four scrolls.
+   With script (.see.live) the stage pins and four stills crossfade with the scroll; on a capable device the live
+   three.js plant replaces them (.see.ready). Without script: one still and the words as plain text. */
 @font-face{font-family:"Instrument Serif";src:url(../assets/fonts/InstrumentSerif-italic.woff2) format("woff2");font-style:italic;font-weight:400;font-display:swap}
 
 .see{--see-night:#05070d;--see-blue:#66a5fa;--see-amber:#f0a43a;--see-sod:#ffcf4a;position:relative;background:var(--see-night);color:#fff}
 .see-stage{position:relative;overflow:hidden;height:100vh;height:100svh;background:var(--see-night)}
 .see.live{height:640vh}
 .see.live .see-stage{position:sticky;top:0}
-.see-poster,.see-film{position:absolute;inset:0;width:100%;height:100%;display:block}
-.see-poster{object-fit:cover;object-position:60% 50%}
-.see.ready .see-poster{visibility:hidden}
+.see-poster,.see-gl,.see-stills,.see-stills img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.see-poster,.see-stills img{object-fit:cover;object-position:60% 50%}
+.see-stills{display:none}
+.see.live .see-poster{display:none}
+.see.live .see-stills{display:block}
+.see-stills img{opacity:0;transition:opacity .9s var(--ease,ease)}
+.see-stills .on img{opacity:1}
+.see.ready .see-stills{display:none}
 
 /* words sit low left on a soft shade; one line of type per scroll */
 .see-shade{position:absolute;inset:auto 0 0 0;height:62%;pointer-events:none;background:linear-gradient(to top,rgba(5,7,13,.86),rgba(5,7,13,.5) 45%,rgba(5,7,13,0))}
 .see-words{position:absolute;left:var(--m,clamp(20px,4vw,112px));right:var(--m,clamp(20px,4vw,112px));bottom:clamp(40px,9vh,110px)}
-.see-w{max-width:34rem}
+.see-w{max-width:44rem}
 .see.live .see-w{position:absolute;left:0;bottom:0;opacity:0;transform:translateY(18px);transition:opacity .6s var(--ease,ease),transform .8s var(--ease,ease);pointer-events:none}
 .see.live .see-w.on{opacity:1;transform:none}
 .see:not(.live) .see-w+.see-w{margin-top:28px}
 .see-h{margin:0;font:600 clamp(2rem,1.2rem + 2.8vw,4rem)/1.02 var(--display,"AmI Display",Arial,sans-serif);letter-spacing:-.035em;text-wrap:balance}
 .see-h em{font:italic 400 1.08em/1 "Instrument Serif",Georgia,serif;letter-spacing:-.01em}
-.see-w[data-s="1"] .see-h em{color:var(--see-sod)}
+.see-w[data-s="1"] .see-h em{color:rgba(255,255,255,.62)}
 .see-w[data-s="2"] .see-h em,.see-w[data-s="3"] .see-h em{color:var(--see-blue)}
 .see-w[data-s="4"] .see-h em{color:var(--see-amber)}
 .see-p{margin:16px 0 0;max-width:30rem;color:rgba(255,255,255,.78);font:400 clamp(1rem,.94rem + .25vw,1.2rem)/1.5 var(--text,"AmI Text",Arial,sans-serif)}
@@ -41,7 +46,7 @@
 .see-m.amb i{border-color:var(--see-amber);background:var(--see-amber);box-shadow:0 0 16px var(--see-amber)}
 .see-m.amb span{background:#fff;color:#0b1238;border-color:#fff}
 .see-m.amb span em{font-style:normal;color:#b86e05;font-weight:600}
-.see-m.r i{border-color:#ff5a5a}.see-m.g i{border-color:#4cff7a}.see-m.b i{border-color:#6a8cff}
+.see-m.anc i{border-color:var(--see-blue);width:14px;height:14px;left:-7px;top:-7px}
 
 .see-snd{position:absolute;right:var(--m,clamp(20px,4vw,112px));top:calc(var(--bar,72px) + 14px);display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(5,7,13,.45);color:#fff;font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);cursor:pointer}
 .see-snd i{display:flex;gap:2px;align-items:flex-end;height:12px}
@@ -62,3 +67,16 @@
 @media (prefers-reduced-motion:reduce){.see.live .see-w{transition:none}}
 .see-m.tag i{border-color:var(--see-blue);background:var(--see-blue);box-shadow:0 0 12px var(--see-blue);width:8px;height:8px;left:-4px;top:-4px}
 .see-m.tag span{top:-28px}
+.see-m.ans span{top:-34px}
+.see-m.flip span{left:auto;right:12px}
+/* marks: q = a problem (without), a = its answer, w = what has waited */
+.see-m.q i{border-color:rgba(255,255,255,.7);border-style:dashed}
+.see-m.q span{color:rgba(255,255,255,.88)}
+.see-m.q span em{font-style:normal;color:#fff;font-weight:600}
+.see-m.a i{border-color:var(--see-blue);background:var(--see-blue);box-shadow:0 0 14px var(--see-blue)}
+.see-m.a span,.see-m.w span{background:#fff;color:#0b1238;border-color:#fff}
+.see-m.a span em{font-style:normal;color:#1f5fc4;font-weight:600}
+.see-m.w i{border-color:var(--see-amber);background:var(--see-amber);box-shadow:0 0 16px var(--see-amber)}
+.see-m.w span em{font-style:normal;color:#b86e05;font-weight:600}
+@media (prefers-reduced-motion:reduce){.see-stills img{transition:none}}
+.see-m.below span{left:0;right:auto;top:12px;transform:translateX(-50%)}
