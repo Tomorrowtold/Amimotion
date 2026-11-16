@@ -71,12 +71,16 @@ window.SeeSound = function (AC) {
     lit.forEach((v, i) => { if (v > .5) setTimeout(() => tick(.08 * v, (i - 1) * .7), 60 + i * 35); });
   };
 
+  let ext = false;
   let on = false, inRoom = false, seg = 0, last = { s: 0, t: 0 }, rang = false, chimed = [0, 0, 0], swell = false;
   const level = () => glide(master.gain, on && inRoom ? .7 : 0, .15);
   const cross = (s, t, a) => last.s === s && last.t < a && t >= a;
 
   return {
-    set(v) { on = v; if (v) AC.resume(); level(); if (v && !timer) timer = setInterval(pulse, 700); },
+    set(v) { on = v; if (v) AC.resume(); level(); if (v && !timer && !ext) timer = setInterval(pulse, 700); },
+    // the picture drives the pulse: one tick per ring the tag sends
+    drive() { ext = true; if (timer) { clearInterval(timer); timer = 0; } },
+    ping() { pulse(); },
     room(v) { inRoom = v; level(); },
     seg(s) {
       if (s === seg) return;

@@ -1,5 +1,5 @@
-/* The explainer: one vast plant rendered in Blender, one continuous camera move in four scrolls.
-   The scroll position is the film's clock: frames are drawn to a canvas, two at a time, crossfaded.
+/* The explainer: one vast plant, live in three.js, one continuous camera in four scrolls.
+   The scroll position is the clock for camera and light; the plant moves in real time.
    Without script: the poster frame and the words as plain text. With script (.see.live) the stage pins. */
 @font-face{font-family:"Instrument Serif";src:url(../assets/fonts/InstrumentSerif-italic.woff2) format("woff2");font-style:italic;font-weight:400;font-display:swap}
 
@@ -7,7 +7,7 @@
 .see-stage{position:relative;overflow:hidden;height:100vh;height:100svh;background:var(--see-night)}
 .see.live{height:640vh}
 .see.live .see-stage{position:sticky;top:0}
-.see-poster,.see-film{position:absolute;inset:0;width:100%;height:100%;display:block}
+.see-poster,.see-film,.see-gl{position:absolute;inset:0;width:100%;height:100%;display:block}
 .see-poster{object-fit:cover;object-position:60% 50%}
 .see.ready .see-poster{visibility:hidden}
 
@@ -41,7 +41,7 @@
 .see-m.amb i{border-color:var(--see-amber);background:var(--see-amber);box-shadow:0 0 16px var(--see-amber)}
 .see-m.amb span{background:#fff;color:#0b1238;border-color:#fff}
 .see-m.amb span em{font-style:normal;color:#b86e05;font-weight:600}
-.see-m.r i{border-color:#ff5a5a}.see-m.g i{border-color:#4cff7a}.see-m.b i{border-color:#6a8cff}
+.see-m.anc i{border-color:var(--see-blue);width:14px;height:14px;left:-7px;top:-7px}
 
 .see-snd{position:absolute;right:var(--m,clamp(20px,4vw,112px));top:calc(var(--bar,72px) + 14px);display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(5,7,13,.45);color:#fff;font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);cursor:pointer}
 .see-snd i{display:flex;gap:2px;align-items:flex-end;height:12px}
@@ -62,3 +62,5 @@
 @media (prefers-reduced-motion:reduce){.see.live .see-w{transition:none}}
 .see-m.tag i{border-color:var(--see-blue);background:var(--see-blue);box-shadow:0 0 12px var(--see-blue);width:8px;height:8px;left:-4px;top:-4px}
 .see-m.tag span{top:-28px}
+.see-m.ans span{top:-34px}
+.see-m.flip span{left:auto;right:12px}
