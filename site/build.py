@@ -267,6 +267,7 @@ def head(meta, url, body, titles):
 <meta name="robots" content="{robots}">
 <link rel="canonical" href="{SITE}{url}">
 <meta name="theme-color" content="{GROUND}">
+<meta name="color-scheme" content="light">
 <meta property="og:type" content="website"><meta property="og:site_name" content="AmIMotion"><meta property="og:locale" content="en_IN">
 <meta property="og:title" content="{e(t)}"><meta property="og:description" content="{e(d)}">
 <meta property="og:url" content="{SITE}{url}"><meta property="og:image" content="{SITE}{og}">
