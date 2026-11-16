@@ -19,7 +19,7 @@ python3 build.py --share               preview build: relative links ending in i
 python3 tools/pickability.py dist      the AI pickability test on whatever was built
 """
 import argparse, html, json, re, shutil, subprocess, sys
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).parent
@@ -219,6 +219,37 @@ def page_schema(meta, url, body, titles):
     return json.dumps({"@context": "https://schema.org", "@graph": g}, ensure_ascii=False, separators=(",", ":"))
 
 
+def md_url(url):
+    """Each public page has a Markdown twin next to it (agents and answer engines read it without the page chrome)."""
+    return url + "index.md" if url.endswith("/") else url + ".md"
+
+
+def to_markdown(body, url, meta):
+    """A plain Markdown version of a page body: headings, paragraphs, lists, links, questions with answers, tables."""
+    b = re.sub(r"<(script|style|svg|template|figure|picture|canvas|noscript|form|button|dialog)\b.*?</\1>", " ", body, flags=re.S | re.I)
+    b = re.sub(r'<nav class="(crumbs|ia-strip)[^"]*".*?</nav>', " ", b, flags=re.S)
+    b = re.sub(r"<!--.*?-->", " ", b, flags=re.S)
+    def link(m):
+        h, t = m.group(1), text_of(m.group(2)).strip()
+        if not t: return ""
+        return f"[{t}]({SITE + h if h.startswith('/') else h})" if not h.startswith("#") else t
+    b = re.sub(r'<a\b[^>]*?href="([^"]+)"[^>]*>(.*?)</a>', link, b, flags=re.S)
+    b = re.sub(r"<summary\b[^>]*>(.*?)</summary>", lambda m: "\n\n### " + text_of(m.group(1)).strip() + "\n\n", b, flags=re.S)
+    for n in (1, 2, 3, 4):
+        b = re.sub(rf"<h{n}\b[^>]*>(.*?)</h{n}>", lambda m, n=n: "\n\n" + "#" * n + " " + " ".join(text_of(m.group(1)).split()) + "\n\n", b, flags=re.S)
+    b = re.sub(r"<li\b[^>]*>(.*?)</li>", lambda m: "\n- " + " ".join(text_of(re.sub(r"\n\n#+ (.*?)\n\n", r"**\1** ", m.group(1))).split()), b, flags=re.S)
+    b = re.sub(r"<dt\b[^>]*>(.*?)</dt>", lambda m: "\n\n**" + " ".join(text_of(m.group(1)).split()) + "**", b, flags=re.S)
+    b = re.sub(r"<tr\b[^>]*>(.*?)</tr>", lambda m: "\n| " + " | ".join(" ".join(text_of(c).split()) for c in re.findall(r"<t[hd]\b[^>]*>(.*?)</t[hd]>", m.group(1), re.S)) + " |", b, flags=re.S)
+    b = re.sub(r"</(p|dd|div|section|ul|ol|table|details|blockquote)>", "\n\n", b)
+    b = re.sub(r"<br\s*/?>", "\n", b)
+    t = html.unescape(re.sub(r"<[^>]+>", " ", b))
+    t = "\n".join(" ".join(l.split()) if not l.lstrip().startswith(("- ", "| ")) else l.strip() for l in t.split("\n"))
+    t = re.sub(r"\n{3,}", "\n\n", t).strip()
+    title = meta.get("title", "AmIMotion")
+    return (f"---\ntitle: {title}\nurl: {SITE}{url}\ndescription: {meta.get('description', '')}\nupdated: {meta.get('_modified', TODAY)}\n"
+            f"publisher: AmIMotion (Locatepro Technologies Pvt Ltd, Bengaluru)\n---\n\n{t}\n")
+
+
 def head(meta, url, body, titles):
     t = meta.get("title", "AmIMotion")
     t = t if "AmIMotion" in t else f"{t} | AmIMotion"
@@ -241,7 +272,12 @@ def head(meta, url, body, titles):
 <meta property="og:url" content="{SITE}{url}"><meta property="og:image" content="{SITE}{og}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="image_src" href="{og}">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="{e(t)}">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/assets/img/AmIMotion_Icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+{f'<link rel="alternate" type="text/markdown" title="This page as Markdown" href="{md_url(url)}">' if url not in ("/404.html",) and meta.get("noindex") != "true" else ''}
 <link rel="alternate" type="text/plain" title="AmIMotion for AI assistants" href="/llms.txt">
 <link rel="alternate" type="text/plain" title="AmIMotion, the full site as text" href="/llms-full.txt">
 {styles(meta)}
@@ -789,7 +825,9 @@ def build():
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
         out.parent.mkdir(parents=True, exist_ok=True); out.write_text(page)
-        if meta.get("noindex") != "true" and url != "/404.html": public.append(url)
+        if meta.get("noindex") != "true" and url != "/404.html":
+            public.append(url)
+            (DIST / md_url(url).lstrip("/")).write_text(to_markdown(body, url, meta))
 
     # sitemap with the pictures each page carries (image search and answer engines use them)
     def imgs(url):
@@ -872,6 +910,16 @@ def build():
     shutil.copytree(SRC / "desk", DIST / "desk")   # the founders' lead desk (noindex; its data needs the desk key)
     (DIST / "assets" / "agent" / "kb.json").write_text(json.dumps({"v": TODAY, "pages": kb_pages, "passages": kb_rows}, ensure_ascii=False, separators=(",", ":")))
 
+    # icons, the web manifest and security.txt (RFC 9116): what browsers, phones and security researchers look for
+    shutil.copy(SRC / "assets" / "img" / "favicon.ico", DIST / "favicon.ico")
+    (DIST / "site.webmanifest").write_text(json.dumps({"name": "AmIMotion", "short_name": "AmIMotion", "start_url": "/", "display": "browser",
+        "background_color": GROUND, "theme_color": GROUND, "icons": [
+            {"src": "/assets/img/icon-192.png", "sizes": "192x192", "type": "image/png"},
+            {"src": "/assets/img/icon-512.png", "sizes": "512x512", "type": "image/png"},
+            {"src": "/assets/img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}]}, indent=1))
+    (DIST / ".well-known").mkdir(exist_ok=True)
+    expires = (date.today() + timedelta(days=330)).isoformat()
+    (DIST / ".well-known" / "security.txt").write_text(f"Contact: mailto:{ENTITY['email']}\nExpires: {expires}T00:00:00.000Z\nPreferred-Languages: en\nCanonical: {SITE}/.well-known/security.txt\n")
     if args.indexnow_key: (DIST / f"{args.indexnow_key}.txt").write_text(args.indexnow_key)
     # Security headers for a static host. Every script and style is first-party; inline ones are the per-page CSS, the
     # JSON-LD, the motion flag and the speculation rules, so 'unsafe-inline' stays and nothing else is allowed in.

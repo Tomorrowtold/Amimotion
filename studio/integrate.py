@@ -197,3 +197,19 @@ if _full.exists() and (OUT / "index.html").exists():
         t2 = re.sub(r"(## [^\n]*\nURL: https://www\.amimotion\.com/\n\n)(.*?)(?=\n## )", lambda mm: mm.group(1) + text + "\n", t, count=1, flags=re.S)
         _full.write_text(t2)
         print("llms-full.txt: homepage section from the live homepage" if t2 != t else "llms-full.txt: homepage section not found")
+        # the homepage's Markdown twin (index.md) follows the live homepage too, keeping its front matter
+        _md = OUT / "index.md"
+        if _md.exists():
+            fm = re.match(r"---\n.*?\n---\n", _md.read_text(), re.S)
+            b = re.sub(r"<(script|style|svg|noscript|template|form|button|select|dialog|canvas|picture)\b.*?</\1>", " ", _m.group(0), flags=re.S)
+            for n in (1, 2, 3):
+                b = re.sub(rf"<h{n}\b[^>]*>(.*?)</h{n}>", lambda m, n=n: "\n\n" + "#" * n + " " + " ".join(_html.unescape(re.sub(r"<[^>]+>", " ", m.group(1))).split()) + "\n\n", b, flags=re.S)
+            b = re.sub(r'<a\b[^>]*?href="(/[^"]*)"[^>]*>(.*?)</a>', lambda m: f"[{' '.join(_html.unescape(re.sub(r'<[^>]+>', ' ', m.group(2))).split())}](https://www.amimotion.com{m.group(1)})", b, flags=re.S)
+            b = re.sub(r"</(p|li|figcaption|blockquote|div|section|article)>", "\n", b)
+            out, seen = [], set()
+            for l in _html.unescape(re.sub(r"<[^>]+>", " ", b)).split("\n"):
+                l = " ".join(l.split())
+                if len(l) > 2 and l not in seen and l not in {"Read more", "Read the guide", "×", "[]"} and not re.fullmatch(r"\[\]\([^)]*\)", l):
+                    seen.add(l); out.append(l)
+            _md.write_text((fm.group(0) if fm else "") + "\n" + "\n\n".join(out) + "\n")
+            print("index.md: from the live homepage")

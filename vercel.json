@@ -125,6 +125,28 @@
           "value": "noindex"
         }
       ]
+    },
+    {
+      "source": "/(.*)\\.md",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/markdown; charset=utf-8"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    },
+    {
+      "source": "/.well-known/security.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
     }
   ],
   "redirects": [
@@ -146,6 +168,91 @@
     {
       "source": "/:path*/index.html",
       "destination": "/:path*/",
+      "permanent": true
+    },
+    {
+      "source": "/blog",
+      "destination": "/learn/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/:path*",
+      "destination": "/learn/",
+      "permanent": true
+    },
+    {
+      "source": "/booking",
+      "destination": "/contact/",
+      "permanent": true
+    },
+    {
+      "source": "/get-started",
+      "destination": "/pilot/",
+      "permanent": true
+    },
+    {
+      "source": "/download",
+      "destination": "/resources/",
+      "permanent": true
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "/privacy/",
+      "permanent": true
+    },
+    {
+      "source": "/terms-of-service",
+      "destination": "/privacy/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/automotive",
+      "destination": "/industries/manufacturing/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/industry-4-0",
+      "destination": "/industries/manufacturing/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/smart-warehouse",
+      "destination": "/industries/warehousing/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/healthcare",
+      "destination": "/industries/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/shopping-mall",
+      "destination": "/industries/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/smart-building",
+      "destination": "/industries/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/:path*",
+      "destination": "/industries/",
+      "permanent": true
+    },
+    {
+      "source": "/favicon-96x96.png",
+      "destination": "/assets/img/favicon-96.png",
+      "permanent": true
+    },
+    {
+      "source": "/manifest.json",
+      "destination": "/site.webmanifest",
+      "permanent": true
+    },
+    {
+      "source": "/icon-512.png",
+      "destination": "/assets/img/icon-512.png",
       "permanent": true
     }
   ]
