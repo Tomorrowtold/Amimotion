@@ -756,7 +756,8 @@ def build():
         pages["/glossary/"] = (m_, re.sub(r'<dt id="([^"]+)">(.*?)</dt>', lambda t: f'<dt id="{t.group(1)}"><a href="{TERMS[t.group(1)]}">{t.group(2)}</a></dt>' if t.group(1) in TERMS else t.group(0), b_))
     pages = {u: (m, ia_links(re.sub(r'<nav class="crumbs".*?</nav>', lambda _m: crumb_trail(u, titles), b, count=1, flags=re.S) if u in IA else b, u, titles, lines))
              for u, (m, b) in pages.items()}
-    pages = {u: (m, with_strip(long_head(ia_next(b, u, titles, lines)), u) if u not in ("/", "/404.html") and m.get("layout") != "product" else ia_next(b, u, titles, lines) if m.get("layout") == "product" else b) for u, (m, b) in pages.items()}
+    # product sites keep their own designed ending (they already carry the next step); they get the strip only
+    pages = {u: (m, b if u in ("/", "/404.html") else with_strip(b if m.get("layout") == "product" else long_head(ia_next(b, u, titles, lines)), u)) for u, (m, b) in pages.items()}
     worlds = {u: m.get("world") for u, (m, _) in pages.items() if m.get("world")}
     covers = {u: m.get("cover") for u, (m, _) in pages.items() if m.get("cover")}
     def connect(body):

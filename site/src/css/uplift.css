@@ -22,7 +22,7 @@
    height; the short answer and the page's own links under the lede. Without a picture the short answer takes the
    right column. A poster head (a photograph under white words) keeps its picture and gets the same type. */
 html body.ds:not(.pl) main>.head:not(.w-poster){
-  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:0;align-items:start;
+  display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr))!important;column-gap:var(--gutter);row-gap:0;align-items:start;justify-items:stretch!important;justify-content:stretch!important;
   width:auto;max-width:none;margin:0;padding:clamp(16px,1.6vw,28px) var(--u-pad) clamp(48px,5.5vw,96px)!important;
   background:transparent!important;color:var(--u-ink);min-height:0;text-align:left;border:0;border-radius:0;box-shadow:none}
 html body.ds:not(.pl) main>.head:not(.w-poster)::before,html body.ds:not(.pl) main>.head:not(.w-poster)::after{content:none}
@@ -262,3 +262,21 @@ html body.ds.page-developers main>.close p>a,html body.ds.page-films main>.close
 body.page-developers .ia-go .ia-go-l::after,body.page-films .ia-go .ia-go-l::after{filter:none;background:#0b0d12 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8h9M8.5 4l4 4-4 4' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat}
 html body.ds:not(.pl) main .sec>.points.c3:has(+.more)>li{padding-bottom:calc(clamp(22px,2vw,32px) + 2.6em)!important}
 html body.ds:not(.pl) main .sec>.points.c3+.more>a{padding:0 clamp(22px,2vw,32px) clamp(22px,2vw,30px)!important}
+
+/* How we prove it: the place each cleared pilot result will take, shown as the fields every result carries */
+.proof-slot{grid-column:1 / -1;background:var(--u-tone);border-radius:calc(var(--u-r) + 6px);padding:clamp(24px,3vw,48px)}
+.proof-empty{margin:0 0 clamp(20px,2.4vw,36px);max-width:34em;font:400 var(--u-lede)/1.4 var(--font-text);color:var(--u-ink)}
+.proof-fields{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:0}
+.proof-fields>div{background:#fff;border-radius:var(--u-r-s);padding:20px 20px 24px;min-height:150px;display:flex;flex-direction:column;gap:10px}
+.proof-fields dt{font:600 1.0625rem/1.2 var(--font-display);letter-spacing:-.01em;color:var(--u-ink)}
+.proof-fields dt::before{content:"";display:block;width:24px;height:4px;border-radius:2px;background:#d7dae0;margin-bottom:16px}
+.proof-fields dd{margin:0;font-size:.9375rem;line-height:1.5;color:var(--u-soft)}
+@media (max-width:1023px){.proof-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:599px){.proof-fields{grid-template-columns:minmax(0,1fr)}.proof-fields>div{min-height:0}}
+.ia-strip{min-width:0;max-width:100vw;overflow:hidden}
+html body.ds:not(.pl) main>.sec{overflow-x:clip}html body.ds:not(.pl) main .term-group>*{min-width:0;overflow-wrap:anywhere}
+html body.ds:not(.pl) main>.head:not(.w-poster)>*{justify-self:stretch!important}html body.ds:not(.pl) main>.head:not(.w-poster)>.crumbs{justify-self:start!important}
+html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic::before,html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic::after{content:none!important}
+/* product pairs show whole; the hall drawing fills its frame */
+html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic img[src*="pair-"],html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic img[src*="family-"]{object-fit:contain!important;padding:8%}
+html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic .hall-lines-pic img{object-fit:cover!important;padding:0}
