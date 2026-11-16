@@ -59,6 +59,8 @@ if SHOT == 'A':
     cam = camera((83.6, 49.4, 1.56), (113.4, 45.0, 2.5), 32 if not TALL else 22, focus=(93.0, 48.0, 1.4), fstop=5.6) if not TALL else camera((85.2, 49.0, 1.56), (113.4, 46.6, 3.6), 21, focus=(93.0, 48.0, 1.4), fstop=5.6)
 elif SHOT == 'B':
     P.cutaway()
+    for o in bpy.data.objects:   # from above, the unlit tops of the lamp shades read as dirt on the floor: the camera looks through them
+        if o.name.startswith('glow') or (o.parent and o.parent.name.startswith('lamp')): o.visible_camera = False
     cam = camera((70, -24, 50), (91, 46.5, 0), 34) if not TALL else camera((152, 49, 58), (92, 47.5, 0), 20)
 elif SHOT == 'C':
     cam = camera((85.12, 47.68, 1.38), (108, 47.2, 1.9), 20 if not TALL else 12)
@@ -87,7 +89,7 @@ mw = cam.matrix_world; fr = cam.data.view_frame(scene=sc)
 def proj(p):
     from bpy_extras.object_utils import world_to_camera_view as w2c
     v = w2c(sc, cam, Vector(p)); return [round(v.x, 5), round(1 - v.y, 5), round(v.z, 3)]
-pts = dict(tag=TAG, hero=(*HERO, .6), worker=(*WORKER, 1.5), free=(*FREE, 1.6), amr=(*AMR, .9), queue=(QUEUE[1][0], QUEUE[1][1], 1.6), dock=(58.5, 33, 3.2), dockfloor=(DOCK[0], DOCK[1], 0), pallet=(*PALLET, 1.2), led=tuple(led),
+pts = dict(tag=TAG, hero=(*HERO, .6), worker=(*WORKER, 1.5), free=(*FREE, 1.6), amr=(*AMR, .9), queue=(QUEUE[1][0], QUEUE[1][1], 1.6), dock=(DOCK[0] - 1.5, DOCK[1], 1.2), dockfloor=(DOCK[0], DOCK[1], 0), pallet=(*PALLET, 1.2), led=tuple(led),
            workerfloor=(*WORKER, 0), freefloor=(*FREE, 0), palletfloor=(*PALLET, 0), herofloor=(*HERO, 0), a0=ANCH[0], a1=ANCH[1], a2=ANCH[2])
 meta = dict(shot=SHOT, w=W, h=H, shift=[cam.data.shift_x, cam.data.shift_y], lens=cam.data.lens, sensor=36, fit=cam.data.sensor_fit, pos=list(mw.translation), mat=[list(r) for r in mw], pts={k: proj(v) for k, v in pts.items()}, world={k: list(v) for k, v in pts.items()},
             counts={k: sum(1 for t in P.THINGS if t[0] == k) for k in ('trolley', 'pallet', 'forklift', 'amr')}, seconds=round(time.time() - t0, 1))

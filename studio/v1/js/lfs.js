@@ -343,7 +343,7 @@
     if (data) {
       var d = data[O], i;
       if (best.k === 'found') { var tg = place('c', 'tag'); for (i = 0; i < 3; i++) seg(i, place('c', 'a' + i), tg, pulse.line[i], .75 * bf * (q > .1 ? 1 : 0)); } else for (i = 0; i < 3; i++) seg(i, null);
-      if (best.k === 'seen') { seg(3, place('b', 'workerfloor'), place('b', 'freefloor'), ss(.3, .38, q), .7 * bf * (1 - ss(.74, .78, q))); seg(4, place('b', 'dockfloor'), place('b', 'palletfloor'), ss(.54, .62, q), .7 * bf * (1 - ss(.74, .78, q))); } else { seg(3, null); seg(4, null); }
+      if (best.k === 'seen') { seg(3, place('b', 'workerfloor'), place('b', 'freefloor'), ss(.3, .38, q), .7 * bf * (1 - ss(.74, .78, q))); seg(4, place('b', 'dockfloor'), place('b', 'palletfloor'), ss(.44, .52, q), .7 * bf * (1 - ss(.74, .78, q))); } else { seg(3, null); seg(4, null); }
     }
     /* controls */
     var step = ps < .38 ? 0 : ps < .706 ? 1 : 2; rail.forEach(function (a, i) { a.classList.toggle('on', i === step); });
