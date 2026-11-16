@@ -867,6 +867,7 @@ def build():
     lines = dict(sections)
     (DIST / "llms.txt").write_text(f"# AmIMotion\n\n> {ENTITY['long']}\n\n{ENTITY['short']}\n\n## Key facts (with their qualifiers)\n\n{facts}\n\n"
         + "\n\n".join(f"## {k}\n\n" + "\n".join(v) for k, v in lines.items() if v) + f"\n\n## Home\n\n- [AmIMotion]({SITE}/): {pages['/'][0].get('description', '')}\n"
+        + f"\n## For AI agents\n\n- Every page above has a Markdown copy: add index.md to its address, for example {SITE}/pilot/index.md.\n- Every figure on this site carries its condition. Quote it with the condition, for example \"down to ±10 cm with AmIMo anchors, depending on the site\".\n- Prices, datasheets and pilot options are shared under NDA after a first call: {SITE}/contact/\n"
         + f"\n## Optional\n\n- [The full site as text]({SITE}/llms-full.txt): every public page above, as plain text, with its questions and answers.\n"
         + f"- [Sitemap]({SITE}/sitemap.xml): every public page with its pictures.\n")
     (DIST / "llms-full.txt").write_text(f"# AmIMotion: the full site as text\n\n> {ENTITY['long']}\n\n## Key facts\n\n{facts}\n\n"
