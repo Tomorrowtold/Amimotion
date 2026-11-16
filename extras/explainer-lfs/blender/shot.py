@@ -44,10 +44,15 @@ if SHOT == 'B':
         if (x, y) in waited: P.spot(x, y, 6.5, 26000, 40, 'amber', .6, .15, vol=False)
         else: P.spot(x, y, 6.0, 18000 if k != 'pallet' else 12000, 36, 'pools', .7, .15, vol=False)
 for i, (x, y, z) in enumerate(ANCH):
-    bpy.ops.object.light_add(type='POINT', location=(x + .22, y, z)); l = bpy.context.object; l.data.energy = 90; l.data.shadow_soft_size = .03; P.group(l, 'anc')
+    bpy.ops.object.light_add(type='POINT', location=(x + .22, y, z)); l = bpy.context.object; l.data.energy = 260; l.data.shadow_soft_size = .03; P.group(l, 'anc')
 led = Vector(TAG) + tagn * .0236 + Vector((0, 0, .019))
 bpy.ops.mesh.primitive_uv_sphere_add(radius=.0013, location=led, segments=12, ring_count=6); lo = bpy.context.object
 lo.data.materials.append(P.mat('led', (0, 0, 0, 1), .3, emit=(1, 1, 1, 1), strength=500)); lo.lightgroup = 'led'; P.group(lo, 'led')
+
+if SHOT == 'D':                      # a soft raking key so the pressed wordmark reads
+    kp = Vector(TAG) + tagn * .45 + Vector((s * .5, -c * .5, .38))
+    bpy.ops.object.light_add(type='AREA', location=kp); k = bpy.context.object; k.data.size = .3; k.data.energy = 7
+    k.rotation_euler = (Vector(TAG) - kp).to_track_quat('-Z', 'Y').to_euler(); P.group(k, 'cone')
 
 # ---- the four views
 if SHOT == 'A':
@@ -56,10 +61,10 @@ elif SHOT == 'B':
     P.cutaway()
     cam = camera((70, -24, 50), (91, 46.5, 0), 34) if not TALL else camera((152, 49, 58), (92, 47.5, 0), 20)
 elif SHOT == 'C':
-    cam = camera((85.68, 47.48, 1.25), (108, 47.3, 2.4), 20 if not TALL else 12)
+    cam = camera((85.12, 47.68, 1.38), (108, 47.2, 1.9), 20 if not TALL else 12)
 elif SHOT == 'D':
     p = Vector(TAG) + tagn * .30 + Vector((-s * .17, c * .17, .09))
-    cam = camera(p, Vector(TAG) + tagn * .01, 85 if not TALL else 42, focus=Vector(TAG) + tagn * .02, fstop=5.6)
+    cam = camera(p, Vector(TAG) + tagn * .01, 58 if not TALL else 42, focus=Vector(TAG) + tagn * .02, fstop=5.6)
 if TALL: cam.data.sensor_fit = 'VERTICAL'
 # keep the subject clear of the words: left third on wide screens, bottom third on tall ones
 SHIFT = {('D', False): (-.17, 0), ('D', True): (0, -.13), ('C', True): (0, -.2), ('A', True): (0, -.08), ('B', True): (0, -.11)}
@@ -82,7 +87,7 @@ mw = cam.matrix_world; fr = cam.data.view_frame(scene=sc)
 def proj(p):
     from bpy_extras.object_utils import world_to_camera_view as w2c
     v = w2c(sc, cam, Vector(p)); return [round(v.x, 5), round(1 - v.y, 5), round(v.z, 3)]
-pts = dict(tag=TAG, hero=(*HERO, .6), worker=(*WORKER, 1.5), free=(*FREE, 1.6), amr=(*AMR, .9), queue=(QUEUE[1][0], QUEUE[1][1], 1.6), dock=(58.5, 33, 3.2), dockfloor=(DOCK[0], DOCK[1], 0), pallet=(*PALLET, 1.2),
+pts = dict(tag=TAG, hero=(*HERO, .6), worker=(*WORKER, 1.5), free=(*FREE, 1.6), amr=(*AMR, .9), queue=(QUEUE[1][0], QUEUE[1][1], 1.6), dock=(58.5, 33, 3.2), dockfloor=(DOCK[0], DOCK[1], 0), pallet=(*PALLET, 1.2), led=tuple(led),
            workerfloor=(*WORKER, 0), freefloor=(*FREE, 0), palletfloor=(*PALLET, 0), herofloor=(*HERO, 0), a0=ANCH[0], a1=ANCH[1], a2=ANCH[2])
 meta = dict(shot=SHOT, w=W, h=H, shift=[cam.data.shift_x, cam.data.shift_y], lens=cam.data.lens, sensor=36, fit=cam.data.sensor_fit, pos=list(mw.translation), mat=[list(r) for r in mw], pts={k: proj(v) for k, v in pts.items()}, world={k: list(v) for k, v in pts.items()},
             counts={k: sum(1 for t in P.THINGS if t[0] == k) for k in ('trolley', 'pallet', 'forklift', 'amr')}, seconds=round(time.time() - t0, 1))

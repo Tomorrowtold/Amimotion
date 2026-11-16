@@ -19,8 +19,8 @@
     var r = el.getAttribute('data-p').split(',').map(Number);
     return { el: el, k: el.getAttribute('data-k'), plate: el.getAttribute('data-plate'), a: r[0], b: r[1], img: $('img', el), o: -1 };
   });
-  var FADE = .012;
-  function fadeOf(f, p) { return (f.a <= 0 ? 1 : ss(f.a, f.a + FADE, p)) * (f.b >= 1 ? 1 : 1 - ss(f.b - FADE, f.b, p)); }
+  var FADE = .013;     /* scenes meet and cross-fade: there is never an empty screen between them */
+  function fadeOf(f, p) { return (f.a <= 0 ? 1 : ss(f.a - FADE, f.a + FADE, p)) * (f.b >= 1 ? 1 : 1 - ss(f.b - FADE, f.b + FADE, p)); }
   var texts = $$('[data-p]').filter(function (el) { return !el.classList.contains('lfs-f'); }).map(function (el) {
     var fr = el.closest('.lfs-f'), li = el.tagName === 'LI';
     var t = { el: el, li: li, plate: fr.getAttribute('data-plate'), at: el.getAttribute('data-at'), o: -1, x: -1, y: -1 };
@@ -55,12 +55,12 @@
 
   /* ---------- where a point of the picture lands on the stage ---------- */
   var FOCUS = { a: [.5, .5], b: [.5, .5], c: [.62, .8], d: [.5, .5] };
-  var view = { su: 1, sv: 1, cu: .5, cv: .5, px: 0, py: 0, foc: .3 };
+  var view = { su: 1, sv: 1, cu: .5, cv: .5, px: 0, py: 0, foc: .3 }, pan = { x: .5, to: .5 };
   function fit(plate, zoom) {
     var d = data && data[O][plate], ap = d ? d.w / d.h : (tall ? 9 / 16 : 16 / 9), as = sw / sh, su, sv, f = FOCUS[plate];
     if (as > ap) { su = 1; sv = ap / as; } else { sv = 1; su = as / ap; }
     su /= zoom; sv /= zoom;
-    view.su = su; view.sv = sv; view.cu = clamp(f[0], su / 2, 1 - su / 2); view.cv = clamp(f[1], sv / 2, 1 - sv / 2);
+    view.su = su; view.sv = sv; view.cu = clamp(plate === 'b' ? pan.x - (tall ? 0 : .12 * su) : f[0], su / 2, 1 - su / 2); view.cv = clamp(f[1], sv / 2, 1 - sv / 2);
   }
   function place(plate, key) {
     var d = data[O][plate], q = d.pts[key]; if (!q) return null;
@@ -73,27 +73,28 @@
   var BLUE = [.16, .42, 1], AMBER = [1, .52, .1];
   var U = {};                      // filled each frame
   var pulse = { ph: 0, n: -1, hit: [0, 0, 0], line: [0, 0, 0], r: 0 }, lost = { bank: -1 };
-  var LEVELS = [1, .7, .46, .27, .12, 0];
+  var LEVELS = [1, .72, .5, .32, .18, .09];
   var PERIOD = 4.6, SPEED = 30;    // the pulse repeats on the world clock; shown speed in metres per second (the real one is light speed)
   function blink(t) { var x = t % 2.3; return Math.exp(-x * 9) + .8 * Math.exp(-Math.max(0, x - .22) * 9) * (x > .22 ? 1 : 0); }
-  function look(f, q, t) {
-    var u = U; u.sod = [0, 0, 0]; u.wht = [0, 0, 0]; u.amb = [0, 0, 0]; u.blu = [0, 0, 0]; u.col = [0, 0]; u.rev = [999, 999, 999]; u.shell = [0, 1, 0]; u.glow = []; u.anc = [0, 0, 0]; u.zoom = 1.05; u.par = 1;
+  var mute = { level: function () {}, blink: function () {}, tick: function () {}, note: function () {}, once: function () {}, reset: function () {}, thunk: function () {} };
+  function look(f, q, t, main) {
+    var snd = main ? SND : mute, u = U; u.sod = [0, 0, 0]; u.wht = [0, 0, 0]; u.amb = [0, 0, 0]; u.blu = [0, 0, 0]; u.col = [0, 0]; u.rev = [999, 999, 999]; u.shell = [0, 1, 0]; u.glow = []; u.anc = [0, 0, 0]; u.zoom = 1.05; u.par = 1;
     var d = data[O][f.plate];
     if (f.k === 'lost') {
       /* the lamps go out bank by bank: the light steps down, each step a breaker thrown */
-      var die = clamp((q - .76) / .21, 0, 1), bank = Math.min(5, Math.floor(die * 5.999)), lv = LEVELS[bank], into = die * 6 - bank;
+      var die = clamp((q - .7) / .3, 0, 1), bank = Math.min(5, Math.floor(die * 5.999)), lv = LEVELS[bank], into = die * 6 - bank;
       if (bank !== lost.bank) { if (lost.bank >= 0) snd.thunk(bank > lost.bank); lost.bank = bank; }
       if (bank < 5 && die > 0) lv = mix(lv, LEVELS[bank + 1], ss(.82, 1, into)) * (into > .7 && Math.sin(t * 61) * Math.sin(t * 37.3) > .3 ? .8 : 1);
       u.sod[0] = lv; u.zoom = 1.05 + .07 * q; snd.level('hall', lv);
     } else if (f.k === 'isl') {
-      u.sod[0] = ss(0, .1, q) * 1.15; u.sod[2] = .05; u.zoom = 1.12 - .06 * q;
+      u.sod[0] = 1.55; u.sod[2] = .2; u.zoom = 1.07 - .04 * q;
     } else if (f.k === 'tag') {
-      var b = blink(t); u.sod[0] = .2; u.wht[1] = .32; u.blu[2] = b * 1.1; u.zoom = 1.05 + .05 * q;
-      u.glow.push([d.pts.tag[0], d.pts.tag[1] - .033 * (tall ? .6 : 1), b * .9, .012]);
+      var b = blink(t), L = d.pts.led || d.pts.tag; u.sod[0] = .22; u.wht[1] = .8; u.blu[2] = b * 1.1; u.zoom = 1.03 + .04 * q;
+      u.glow.push([L[0], L[1], b * .8, .007]);
       snd.blink(t);
     } else if (f.k === 'found') {
       var cone = ss(.5, .66, q), run = q > .1;
-      u.sod[0] = mix(.14, .05, cone); u.col[0] = cone * 1.25; u.zoom = 1.035 + .03 * q;
+      u.sod[0] = mix(.34, .1, cone); u.col[0] = cone * 1.7; u.zoom = 1.035 + .03 * q;
       var ph = t % PERIOD, n = Math.floor(t / PERIOD);
       if (n !== pulse.n) { pulse.n = n; pulse.hit = [0, 0, 0]; if (run) snd.tick(); }
       var r = ph * SPEED; pulse.r = r;
@@ -104,20 +105,21 @@
         for (var i = 0; i < 3; i++) {
           var since = (r - d.adist[i]) / SPEED;
           if (since > 0 && !pulse.hit[i]) { pulse.hit[i] = 1; snd.note(i); }
-          var a = since > 0 ? Math.exp(-since * 2.2) * 1.0 + .22 : .0;
-          u.anc[i] = a; pulse.line[i] = since > 0 ? clamp(since / .5, 0, 1) * clamp((PERIOD - ph) / .5, 0, 1) : 0;
-          u.glow.push([d.pts['a' + i][0], d.pts['a' + i][1], a * .8, .0045]);
+          var a = since > 0 ? Math.exp(-since * 2.2) * 1.0 + .5 : (q > .5 ? .5 : 0);
+          u.anc[i] = a; pulse.line[i] = since > 0 ? clamp(since / .5, 0, 1) * (q > .5 ? 1 : clamp((PERIOD - ph) / .5, 0, 1)) : (q > .5 ? 1 : 0);
+          u.glow.push([d.pts['a' + i][0], d.pts['a' + i][1], a * 1.1, .0055]);
         }
       } else pulse.line = [0, 0, 0];
       if (cone > .5) snd.once('chord'); else snd.reset('chord');
     } else if (f.k === 'seen') {
       var e = Math.pow(clamp(q / .3, 0, 1), 2.1);
-      u.col = [1.9, 1.25]; u.rev[0] = e * 200 - 4; u.rev[1] = clamp(e * 1.08 - .1, 0, 1) * 200 - 4; u.rev[2] = u.rev[1];
-      u.amb[1] = 1.7 * ss(.27, .4, q); u.wht[2] = .3 * ss(.02, .3, q); u.zoom = 1.06 + .06 * (1 - ss(0, 1, q));
+      u.col = [2.1, 1.5]; u.rev[0] = 9 + e * 200; u.rev[1] = 7 + clamp(e * 1.08 - .08, 0, 1) * 200; u.rev[2] = u.rev[1];
+      u.amb[1] = 1.7 * ss(.27, .4, q); u.wht[2] = mix(.1, .2, ss(0, .3, q)); u.zoom = 1.03 + .04 * (1 - ss(0, 1, q));
       snd.level('pad', ss(0, .15, q)); if (q > .02) snd.once('open'); else snd.reset('open');
     }
     if (f.k !== 'lost') snd.level('hall', 0);
     if (f.k !== 'seen') snd.level('pad', 0);
+    u.k0 = f.k === 'seen' ? [.9, .97, 1.08] : [1, 1, 1]; u.sat = f.k === 'seen' ? 1.5 : 1.15;
   }
   var FLAGS = { shell: sec.getAttribute('data-pulse') !== 'lines' };
 
@@ -126,7 +128,7 @@
   var FS = [
     'precision highp float;varying vec2 v;',
     'uniform sampler2D m0,m1,m2,c0,c1,dp,ds;',
-    'uniform vec4 fit;uniform vec3 par;uniform vec3 sod,wht,amb,blu,rev,shell,anc;uniform vec2 col;uniform vec4 g0,g1,g2,g3;uniform vec3 a0,a1,a2;',
+    'uniform vec4 fit;uniform vec3 par;uniform vec3 sod,wht,amb,blu,rev,shell,anc;uniform vec2 col;uniform vec3 k0;uniform float sat;uniform vec4 g0,g1,g2,g3;uniform vec3 a0,a1,a2;',
     'uniform float fade,time,dmax,asp;uniform vec2 res;',
     'float tm(float x){x=x*(1.+x/16.)/(1.+x);return pow(clamp(x,0.,1.),.4545);}',
     'vec3 ramp(float L){L=pow(clamp((L-.03)/.9,0.,1.),1.35);vec3 k1=vec3(.27,.13,.012),k2=vec3(.78,.48,.06),k3=vec3(.98,.78,.26),k4=vec3(1.,.95,.7);',
@@ -140,8 +142,9 @@
     ' float dist=texture2D(ds,uv).r;dist=dist*dist*dmax;',
     ' float s=dot(m,sod);vec3 o=ramp(tm(s));',
     ' vec3 r3=1.-smoothstep(rev-9.,rev,vec3(dist));',
-    ' vec3 lin=pow(texture2D(c0,uv).rgb,vec3(2.2))*col.x*r3.x+pow(texture2D(c1,uv).rgb,vec3(2.2))*col.y*r3.y;',
+    ' vec3 lin=pow(texture2D(c0,uv).rgb,vec3(2.2))*k0*col.x*r3.x+pow(texture2D(c1,uv).rgb,vec3(2.2))*col.y*r3.y;',
     ' float an=m.y*(near(a0,uv)+near(a1,uv)+near(a2,uv));',
+    ' float gy=dot(lin,vec3(.3,.6,.1));lin=max(vec3(0.),mix(vec3(gy),lin,sat));',
     ' lin+=vec3(dot(m,wht))+vec3(1.,.52,.1)*dot(m,amb)*r3.z;',
     ' float sh=exp(-pow((dist-shell.x)/shell.y,2.))*shell.z;',
     ' vec3 bl=vec3(.16,.42,1.);lin+=bl*(dot(m,blu)+an*anc.x)+mix(bl,vec3(1.),.35)*sh*(m.x*5.+.035+inv*.02);',
@@ -164,7 +167,7 @@
       if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error('link');
       gl.useProgram(prog); var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
       var al = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
-      ['fit', 'par', 'sod', 'wht', 'amb', 'blu', 'rev', 'shell', 'anc', 'col', 'g0', 'g1', 'g2', 'g3', 'a0', 'a1', 'a2', 'fade', 'time', 'dmax', 'asp', 'res'].concat(SLOTS).forEach(function (n) { loc[n] = gl.getUniformLocation(prog, n); });
+      ['fit', 'par', 'sat', 'k0', 'sod', 'wht', 'amb', 'blu', 'rev', 'shell', 'anc', 'col', 'g0', 'g1', 'g2', 'g3', 'a0', 'a1', 'a2', 'fade', 'time', 'dmax', 'asp', 'res'].concat(SLOTS).forEach(function (n) { loc[n] = gl.getUniformLocation(prog, n); });
       SLOTS.forEach(function (n, i) { gl.uniform1i(loc[n], i); });
       black = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, black); gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, 1, 1, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, new Uint8Array([0]));
       gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
@@ -203,24 +206,25 @@
         if (cap < 1) { w = Math.round(w * cap); h = Math.round(h * cap); }
         if (w !== bw || h !== bh) { bw = cv.width = w; bh = cv.height = h; gl.viewport(0, 0, w, h); }
       },
-      draw: function (f, fade, t, dt) {
+      draw: function (f, fade, t, dt, add) {
         var P = plates[f.plate], d = data[O][f.plate], u = U;
+        if (add) { gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE); } else gl.disable(gl.BLEND);
         SLOTS.forEach(function (n, i) { gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, P.t[n] || black); });
         gl.uniform4f(loc.fit, view.su, view.sv, view.cu, view.cv); gl.uniform3f(loc.par, view.px, view.py, view.foc);
-        gl.uniform3fv(loc.sod, u.sod); gl.uniform3fv(loc.wht, u.wht); gl.uniform3fv(loc.amb, u.amb); gl.uniform3fv(loc.blu, u.blu); gl.uniform3fv(loc.rev, u.rev); gl.uniform3fv(loc.shell, u.shell); gl.uniform2fv(loc.col, u.col);
+        gl.uniform3fv(loc.k0, u.k0); gl.uniform1f(loc.sat, u.sat); gl.uniform3fv(loc.sod, u.sod); gl.uniform3fv(loc.wht, u.wht); gl.uniform3fv(loc.amb, u.amb); gl.uniform3fv(loc.blu, u.blu); gl.uniform3fv(loc.rev, u.rev); gl.uniform3fv(loc.shell, u.shell); gl.uniform2fv(loc.col, u.col);
         gl.uniform3f(loc.anc, 1, 0, 0);
         for (var i = 0; i < 4; i++) gl.uniform4fv(loc['g' + i], u.glow[i] || [0, 0, 0, 1]);
         for (i = 0; i < 3; i++) { var a = d.pts['a' + i]; gl.uniform3f(loc['a' + i], a ? a[0] : 0, a ? a[1] : 0, u.anc[i]); }
         gl.uniform1f(loc.fade, fade); gl.uniform1f(loc.time, t); gl.uniform1f(loc.dmax, d.dmax || 1); gl.uniform1f(loc.asp, d.w / d.h); gl.uniform2f(loc.res, bw, bh);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         /* a chip that cannot keep up gets a smaller picture, and after that the finished pictures */
-        if (dt < 250 && !window.__lfsShot) { tAcc += dt; if (++frames === 50) { var avg = tAcc / 50; frames = 0; tAcc = 0; if (avg > 34) { if (++slowN >= 2) { if (scale > .55) { scale *= .7; slowN = 0; this.resize(); } else { GL = null; sec.classList.remove('lfs-live'); } } } else slowN = 0; } }
+        if (!add && dt < 250 && !window.__lfsShot && !/[?&]lfs=full/.test(location.search)) { tAcc += dt; if (++frames === 50) { var avg = tAcc / 50; frames = 0; tAcc = 0; if (avg > 34) { if (++slowN >= 2) { if (scale > .55) { scale *= .7; slowN = 0; this.resize(); } else { GL = null; sec.classList.remove('lfs-live'); } } } else slowN = 0; } }
       }
     };
   })();
 
   /* ---------- sound: built from tones, started by the first tap, click or key ---------- */
-  var snd = (function () {
+  var SND = (function () {
     var ac = null, on = true, master, hall, pad, lv = { hall: 0, pad: 0 }, done = {}, lastBlink = -1, N = [659.25, 830.61, 987.77];
     function build() {
       var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; ac = new AC();
@@ -280,27 +284,44 @@
     var t = (now - T0) / 1000, dt = now - lastT; lastT = now;
     readScroll(); ps += (p - ps) * (Math.abs(p - ps) > .2 ? 1 : .18); if (Math.abs(p - ps) < .0002) ps = p;
     ptr.sx += (ptr.x - ptr.sx) * .05; ptr.sy += (ptr.y - ptr.sy) * .05;
-    var best = null, bf = -1;
-    frames.forEach(function (f) { var o = fadeOf(f, ps); if (o > bf) { bf = o; best = f; } });
-    current = best; var q = clamp((ps - best.a) / (best.b - best.a), 0, 1), live = !!(GL && data && GL.ready(best.plate));
+    var best = null, bf = -1, other = null, of = 0;
+    frames.forEach(function (f) { f.f = fadeOf(f, ps); if (f.f > bf) { bf = f.f; best = f; } });
+    frames.forEach(function (f) { if (f !== best && f.f > .004) { other = f; of = f.f; } });
+    current = best; var q = clamp((ps - best.a) / (best.b - best.a), 0, 1), live = !!(GL && data && GL.ready(best.plate) && (!other || GL.ready(other.plate)));
     if (data) {
-      look(best, q, t); fit(best.plate, U.zoom);
-      var k = tall ? .5 : 1; view.px = (Math.sin(t * .23) * .0035 + ptr.sx * .008) * k * U.par; view.py = (Math.cos(t * .19) * .002 + ptr.sy * .004) * k * U.par; view.foc = .25;
-      if (live) GL.draw(best, bf, t, dt);
+      var k = tall ? .5 : 1, px = (Math.sin(t * .23) * .0035 + ptr.sx * .008) * k, py = (Math.cos(t * .19) * .002 + ptr.sy * .004) * k;
+      view.px = px; view.py = py; view.foc = .25;
+      if (other) { look(other, clamp((ps - other.a) / (other.b - other.a), 0, 1), t, false); fit(other.plate, U.zoom); if (live) GL.draw(other, of, t, dt, false); }
+      look(best, q, t, true); fit(best.plate, U.zoom);
+      if (live) GL.draw(best, bf, t, dt, !!other);
     }
     if (live !== (mode === 'gl')) { mode = live ? 'gl' : 'pics'; sec.classList.toggle('lfs-live', live); }
-    frames.forEach(function (f) { var o = f === best ? (live ? 0 : bf) : 0; o = Math.round(o * 100) / 100; if (o !== f.o) { f.o = o; f.img.style.opacity = o; } });
-    /* words and facts */
+    frames.forEach(function (f) { var o = live ? 0 : Math.round(f.f * 100) / 100; if (o !== f.o) { f.o = o; f.img.style.opacity = o; } });
+    stage.style.setProperty('--end', ss(.925, .96, ps).toFixed(3)); stage.style.setProperty('--seen', ss(.7, .735, ps).toFixed(3));
+    /* words and facts. On a screen narrower than the picture, the high view pans to the newest fact */
+    var newest = -1, tz = null; pan.to = tall ? .5 : .5 + .12 * view.su;
+    if (!tall) texts.forEach(function (x) {
+      if (x.li || x.o < .05) return;
+      if (!x.rc) { var a = x.el.getBoundingClientRect(), b = stage.getBoundingClientRect(); x.rc = { l: a.left - b.left, t: a.top - b.top, r: a.right - b.left, b: a.bottom - b.top }; }
+      tz = tz ? { l: Math.min(tz.l, x.rc.l), t: Math.min(tz.t, x.rc.t), r: Math.max(tz.r, x.rc.r), b: Math.max(tz.b, x.rc.b) } : x.rc;
+    });
     texts.forEach(function (x) {
       var r = tall ? x.pm : x.p, o = ss(r[0], r[0] + .014, ps) * (r[1] >= 1 ? 1 : 1 - ss(r[1] - .012, r[1], ps));
       if (x.li) {
         if (!data || x.plate !== best.plate) o = 0;
+        if (o > 0 && x.plate === 'b' && r[0] > newest && ps < r[1] - .014) { newest = r[0]; pan.to = data[O].b.pts[x.at][0]; }
         if (o > 0) {
           var pt = place(x.plate, x.at); if (!pt) { set(x, 0); return; }
-          var X = Math.round(pt[0]), Y = Math.round(pt[1]) + Math.round((1 - o) * 6), off = tall ? x.offm : x.off, dx = off[0], dy = off[1];
+          var X = Math.round(pt[0]), Y = Math.round(pt[1]) + Math.round((1 - o) * 6), off = tall ? x.offm : x.off, ks = tall ? clamp(sw / 390, .9, 1.5) : clamp(sw / 1440, .85, 1.5), dx = off[0] * ks, dy = off[1] * ks;
           if (!x.w) { x.w = x.span.offsetWidth; x.h = x.span.offsetHeight; }
-          if (dx > 0 && X + dx + x.w > sw - 14) dx = -dx; else if (dx < 0 && X + dx - x.w < 14) dx = -dx;
-          if (tall && dy > 0 && Y + dy + x.h > zone) dy = -dy - 10;          // on a phone the facts stay clear of the words below
+          /* a label never sits on the words or off the stage: try its own side first, then the others */
+          var c = [[dx, dy], [-dx, dy], [dx, -dy], [-dx, -dy]], ok = false;
+          for (var ci = 0; ci < 4 && !ok; ci++) {
+            var l = X + (c[ci][0] > 0 ? c[ci][0] : c[ci][0] - x.w), tp = Y + (c[ci][1] > 0 ? c[ci][1] : c[ci][1] - x.h + 20);
+            ok = l > 12 && l + x.w < sw - 12 && tp > 12 && tp + x.h < (tall ? zone : sh - 60) && !(tz && l < tz.r + 16 && l + x.w > tz.l - 16 && tp < tz.b + 12 && tp + x.h > tz.t - 12);
+            if (ok) { dx = c[ci][0]; dy = c[ci][1]; }
+          }
+          if (!ok) { set(x, 0); return; }
           if (X !== x.x || Y !== x.y || dx !== x.dx || dy !== x.dy) {
             x.x = X; x.y = Y; x.dx = dx; x.dy = dy; x.el.style.transform = 'translate3d(' + X + 'px,' + Y + 'px,0)';
             x.span.style.left = (dx > 0 ? dx : dx - x.w) + 'px'; x.span.style.top = (dy > 0 ? dy : dy - x.h + 20) + 'px';
@@ -311,6 +332,7 @@
       }
       set(x, o);
     });
+    pan.x += (pan.to - pan.x) * Math.min(1, dt * .0022);
     /* lines of light: anchors to the tag, then the floor lines of the map */
     if (data) {
       var d = data[O], i;
@@ -320,19 +342,19 @@
     /* controls */
     var step = ps < .38 ? 0 : ps < .706 ? 1 : 2; rail.forEach(function (a, i) { a.classList.toggle('on', i === step); });
     topLink.classList.toggle('show', now - upT < 2600 && ps > .02);
-    var rc = sec.getBoundingClientRect(); snd.gate(rc.top < innerHeight * .7 && rc.bottom > innerHeight * .3 ? 1 : 0);
+    var rc = sec.getBoundingClientRect(); SND.gate(rc.top < innerHeight * .7 && rc.bottom > innerHeight * .3 ? 1 : 0);
     if (GL) GL.next();
   }
   new IntersectionObserver(function (es) {
     var v = es[0].isIntersecting; if (v === vis) return; vis = v;
-    if (vis) { size(); lastT = performance.now(); requestAnimationFrame(tick); if (!data && !data0) load(); } else snd.quiet();
+    if (vis) { size(); lastT = performance.now(); requestAnimationFrame(tick); if (!data && !data0) load(); } else SND.quiet();
   }, { rootMargin: '60% 0px' }).observe(sec);
   var data0 = false;
   function load() {
     data0 = true;
     fetch(base + 'lfs.json').then(function (r) { return r.json(); }).then(function (j) { data = j; if (GL) GL.next(); }).catch(function () { data0 = false; });
   }
-  window.addEventListener('resize', function () { size(); texts.forEach(function (x) { x.w = 0; x.x = -1; }); }, { passive: true });
+  window.addEventListener('resize', function () { size(); texts.forEach(function (x) { x.w = 0; x.x = -1; x.rc = null; }); }, { passive: true });
   window.__lfs = { at: function (v) { ps = p = v; }, ready: function () { return !!(data && (!GL || ['a', 'b', 'c', 'd'].every(GL.ready))); }, clock: function (s) { T0 = performance.now() - s * 1000; } };
   size();
 })();
