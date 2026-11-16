@@ -18,7 +18,7 @@ python3 build.py --indexable           public build for amimotion.com (only afte
 python3 build.py --share               preview build: relative links ending in index.html, runs from an artifact
 python3 tools/pickability.py dist      the AI pickability test on whatever was built
 """
-import argparse, html, json, re, shutil, subprocess
+import argparse, html, json, re, shutil, subprocess, sys
 from datetime import date
 from pathlib import Path
 
@@ -46,6 +46,9 @@ for _s in NAV["sections"]:
     for _l, _u, _line in _s["items"]: LABEL.setdefault(_u, _l)
 
 part = lambda n: (SRC / "partials" / n).read_text()
+sys.path.insert(0, str(ROOT / "tools"))
+import purge   # per-page CSS trim (tools/purge.py): keeps only rules a page or a first-party script can use
+JS_WORDS = set().union(*(purge.js_words(f.read_text()) for f in sorted((SRC / "js").rglob("*.js"))))
 # colours live only in core.css: the browser bar colour is read from the --ground token, so a palette swap is one file
 GROUND = re.search(r"--ground:\s*(#[0-9a-fA-F]{3,8})", (SRC / "css" / "core.css").read_text()).group(1)
 
@@ -257,7 +260,7 @@ def css_min(css):
 
 def body_class(meta):
     """The shared class plus the page's looks (front matter look: serif sidehead cards ...): kit.css restyles by them."""
-    return " ".join(["ds"] + (["pl", "site-" + meta["id"]] if meta.get("layout") == "product" else []) + ["look-" + x for x in meta.get("look", "").split()])
+    return " ".join(["ds"] + (["pl", "site-" + meta["id"]] if meta.get("layout") == "product" else ["page-" + meta["id"]] if meta.get("id") else []) + ["look-" + x for x in meta.get("look", "").split()])
 
 
 # Every page opens at its top when a link is followed (a link to a section, Back/Forward and reload keep the browser's own
@@ -303,13 +306,13 @@ def styles(meta):
     # the product sites (thread "Build AmIGo, AmIMo and AmIHub product sites"): each product page is its own small
     # site under the AmIMotion nav, so it carries core.css plus its own two files, none of the inner-page kit
     if meta.get("layout") == "product":
-        css = css_min("".join((SRC / "css" / f).read_text() for f in ["core.css", "products/base.css", f"products/{meta['id']}.css"] + ([] if meta["id"] in ("amigo", "amimo", "amihub") else ["house.css"])))
+        css = css_min("".join((SRC / "css" / f).read_text() for f in ["core.css", "products/base.css", f"products/{meta['id']}.css"] + ([] if meta["id"] in ("amigo", "amimo", "amihub") else ["house.css"]) + ["uplift.css"]))
         return (FONT_PRELOAD +
                 f"<style>{css}</style>")
     files = ["core.css"] + (["home.css"] if meta.get("layout") == "home" else ["inner.css"] + [f"{x}.css" for x in meta.get("css", "").split()] + ["worlds.css", "kit.css"])
     if meta.get("layout") != "home" and meta.get("id") and (SRC / "css" / "id" / f"{meta['id']}.css").exists(): files.append(f"id/{meta['id']}.css")
     # house.css last (site audit, 12 Nov 2026): one house style settles the tokens of every older layer; not on the homepage
-    if meta.get("layout") != "home": files.append("house.css")
+    if meta.get("layout") != "home": files += ["house.css", "uplift.css"]   # uplift.css: the inner-page system on the new IA (16 Nov 2026)
     css = css_min("".join((SRC / "css" / f).read_text() for f in files))
     return (FONT_PRELOAD +
             f"<style>{css}</style>")
@@ -599,6 +602,87 @@ def ia_links(body, url, titles, lines):
     return body[:i] + block + body[i:] if i >= 0 else body + "\n" + block
 
 
+# ---- the IA on every inner page (thread "Redesign AmIMotion inner pages on new IA", 16 Nov 2026) ----
+# The way every page feeds (site architecture, 16 Nov): see where work waits, how a pilot runs, book a call.
+ROUTE = [("/solutions/wip/", "See where work waits"), ("/pilot/", "How a pilot runs"), ("/contact/", "Book a call")]
+
+
+def ia_strip(url):
+    """The door you are in and every page behind it, in menu order and groups: a stranger who lands deep sees where
+    the page sits and what sits next to it. Built from nav.json, so it always agrees with the bar and the breadcrumb."""
+    s = section_of(url)
+    if not s or url == "/": return ""
+    owner = max([(len(u), u) for _, u, _ in s["items"] if u == url or (url.startswith(u) and u != "/")] + [(0, None)])[1]
+    groups = []
+    for (name, items), g in zip(grouped(s), s["groups"]):
+        li = "".join(f'<li><a href="{u}"{" aria-current=\"page\"" if u == url else " aria-current=\"true\"" if u == owner else ""}>{html.escape(l)}</a></li>' for l, u, _ in items)
+        groups.append(f'<li class="ia-g"><ul aria-label="{html.escape(name)}">{li}</ul></li>')
+    hub = f'<a class="ia-door" href="{s["url"]}"{" aria-current=\"page\"" if s["url"] == url else ""}>{html.escape(s["label"])}</a>'
+    return f'<nav class="ia-strip" aria-label="In {html.escape(s["label"])}"><div class="ia-in">{hub}<ul class="ia-list">{"".join(groups)}</ul></div></nav>\n'
+
+
+def ia_route(url, nxt):
+    """The three steps to a pilot, with this page's place on it: the step it is (or leads to) is marked."""
+    on = next((i for i, (u, _) in enumerate(ROUTE) if u == url), None)
+    to = next((i for i, (u, _) in enumerate(ROUTE) if u == nxt), None)
+    li = "".join(f'<li{" class=\"on\"" if i == on else " class=\"to\"" if on is None and i == to else ""}>'
+                 + (f'<span aria-current="step">{html.escape(t)}</span>' if i == on else f'<a href="{u}">{html.escape(t)}</a>') + "</li>"
+                 for i, (u, t) in enumerate(ROUTE))
+    return f'<ol class="ia-route" aria-label="The way to a pilot">{li}</ol>'
+
+
+def ia_next(body, url, titles, lines):
+    """Every page ends on its next step (ia.json next): one clear card above the related links, and the way to a
+    pilot under it. Pages without a Read next list get one above their closing line."""
+    plan = IA.get(url)
+    if not plan or url == "/": return body
+    nxt = plan.get("next")
+    card = ""
+    if nxt and nxt in titles:
+        card = (f'<a class="ia-go" href="{nxt}"><span class="ia-go-k">Next step</span><b>{html.escape(LABEL.get(nxt) or titles[nxt])}</b>'
+                f'<span class="ia-go-l">{html.escape(full_stop(lines.get(nxt, "")))}</span></a>')
+    block = card + ia_route(url, nxt)
+    # the next step is the big card: the same page is not listed again under it (when the list keeps others)
+    def drop_next(lst):
+        items = re.findall(r"<li\b.*?</li>", lst.group(1), re.S)
+        keep = [x for x in items if f'href="{nxt}"' not in x]
+        return lst.group(0).replace(lst.group(1), "".join(keep)) if keep and len(keep) < len(items) else lst.group(0)
+    rn = re.search(r'aria-labelledby="read-next".*?</section>', body, re.S)
+    if rn and nxt:
+        sec = re.sub(r'<nav class="related[^"]*" aria-label="Related pages"><ul>(.*?)</ul></nav>', drop_next, rn.group(0), count=1, flags=re.S)
+        body = body[:rn.start()] + sec + body[rn.end():]
+    m = re.search(r'(<section class="sec)([^"]*)("[^>]*aria-labelledby="read-next"[^>]*>\s*<h2 id="read-next">.*?</h2>)', body, re.S)
+    if m:
+        return body[:m.start()] + m.group(1) + m.group(2) + " ia-next" + m.group(3) + f'<div class="ia-end">{block}</div>' + body[m.end():]
+    sec = ('<section class="sec ia-next" aria-labelledby="read-next">\n<h2 id="read-next"><span>Read next.</span></h2>'
+           f'<div class="ia-end">{block}</div>\n</section>\n')
+    i = body.rfind('<section class="close"')
+    return body[:i] + sec + body[i:] if i >= 0 else body + "\n" + sec
+
+
+def long_head(body):
+    """A headline longer than about two short lines gets the smaller display size, so it still sets in four lines."""
+    h = re.search(r"<h1[^>]*>(.*?)</h1>", body, re.S)
+    if not h or len(text_of(h.group(1))) <= 46: return body
+    return re.sub(r'(<div data-km class="head)', r"\1 h-long", body, count=1)
+
+
+def with_strip(body, url):
+    """The section strip goes right under the page head (the first block that is the head), else at the top."""
+    st = ia_strip(url)
+    if not st: return body
+    m = re.search(r'<div data-km class="head[^"]*"', body) or re.search(r'<(?:div|section|header)\b[^>]*class="[^"]*\bhead\b', body)
+    if not m: return st + body
+    # find the end of that head block by balancing its tag
+    tag = re.match(r"<(\w+)", m.group(0)).group(1)
+    depth, i = 0, m.start()
+    for t in re.finditer(rf"<(/?){tag}\b[^>]*>", body[m.start():]):
+        depth += -1 if t.group(1) else 1
+        if depth == 0:
+            i = m.start() + t.end(); break
+    return body[:i] + "\n" + st + body[i:]
+
+
 def crumb_labels(body, url=None):
     """Visible breadcrumbs use the nav label of each URL, the same as the bar and BreadcrumbList, the current page too."""
     def fix(m):
@@ -672,6 +756,7 @@ def build():
         pages["/glossary/"] = (m_, re.sub(r'<dt id="([^"]+)">(.*?)</dt>', lambda t: f'<dt id="{t.group(1)}"><a href="{TERMS[t.group(1)]}">{t.group(2)}</a></dt>' if t.group(1) in TERMS else t.group(0), b_))
     pages = {u: (m, ia_links(re.sub(r'<nav class="crumbs".*?</nav>', lambda _m: crumb_trail(u, titles), b, count=1, flags=re.S) if u in IA else b, u, titles, lines))
              for u, (m, b) in pages.items()}
+    pages = {u: (m, with_strip(long_head(ia_next(b, u, titles, lines)), u) if u not in ("/", "/404.html") and m.get("layout") != "product" else ia_next(b, u, titles, lines) if m.get("layout") == "product" else b) for u, (m, b) in pages.items()}
     worlds = {u: m.get("world") for u, (m, _) in pages.items() if m.get("world")}
     covers = {u: m.get("cover") for u, (m, _) in pages.items() if m.get("cover")}
     def connect(body):
@@ -693,7 +778,7 @@ def build():
         if url != "/": body = with_magnet(body, url)
         header = header_html(url, meta.get("world"), over_photo(meta, body))
         page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main" tabindex="-1">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
-        page = phone_dpr_cap(page)
+        page = purge.trim_page(phone_dpr_cap(page), JS_WORDS)
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
         out.parent.mkdir(parents=True, exist_ok=True); out.write_text(page)

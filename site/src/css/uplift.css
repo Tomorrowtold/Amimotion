@@ -1,0 +1,264 @@
+/* uplift.css: the inner-page design system on the new IA (thread "Redesign AmIMotion inner pages on new IA",
+   16 Nov 2026). Loaded last on every inner page that is not a product site, after house.css, so one set of rules
+   decides the head, the section rhythm, the shared components and the motion layer.
+   Brand rules kept: black and white interface, colour only from pictures; located blue #66a5fa marks where you are,
+   amber marks waiting. One face. No eyebrows, no gradients, no glass, no resting shadows: tone fills, not boxes.
+   Motion: one CSS layer driven by scroll position (no script, transform and opacity only, off for reduced motion). */
+
+.ds{
+  --u-max:1320px;
+  --u-pad:max(var(--margin),calc((100vw - var(--u-max)) / 2));
+  --u-tone:#f4f5f7; --u-tone-2:#eceef1; --u-ink:#0b0d12; --u-soft:#4b515d; --u-mute:#6b717c;
+  --u-r:18px; --u-r-s:12px;
+  --u-h1:clamp(2.5rem,1.25rem + 3.7vw,5.25rem);
+  --u-h2:clamp(2rem,1.2rem + 2.3vw,3.75rem);
+  --u-h3:clamp(1.1875rem,1rem + .45vw,1.5rem);
+  --u-lede:clamp(1.1875rem,1rem + .55vw,1.5rem);
+  --u-ease:cubic-bezier(.2,.7,.1,1);
+}
+
+/* ---------- one head for every inner page ----------
+   crumbs; the two-line headline on the left; the lede under it; the page's picture on the right at the headline's
+   height; the short answer and the page's own links under the lede. Without a picture the short answer takes the
+   right column. A poster head (a photograph under white words) keeps its picture and gets the same type. */
+html body.ds:not(.pl) main>.head:not(.w-poster){
+  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:0;align-items:start;
+  width:auto;max-width:none;margin:0;padding:clamp(16px,1.6vw,28px) var(--u-pad) clamp(48px,5.5vw,96px)!important;
+  background:transparent!important;color:var(--u-ink);min-height:0;text-align:left;border:0;border-radius:0;box-shadow:none}
+html body.ds:not(.pl) main>.head:not(.w-poster)::before,html body.ds:not(.pl) main>.head:not(.w-poster)::after{content:none}
+html body.ds:not(.pl) main>.head:not(.w-poster)>.crumbs{grid-column:1 / -1;grid-row:1;margin:0 0 clamp(28px,4.4vw,72px);justify-content:flex-start;text-align:left}
+html body.ds:not(.pl) main>.head:not(.w-poster)>h1{
+  grid-column:1 / span 7;grid-row:2;margin:0 0 clamp(20px,2.2vw,36px);max-width:13.5em;
+  font:600 var(--u-h1)/.98 var(--font-display)!important;letter-spacing:-.04em;color:var(--u-ink);text-align:left;text-wrap:balance}
+html body.ds:not(.pl) main>.head:not(.w-poster)>h1 span{display:block}
+html body.ds:not(.pl) main>.head:not(.w-poster)>h1 span+span{color:var(--u-soft)!important}
+html body.ds:not(.pl) main>.head:not(.w-poster) .words{display:contents}
+html body.ds:not(.pl) main>.head:not(.w-poster) .lede{
+  grid-column:1 / span 6;grid-row:3;margin:0;max-width:30em;
+  font:400 var(--u-lede)/1.38 var(--font-text)!important;letter-spacing:-.005em;color:var(--u-ink)!important;text-align:left}
+html body.ds:not(.pl) main>.head:not(.w-poster) .short-answer{
+  grid-column:8 / -1;grid-row:2 / span 2;align-self:end;margin:0;max-width:none;
+  background:var(--u-tone)!important;border:0!important;border-radius:var(--u-r);box-shadow:none!important;
+  padding:clamp(18px,1.6vw,26px) clamp(20px,1.8vw,30px)!important;
+  font:400 .9375rem/1.6 var(--font-text)!important;color:var(--u-soft)!important;text-align:left}
+html body.ds:not(.pl) main>.head:not(.w-poster) .short-answer::before{
+  content:"The short answer";display:block;margin:0 0 8px;font:500 .8125rem/1.2 var(--font-text)!important;
+  letter-spacing:0!important;text-transform:none!important;color:var(--u-ink)!important;background:none!important;position:static!important}
+html body.ds:not(.pl) main>.head:not(.w-poster) .more{grid-column:1 / span 6;grid-row:4;margin:clamp(20px,2vw,32px) 0 0;justify-content:flex-start}
+html body.ds:not(.pl) main>.head:not(.w-poster)>:not(.crumbs):not(h1):not(.words):not(.head-pic){grid-column:1 / -1}
+
+/* with a picture: picture right, from the headline down; short answer under the lede */
+html body.ds:not(.pl) main>.head:not(.w-poster):has(>.head-pic)>h1{grid-column:1 / span 7}
+html body.ds:not(.pl) main>.head:not(.w-poster):has(>.head-pic) .lede{grid-column:1 / span 6}
+html body.ds:not(.pl) main>.head:not(.w-poster):has(>.head-pic) .short-answer{grid-column:1 / span 6;grid-row:4;align-self:start;margin-top:clamp(20px,2vw,32px)}
+html body.ds:not(.pl) main>.head:not(.w-poster):has(>.head-pic) .more{grid-row:5}
+html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic{
+  grid-column:8 / -1;grid-row:2 / span 4;align-self:stretch;margin:0!important;padding:0;max-width:none;width:auto;
+  position:relative;overflow:hidden;border-radius:var(--u-r);background:var(--u-tone);min-height:clamp(320px,34vw,560px);transform:none}
+html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic>*{position:absolute;inset:0;margin:0!important;width:100%;height:100%;max-width:none;border-radius:0;box-shadow:none;background:transparent;transform:none}
+html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic picture{display:block;width:100%;height:100%}
+html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic img,html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic video,html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic svg{
+  width:100%!important;height:100%!important;max-height:none!important;aspect-ratio:auto!important;object-fit:cover;object-position:var(--u-pos,50% 50%);border-radius:0;animation:none;margin:0!important;max-width:none!important}
+/* product photographs on a clean ground show whole, not cropped */
+html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic .render img,html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic .r43-pic.cad img{object-fit:contain;padding:6%}
+html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic figcaption{position:absolute;inset:auto 0 0;height:auto;padding:12px 16px;font-size:.8125rem;color:var(--u-soft);background:none}
+
+@media (max-width:899px){
+  html body.ds:not(.pl) main>.head:not(.w-poster){padding-bottom:40px!important}
+  html body.ds:not(.pl) main>.head:not(.w-poster)>*,html body.ds:not(.pl) main>.head:not(.w-poster) .words>*,
+  html body.ds:not(.pl) main>.head:not(.w-poster):has(>.head-pic) .words>*{grid-column:1 / -1!important;grid-row:auto!important}
+  html body.ds:not(.pl) main>.head:not(.w-poster)>.crumbs{margin-bottom:24px;order:0}
+  html body.ds:not(.pl) main>.head:not(.w-poster)>h1{order:1}
+  html body.ds:not(.pl) main>.head:not(.w-poster) .lede{order:2}
+  html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic{order:3}
+  html body.ds:not(.pl) main>.head:not(.w-poster) .short-answer{order:4;font-size:.875rem!important}
+  html body.ds:not(.pl) main>.head:not(.w-poster) .more{order:5}
+  html body.ds:not(.pl) main>.head:not(.w-poster)>:not(.crumbs):not(h1):not(.words):not(.head-pic){order:6}
+  html body.ds:not(.pl) main>.head:not(.w-poster)>h1{font-size:clamp(2.125rem,1.3rem + 4vw,3rem)!important;max-width:none}
+  html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic{min-height:0;aspect-ratio:4 / 3;margin:24px 0 0!important;border-radius:var(--u-r-s)}
+  html body.ds:not(.pl) main>.head:not(.w-poster) .short-answer{margin-top:20px!important}
+  html body.ds:not(.pl) main>.head:not(.w-poster) .more{margin-top:20px}
+}
+
+/* poster heads: the photograph stays; the words get the same type */
+@media (min-width:900px){html body.ds:not(.pl) main>.head.w-poster h1{font:600 var(--u-h1)/.98 var(--font-display)!important;letter-spacing:-.04em;text-wrap:balance}}
+html body.ds:not(.pl) main>.head.w-poster .short-answer{border-radius:var(--u-r);border:0!important;background:var(--u-tone)!important;box-shadow:none!important}
+
+/* ---------- the section strip: the door you are in and the pages behind it ---------- */
+.ia-strip{position:sticky;top:var(--bar);z-index:20;margin:0;background:rgba(255,255,255,.97);box-shadow:0 1px 0 rgba(11,13,18,.08);transition:top .4s var(--ease-ds)}
+html:has(.top.away) .ia-strip{top:0}
+.ia-strip .ia-in{display:flex;align-items:center;gap:clamp(16px,2vw,32px);padding:0 var(--u-pad);height:52px;overflow-x:auto;scrollbar-width:none;
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
+.ia-strip .ia-in::-webkit-scrollbar{display:none}
+.ia-strip ul{list-style:none;margin:0;padding:0;display:flex;align-items:center}
+.ia-strip .ia-list{gap:clamp(16px,2vw,28px)}
+.ia-strip .ia-g ul{gap:clamp(14px,1.5vw,22px)}
+.ia-strip .ia-g+.ia-g{position:relative;padding-left:clamp(16px,2vw,28px)}
+.ia-strip .ia-g+.ia-g::before{content:"";position:absolute;left:0;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:#c5c9d0}
+.ia-strip a{position:relative;display:block;white-space:nowrap;font:400 .875rem/52px var(--font-text);color:var(--u-soft);text-decoration:none}
+.ia-strip a:hover{color:var(--u-ink)}
+.ia-strip .ia-door{font:600 .9375rem/52px var(--font-display);letter-spacing:-.01em;color:var(--u-ink)}
+.ia-strip a[aria-current]{color:var(--u-ink);font-weight:500}
+.ia-strip a[aria-current]::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;border-radius:2px;background:#66a5fa}
+.ia-strip .ia-door[aria-current]::after{content:none}
+/* pages that already pin their own chapter list keep it; the strip then scrolls away */
+body:has(.local) .ia-strip{position:relative;top:auto}
+@media (max-width:1023px){.ia-strip{position:relative;top:auto}.ia-strip .ia-in{height:48px}.ia-strip a{line-height:48px}}
+
+/* ---------- section rhythm and headings ---------- */
+html body.ds:not(.pl) main>.sec{padding-left:var(--u-pad);padding-right:var(--u-pad);max-width:none;margin-left:0;margin-right:0}
+html body.ds:not(.pl) main>.sec>h2{font:600 var(--u-h2)/1.02 var(--font-display)!important;letter-spacing:-.035em;text-wrap:balance}
+html body.ds:not(.pl) main>.sec>h2 span{display:block}
+html body.ds:not(.pl) main>.sec>.lead{font-size:var(--u-lede);line-height:1.4;color:var(--u-soft)}
+html body.ds:not(.pl) main>.sec.band.surface{background:var(--u-tone)!important}
+
+/* ---------- points: three ideas side by side become three tone cards ---------- */
+html body.ds:not(.pl) main .sec .points.c3{row-gap:var(--gutter)}
+html body.ds:not(.pl) main .sec .points.c3>li{background:var(--u-tone);border:0!important;border-radius:var(--u-r);padding:clamp(22px,2vw,32px)!important;display:flex;flex-direction:column;gap:10px}
+html body.ds:not(.pl) main .sec.band.surface .points.c3>li{background:#fff}
+html body.ds:not(.pl) main .sec .points.c3>li h3{margin:0!important;font:600 var(--u-h3)/1.2 var(--font-display)!important;letter-spacing:-.015em}
+html body.ds:not(.pl) main .sec .points.c3>li p{font-size:1rem;line-height:1.55;color:var(--u-soft)}
+html body.ds:not(.pl) main .sec .points.c3>li a{color:var(--u-ink)}
+
+/* ---------- steps: a real order, so the numbers stay; one large figure and a rule of progress ---------- */
+html body.ds:not(.pl) main .sec ol.steps>li{border-top:0!important;position:relative;padding-top:20px!important}
+html body.ds:not(.pl) main .sec ol.steps>li::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;border-radius:2px;background:var(--u-tone-2)}
+html body.ds:not(.pl) main .sec ol.steps>li:first-child::after{background:linear-gradient(90deg,#66a5fa 0 48px,var(--u-tone-2) 48px)}
+
+/* ---------- questions: the heading holds on the left, the answers open on the right ---------- */
+@media (min-width:1024px){
+  html body.ds:not(.pl) main>.sec:has(>.faq)>h2{grid-column:1 / span 4;position:sticky;top:calc(var(--bar) + 76px);align-self:start;font-size:clamp(2rem,1.2rem + 1.6vw,3rem)!important}
+  html body.ds:not(.pl) main>.sec:has(>.faq)>.faq{grid-column:6 / -1;grid-row:1 / span 3}
+  html body.ds:not(.pl) main>.sec:has(>.faq)>.lead{grid-column:1 / span 4}
+}
+html body.ds:not(.pl) main .faq details{background:#fff;border-radius:var(--u-r-s);margin-bottom:8px;padding:0 clamp(18px,1.6vw,26px);border:0;box-shadow:none;transition:background-color .2s}
+html body.ds:not(.pl) main .sec:not(.band) .faq details{background:var(--u-tone)}
+html body.ds:not(.pl) main .faq summary{font:500 1.0625rem/1.45 var(--font-text);padding-block:20px;align-items:center}
+html body.ds:not(.pl) main .faq summary::after{content:"";flex:none;width:12px;height:12px;background:
+  linear-gradient(currentColor,currentColor) center/12px 2px no-repeat,linear-gradient(currentColor,currentColor) center/2px 12px no-repeat;
+  color:var(--u-ink);transition:transform .25s var(--u-ease)}
+html body.ds:not(.pl) main .faq details[open] summary::after{transform:rotate(45deg)}
+html body.ds:not(.pl) main .faq details p{font-size:1rem;line-height:1.6;padding-bottom:22px}
+
+/* ---------- the end of every page: its next step, then the related pages, then the way to a pilot ---------- */
+html body.ds:not(.pl) main>.sec.ia-next>h2{grid-column:1 / -1}
+.ia-next .ia-end{grid-column:1 / -1;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:var(--gutter);order:0}
+.ia-next>h2{grid-row:1}
+.ia-next .ia-end{grid-row:2}
+.ia-next>.related{grid-row:3}
+.ia-go{grid-column:1 / span 5;display:flex;flex-direction:column;justify-content:space-between;gap:28px;min-height:220px;
+  padding:clamp(24px,2.2vw,36px);border-radius:var(--u-r);background:var(--u-ink);color:#fff!important;text-decoration:none!important;
+  transition:transform .25s var(--u-ease),background-color .25s}
+.ia-go:hover{background:#20242d}
+.ia-go:active{transform:scale(.985)}
+.ia-go .ia-go-k{display:flex;align-items:center;gap:10px;font:500 .875rem/1 var(--font-text);color:rgba(255,255,255,.72)}
+.ia-go .ia-go-k::before{content:"";width:8px;height:8px;border-radius:50%;background:#66a5fa;box-shadow:0 0 0 4px rgba(102,165,250,.22)}
+.ia-go b{display:block;font:600 clamp(1.75rem,1.1rem + 1.6vw,2.75rem)/1.02 var(--font-display);letter-spacing:-.035em;color:#fff;margin-top:auto}
+.ia-go .ia-go-l{display:flex;justify-content:space-between;align-items:center;gap:16px;font:400 1rem/1.4 var(--font-text);color:rgba(255,255,255,.78)}
+.ia-go .ia-go-l::after{content:"";flex:none;width:44px;height:44px;border-radius:50%;background:#fff
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8h9M8.5 4l4 4-4 4' fill='none' stroke='%230b0d12' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat;
+  transition:transform .25s var(--u-ease)}
+.ia-go:hover .ia-go-l::after{transform:translateX(4px)}
+.ia-route{grid-column:6 / -1;align-self:end;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;counter-reset:r}
+.ia-route li{position:relative;padding:22px 12px 0 0;font:500 .9375rem/1.3 var(--font-text);color:var(--u-mute)}
+.ia-route li::before{content:"";position:absolute;left:0;right:0;top:5px;height:2px;background:var(--u-tone-2)}
+.ia-route li::after{content:"";position:absolute;left:0;top:0;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2px #c5c9d0}
+.ia-route li.on::after,.ia-route li.to::after{background:#66a5fa;box-shadow:0 0 0 4px rgba(102,165,250,.22)}
+.ia-route li.on::before{background:linear-gradient(90deg,#66a5fa 0 12px,var(--u-tone-2) 12px)}
+.ia-route li a{color:var(--u-soft);text-decoration:none}
+.ia-route li a:hover{color:var(--u-ink);text-decoration:underline;text-underline-offset:3px}
+.ia-route li.on span,.ia-route li.to a{color:var(--u-ink)}
+.ia-route li:last-child::before{right:auto;width:12px}
+.ia-next .ia-route::before{content:"The way to a pilot";grid-column:1 / -1;margin:0 0 18px;font:500 .875rem/1.2 var(--font-text);color:var(--u-mute)}
+
+/* related pages: tone cards with the page name and its line, the whole card a link */
+html body.ds:not(.pl) main .sec .related:not(.tiles) ul{gap:12px;row-gap:12px;margin:0}
+html body.ds:not(.pl) main .sec .related:not(.tiles) li{border:0!important;padding:0!important;margin:0;position:relative;background:var(--u-tone);border-radius:var(--u-r-s);transition:background-color .2s}
+html body.ds:not(.pl) main .sec .related:not(.tiles) li::before,html body.ds:not(.pl) main .sec .related:not(.tiles) li::after{content:none!important}
+html body.ds:not(.pl) main .sec .related:not(.tiles) li:hover{background:var(--u-tone-2)}
+html body.ds:not(.pl) main .sec .related:not(.tiles) li>a{display:block;padding:20px 52px 6px 22px;font:600 1.125rem/1.25 var(--font-display)!important;letter-spacing:-.01em;color:var(--u-ink)!important;text-decoration:none!important;border:0!important}
+html body.ds:not(.pl) main .sec .related:not(.tiles) li>a::before{content:"";position:absolute;inset:0;border-radius:inherit}
+html body.ds:not(.pl) main .sec .related:not(.tiles) li>a::after{content:"";position:absolute;right:20px;top:22px;width:8px;height:8px;border:solid var(--u-ink);border-width:2px 2px 0 0;transform:rotate(45deg);transition:transform .2s var(--u-ease)}
+html body.ds:not(.pl) main .sec .related:not(.tiles) li:hover>a::after{transform:translateX(3px) rotate(45deg)}
+html body.ds:not(.pl) main .sec .related:not(.tiles) li>span{display:block;padding:0 22px 20px;margin:0;font-size:.9375rem;line-height:1.45;color:var(--u-soft)}
+html body.ds:not(.pl) main .sec.band.surface .related:not(.tiles) li{background:#fff}
+.ia-next .related{grid-column:1 / -1;margin-top:var(--gutter)!important}
+
+@media (max-width:899px){
+  .ia-go,.ia-route{grid-column:1 / -1}
+  .ia-go{min-height:180px}
+  .ia-route{margin-top:12px}
+  .ia-route li{font-size:.875rem}
+}
+
+/* ---------- the close: one statement, one button, on a tone panel inside the margins ---------- */
+html body.ds:not(.pl) main>.close{margin:clamp(24px,3vw,48px) var(--u-pad) clamp(40px,4vw,72px);padding:clamp(40px,5vw,88px) clamp(24px,4vw,72px)!important;
+  border-radius:calc(var(--u-r) + 6px);background:var(--u-tone)!important;display:block}
+html body.ds:not(.pl) main>.close p{margin:0;max-width:none;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:40px;align-items:end;font:600 clamp(2rem,1.2rem + 2.4vw,4rem)/1.02 var(--font-display)!important;letter-spacing:-.035em;color:var(--u-ink)}
+html body.ds:not(.pl) main>.close p>span:first-child{grid-column:1;color:var(--u-ink)!important;text-wrap:balance}
+html body.ds:not(.pl) main>.close .sub{grid-column:1;margin-top:16px;font:400 var(--u-lede)/1.4 var(--font-text)!important;letter-spacing:0;color:var(--u-soft)!important;max-width:32em}
+html body.ds:not(.pl) main>.close p>a{grid-column:2;grid-row:1 / span 2;align-self:end;margin:0!important;display:inline-flex!important;align-items:center;height:52px;padding:0 26px;border-radius:999px;
+  background:var(--u-ink)!important;color:#fff!important;font:500 1rem/1 var(--font-text)!important;white-space:nowrap;box-shadow:none!important;transition:transform .15s var(--ease-ds),background-color .2s}
+html body.ds:not(.pl) main>.close p>a:hover{background:#20242d!important}
+html body.ds:not(.pl) main>.close p>a:active{transform:scale(.97)}
+@media (max-width:899px){
+  html body.ds:not(.pl) main>.close p{grid-template-columns:minmax(0,1fr)}
+  html body.ds:not(.pl) main>.close p>a{grid-column:1;grid-row:auto;margin-top:24px!important;justify-self:start}
+}
+
+/* ---------- tables: figures read cleanly, no boxes ---------- */
+html body.ds:not(.pl) main .sec table{border-collapse:collapse}
+html body.ds:not(.pl) main .sec table th[scope="row"]{font-weight:500;color:var(--u-ink)}
+
+/* ---------- pictures in sections: rounded, on tone while they load ---------- */
+html body.ds:not(.pl) main .sec .pic:not(.cad){border-radius:var(--u-r);overflow:hidden}
+
+/* ---------- the motion layer: rises with scroll position, never waits on a script ---------- */
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    @keyframes u-rise{from{opacity:0;translate:0 28px}to{opacity:1;translate:0 0}}
+    @keyframes u-unveil{from{clip-path:inset(6% 6% 6% 6% round var(--u-r));scale:1.08}to{clip-path:inset(0 0 0 0 round var(--u-r));scale:1}}
+    html.motion body.ds:not(.pl) main>.sec>h2,
+    html.motion body.ds:not(.pl) main>.sec>.lead,
+    html.motion body.ds:not(.pl) main .sec .points>li,
+    html.motion body.ds:not(.pl) main .sec ol.steps>li,
+    html.motion body.ds:not(.pl) main .sec .related li,
+    html.motion body.ds:not(.pl) main .faq details,
+    html.motion body.ds:not(.pl) main .ia-go,
+    html.motion body.ds:not(.pl) main>.close{animation:u-rise linear both;animation-timeline:view();animation-range:entry 0% entry 70%}
+    html.motion body.ds:not(.pl) main .sec .points>li:nth-child(3n+2),html.motion body.ds:not(.pl) main .sec .related li:nth-child(3n+2){animation-range:entry 6% entry 76%}
+    html.motion body.ds:not(.pl) main .sec .points>li:nth-child(3n),html.motion body.ds:not(.pl) main .sec .related li:nth-child(3n){animation-range:entry 12% entry 82%}
+    html.motion body.ds:not(.pl) main .sec .pic:not(.cad) img{animation:u-unveil linear both;animation-timeline:view();animation-range:entry 0% cover 40%}
+  }
+}
+
+/* long headlines (a question and its answer): one size down, so they set in four lines at most */
+html body.ds:not(.pl) main>.head.h-long:not(.w-poster)>h1{font-size:clamp(2.25rem,1.2rem + 2.9vw,4.25rem)!important;max-width:15em}
+@media (max-width:899px){html body.ds:not(.pl) main>.head.h-long:not(.w-poster)>h1{font-size:clamp(2rem,1.3rem + 3vw,2.625rem)!important}}
+
+/* the two dark pages (developers, films) keep their night ground: the same system in light-on-dark tokens */
+body.page-developers,body.page-films{--u-ink:#f3f4f6;--u-soft:rgba(243,244,246,.72);--u-mute:rgba(243,244,246,.56);--u-tone:#16181d;--u-tone-2:#262a31}
+body.page-developers .ia-strip,body.page-films .ia-strip{background:rgba(11,13,18,.96);box-shadow:0 1px 0 rgba(255,255,255,.08)}
+body.page-developers .ia-go,body.page-films .ia-go{background:#fff;color:#0b0d12!important}
+body.page-developers .ia-go b,body.page-films .ia-go b{color:#0b0d12}
+body.page-developers .ia-go .ia-go-k,body.page-developers .ia-go .ia-go-l,body.page-films .ia-go .ia-go-k,body.page-films .ia-go .ia-go-l{color:#4b515d}
+body.page-developers .ia-go .ia-go-l::after,body.page-films .ia-go .ia-go-l::after{background-color:#0b0d12;filter:invert(1)}
+body.page-developers main>.close p>a,body.page-films main>.close p>a{background:#fff!important;color:#0b0d12!important}
+body.page-developers .ia-route li::after,body.page-films .ia-route li::after{background:#0b0d12}
+
+/* fixes after the first look */
+html body.ds:not(.pl) main .sec .related:not(.tiles) li>a::after{left:auto!important;right:20px}
+@media (min-width:900px){html body.ds:not(.pl) main .sec .points.c3:not(:has(+.more)){grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  html body.ds:not(.pl) main .sec .points.c3:not(:has(+.more))>li{grid-column:auto!important;display:flex!important}}
+/* a card row whose links sit under each card (Pilot hub): the link reads as the card's foot */
+html body.ds:not(.pl) main .sec>.points.c3+.more>a{background:transparent;color:var(--u-ink)!important;font-weight:500}
+
+/* the page's tool (filled in by the Ask agent after load): a tone panel inside the margins, no floating card */
+html body.ds main .mg{margin:clamp(24px,3vw,48px) var(--u-pad);border-radius:calc(var(--u-r) + 6px);background:var(--u-tone);box-shadow:none}
+html body.ds main .mg .mg-out,html body.ds main .mg [class*="mg-card"]{box-shadow:none}
+html body.ds:not(.pl) main>.head:not(.w-poster)>.crumbs,html body.ds:not(.pl) main>.head:not(.w-poster)>.crumbs a,html body.ds:not(.pl) main>.head:not(.w-poster)>.crumbs span{color:var(--u-soft)!important;text-shadow:none}
+html body.ds:not(.pl) main>.head:not(.w-poster)>.crumbs [aria-current]{color:var(--u-ink)!important}
+html body.ds.page-developers main>.close p>a,html body.ds.page-films main>.close p>a{background:#fff!important;color:#0b0d12!important}
+body.page-developers .ia-go .ia-go-l::after,body.page-films .ia-go .ia-go-l::after{filter:none;background:#0b0d12 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8h9M8.5 4l4 4-4 4' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat}
+html body.ds:not(.pl) main .sec>.points.c3:has(+.more)>li{padding-bottom:calc(clamp(22px,2vw,32px) + 2.6em)!important}
+html body.ds:not(.pl) main .sec>.points.c3+.more>a{padding:0 clamp(22px,2vw,32px) clamp(22px,2vw,30px)!important}
