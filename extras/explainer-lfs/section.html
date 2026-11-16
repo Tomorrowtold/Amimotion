@@ -1,0 +1,89 @@
+<!-- 1b. LOST. FOUND. SEEN: how AmIMotion works, in three scrolls. Without scripts it reads as five pictures with their words. -->
+<section class="lfs" id="see" data-assets="assets/lfs/" aria-label="How AmIMotion works, in three steps: lost, found, seen">
+  <div class="lfs-stage">
+
+    <div class="lfs-f" id="lfs-lost" data-k="lost" data-plate="a" data-p="0,.2">
+      <picture class="lfs-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/lfs/P/s_lost.webp" width="720" height="1280"><img src="assets/lfs/L/s_lost.webp" width="1280" height="720" alt="A long factory hall at night under yellow lamps. A worker stands in the main aisle, a hand raised to the eyes, looking down the hall. Rows of trolleys and pallets stand on both sides." loading="lazy" decoding="async"></picture>
+      <div class="lfs-t">
+        <h2 class="lfs-word" data-p=".004,.372">Lost.</h2>
+        <div class="lfs-lines">
+          <p data-p=".03,.196">Somewhere on this floor is the trolley you need.</p>
+          <p data-p=".085,.196">In a plant this size, finding it means walking.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="lfs-f" data-k="isl" data-plate="b" data-p=".212,.372">
+      <picture class="lfs-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/lfs/P/s_isl.webp" width="720" height="1280"><img src="assets/lfs/L/s_isl.webp" width="1280" height="720" alt="The same plant seen from high above, almost all of it dark. Four small pools of yellow light show a worker, a parked forklift, an AMR and a truck at a dock." loading="lazy" decoding="async"></picture>
+      <div class="lfs-t">
+        <div class="lfs-lines">
+          <p data-p=".225,.368">A plant this size, and this is all you can see.</p>
+        </div>
+      </div>
+      <ul class="lfs-facts">
+        <li data-at="worker" data-p=".245,.368" data-pm=".24,.3" data-o="-36,-92" data-om="22,-74"><span>Looking for a free forklift.<br><b>20 minutes</b> so far.</span></li>
+        <li data-at="free" data-p=".275,.368" data-pm=".255,.3" data-o="44,34" data-om="-20,40"><span>Free. Two aisles away.<br>Nobody knows.</span></li>
+        <li data-at="amr" data-p=".305,.368" data-pm=".308,.368" data-o="40,-78" data-om="24,-70"><span><b>Three</b> forklifts are queued ahead.<br>It can't see them.</span></li>
+        <li data-at="dock" data-p=".335,.368" data-pm=".322,.368" data-o="46,-96" data-om="26,-84"><span>Waiting for <b>one</b> pallet.<br>It's still inside.</span></li>
+      </ul>
+    </div>
+
+    <div class="lfs-f" id="lfs-found" data-k="tag" data-plate="d" data-p=".384,.476">
+      <picture class="lfs-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/lfs/P/s_tag.webp" width="720" height="1280"><img src="assets/lfs/L/s_tag.webp" width="1280" height="720" alt="Close on the AmIGo tag: a small dark grey unit with the word amimotion pressed into its face, fixed to the handle post of a trolley. A point of blue light shines on it." loading="lazy" decoding="async"></picture>
+      <div class="lfs-t">
+        <h2 class="lfs-word" data-p=".388,.7">Found.</h2>
+        <div class="lfs-lines">
+          <p data-p=".402,.472">A small tag rides on the trolley. It sends a short radio pulse.</p>
+        </div>
+      </div>
+      <ul class="lfs-facts lfs-names">
+        <li data-at="tag" data-p=".41,.472" data-o="-150,-120" data-om="-40,-150"><span><strong>AmIGo</strong><br>the tag</span></li>
+      </ul>
+    </div>
+
+    <div class="lfs-f" data-k="found" data-plate="c" data-p=".488,.7">
+      <picture class="lfs-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/lfs/P/s_found.webp" width="720" height="1280"><img src="assets/lfs/L/s_found.webp" width="1280" height="720" alt="The trolley stands in a cone of white light in the dark hall. Its cartons and bins show their colours again. High on three columns, three small anchors glow, and thin lines of light run from them to the tag on the trolley." loading="lazy" decoding="async"></picture>
+      <div class="lfs-t">
+        <div class="lfs-lines">
+          <p data-p=".51,.696">Anchors on the columns catch it.</p>
+          <p data-p=".6,.696">The tiny gaps between their arrival times give its position, typically to within 10&nbsp;cm.</p>
+        </div>
+      </div>
+      <ul class="lfs-facts lfs-names">
+        <li data-at="tag" data-p=".5,.696" data-o="60,-34" data-om="-30,64"><span><strong>AmIGo</strong><br>the tag</span></li>
+        <li data-at="a0" data-p=".53,.696" data-o="40,-52" data-om="-28,-64"><span><strong>AmIMo</strong><br>the anchor</span></li>
+        <li data-at="herofloor" data-p=".63,.696" data-o="-190,24" data-om="-40,150"><span><strong>AmIHub</strong><br>works out the position</span></li>
+      </ul>
+    </div>
+
+    <div class="lfs-f" id="lfs-seen" data-k="seen" data-plate="b" data-p=".712,1">
+      <picture class="lfs-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/lfs/P/s_seen.webp" width="720" height="1280"><img src="assets/lfs/L/s_seen.webp" width="1280" height="720" alt="The same high view of the plant, now lit. Every trolley, pallet, forklift and AMR stands in its own pool of white light. A few glow amber: the ones that have waited." loading="lazy" decoding="async"></picture>
+      <div class="lfs-t">
+        <h2 class="lfs-word" data-p=".716,.93">Seen.</h2>
+        <div class="lfs-lines">
+          <p data-p=".73,.93">Now tag everything that moves.</p>
+          <p data-p=".768,.93">One live map shows where each thing is, and how long it has waited.</p>
+        </div>
+      </div>
+      <ul class="lfs-facts">
+        <li data-at="worker" data-p=".795,.93" data-pm=".79,.848" data-o="-36,-92" data-om="22,-74"><span>Nearest free forklift:<br><b>35 m</b>, aisle B3.</span></li>
+        <li data-at="free" class="lfs-wait" data-p=".82,.93" data-pm=".805,.848" data-o="44,34" data-om="-20,40"><span>Parked<br><b>2 h 10 min.</b></span></li>
+        <li data-at="queue" class="lfs-wait" data-p=".845,.93" data-pm=".856,.93" data-o="40,-78" data-om="24,-70"><span><b>3</b> forklifts in aisle B3.<br>Waiting <b>12 min.</b></span></li>
+        <li data-at="dock" class="lfs-wait" data-p=".87,.93" data-pm=".872,.93" data-o="46,-96" data-om="26,-84"><span>Its pallet: line 4.<br>Waiting <b>26 min.</b></span></li>
+      </ul>
+      <div class="lfs-end">
+        <p class="lfs-count" data-p=".895,1"><b>44</b> trolleys. <b>196</b> pallets. <b>8</b> forklifts. <b>5</b> AMRs. All located.</p>
+        <p class="lfs-close" data-p=".945,1">AmIMotion. <br class="lfs-brm">Where work is.<br>Where it waits.</p>
+      </div>
+    </div>
+
+    <canvas class="lfs-gl" aria-hidden="true"></canvas>
+    <div class="lfs-shade" aria-hidden="true"></div>
+    <svg class="lfs-ov" aria-hidden="true"></svg>
+
+    <div class="lfs-ctl">
+      <nav class="lfs-rail" aria-label="Steps of the explainer"><a href="#lfs-lost" data-go="0">Lost</a><a href="#lfs-found" data-go=".39">Found</a><a href="#lfs-seen" data-go=".72">Seen</a></nav>
+      <span class="lfs-right"><a class="lfs-top" href="#hero">Back to top</a><button class="lfs-snd" type="button" aria-pressed="true">Sound on</button><a class="lfs-skip" href="#trio">Skip</a></span>
+    </div>
+  </div>
+</section>
