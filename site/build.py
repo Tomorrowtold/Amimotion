@@ -540,7 +540,7 @@ def footer_html(url="/", world=None):
             f'{paths}</svg></div>\n</div></footer>')
 
 
-NAV_JS = '<script src="/assets/js/nav.js" defer></script>'
+NAV_JS = '<script src="/assets/js/nav.js" defer></script>\n<script src="/assets/js/config.js" defer></script>\n<script src="/assets/js/measure.js" defer></script>'
 # the inbound agent (Ask AmIMotion): every page but the homepage; it loads its core, magnets and styles itself, lazily
 AGENT_JS = '<script src="/assets/js/agent.js" defer></script>'
 
@@ -578,7 +578,7 @@ def scripts(meta):
     out = [NAV_JS]
     if meta.get("layout") == "product":
         return "\n".join(out + [AGENT_JS] + ['<script src="/assets/js/products/site.js" defer></script>'] + [f'<script type="module" src="/assets/js/products/{x}.js"></script>' for x in s])
-    if "diag" in s: out.append('<script src="/assets/js/config.js" defer></script><script src="/assets/js/diagnostic.js" defer></script>')
+    if "diag" in s: out.append('<script src="/assets/js/diagnostic.js" defer></script>')
     out += [f'<script src="/assets/js/{x}.js" defer></script>' for x in s if x not in ("hero", "diag")]
     return "\n".join(out + [AGENT_JS])
 

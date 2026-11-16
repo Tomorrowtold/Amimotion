@@ -113,6 +113,8 @@ async function lead(req, env, ctx) {
   const b = await req.json().catch(() => null);
   if (!b) return json({ error: 'bad request' }, 400);
   if (b.website) return json({ ok: true });                                    // honeypot: bots fill the hidden field
+  // no lead may vanish: with no store, webhook, HubSpot or email set, say so, and the page falls back to an email draft
+  if (!hasLeadSink(env)) return json({ error: 'no lead destination is set up yet', fallback: 'email' }, 503);
   const P = mergeProfile({}, b.profile || {});
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(P.email || '') || !P.name) return json({ error: 'name and a valid email are needed' }, 400);
   if (!b.consent || !b.consent.reply) return json({ error: 'consent needed' }, 400);
@@ -142,6 +144,10 @@ async function lead(req, env, ctx) {
   return json({ ok: true, id, grade: d.score.grade });
 }
 
+export function hasLeadSink(env) {
+  return !!((env.LEADS && env.LEADS.put) || env.LEADS_WEBHOOK_STORE || env.LEAD_WEBHOOK || env.HUBSPOT_TOKEN
+    || (env.HUBSPOT_PORTAL_ID && env.HUBSPOT_FORM_ID) || (env.RESEND_API_KEY && env.LEAD_EMAIL_TO));
+}
 async function deliver(d, env) {
   const jobs = [];
   if (env.LEADS && env.LEADS.put) jobs.push(env.LEADS.put('lead:' + d.id, JSON.stringify(d), { metadata: { at: d.at, grade: d.score.grade, company: d.contact.company || '', status: d.status } }));
