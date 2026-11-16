@@ -324,7 +324,7 @@
           var c = [[dx, dy], [-dx, dy], [dx, -dy], [-dx, -dy]], ok = false;
           for (var ci = 0; ci < 4 && !ok; ci++) {
             var l = X + (c[ci][0] > 0 ? c[ci][0] : c[ci][0] - x.w), tp = Y + (c[ci][1] > 0 ? c[ci][1] : c[ci][1] - x.h + 20);
-            ok = l > 12 && l + x.w < sw - 12 && tp > (tall ? 70 : 100) && tp + x.h < (tall ? zone : sh - 60) && !(tz && l < tz.r + 16 && l + x.w > tz.l - 16 && tp < tz.b + 12 && tp + x.h > tz.t - 12);
+            ok = l > 12 && l + x.w < sw - 12 && tp > (tall ? 62 : 100) && tp + x.h < (tall ? zone : sh - 60) && !(tz && l < tz.r + 16 && l + x.w > tz.l - 16 && tp < tz.b + 12 && tp + x.h > tz.t - 12);
             if (ok) { dx = c[ci][0]; dy = c[ci][1]; }
           }
           if (!ok) { set(x, 0); return; }
