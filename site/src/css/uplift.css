@@ -216,7 +216,7 @@ html body.ds:not(.pl) main .sec .pic:not(.cad){border-radius:var(--u-r);overflow
 /* ---------- the motion layer: rises with scroll position, never waits on a script ---------- */
 @supports (animation-timeline:view()){
   @media (prefers-reduced-motion:no-preference){
-    @keyframes u-rise{from{opacity:0;translate:0 28px}to{opacity:1;translate:0 0}}
+    @keyframes u-rise{from{opacity:0;translate:0 28px}30%{opacity:1}to{opacity:1;translate:0 0}}
     @keyframes u-unveil{from{clip-path:inset(6% 6% 6% 6% round var(--u-r));scale:1.08}to{clip-path:inset(0 0 0 0 round var(--u-r));scale:1}}
     html.motion body.ds:not(.pl) main>.sec>h2,
     html.motion body.ds:not(.pl) main>.sec>.lead,
@@ -237,7 +237,7 @@ html body.ds:not(.pl) main>.head.h-long:not(.w-poster)>h1{font-size:clamp(2.25re
 @media (max-width:899px){html body.ds:not(.pl) main>.head.h-long:not(.w-poster)>h1{font-size:clamp(2rem,1.3rem + 3vw,2.625rem)!important}}
 
 /* the two dark pages (developers, films) keep their night ground: the same system in light-on-dark tokens */
-body.page-developers,body.page-films{--u-ink:#f3f4f6;--u-soft:rgba(243,244,246,.72);--u-mute:rgba(243,244,246,.56);--u-tone:#16181d;--u-tone-2:#262a31}
+body.page-developers,body.page-films{--on-ink:#0b0d12;--u-ink:#f3f4f6;--u-soft:rgba(243,244,246,.72);--u-mute:rgba(243,244,246,.56);--u-tone:#16181d;--u-tone-2:#262a31}
 body.page-developers .ia-strip,body.page-films .ia-strip{background:rgba(11,13,18,.96);box-shadow:0 1px 0 rgba(255,255,255,.08)}
 body.page-developers .ia-go,body.page-films .ia-go{background:#fff;color:#0b0d12!important}
 body.page-developers .ia-go b,body.page-films .ia-go b{color:#0b0d12}
@@ -282,6 +282,6 @@ html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic img[src*="pair-"],html
 html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic .hall-lines-pic img{object-fit:cover!important;padding:0}
 
 /* guides: the day they were last changed */
-html body.ds main .updated{display:block;margin:12px 0 0;font-size:.8125rem;line-height:1.4;color:var(--u-mute)}
+html body.ds main .updated{display:block;margin:12px 0 0;font-size:.8125rem;line-height:1.4;color:#565c67}
 /* crumbs over a photo stay readable on bright windows and skies */
 html body.ds .head.w-poster .crumbs,html body.ds .head.w-poster .crumbs a{text-shadow:0 1px 2px rgba(0,0,0,.5),0 0 18px rgba(0,0,0,.45)}

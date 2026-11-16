@@ -91,8 +91,8 @@ html.askw-open .askw-launch{opacity:0;pointer-events:none}
 .askw-tags em,.askw-people em{font-style:normal;font-size:12.5px;color:var(--ink-soft)}
 .askw-people li.you b::before{content:"";display:inline-block;width:7px;height:7px;margin-right:7px;border-radius:50%;background:var(--located,#1f6bff);vertical-align:1px}
 .askw-mail{white-space:pre-wrap;font:400 13px/1.5 var(--font-text,Arial,sans-serif);background:var(--ground,#f0f6ff);padding:12px;border-radius:10px;margin:4px 0 0;max-height:220px;overflow:auto}
-.askw-sim{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.02em;padding:2px 7px;margin-right:6px;border-radius:4px;background:var(--ink);color:#fff;vertical-align:1px}
-.askw-call code{font:500 12.5px/1.4 var(--font-text,Arial,sans-serif);background:var(--ground);padding:3px 8px;border-radius:6px}
+.askw-sim{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.02em;padding:2px 7px;margin-right:6px;border-radius:4px;background:var(--ink);color:var(--on-ink,#fff);vertical-align:1px}
+.askw-call code{font:500 12.5px/1.4 var(--font-text,Arial,sans-serif);background:var(--ground);background:color-mix(in srgb,currentColor 9%,transparent);padding:3px 8px;border-radius:6px}
 .askw-tab{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
 .askw-tab th{text-align:left;font-weight:600;font-size:12px;color:var(--ink-soft);padding:4px 6px;border-bottom:1px solid var(--hairline)}
 .askw-tab td{padding:6px;border-bottom:1px solid var(--hairline)}
@@ -145,7 +145,7 @@ html.askw-open .askw-launch{opacity:0;pointer-events:none}
 .mg-chips button,.mg-chips label{position:relative;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:8px 14px;border-radius:999px;border:1px solid var(--hairline,rgba(11,18,56,.14));background:var(--surface,#fff);color:var(--ink);font:500 14px/1.2 var(--font-text,Arial,sans-serif);cursor:pointer;transition:background .15s,border-color .15s}
 .mg-chips input{position:absolute;opacity:0;pointer-events:none}
 .mg-chips button:hover,.mg-chips label:hover{background:var(--ground,#f0f6ff)}
-.mg-chips button[aria-pressed="true"],.mg-chips label:has(input:checked){background:var(--ink,#0b1238);border-color:var(--ink);color:#fff}
+.mg-chips button[aria-pressed="true"],.mg-chips label:has(input:checked){background:var(--ink,#0b1238);border-color:var(--ink);color:var(--on-ink,#fff)}
 .mg-chips label:has(input:focus-visible),.mg-chips button:focus-visible{outline:2px solid var(--focus,#4b3df0);outline-offset:2px}
 .mg-chips .n{font-size:11px;font-weight:600;width:18px;height:18px;border-radius:50%;display:inline-grid;place-items:center;background:rgba(255,255,255,.2)}
 .mg-chips .wt{background:var(--waiting,#ffb020)!important;border-color:var(--waiting-edge,#8f5c00)!important;color:var(--ink)!important}
