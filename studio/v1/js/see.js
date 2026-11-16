@@ -1,317 +1,228 @@
-// "Can you see it?" : one floor, four scrolls. The scroll position is the only clock: scroll back and everything runs backwards.
-// With data-pull on the section it opens on the hero's tag and the camera backs away from it, through a white model of the plant
-// that then turns real. Nothing here needs WebGL: pictures, two small canvases for the camera moves, and one SVG drawn over them.
+// The explainer, the section after the hero: what AmIMotion is, on one floor, in four beats.
+//   1  Without: the floor is dark. You see the corner you stand in; the rest is questions.
+//   2  The tags: everything that moves lights up, kind by kind, and the anchors on the roof find each one. Then the floor is all there.
+//   3  Without | with: a line splits the floor. Five kinds of things to compare (the scroll steps through them, or tap one); drag the line.
+//   4  Ask: the view rises to the map, a question is typed, and the floor answers.
+// No libraries, no WebGL: the photo, three light layers, a canvas for the rise, and plain HTML marks placed in pixels.
 (() => {
   const root = document.getElementById('see'); if (!root) return;
-  const here = document.currentScript ? document.currentScript.src : '';
-  const $ = s => root.querySelector(s), NS = 'http://www.w3.org/2000/svg';
-  const stage = $('.see-stage'), box = $('.see-box'), svg = $('.see-ov'), cv = $('.see-rise'), pv = $('.see-pull'), tip = $('.see-tip'), sndBtn = $('.see-snd');
-  const words = [...root.querySelectorAll('.see-w')], ticks = [...root.querySelectorAll('.see-ticks i')], q = $('.see-q');
-  const lay = { dim: $('.see-dim'), blue: $('.see-blue'), amber: $('.see-amber'), vig: $('.see-vig') };
-  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const tall = matchMedia('(max-aspect-ratio: 4/5)');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, STILL = /[?&]still\b/.test(location.search);
+  const $ = (s, e = root) => e.querySelector(s), $$ = (s, e = root) => [...e.querySelectorAll(s)];
+  const stage = $('.see-stage'), box = $('.see-box'), svg = $('.see-ov'), marksEl = $('.see-marks'), cv = $('.see-rise'), ctx = cv.getContext('2d');
+  const words = $$('.see-w'), ticks = $$('.see-ticks i'), kinds = $$('.see-kinds span'), cards = $$('.see-c'), tabs = $$('.see-tabs button');
+  const grip = $('.see-grip'), w4 = $('.see-w4'), q = $('.see-q'), qText = q.dataset.q, snd = $('.see-snd');
   const base = root.dataset.assets || 'assets/see/';
-  const ctx = cv.getContext('2d'), pctx = pv ? pv.getContext('2d') : null;
-  let V, D, W, H, frames = [], pframes = [], els = null, order = [], cur = 0, want = 0, shown = -1, drawn = -1, pdrawn = -1, raf = 0, near = false, typed = -1, seen = false;
-  let hi = 0, px = 0, py = 0, tx = 0, ty = 0, vel = 0, guessed = 0, sound = null, was = null;
-
-  const seg = (p, a, b) => Math.min(1, Math.max(0, (p - a) / (b - a)));
-  const ease = t => t * t * (3 - 2 * t);
-  const mk = (n, a, parent) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); (parent || svg).appendChild(e); return e; };
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v)), seg = (p, a, b) => clamp((p - a) / (b - a)), ease = t => t * t * (3 - 2 * t);
   const pad = i => String(i).padStart(2, '0');
-  // the page is only written to when a value has really changed, so a still frame costs nothing
-  let memo = {};
-  const V$ = (k, v) => { if (memo[k] !== v) { memo[k] = v; root.style.setProperty(k, v); } };
+
+  // the kinds of things on this floor, and what each tab shows
+  const KIND = { Trolley: 'wip', Bins: 'wip', Pallet: 'dock', Forklift: 'fork', Robot: 'robot', Badge: 'people', 'Tool chest': 'tools' };
+  const LEGEND = { Trolley: 0, Bins: 1, Pallet: 2, Forklift: 3, Robot: 4, 'Tool chest': 5, Badge: 6 };
+  const CATS = ['wip', 'fork', 'robot', 'dock', 'people'];
+  const DOCK = new Set(['P-21', 'P-22', 'P-23']);
+  // the few words the floor says, per tab (no ids: what it is, and where or how long)
+  const SAY = {
+    wip: { 'T-14': '42 min', 'B-08': '26 min' },
+    fork: { 'FL-1': 'Forklift, moving' },
+    robot: { 'AMR-2': 'Robot, on its way' },
+    dock: { 'P-23': '12 min at the dock', 'P-21': 'Pallet, arriving' },
+    people: { 'Badge-1': 'In the racks', 'Badge-2': 'In the aisle', 'Badge-3': 'At the bench', 'Badge-4': 'By the bins' }
+  };
+  const TRAILS = { wip: ['T-14', 'T-03', 'T-07', 'B-11'], fork: ['FL-1'], robot: ['AMR-2'], dock: ['P-21'], people: [] };
+  const ASK = { 'T-14': '42 min', 'B-08': '26 min', 'P-23': '12 min' };
+  const QS = [['FL-1', 'Which forklift is free?', 1], ['P-23', 'Is this load ready?', 0], ['T-14', 'How long has this waited?', 0]];
+  const POOLS = ['Badge-3', 'Badge-2', 'Badge-4'];
+  // where each beat sits in the scroll (0..1 through the pinned section)
+  const T = { lights: [.15, .27], roof: [.17, .27], up: [.255, .315], cmpIn: [.33, .37], cats: [.37, .745], cmpOut: [.75, .775], rise: [.775, .88], type: [.875, .915], told: .925 };
+  const SHOW = [[-.01, .125, .15], [.15, .315, .34], [.345, .75, .772], [.772, 2, 3]];
+
+  let V, D, els = null, frames = [], drawn = -1, cur = 0, want = 0, raf = 0, last = 0, near = false, seen = false;
+  let bx = { l: 0, t: 0, w: 1, h: 1, sw: 1, sh: 1 }, userG = null, cat = -1, typed = -1, told = false, shownStep = -1;
+  const memo = {}; const V$ = (k, v) => { if (memo[k] !== v) { memo[k] = v; root.style.setProperty(k, v); } };
+  const O$ = (e, v) => { v = Math.round(v * 100) / 100; if (e._o !== v) { e._o = v; e.style.opacity = v; } };
   const A$ = (e, k, v) => { const c = e._c || (e._c = {}); if (c[k] !== v) { c[k] = v; e.setAttribute(k, v); } };
-  const L$ = (e, on) => { if (e && e._v !== on) { e._v = on; e.classList.toggle('see-off', !on); } };   // a layer that adds nothing leaves the picture
-  const O$ = (e, v) => { v = Math.round(v * 200) / 200; if (e._o !== v) { e._o = v; e.style.opacity = v; } };
 
-  // The pull-back takes the first fifth of the scroll when it is on. Everything after is a fraction of what is left.
-  const PULL = pv && root.hasAttribute('data-pull') ? .2 : 0, FLY = .74;
-  const rest = v => (v - PULL) / (1 - PULL);
-  const T = { dip: [.07, .2], pts: [.17, .31], trail: [.43, .56], amber: [.47, .59], rise: [.66, .88], type: [.865, .925], ans: [.93, .965], push: [0, .66] };
-  // each set of words: where it comes in (it plays once, by itself), and the stretch of scroll that carries it away
-  const SHOW = [[-.01, .07, .12], [.2, .395, .45], [.5, .62, .67], [.855, 2, 3]];
-  const PUSH = .07;
-
-  // headlines come up word by word from behind their own baseline
-  root.querySelectorAll('.see-h').forEach(h => {
-    let i = 0; const wrap = (node, into) => [...node.childNodes].forEach(n => {
+  // the headline words rise in one by one
+  $$('.see-h').forEach(h => {
+    let i = 0; const wrap = (from, into) => from.childNodes.forEach(n => {
       if (n.nodeType === 3) n.textContent.split(/(\s+)/).forEach(t => { if (!t) return; if (/^\s+$/.test(t)) return into.append(' '); const o = document.createElement('span'), b = document.createElement('b'); o.className = 'wd'; b.style.setProperty('--i', i++); b.textContent = t; o.append(b); into.append(o); });
       else { const c = n.cloneNode(false); into.append(c); wrap(n, c); }
     });
-    const f = document.createDocumentFragment(); wrap(h, f); h.setAttribute('aria-label', h.textContent); h.textContent = ''; h.append(f); h.nextElementSibling && h.nextElementSibling.style.setProperty('--i', i);
+    const f = document.createDocumentFragment(); wrap(h, f); h.setAttribute('aria-label', h.textContent); h.textContent = ''; h.append(f);
+    let s = h.nextElementSibling; while (s) { s.style.setProperty('--i', i); s = s.nextElementSibling; }
   });
+  $$('.see-ans li').forEach((li, i) => li.style.setProperty('--r', i));
 
+  if (reduce) return;   // still pictures and plain words: the section reads top to bottom without moving
+  root.classList.add('live');
+
+  const NS = 'http://www.w3.org/2000/svg', mk = (t, a, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (p) p.append(e); return e; };
   const image = (src, done) => { const im = new Image(); im.decoding = 'async'; im.src = src; (im.decode ? im.decode() : Promise.reject()).then(done, () => { im.complete ? done() : (im.onload = done); }); return im; };
   const ready = im => im && im.complete && im.naturalWidth;
 
   async function load() {
-    V = tall.matches ? 'P' : 'L'; W = V === 'P' ? 900 : 1600; H = V === 'P' ? 1600 : 900;
-    D = await (await fetch(base + V + '/data.json')).json();
-    svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.textContent = ''; frames = []; pframes = []; drawn = pdrawn = -1; memo = {};
-    cv.width = D.frame[0]; cv.height = D.frame[1]; if (pv) { pv.width = D.frame[0]; pv.height = D.frame[1]; }
-    const defs = mk('defs', {});   // soft glows as gradients: no filters, so nothing is re-blurred while the camera rises
-    for (const [id, c] of [['see-gb', '102,165,250'], ['see-ga', '240,164,58'], ['see-gw', '255,236,205'], ['see-gh', '255,248,236'], ['see-gr', '214,64,48']]) { const g = mk('radialGradient', { id }, defs); (id === 'see-gw' ? [[0, .62], [.45, .34], [.8, .08], [1, 0]] : id === 'see-gh' ? [[0, .95], [.45, .55], [.8, .14], [1, 0]] : id === 'see-gr' ? [[0, .7], [.45, .3], [.8, .06], [1, 0]] : [[0, .9], [.35, .42], [1, 0]]).forEach(([o, a]) => mk('stop', { offset: o, 'stop-color': `rgba(${c},${a})` }, g)); }
-    for (const [id, c] of [['see-gbeam', '255,240,214'], ['see-gbeam-a', '246,178,80']]) { const g = mk('linearGradient', { id, x1: 0, y1: 0, x2: 0, y2: 1 }, defs); [[0, 0], [.55, .05], [.9, .2], [1, .26]].forEach(([o, a]) => mk('stop', { offset: o, 'stop-color': `rgba(${c},${a})` }, g)); }
-    const gK = mk('g', { class: 'pk' }), gT = mk('g', {}), gZ = mk('g', {}), gP = mk('g', { class: 'pts' });
-    const A = D.eye.anchors, wave = t => Math.min(...A.map(a => Math.hypot((a[0] - t.xy[0]) * W, (a[1] - t.xy[1]) * H)));
-    const dist = D.eye.tags.map(wave), far = Math.max(...dist);
+    V = matchMedia('(max-aspect-ratio:4/5)').matches ? 'P' : 'L';
+    try { D = await (await fetch(`${base}${V}/data.json`)).json(); } catch (e) { return; }
+    const W = V === 'P' ? 900 : 1600, H = V === 'P' ? 1600 : 900; svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.textContent = ''; marksEl.textContent = '';
+    cv.width = D.frame[0]; cv.height = D.frame[1]; frames = []; drawn = -1; for (const k in memo) delete memo[k];
+    const A = D.eye.anchors, tags = D.eye.tags, byId = Object.fromEntries(tags.map((t, i) => [t.id, i]));
+    const wave = t => Math.min(...A.map(a => Math.hypot((a[0] - t.xy[0]) * W, (a[1] - t.xy[1]) * H))), dist = tags.map(wave), far = Math.max(...dist);
+    const gT = mk('g', {}, svg), gR = mk('g', {}, svg);
+    const amr = tags[byId['AMR-2']].xy, nearest = [...A].sort((a, b) => Math.hypot(a[0] - amr[0], a[1] - amr[1]) - Math.hypot(b[0] - amr[0], b[1] - amr[1])).slice(0, 3);
     els = {
-      trails: Object.keys(D.eye.paths).map(k => ({ k, g: mk('polyline', { class: 'trg', pathLength: 1, 'stroke-dasharray': 1 }, gT), l: mk('polyline', { class: 'tr', pathLength: 1, 'stroke-dasharray': 1 }, gT), h: mk('circle', { class: 'trh', r: 3 }, gT) })),
-      zones: Object.keys(D.zones).map(k => { const e = mk('text', { class: 'zone' }, gZ); e.textContent = k; return { k, e }; }),
-      tags: D.eye.tags.map((t, i) => {
-        const g = mk('g', {}, gP), wait = t.state === 'wait', hero = t.mins === 42;
-        const o = { t, g, i, at: dist[i] / far, wait, hero, shown: -1, pg: mk('circle', { class: 'pg', r: 24 }, g), pc: mk('circle', { class: 'pc', r: 3.6 }, g) };
-        if (wait) {
-          o.ag = mk('circle', { class: 'ag', r: hero ? 58 : 38 }, g); o.ac = mk('circle', { class: 'ac', r: hero ? 7 : 5 }, g);
-          const flip = V === 'P' && t.xy[0] > .6; o.tx = mk('text', { class: 'mins' + (hero ? ' mins-big' : '') + (flip ? ' flip' : ''), x: (hero ? 16 : 12) * (flip ? -1 : 1), y: hero ? 8 : 6 }, g);
-          if (hero) o.lock = mk('path', { class: 'lock', d: 'M-22-12v-10h10M12-22h10v10M22 12v10h-10M-12 22h-10v-10' }, g);
-        }
-        return o;
-      })
+      W, H, byId,
+      roof: nearest.map(a => mk('line', { class: 'rf', x1: a[0] * W, y1: a[1] * H, x2: amr[0] * W, y2: amr[1] * H }, gR)),
+      anchors: A.map(a => mk('circle', { class: 'an', cx: a[0] * W, cy: a[1] * H, r: 4, opacity: 0 }, gR)),
+      trails: Object.fromEntries(Object.entries(D.eye.paths).map(([k, pts]) => {
+        const s = pts.map(p => `${(p[0] * W).toFixed(1)},${(p[1] * H).toFixed(1)}`).join(' ');
+        return [k, { g: mk('polyline', { class: 'trg', points: s, pathLength: 1, 'stroke-dasharray': 1, 'stroke-dashoffset': 1 }, gT), l: mk('polyline', { class: 'tr', points: s, pathLength: 1, 'stroke-dasharray': 1, 'stroke-dashoffset': 1 }, gT) }];
+      })),
+      tags: tags.map((t, i) => {
+        const e = document.createElement('div'); e.className = 'see-m'; const dot = document.createElement('i'), lab = document.createElement('b'); e.append(dot, lab); marksEl.append(e);
+        const k = t.kind === 'Pallet' && !DOCK.has(t.id) ? 'wip' : KIND[t.kind];
+        return { t, i, e, lab, k, at: dist[i] / far, wait: t.state === 'wait', say: '' };
+      }),
+      qs: QS.map(([id, text, left]) => { const e = document.createElement('div'); e.className = 'see-qm'; e.innerHTML = '<i>?</i><b></b>'; e.lastChild.textContent = text; marksEl.append(e); return { i: byId[id], e, left, skipP: id === 'P-23' }; })
     };
-    order = [...els.tags].sort((a, b) => a.at - b.at);
-    // scroll 1: a pool of light on every trolley, larger where the floor is nearer; a ring and its minutes arrive when one is picked.
-    // What has been picked is kept by the trolley's id, so turning the phone (which redraws all of this) loses nothing.
-    els.tags.forEach((o, i) => {
-      if (o.t.kind !== 'Trolley') return; const [x, y] = o.t.xy, k = .62 + .76 * y, flip = x > (V === 'P' ? .6 : .72);
-      const g = mk('g', { transform: `translate(${(x * W).toFixed(1)} ${(y * H).toFixed(1)})` }, gK);
-      const top = -(y * H) + H * .03; mk('polygon', { class: 'pk-beam', points: `${-10 * k},${top} ${10 * k},${top} ${70 * k},${26 * k} ${-70 * k},${26 * k}` }, g);
-      mk('ellipse', { class: 'pk-pool', cx: 0, cy: (26 * k).toFixed(1), rx: (78 * k).toFixed(1), ry: (52 * k).toFixed(1) }, g);
-      mk('circle', { class: 'pk-ring', cy: (20 * k).toFixed(1), r: (38 * k).toFixed(1) }, g); mk('circle', { class: 'pk-dot', r: 2.6 }, g);
-      const l = mk('text', { class: 'pk-l', x: (38 * k + 12) * (flip ? -1 : 1), y: (20 * k + 6).toFixed(1), 'text-anchor': flip ? 'end' : 'start' }, g);
-      o.pk = g; o.pl = l; const was = picked[o.t.id];
-      g.style.setProperty('--w', (y * 1.3).toFixed(2)); if (was) { g.classList.add(was, 'lit'); l.textContent = was === 'yes' ? '42 min' : ago(o) + ' min'; }
-    });
-    hot = null; if (armed) requestAnimationFrame(() => { litIds.clear(); game = new Set(inView().map(o => o.t.id)); els.tags.forEach(o => { if (o.pk) o.pk.classList.toggle('lit', game.has(o.t.id) || !!picked[o.t.id]); if (game.has(o.t.id)) litIds.add(o.t.id); }); spots(); buildKeys(); declash(); });
-    hi = D.eye.tags.findIndex(t => t.mins === 42); const hero = D.eye.tags[hi].xy; box.style.transformOrigin = `${hero[0] * 100}% ${hero[1] * 100}%`;
-    if (PULL) for (let i = 0; i <= D.pull; i++) pframes.push(image(`${base}${V}/pull/${pad(i)}.webp`, () => { if (pdrawn < 0 || i === Math.round(seg(cur, 0, PULL * FLY) * D.pull)) { pdrawn = -1; paint(true); } }));
-    shown = -1; paint(true);
+    measure(); preload(); paint(true);
   }
+  function preload() { if (frames.length || !D || !near) return; for (let i = 0; i < D.rise.length; i++) frames.push(image(`${base}${V}/rise/${pad(i)}.webp`, () => { if (i === drawn) { drawn = -1; paint(true); } })); }
 
-  function preload() {            // the rise frames, only once the section is close
-    if (frames.length || !D) return;
-    for (let i = 0; i < D.rise.length; i++) frames.push(image(`${base}${V}/rise/${pad(i)}.webp`, () => { if (i === drawn) { drawn = -1; paint(true); } }));
+  // the box is the picture's real place on screen: marks are put there in pixels
+  function measure() {
+    const b = box.getBoundingClientRect(), s = stage.getBoundingClientRect();
+    const wr = $('.see-ans').getBoundingClientRect(), qr = q.getBoundingClientRect(); bx = { l: b.left - s.left, t: b.top - s.top, w: b.width, h: b.height, sw: s.width, sh: s.height, wt: Math.min(wr.top, qr.top) - s.top, ct: $('.see-cmp').getBoundingClientRect().top - s.top - ($('.see-c.on .see-a') ? 0 : 0) - (V === 'P' ? 40 : 0) };
+    const top = root.getBoundingClientRect().top + scrollY; root._top = top; root._len = root.offsetHeight - innerHeight;
+    if (els) { const pools = POOLS.map(id => { const xy = D.eye.tags[els.byId[id]].xy, k = .62 + .76 * xy[1], r = (V === 'P' ? 16 : 7.5) * k; return `radial-gradient(circle at ${(xy[0] * 100).toFixed(2)}% ${(xy[1] * 100 + 1).toFixed(2)}%,#000 ${(r * .35).toFixed(1)}%,transparent ${r.toFixed(1)}%)`; }); V$('--pools', pools.join(',')); }
   }
+  const px = xy => [bx.l + xy[0] * bx.w, bx.t + xy[1] * bx.h];
+  const onScreen = (x, y) => x > 16 && x < bx.sw - 16 && y > 70 && y < bx.sh * .62;
+
+  function progress() { const len = root._len || 1; return clamp((scrollY - (root._top || 0)) / len); }
 
   function paint(force) {
-    if (!els) return;
-    const pull = PULL ? seg(cur, 0, PULL) : 1, p = rest(cur), w = rest(want);
-    const fly = seg(pull, 0, FLY), real = PULL ? ease(seg(pull, FLY, 1)) : 1;
-    if (PULL) {   // the camera backs away from the hero's tag; then the real floor spreads out from that tag
-      const f = Math.round(fly * D.pull);
-      if (f !== pdrawn && ready(pframes[f])) { pctx.drawImage(pframes[f], 0, 0, pv.width, pv.height); pdrawn = f; }
-      V$('--rr', (real * 190).toFixed(1) + '%'); V$('--in', seg(pull, .84, 1).toFixed(3)); V$('--lede', (1 - seg(pull, 0, .09)).toFixed(3));
-      pv.style.visibility = real >= 1 ? 'hidden' : 'visible';
-    }
-    if (!calm) {   // depth: the camera never quite stops. It drifts in on the floor until it lifts off, and leans a hair with the cursor
-      const z = 1 + PUSH * (1 - ease(seg(p, ...T.push))), k = (z - 1) / PUSH * (PULL ? real : 1);
-      box.style.scale = z > 1.0005 ? z.toFixed(4) : ''; box.style.translate = k > .01 ? `${(-px * 9 * k).toFixed(1)}px ${(-py * 6 * k).toFixed(1)}px` : '';
-      V$('--wx', (px * 4 * k).toFixed(1) + 'px');
-    }
-    const dip = seg(p, ...T.dip), pts = seg(p, ...T.pts), tr = seg(p, ...T.trail), amb = ease(seg(p, ...T.amber)), rise = seg(p, ...T.rise), ans = ease(seg(p, ...T.ans));
-    const f = Math.round(rise * (D.rise.length - 1)), mix = ease(seg(rise, 0, .1));
-    V$('--dip', ease(dip).toFixed(3)); V$('--m0', (dip * 160 - 60).toFixed(1) + '%'); V$('--m1', (dip * 160).toFixed(1) + '%');
-    V$('--blue', (ease(pts) * (1 - .5 * amb) * (1 - mix)).toFixed(3)); V$('--amb', (amb * (1 - mix)).toFixed(3));
-    V$('--rise', mix.toFixed(3)); V$('--ans', ans.toFixed(3));
-    // a layer that adds nothing is taken out of the picture, so the browser has less to blend
-    L$(lay.dim, dip > 0); L$(lay.blue, pts > 0 && mix < 1); L$(lay.amber, amb > 0 && mix < 1); L$(cv, mix > 0); L$(lay.vig, dip > 0);
-    const glow = pts > 0 && mix < 1 && ans < 1; if (glow !== root._glow) { root._glow = glow; root.classList.toggle('see-glow', glow); }   // the points breathe only while you can see them
+    if (!els) return; const p = cur;
+    // beat 1 and 2: the dark floor, the lights, the roof
+    const lights = seg(p, ...T.lights), up = ease(seg(p, ...T.up)), cmpIn = ease(seg(p, ...T.cmpIn)), cmpOut = ease(seg(p, ...T.cmpOut)), rise = ease(seg(p, ...T.rise));
+    const cmp = cmpIn * (1 - cmpOut), inCmp = cmp > .5;
+    const ci = clamp(Math.floor((p - T.cats[0]) / ((T.cats[1] - T.cats[0]) / 5)), 0, 4);
+    if (ci !== cat || force) setCat(ci, false);
+    const g0 = userG != null ? userG : (V === 'P' ? .34 : .5), g = g0;
+    // the dark: all of it in beat 1; it lifts in beat 2; in beat 3 it sweeps back in from the left to the line
+    const night = p < T.cmpIn[0] ? 1 - up : 1 - cmpOut;
+    const gx = bx.sw * g, sxBox = clamp((gx - bx.l) / bx.w * 100, 0, 100);
+    const sx = p < T.cmpIn[0] ? 100 : sxBox * cmpIn * (1 - cmpOut);            // right edge of the dark, share of the box
+    const wx = p < T.lights[0] ? 100 : p < T.cmpIn[0] ? 0 : sx;                 // left edge of the lit marks and glows
+    V$('--night', night.toFixed(3)); V$('--sx', sx.toFixed(2) + '%'); V$('--wx', wx.toFixed(2) + '%'); V$('--gx', (g * 100).toFixed(2) + '%'); V$('--cmp', cmp.toFixed(3));
+    root.classList.toggle('cmp', inCmp); grip.tabIndex = inCmp ? 0 : -1; A$(grip, 'aria-valuenow', Math.round(g * 100));
+    // glows: blue while the tags light in the dark, settling once the floor is lit; amber for what waits, on the work and dock tabs
+    const blue = p < T.cmpIn[0] ? lights * (.9 - .5 * up) : (1 - cmpOut) * .45 * cmpIn;
+    const amb = (cat === 0 || cat === 3) ? cmp * .9 : 0;
+    V$('--blue', blue.toFixed(3)); V$('--amb', amb.toFixed(3)); V$('--rise', seg(rise, 0, .22).toFixed(3)); V$('--ask', seg(p, T.type[0], T.told).toFixed(3));
+    $('.see-ov').style.clipPath = `inset(0 0 0 ${wx.toFixed(2)}%)`;
+    // the roof finds a tag: three dashed lines from the nearest anchors to the robot, while the tags light
+    const roof = seg(p, ...T.roof), rf = Math.sin(Math.PI * roof) * (1 - up);
+    els.roof.forEach(l => O$(l, rf * .9)); els.anchors.forEach(a => O$(a, Math.max(rf, (1 - rise) * lights * .6 * (1 - cmp))));
+    // the rise: frames on a canvas, marks follow the frame's own points
+    const f = Math.round(rise * (D.rise.length - 1));
     if (rise > 0 && f !== drawn && ready(frames[f])) { ctx.drawImage(frames[f], 0, 0, cv.width, cv.height); drawn = f; }
-    // where things are on screen at this moment of the rise
-    const F = rise > 0 ? D.rise[f] : null, at = (i) => F ? F.tags[i] : D.eye.tags[i].xy;
-    const hxy = at(hi); V$('--hx', (hxy[0] * 100).toFixed(2) + '%'); V$('--hy', (hxy[1] * 100).toFixed(2) + '%');
-    V$('--spot', Math.max(.5 * ease(seg(amb, .5, 1)) * (1 - mix), ans).toFixed(3)); V$('--grid', (seg(rise, .8, 1) * (1 - .35 * ans)).toFixed(3));
-    els.tags.forEach((o, i) => {
-      const xy = at(i), on = ease(seg(pts, o.at * .7, o.at * .7 + .3)), a = o.wait ? amb : 0;
-      const big = 1 + (.62 + .76 * D.eye.tags[i].xy[1] - 1) * (1 - ease(rise));   // near things are larger, until the view is from straight above
-      A$(o.g, 'transform', `translate(${(xy[0] * W).toFixed(1)} ${(xy[1] * H).toFixed(1)}) scale(${big.toFixed(3)})`);
-      const quiet = 1 - ans * (o.hero ? 0 : .6);
-      O$(o.pg, .8 * on * (1 - a) * (1 - .45 * amb) * quiet); O$(o.pc, on * (1 - a) * (1 - .35 * amb) * quiet);
-      A$(o.pc, 'r', (3.6 * (.6 + .4 * on)).toFixed(2));
-      if (o.wait) {
-        O$(o.ag, .9 * a * quiet); O$(o.ac, a * quiet); O$(o.tx, ease(seg(amb, .25, .7)) * (o.hero ? 1 : 1 - ans)); if (o.lock) O$(o.lock, ans);
-        const m = Math.round(o.t.mins * ease(seg(amb, .25, 1))); if (m !== o.shown) { o.shown = m; o.tx.textContent = m + ' min'; }
-      }
+    const F = rise > 0 ? D.rise[f] : null;
+    // the typed question and its answer
+    const n = Math.round(seg(p, ...T.type) * qText.length); if (n !== typed) { typed = n; q.textContent = qText.slice(0, n); }
+    const t2 = p >= T.told; if (t2 !== told) { told = t2; w4.classList.toggle('told', t2); if (t2) sound('told'); }
+    // trails of the focused kind
+    const focus = CATS[cat];
+    for (const k in els.trails) { const on = inCmp && TRAILS[focus].includes(k) ? 1 : 0, tr = els.trails[k]; const off = tr._off == null ? 1 : tr._off; tr._want = on; }
+    // marks
+    const lab = rise > .9 ? (told ? 1 : 0) : inCmp ? 1 : 0;
+    els.tags.forEach(o => {
+      const xy = F ? F.tags[o.i] : o.t.xy, [x, y] = px(xy);
+      let a = 0, foc = false, say = '';
+      if (rise > .02) { const behind = y > bx.wt - 14 && Math.abs(x - bx.sw / 2) < Math.min(bx.sw * .5, 520); a = seg(rise, 0, .22) * (ASK[o.t.id] ? 1 : .55) * (behind && !ASK[o.t.id] ? 1 - seg(p, T.type[0], T.told) : 1); if (ASK[o.t.id]) { foc = told && !behind; say = told && !behind ? ASK[o.t.id] : ''; } }
+      else if (p < T.cmpIn[0]) a = ease(seg(lights, o.at * .72, o.at * .72 + .28));
+      else { const right = x > gx + 6, under = y > bx.ct - 12; foc = o.k === focus && !under; a = right ? (cmp > .02 ? (foc ? 1 : under ? 0 : .32) : 1) : (cmp < .5 ? 1 - cmpIn : 0); say = foc ? (SAY[focus][o.t.id] || '') : ''; }
+      const w = o.wait && (rise > .02 ? true : p >= T.cmpIn[0] && (focus === 'wip' || focus === 'dock') && SAY[focus][o.t.id]);
+      if (o.say !== say) { o.say = say; o.lab.textContent = say; }
+      const flip = xy[0] > (V === 'P' ? .55 : .74);
+      const cls = 'see-m' + (w ? ' w' : '') + (foc ? ' f' : '') + (flip ? ' l' : ''); if (o.e.className !== cls) o.e.className = cls;
+      const tf = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`; if (o._tf !== tf) { o._tf = tf; o.e.style.transform = tf; }
+      O$(o.e, a); o.e.style.setProperty('--lab', say ? lab : 0); o.e.style.setProperty('--ring', foc ? 1 : 0);
+      // a kind's name lights in the list as its first tag lights
+      if (p < T.cmpIn[0] && o.t.kind in LEGEND && a > .6) kinds[LEGEND[o.t.kind]]._on = true;
     });
-    els.trails.forEach((o, i) => {
-      const fk = F ? f : -1; if (o.fk !== fk) { o.fk = fk; o.len = 0; const pts2 = (F ? F.paths[o.k] : D.eye.paths[o.k]).map(q => (q[0] * W).toFixed(1) + ',' + (q[1] * H).toFixed(1)).join(' '); o.g.setAttribute('points', pts2); o.l.setAttribute('points', pts2); }
-      const d = +(1 - ease(seg(tr, i * .06, i * .06 + .6))).toFixed(4), op = (1 - .6 * ans);
-      A$(o.g, 'stroke-dashoffset', d); A$(o.l, 'stroke-dashoffset', d);
-      O$(o.l, .9 * op); O$(o.g, .16 * op);
-      const run = 1 - d; if (run > .001 && run < .999) { const L = o.len || (o.len = o.l.getTotalLength()), pt = o.l.getPointAtLength(L * run); o.h.setAttribute('cx', pt.x); o.h.setAttribute('cy', pt.y); O$(o.h, 1); } else O$(o.h, 0);
-    });
-    const last = D.rise[D.rise.length - 1];
-    els.zones.forEach(o => { const xy = last.zones[o.k]; A$(o.e, 'x', xy[0] * W); A$(o.e, 'y', xy[1] * H); O$(o.e, .9 * seg(rise, .92, 1) * (1 - .5 * ans)); });
-    // words come in on their own once you reach them; the scroll itself carries them away
-    const step = SHOW.findIndex(r => w >= r[0] && w < r[2]);
+    if (p < T.cmpIn[0]) { kinds.forEach((k, i) => { const on = !!k._on || (i === 5 && lights > .92); k.classList.toggle('on', on); k._on = false; }); }
+    // beat 1's questions, in the dark where nobody can see
+    const qa = (1 - seg(p, .1, .155)) * (seen ? 1 : 0);
+    els.qs.forEach((o, j) => { if (V === 'P' && o.skipP) return O$(o.e, 0); const xy = D.eye.tags[o.i].xy, [x, y] = px(xy), vis = onScreen(x, y) || y < bx.sh * .7; o.e.className = 'see-qm' + (o.left || xy[0] > (V === 'P' ? .55 : .8) ? ' l' : ''); const tf = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`; if (o._tf !== tf) { o._tf = tf; o.e.style.transform = tf; } O$(o.e, vis ? qa * ease(seg(p, -.02 + j * .015, .02 + j * .015)) : 0); });
+    // words and ticks
+    const step = SHOW.findIndex(r => p >= r[0] && p < r[2]);
     words.forEach((el, i) => { const r = SHOW[i], out = seg(p, r[1], r[2]); el.classList.toggle('on', i === step && (i > 0 || seen)); el.style.opacity = out > 0 ? (1 - out).toFixed(3) : ''; el.style.setProperty('--out', out.toFixed(3)); });
-    if (step !== shown || force) { shown = step; const k = w < .14 ? 0 : w < .44 ? 1 : w < .7 ? 2 : 3; ticks.forEach((t, i) => t.classList.toggle('on', i === k)); }
-    // scroll 1 is a question you can answer with a finger: it stays open until the lights go
-    const ask = p >= -.01 && p < T.dip[0]; root.classList.toggle('see-ask', ask); if (ask && seen && !lit0 && root.getBoundingClientRect().top < innerHeight * .15) lightUp(); if (!ask && tip.classList.contains('say')) tip.classList.remove('on', 'say');
-    const night = lit0 && p < T.dip[1]; if (night !== root._night) { root._night = night; root.classList.toggle('see-night', night); } V$('--hn', night ? (1 - ease(dip)).toFixed(3) : '0');
-    // the question is typed by the scroll, and answered on the floor
-    const text = q.dataset.q, n = calm ? text.length : Math.round(text.length * seg(p, ...T.type));
-    if (n !== typed) { typed = n; q.textContent = text.slice(0, n); }
-    const told = p >= T.ans[0] - .012; words[3].classList.toggle('told', told);
-    // what the story is doing now, for the ear and the hand
-    const lit = order.filter(o => pts > o.at * .7 + .12).length, waits = order.filter(o => o.wait && !o.hero && amb > .3 + .25 * (o.t.mins > 20));
-    const st = { near, vel, fly, real, dip: Math.max(dip, night ? bankOff / 3 : 0), bank: Math.max(Math.min(3, Math.floor(dip * 3.2)), night ? bankOff : 0), lit, litAt: lit ? order[lit - 1].t.xy : null, amber: waits.length, amberAt: waits.length ? waits[waits.length - 1].t.xy : null, hero: amb > .8, heroAt: D.eye.tags[hi].xy, mins: els.tags[hi].shown, rise, typed: n, told, guess: guessed, pkLit, hotN, pickAt, bankOff };
-    const p0 = was || st; was = st;
-    if (!calm && navigator.vibrate) { const n = st.told && !p0.told ? 18 : st.hero && !p0.hero ? 14 : st.bank > p0.bank ? 10 : 0; if (n) try { navigator.vibrate(n); } catch (e) {} }
-    if (sound) sound.hear(st);
+    if (step !== shownStep) { shownStep = step; ticks.forEach((t, i) => t.classList.toggle('on', i === Math.max(0, step))); if (step >= 0) sound('beat', step); }
+    trailsTick();
+  }
+  // trails draw in and out with a little time of their own, so a tab change reads as motion, not a cut
+  function trailsTick() {
+    let busy = false;
+    for (const k in els.trails) { const tr = els.trails[k], to = tr._want ? 0 : 1, now = tr._off == null ? 1 : tr._off; if (Math.abs(to - now) < .002) { tr._off = to; continue; } const nx = now + (to - now) * .12; tr._off = nx; busy = true; A$(tr.l, 'stroke-dashoffset', nx.toFixed(3)); A$(tr.g, 'stroke-dashoffset', nx.toFixed(3)); }
+    if (busy) kick();
+  }
+  function setCat(i, user) {
+    if (i === cat && !user) return; const was = cat; cat = i;
+    cards.forEach((c, j) => c.classList.toggle('on', j === i)); tabs.forEach((t, j) => { t.setAttribute('aria-selected', j === i); t.tabIndex = j === i ? 0 : -1; });
+    if (was >= 0 && was !== i && cur > T.cmpIn[0] && cur < T.cmpOut[0]) sound('cat', i);
   }
 
-  function measure() {
-    const r = root.getBoundingClientRect(), span = r.height - innerHeight;
-    want = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
-    const wasNear = near; near = r.top < innerHeight * 2.5 && r.bottom > -innerHeight; root.classList.toggle('near', near);
-    if (near !== wasNear) { if (near) fetchScore(); if (sound) paint(); idle(); } if (!seen && r.top < innerHeight * .5) { seen = true; shown = -1; }
-    if (near && rest(want) > .2) preload();
-    if (!raf && near) raf = requestAnimationFrame(tick);
-  }
-  // the picture follows the scroll with a little weight. Time-based, so it feels the same at 60, 90 or 120 frames a second
-  let lastT = 0;
+  // the scroll moves the story with a little weight; time-based, so it feels the same at any frame rate
   function tick(now) {
-    raf = 0; const dt = lastT ? Math.min(64, now - lastT) : 16.7; lastT = now; const k = 1 - Math.pow(1 - .16, dt / 16.7), kp = 1 - Math.pow(1 - .08, dt / 16.7);
-    const d = want - cur; vel += (Math.abs(d) - vel) * .2; cur = calm || Math.abs(d) < .0004 ? want : cur + d * k;
-    px += (tx - px) * kp; py += (ty - py) * kp;
-    paint();
-    if (cur !== want || Math.abs(tx - px) + Math.abs(ty - py) > .002 || (sound && vel > .0004)) raf = requestAnimationFrame(tick); else lastT = 0;
+    raf = 0; const dt = last ? Math.min(64, now - last) : 16; last = now;
+    want = progress(); const k = STILL ? 1 : 1 - Math.exp(-dt / 85); cur += (want - cur) * k; if (Math.abs(want - cur) < .0004) cur = want;
+    paint(); if (cur !== want) kick(); else last = 0;
   }
+  function kick() { if (!raf) raf = requestAnimationFrame(tick); }
 
-  // the nearest thing of a kind to the cursor or finger, within reach
-  function pick(ev, reach, kind, ok) {
-    const b = ev._b || (ev._b = box.getBoundingClientRect()); let best = null, bd = reach;
-    els.tags.forEach(o => { if ((kind && o.t.kind !== kind) || (ok && !ok(o))) return; const x = b.left + o.t.xy[0] * b.width, y = b.top + o.t.xy[1] * b.height, d = Math.hypot(ev.clientX - x, ev.clientY - y); if (d < bd) { bd = d; best = [o, x, y]; } });
-    return best;
-  }
-  function say(best, text, cls) {
-    const s = stage.getBoundingClientRect(); tip.textContent = text; tip.classList.toggle('say', !!cls); tip.classList.add('on');
-    const x = Math.min(s.width - tip.offsetWidth - 12, Math.max(12, best[1] - s.left + 14)); tip.style.transform = `translate(${Math.round(x)}px,${Math.round(best[2] - s.top - 40)}px)`;
-  }
-  // a point says what it is when the cursor or a finger comes near
-  function hover(ev) {
-    const c = rest(cur); if (!els || tip.classList.contains('say')) return;
-    if (c < T.pts[1] || c > T.rise[0]) return tip.classList.remove('on');
-    const best = pick(ev, 34); if (!best) return tip.classList.remove('on');
-    say(best, best[0].t.kind + (best[0].wait && c > T.amber[1] ? ', waiting ' + best[0].t.mins + ' min' : ''));
-  }
-  // Scroll 1 is a game with three picks. The hall's lights come down, the trolleys light up one by one, and the visitor
-  // picks the one that has waited 42 minutes. Almost everyone misses, and every miss shows the point: they all look the same,
-  // waiting cannot be seen. A hit (or the third miss, which shows the answer) carries the visitor straight into the next scene.
-  // It can be played with a mouse, a finger or the keyboard (a hidden row of buttons, one per trolley in view).
-  const sayEl = root.querySelector('.see-say'), lives = [...root.querySelectorAll('.see-lives i')], livesEl = root.querySelector('.see-lives'), keys = root.querySelector('.see-keys');
-  const picked = {}, N_TRY = 3, litIds = new Set(), spot = root.querySelector('.see-spot');
-  // which trolleys stand in light: an opening in the dark for each one that is on (a missed one goes dark; after the answer, only it stays lit)
-  function spots() {
-    if (!spot || !els) return;
-    const m = els.tags.filter(o => o.pk && litIds.has(o.t.id) && picked[o.t.id] !== 'no' && (!found || o.hero)).map(o => { const k = .62 + .76 * o.t.xy[1]; return `radial-gradient(ellipse ${(88 * k / W * 100).toFixed(2)}% ${(62 * k / H * 100).toFixed(2)}% at ${(o.t.xy[0] * 100).toFixed(2)}% ${((o.t.xy[1] * H + 24 * k) / H * 100).toFixed(2)}%,#000 34%,transparent 100%)`; }).join(',') || 'linear-gradient(transparent,transparent)';
-    spot.style.webkitMaskImage = m; spot.style.maskImage = m;
-  }
-  let tries = 0, found = false, hot = null, lit0 = false, armed = false, pkLit = 0, pickAt = null, hotN = 0, bankOff = 0, nudge = 0;
-  const tell = html => { if (!sayEl) return; sayEl.classList.add('swap'); setTimeout(() => { sayEl.innerHTML = html; sayEl.classList.remove('swap'); }, 200); };
-  function ago(o) { return o.t.mins && o.t.mins !== 42 ? o.t.mins : 2 + o.i * 7 % 9; }
-  // only the trolleys the visitor can actually see are in the game (a phone shows fewer of them than a laptop)
-  // (and not one the words sit on, nor T-02, which the photograph hides behind a column)
-  const inView = () => { const b = box.getBoundingClientRect(), s = stage.getBoundingClientRect(), wr = words[0].getBoundingClientRect(), floor = Math.min(s.bottom - 14, (wr.height ? wr.top : s.bottom) - 18); return els.tags.filter(o => { if (!o.pk || o.t.id === 'T-02') return false; const x = b.left + o.t.xy[0] * b.width, y = b.top + o.t.xy[1] * b.height; return o.hero || (x > s.left + 14 && x < s.right - 14 && y > s.top + 70 && y < floor); }); };
-  let game = new Set();
-  const setHot = o => { if (o === hot) return; if (hot) hot.pk.classList.remove('hot'); hot = o; if (o) { o.pk.classList.add('hot'); hotN++; pickAt = o.t.xy; if (sound) paint(); } };
-  function buildKeys() {
-    if (!keys || !armed) return; keys.textContent = ''; const list = els.tags.filter(o => game.has(o.t.id)).sort((a, b) => a.t.xy[0] - b.t.xy[0]);
-    list.forEach((o, i) => { const bt = document.createElement('button'); bt.type = 'button'; bt.textContent = `Trolley ${i + 1} of ${list.length}`; bt.disabled = found || !!picked[o.t.id]; bt.onfocus = () => setHot(found || picked[o.t.id] ? null : o); bt.onblur = () => setHot(null); bt.onclick = ev => { ev.stopPropagation(); choose(o); }; o.key = bt; keys.append(bt); });
-  }
-  function lightUp() {            // the hall's lights go off bank by bank, far to near; then the trolleys' lights come on, each with a note
-    lit0 = true; const list = inView().sort((a, b) => a.t.xy[1] - b.t.xy[1]), t0 = calm ? 0 : 1500, gap = calm ? 0 : 90; game = new Set(list.map(o => o.t.id));
-    [1, 2, 3].forEach(b => setTimeout(() => { root.classList.add('pk-b' + b); bankOff = b; if (sound) paint(); }, calm ? 0 : 200 + (b - 1) * 420));
-    list.forEach((o, i) => setTimeout(() => { o.pk.classList.add('lit'); litIds.add(o.t.id); spots(); pkLit++; pickAt = o.t.xy; if (sound) paint(); }, t0 + i * gap));
-    setTimeout(() => {
-      armed = true; list.forEach(o => { o.pk.classList.add('lit'); litIds.add(o.t.id); }); spots(); root.classList.add('pk-ready'); buildKeys();
-    }, t0 + list.length * gap + 120);
-    setTimeout(() => {
-      // nobody has picked yet: one slow wave of light across the trolleys says they can be
-      nudge = setTimeout(() => { if (!tries && !found && root.classList.contains('see-ask')) { root.classList.add('pk-wave'); setTimeout(() => root.classList.remove('pk-wave'), 2600); } }, 6500);
-    }, t0 + list.length * gap + 140);
-  }
-  const red = root.querySelector('.see-red');
-  // straight on into scene 2: the lights go down and every tag comes on, played by a glide rather than the visitor's wheel
-  function carryOn(delay) {
-    setTimeout(() => {
-      if (!root.classList.contains('see-ask') || document.hidden) return;   // the visitor has already moved on by themselves
-      const span = root.offsetHeight - innerHeight, top = root.getBoundingClientRect().top + scrollY, to = Math.round(top + span * (PULL + (1 - PULL) * .3));
-      if (scrollY >= to - 2) return; if (calm) return scrollTo(0, to);
-      const from = scrollY, t0 = performance.now(), ms = 1900; let stop = false; const halt = () => { stop = true; off(); }, EV = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
-      const off = () => EV.forEach(e => removeEventListener(e, halt)); EV.forEach(e => addEventListener(e, halt, { passive: true }));
-      const e2 = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-      const step = now => { if (stop) return; const k = Math.min(1, (now - t0) / ms); scrollTo(0, from + (to - from) * e2(k)); if (k < 1) requestAnimationFrame(step); else off(); };
-      requestAnimationFrame(step);
-    }, delay);
-  }
-  // a miss's small label never sits under the answer's
-  function declash() { if (!els || !found) return; const h = els.tags[hi], a = h.pl.getBoundingClientRect(); els.tags.forEach(o => { if (o === h || !o.pl || picked[o.t.id] !== 'no') return; const b = o.pl.getBoundingClientRect(); o.pk.classList.toggle('clash', b.left < a.right + 8 && b.right > a.left - 8 && b.top < a.bottom + 6 && b.bottom > a.top - 6); }); }
-  function reveal(won) {
-    found = true; const h = els.tags[hi]; picked[h.t.id] = 'yes'; h.pk.classList.remove('hot', 'no'); h.pk.classList.add('yes', 'lit'); h.pl.textContent = '42 min'; root.classList.add('see-found'); spots();
-    requestAnimationFrame(declash);
-    if (livesEl) livesEl.classList.toggle('won', won); guessed += won ? 100 : 50; pickAt = h.t.xy; setHot(null); paint();
-    if (keys) keys.querySelectorAll('button').forEach(b => { b.disabled = true; });
-    carryOn(won ? 1400 : 2400);
-  }
-  function choose(o) {
-    if (!els || !armed || found || !o || !game.has(o.t.id) || picked[o.t.id] || !root.classList.contains('see-ask')) return;
-    clearTimeout(nudge); const n = game.size; tries++;
-    if (o.hero) { reveal(true); return tell(tries === 1 ? `That's the one. First pick, one chance in ${n}. <b>AmIMotion never needs the luck.</b>` : `That's the one, on pick ${tries}. On a real floor every pick is a walk. <b>AmIMotion never needs one.</b>`); }
-    if (lives[tries - 1]) lives[tries - 1].classList.add('out');
-    picked[o.t.id] = 'no'; guessed += 1; pickAt = o.t.xy; if (hot === o) setHot(null); o.pk.classList.add('no'); spots(); o.pl.textContent = ago(o) + ' min'; if (o.key) o.key.disabled = true;
-    if (red && !calm) { red.classList.remove('on'); void red.offsetWidth; red.classList.add('on'); }
-    if (tries >= N_TRY) { tell(`It was this one: <b>42 minutes, and it looked like all the rest.</b>`); paint(); return setTimeout(() => reveal(false), 500); }
-    tell(tries === 1 ? `Not this one. It got here ${ago(o)} minutes ago. <b>They all look the same.</b>` : `Not this one either. <b>Your eyes can't see how long something has waited.</b>`);
-    paint();
-  }
-  const under = ev => { if (!els || !armed || found || !root.classList.contains('see-ask')) return null; const b = pick(ev, ev.pointerType === 'touch' ? 64 : 80, 'Trolley', o => game.has(o.t.id) && !picked[o.t.id]); return b ? b[0] : null; };
-  function guess(ev) { if (!ev.target.closest('.see-snd')) choose(under(ev)); }
-  // under the cursor or the finger, a trolley's light comes up: it is the thing to pick
-  function lift(ev) { setHot(under(ev)); }
+  // tabs: each one is a place in the scroll, so the tab and the scroll never disagree
+  const catAt = i => (root._top || 0) + (root._len || 0) * (T.cats[0] + (T.cats[1] - T.cats[0]) / 5 * (i + .45));
+  tabs.forEach((t, i) => t.addEventListener('click', () => { measure(); scrollTo({ top: catAt(i), behavior: 'smooth' }); }));
+  $('.see-tabs').addEventListener('keydown', e => { const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return; e.preventDefault(); const i = clamp(cat + d, 0, 4); tabs[i].focus(); tabs[i].click(); });
 
-  // Sound is on by default. No browser lets a page make a sound before the visitor's first tap, click or key (a scroll is not
-  // enough), so the button says "Tap for sound" until then, and the very first touch anywhere starts it. The audio context is
-  // made inside that touch (iPhones refuse one made later); the score itself is fetched as the section comes near.
-  let muted = false, AC = null; try { muted = localStorage.getItem('see-mute') === '1'; } catch (e) {}
-  const playing = () => !!(sound && AC && AC.state === 'running' && !muted);
-  const label = () => { if (!sndBtn) return; const on = playing(); sndBtn.setAttribute('aria-pressed', on); sndBtn.classList.toggle('wait', !muted && !on); sndBtn.lastElementChild.textContent = muted ? 'Sound off' : on ? 'Sound on' : 'Tap for sound'; };
-  let score = null;
+  // the line: drag it anywhere on the floor while comparing, or use the arrow keys on its grip
+  let dragging = false;
+  const setG = cx => { const s = stage.getBoundingClientRect(); userG = clamp((cx - s.left) / s.width, .08, .92); paint(true); };
+  grip.addEventListener('pointerdown', e => { dragging = true; grip.classList.add('drag'); grip.setPointerCapture(e.pointerId); e.preventDefault(); });
+  grip.addEventListener('pointermove', e => { if (dragging) setG(e.clientX); });
+  const stop = () => { dragging = false; grip.classList.remove('drag'); }; grip.addEventListener('pointerup', stop); grip.addEventListener('pointercancel', stop);
+  stage.addEventListener('pointerdown', e => { if (!root.classList.contains('cmp') || e.target.closest('button,.see-grip,a') || e.pointerType === 'touch') return; setG(e.clientX); });
+  grip.addEventListener('keydown', e => { const d = e.key === 'ArrowRight' ? .04 : e.key === 'ArrowLeft' ? -.04 : 0; if (!d) return; e.preventDefault(); userG = clamp((userG != null ? userG : .5) + d, .08, .92); paint(true); });
+
+  // sound: on by default. Browsers let it start only after a tap, click or key, so it starts on the first one, anywhere on the page
+  let AC = null, S = null, score = null, pref = true, started = false;
+  try { pref = localStorage.getItem('see-sound') !== 'off'; } catch (e) {}
+  const here = (document.currentScript && document.currentScript.src) || '';
+  const label = () => { snd.setAttribute('aria-pressed', pref && started); snd.lastChild.textContent = !pref ? 'Sound off' : started ? 'Sound on' : 'Tap for sound'; };
   const fetchScore = () => score || (score = new Promise(res => { const sc = document.createElement('script'); sc.src = here.replace(/see\.js(\?.*)?$/, 'see-sound.js'); sc.onload = sc.onerror = res; document.head.append(sc); }));
-  function start() {                 // only ever called inside a tap, click or key
-    if (muted) return;
-    if (AC) { if (AC.state !== 'running') AC.resume().then(label, label); return; }
-    try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
-    try { const b = AC.createBuffer(1, 1, 22050), s = AC.createBufferSource(); s.buffer = b; s.connect(AC.destination); s.start(0); } catch (e) {}   // older iPhones unlock on a played sample
-    AC.resume().then(label, label); AC.onstatechange = label;
-    fetchScore().then(() => { try { sound = window.SeeSound(AC); sound.set(true); was = null; paint(); } catch (e) { sound = null; } label(); });
+  function startSound() {
+    if (started || !pref) return; started = true;
+    try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); AC.resume(); } catch (e) { started = false; return; }
+    fetchScore().then(() => { try { S = window.SeeSound(AC); S.set(true); S.room(near); } catch (e) { S = null; } label(); });
+    label();
   }
-  const gesture = ev => { if (ev.target && ev.target.closest && ev.target.closest('.see-snd')) return; if (!playing()) start(); };
-  ['pointerdown', 'pointerup', 'touchend', 'keydown'].forEach(e => addEventListener(e, gesture, { passive: true, capture: true }));
-  if (sndBtn) sndBtn.addEventListener('click', () => {
-    if (playing()) { muted = true; sound.set(false); }
-    else { muted = false; if (sound) sound.set(true); start(); }
-    try { localStorage.setItem('see-mute', muted ? '1' : '0'); } catch (e) {} was = null; paint(); label();
+  function sound(what, arg) { if (S && pref && near) S.play(what, arg); }
+  ['pointerdown', 'keydown', 'touchend'].forEach(ev => addEventListener(ev, e => { if (!e.target.closest || !e.target.closest('.see-snd')) startSound(); }, { capture: true, passive: true }));
+  snd.addEventListener('click', () => {
+    if (!started && pref) { startSound(); return; }
+    pref = !pref; try { localStorage.setItem('see-sound', pref ? 'on' : 'off'); } catch (e) {}
+    if (pref && !started) startSound(); else if (S) S.set(pref); label();
   });
-  // a hidden tab, or a page scrolled well away from the floor, is silent and costs nothing
-  let nap = 0;
-  const idle = () => { if (!AC) return; clearTimeout(nap); const away = document.hidden || !near; if (away) nap = setTimeout(() => { if (AC.state === 'running') AC.suspend(); }, 1500); else if (!muted && AC.state === 'suspended') AC.resume().then(label, label); };
-  document.addEventListener('visibilitychange', idle);
   label();
 
-  root.classList.add('live');
-  // the floor's data waits for the hero: it is fetched when the section first shows, or once the page has loaded and gone quiet
-  let booted = false;
-  const boot = () => { if (booted) return; booted = true; load().then(() => { measure(); cur = want; paint(true); }); };
-  if ('IntersectionObserver' in window) { const io = new IntersectionObserver(e => { if (e.some(x => x.isIntersecting)) { io.disconnect(); boot(); } }, { rootMargin: '0px' }); io.observe(root); } else boot();
-  const later = () => (window.requestIdleCallback || setTimeout)(boot, { timeout: 1200 });
-  if (document.readyState === 'complete') later(); else addEventListener('load', later, { once: true });
-  addEventListener('scroll', measure, { passive: true }); addEventListener('resize', () => { measure(); paint(); });
-  tall.addEventListener('change', () => { if (booted) load().then(measure); });
-  stage.addEventListener('pointerdown', lift); ['pointerup', 'pointercancel', 'pointerleave'].forEach(e => stage.addEventListener(e, ev => { if (ev.pointerType !== 'mouse' || e === 'pointerleave') setTimeout(() => setHot(null), 260); }));
-  stage.addEventListener('pointermove', ev => { hover(ev); lift(ev); if (ev.pointerType === 'mouse') { tx = ev.clientX / innerWidth - .5; ty = ev.clientY / innerHeight - .5; if (!raf) raf = requestAnimationFrame(tick); } });
-  stage.addEventListener('click', guess); stage.addEventListener('pointerleave', () => { if (!tip.classList.contains('say')) tip.classList.remove('on'); });
+  // only while the section is on screen does any of this run
+  new IntersectionObserver(es => es.forEach(e => {
+    near = e.isIntersecting; if (S) S.room(near);
+    if (near) { if (!D) load(); else preload(); if (!seen) { seen = true; } measure(); kick(); }
+  }), { rootMargin: '25% 0px' }).observe(root);
+  addEventListener('scroll', () => { if (near) kick(); }, { passive: true });
+  let rz = 0; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { const v = matchMedia('(max-aspect-ratio:4/5)').matches ? 'P' : 'L'; if (v !== V && D) { D = null; els = null; load(); } else { measure(); paint(true); } }, 120); });
+  addEventListener('load', () => { measure(); if (near) paint(true); });
+  // the floor's numbers are tiny; fetch them once the page is idle, so the first scroll never waits
+  const idle = window.requestIdleCallback ? f => requestIdleCallback(f, { timeout: 3000 }) : f => setTimeout(f, 1500); addEventListener("load", () => idle(() => { if (!D) load(); }));
 })();
