@@ -639,8 +639,12 @@ def ia_next(body, url, titles, lines):
     nxt = plan.get("next")
     card = ""
     if nxt and nxt in titles:
-        card = (f'<a class="ia-go" href="{nxt}"><span class="ia-go-k">Next step</span><b>{html.escape(LABEL.get(nxt) or titles[nxt])}</b>'
-                f'<span class="ia-go-l">{html.escape(full_stop(lines.get(nxt, "")))}</span></a>')
+        label, line = html.escape(LABEL.get(nxt) or titles[nxt]), html.escape(full_stop(lines.get(nxt, "")))
+        # when the page's own Read next list already names the next step, its words move into the card unchanged
+        own = re.search(r'aria-labelledby="read-next".*?<li><a href="' + re.escape(nxt) + r'">(.*?)</a>\s*<span>(.*?)</span></li>', body, re.S)
+        if own and "<" not in own.group(1) + own.group(2): label, line = own.group(1), own.group(2)
+        card = (f'<a class="ia-go" href="{nxt}"><span class="ia-go-k">Next step</span><b>{label}</b>'
+                f'<span class="ia-go-l">{line}</span></a>')
     block = card + ia_route(url, nxt)
     # the next step is the big card: the same page is not listed again under it (when the list keeps others)
     def drop_next(lst):
