@@ -32,7 +32,7 @@ html body.ds:not(.pl) main>.head:not(.w-poster)>h1{
   font:600 var(--u-h1)/.98 var(--font-display)!important;letter-spacing:-.04em;color:var(--u-ink);text-align:left;text-wrap:balance}
 html body.ds:not(.pl) main>.head:not(.w-poster)>h1 span{display:block}
 html body.ds:not(.pl) main>.head:not(.w-poster)>h1 span+span{color:var(--u-soft)!important}
-html body.ds:not(.pl) main>.head:not(.w-poster) .words{display:contents}
+html body.ds:not(.pl) main>.head:not(.w-poster) .words{display:contents!important}
 html body.ds:not(.pl) main>.head:not(.w-poster) .lede{
   grid-column:1 / span 6;grid-row:3;margin:0;max-width:30em;
   font:400 var(--u-lede)/1.38 var(--font-text)!important;letter-spacing:-.005em;color:var(--u-ink)!important;text-align:left}
@@ -94,7 +94,7 @@ html:has(.top.away) .ia-strip{top:0}
 .ia-strip .ia-list{gap:clamp(16px,2vw,28px)}
 .ia-strip .ia-g ul{gap:clamp(14px,1.5vw,22px)}
 .ia-strip .ia-g+.ia-g{position:relative;padding-left:clamp(16px,2vw,28px)}
-.ia-strip .ia-g+.ia-g::before{content:"";position:absolute;left:0;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:#c5c9d0}
+.ia-strip .ia-g+.ia-g::before{content:"";position:absolute;left:0;top:50%;width:1px;height:16px;margin-top:-8px;background:rgba(11,13,18,.16)}
 .ia-strip a{position:relative;display:block;white-space:nowrap;font:400 .875rem/52px var(--font-text);color:var(--u-soft);text-decoration:none}
 .ia-strip a:hover{color:var(--u-ink)}
 .ia-strip .ia-door{font:600 .9375rem/52px var(--font-display);letter-spacing:-.01em;color:var(--u-ink)}
@@ -285,3 +285,8 @@ html body.ds:not(.pl) main>.head:not(.w-poster)>.head-pic .hall-lines-pic img{ob
 html body.ds main .updated{display:block;margin:12px 0 0;font-size:.8125rem;line-height:1.4;color:#565c67}
 /* crumbs over a photo stay readable on bright windows and skies */
 html body.ds .head.w-poster .crumbs,html body.ds .head.w-poster .crumbs a{text-shadow:0 1px 2px rgba(0,0,0,.5),0 0 18px rgba(0,0,0,.45)}
+/* Book a call: the form is the page. No picture ahead of it, so the first fields sit in the first screen. */
+html body.ds.page-contact .head .head-pic{display:none}
+html body.ds.page-contact .head{padding-bottom:clamp(20px,3vh,36px)}
+html body.ds.page-contact .head+.ia-strip+.sec,html body.ds.page-contact main>.sec:first-of-type{padding-top:clamp(28px,4vh,48px)}
+@media (min-width:900px){html body.ds.page-contact main>.head:not(.w-poster):has(>.head-pic) .short-answer{grid-column:8 / -1;grid-row:2 / span 2;align-self:end;margin-top:0}}

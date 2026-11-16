@@ -465,7 +465,13 @@ def header_html(url="/", world=None, over=False):
     so it opens on click, tap and keyboard with JavaScript off. Phones: the same bar at the top (logo, Book a call,
     Menu); Menu opens a full-screen sheet with Ask on top and the five doors as pages."""
     here_label = WORLD_DOOR.get(world) if world else None
-    here = next((s for s in NAV["sections"] if s["label"] == here_label), None) or section_of(url)
+    # the lit door is the one the breadcrumb and the section strip name: the nav section that lists the page, else
+    # the door at the top of its ia.json parent chain; a page's picture world only decides when neither knows
+    def ia_door(u, seen=()):
+        par = (IA.get(u) or {}).get("parent")
+        if not par or par in seen: return None
+        return next((x for x in NAV["sections"] if x["url"] == par), None) or ia_door(par, seen + (u,))
+    here = section_of(url) or ia_door(url) or next((s for s in NAV["sections"] if s["label"] == here_label), None)
     cur = lambda u: ' aria-current="page"' if u == url else ""
     doors, panes = [], []
     for s in NAV["sections"]:
