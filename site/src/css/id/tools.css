@@ -4,3 +4,8 @@
 .related li>a{color:#fff!important;font-size:1.6rem!important}
 .related li span{color:rgba(242,243,245,.7)!important}
 .related li::before{display:none}
+/* the dark instrument cards keep white type over the shared related-card style (uplift.css) */
+html body.ds:not(.pl) main .sec .related:not(.tiles) li>a{color:#fff!important}
+html body.ds:not(.pl) main .sec .related:not(.tiles) li>a::after{border-color:#fff}
+html body.ds:not(.pl) main .sec .related:not(.tiles) li>span{color:rgba(242,243,245,.72)!important}
+html body.ds:not(.pl) main .sec .related:not(.tiles) li:hover{background:#262a31!important}
