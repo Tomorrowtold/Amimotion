@@ -1,186 +1,64 @@
-/* The explainer: the section after the hero. One floor and everything on it, in four beats:
-   1 without (a dark floor, you see the corner you stand in), 2 the tags (everything that moves lights up, then the floor is all there),
-   3 without | with (a line you can drag; five kinds of things to compare), 4 ask (the view rises to the map and answers).
-   Without script it is one picture and the words as plain text. With script (.see.live) the stage pins and the scroll drives it. */
+/* The explainer: one vast plant rendered in Blender, one continuous camera move in four scrolls.
+   The scroll position is the film's clock: frames are drawn to a canvas, two at a time, crossfaded.
+   Without script: the poster frame and the words as plain text. With script (.see.live) the stage pins. */
 @font-face{font-family:"Instrument Serif";src:url(../assets/fonts/InstrumentSerif-italic.woff2) format("woff2");font-style:italic;font-weight:400;font-display:swap}
 
-.see{--see-ink:#0b1238;--see-night:#05070d;--see-blue:#66a5fa;--see-amber:#f0a43a;position:relative;background:var(--see-night);color:#fff}
+.see{--see-night:#05070d;--see-blue:#66a5fa;--see-amber:#f0a43a;--see-sod:#ffcf4a;position:relative;background:var(--see-night);color:#fff}
 .see-stage{position:relative;overflow:hidden;height:100vh;height:100svh;background:var(--see-night)}
-.see.live{height:600vh}
+.see.live{height:640vh}
 .see.live .see-stage{position:sticky;top:0}
+.see-poster,.see-film{position:absolute;inset:0;width:100%;height:100%;display:block}
+.see-poster{object-fit:cover;object-position:60% 50%}
+.see.ready .see-poster{visibility:hidden}
 
-/* the picture always covers the stage; every layer shares one box, so the marks stay on their objects */
-.see-stage{--bw:max(100vw,calc(100vh*16/9));--bw:max(100vw,calc(100svh*16/9));--bh:calc(var(--bw)*9/16)}
-.see-box{position:absolute;left:calc(50% - var(--bw)/2);top:calc(50% - var(--bh)/2);width:var(--bw);height:var(--bh)}
-.see-box img,.see-box canvas,.see-box svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.see-box img{object-fit:cover}
+/* words sit low left on a soft shade; one line of type per scroll */
+.see-shade{position:absolute;inset:auto 0 0 0;height:62%;pointer-events:none;background:linear-gradient(to top,rgba(5,7,13,.86),rgba(5,7,13,.5) 45%,rgba(5,7,13,0))}
+.see-words{position:absolute;left:var(--m,clamp(20px,4vw,112px));right:var(--m,clamp(20px,4vw,112px));bottom:clamp(40px,9vh,110px)}
+.see-w{max-width:34rem}
+.see.live .see-w{position:absolute;left:0;bottom:0;opacity:0;transform:translateY(18px);transition:opacity .6s var(--ease,ease),transform .8s var(--ease,ease);pointer-events:none}
+.see.live .see-w.on{opacity:1;transform:none}
+.see:not(.live) .see-w+.see-w{margin-top:28px}
+.see-h{margin:0;font:600 clamp(2rem,1.2rem + 2.8vw,4rem)/1.02 var(--display,"AmI Display",Arial,sans-serif);letter-spacing:-.035em;text-wrap:balance}
+.see-h em{font:italic 400 1.08em/1 "Instrument Serif",Georgia,serif;letter-spacing:-.01em}
+.see-w[data-s="1"] .see-h em{color:var(--see-sod)}
+.see-w[data-s="2"] .see-h em,.see-w[data-s="3"] .see-h em{color:var(--see-blue)}
+.see-w[data-s="4"] .see-h em{color:var(--see-amber)}
+.see-p{margin:16px 0 0;max-width:30rem;color:rgba(255,255,255,.78);font:400 clamp(1rem,.94rem + .25vw,1.2rem)/1.5 var(--text,"AmI Text",Arial,sans-serif)}
+.see-q{margin:18px 0 0;display:inline-flex;align-items:center;gap:12px;background:#fff;color:#0b1238;border-radius:14px;padding:12px 16px;font:500 clamp(1rem,.95rem + .2vw,1.15rem)/1.3 var(--text,"AmI Text",Arial,sans-serif)}
+.see-q::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--see-blue);box-shadow:0 0 0 5px rgba(102,165,250,.25)}
+.see-ans{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px;max-width:30rem}
+.see-ans li{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:baseline;padding:10px 14px;border-radius:12px;background:rgba(10,14,24,.72);border:1px solid rgba(255,255,255,.12);font:400 .98rem/1.3 var(--text,"AmI Text",Arial,sans-serif)}
+.see-ans b{font:600 .98rem/1.3 var(--display,"AmI Display",Arial,sans-serif)}
+.see-ans span{color:rgba(255,255,255,.7)}
+.see-ans em{font-style:normal;color:var(--see-amber);font-weight:600;font-variant-numeric:tabular-nums}
+.see.live .see-ans li{opacity:var(--a,0);transform:translateY(calc((1 - var(--a,0))*8px));transition:opacity .4s,transform .5s}
 
-/* the split: everything left of --sx (a share of the box) is the floor without AmIMotion */
-.see-dim{mix-blend-mode:multiply;opacity:var(--night,0);clip-path:inset(0 calc(100% - var(--sx,100%)) 0 0)}
-.see-spot{opacity:var(--night,0);clip-path:inset(0 calc(100% - var(--sx,100%)) 0 0);-webkit-mask-image:var(--pools);mask-image:var(--pools)}
-.see-blue,.see-amber{mix-blend-mode:screen;clip-path:inset(0 0 0 var(--wx,0%))}
-.see-blue{opacity:var(--blue,0)}
-.see-amber{opacity:var(--amb,0)}
-.see-rise{opacity:var(--rise,0)}
-.see:not(.live) .see-dim,.see:not(.live) .see-spot,.see:not(.live) .see-rise{display:none}
-.see .see-off{visibility:hidden;mix-blend-mode:normal}
-.see.live .see-dim,.see.live .see-blue,.see.live .see-amber,.see.live .see-spot{will-change:opacity,clip-path}
+/* marks: small labels pinned to things in the film, placed from the same camera the film was rendered with */
+.see-marks{position:absolute;inset:0;pointer-events:none}
+.see-m{position:absolute;left:0;top:0;transform:translate(var(--x),var(--y));opacity:var(--o,0);transition:opacity .35s;white-space:nowrap}
+.see-m i{position:absolute;left:-5px;top:-5px;width:10px;height:10px;border-radius:50%;border:1.5px solid #fff}
+.see-m span{position:absolute;left:12px;top:-30px;font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);letter-spacing:.02em;padding:7px 10px;border-radius:999px;background:rgba(5,7,13,.62);border:1px solid rgba(255,255,255,.18)}
+.see-m.amb i{border-color:var(--see-amber);background:var(--see-amber);box-shadow:0 0 16px var(--see-amber)}
+.see-m.amb span{background:#fff;color:#0b1238;border-color:#fff}
+.see-m.amb span em{font-style:normal;color:#b86e05;font-weight:600}
+.see-m.r i{border-color:#ff5a5a}.see-m.g i{border-color:#4cff7a}.see-m.b i{border-color:#6a8cff}
 
-.see-shade{position:absolute;inset:auto 0 0 0;height:calc(56% + 22%*var(--ask,0));pointer-events:none;background:linear-gradient(to top,rgba(5,7,13,.9),rgba(5,7,13,.55) 40%,rgba(5,7,13,0))}
-.see-grain{position:absolute;inset:0;pointer-events:none;background:url(../assets/see/grain.png) 0 0/256px 256px;mix-blend-mode:overlay;opacity:.22}
-.see-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 46%,rgba(5,7,13,0) 50%,rgba(5,7,13,.4) 100%)}
+.see-snd{position:absolute;right:var(--m,clamp(20px,4vw,112px));top:calc(var(--bar,72px) + 14px);display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(5,7,13,.45);color:#fff;font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);cursor:pointer}
+.see-snd i{display:flex;gap:2px;align-items:flex-end;height:12px}
+.see-snd i b,.see-snd i::before,.see-snd i::after{content:"";width:2px;background:#fff;height:5px;border-radius:1px}
+.see-snd[aria-pressed="true"] i b{height:12px}.see-snd[aria-pressed="true"] i::before{height:8px}.see-snd[aria-pressed="true"] i::after{height:10px}
+.see:not(.live) .see-snd,.see:not(.live) .see-ticks{display:none}
+.see-ticks{position:absolute;right:var(--m,clamp(20px,4vw,112px));top:50%;transform:translateY(-50%);display:grid;gap:10px}
+.see-ticks i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.32);transition:background .3s}
+.see-ticks i.on{background:#fff}
 
-/* trails, anchors and the lines from the roof: drawn in the box, thin at any size */
-.see-ov{overflow:visible}
-.see-ov *{vector-effect:non-scaling-stroke}
-.see-ov .tr{fill:none;stroke:#a9cdfd;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.see-ov .trg{fill:none;stroke:#2f7bff;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;opacity:.18}
-.see-ov .rf{stroke:#cfe3ff;stroke-width:1;stroke-dasharray:3 5;opacity:0}
-.see-ov .an{fill:#05070d;stroke:#cfe3ff;stroke-width:1.2}
-
-/* marks on the floor: plain HTML, placed in pixels, so the words stay the same size on every screen */
-.see-marks{position:absolute;inset:0;pointer-events:none;z-index:1}
-.see-m{position:absolute;left:0;top:0;width:0;height:0;opacity:0;will-change:transform,opacity}
-.see-m i{position:absolute;left:-4px;top:-4px;width:8px;height:8px;border-radius:50%;background:#eaf3ff;box-shadow:0 0 0 3px rgba(102,165,250,.35),0 0 18px 6px rgba(102,165,250,.55)}
-.see-m.w i{background:#ffe2ad;box-shadow:0 0 0 3px rgba(240,164,58,.4),0 0 22px 8px rgba(240,164,58,.6)}
-.see-m.f i{transform:scale(1.35)}
-.see-m.f::before{content:"";position:absolute;left:-17px;top:-17px;width:34px;height:34px;border:1.5px solid rgba(255,255,255,.9);border-radius:50%;opacity:var(--ring,0);transform:scale(calc(.6 + .4*var(--ring,0)))}
-.see-m b{position:absolute;left:18px;top:-.62em;white-space:nowrap;font:500 16px/1.2 var(--text,"AmI Text",Arial,sans-serif);color:#fff;letter-spacing:.005em;opacity:var(--lab,0);text-shadow:0 1px 3px rgba(5,7,13,.9),0 0 18px rgba(5,7,13,.7);transition:opacity .35s}
-.see-m.w b{color:#ffd391;font:600 22px/1 var(--display,"AmI Display",Arial,sans-serif);letter-spacing:-.02em;top:-.5em}
-.see-m.l b{left:auto;right:16px}
-/* the dark floor's questions, where nobody can see */
-.see-qm{position:absolute;left:0;top:0;width:0;height:0;opacity:0;will-change:transform,opacity}
-.see-qm i{position:absolute;left:-13px;top:-13px;width:26px;height:26px;border-radius:50%;border:1px dashed rgba(255,255,255,.6);font:500 14px/24px var(--text,"AmI Text",Arial,sans-serif);text-align:center;font-style:normal;color:#fff}
-.see-qm b{position:absolute;left:22px;top:-.62em;white-space:nowrap;font:500 15px/1.2 var(--text,"AmI Text",Arial,sans-serif);color:#e6ecf7;text-shadow:0 1px 3px rgba(5,7,13,.9)}
-.see-qm.l b{left:auto;right:22px}
-
-/* the dividing line, and its grip */
-.see-split{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:var(--cmp,0)}
-.see-split::before{content:"";position:absolute;top:0;bottom:0;left:var(--gx,50%);width:1px;margin-left:-.5px;background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.9) 18%,rgba(255,255,255,.9) 82%,rgba(255,255,255,0))}
-.see-side{position:absolute;top:calc(var(--bar,72px) + clamp(14px,3vh,34px));font:500 clamp(.82rem,.76rem + .2vw,1rem)/1 var(--text,"AmI Text",Arial,sans-serif);letter-spacing:.02em;color:#fff;white-space:nowrap;text-shadow:0 1px 10px rgba(5,7,13,.8)}
-.see-side-a{right:calc(100% - var(--gx,50%) + 18px);color:#b9c3d6}
-.see-side-b{left:calc(var(--gx,50%) + 18px)}
-.see-grip{position:absolute;top:50%;left:var(--gx,50%);z-index:3;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;display:grid;place-items:center;cursor:ew-resize;touch-action:none;opacity:var(--cmp,0);pointer-events:none;outline:none}
-.see-grip i{width:36px;height:36px;border-radius:50%;background:#fff;box-shadow:0 6px 24px rgba(5,7,13,.45);position:relative;transition:transform .25s}
-.see-grip i::before,.see-grip i::after{content:"";position:absolute;top:50%;width:0;height:0;border:5px solid transparent;margin-top:-5px}
-.see-grip i::before{left:6px;border-right-color:var(--see-ink)}
-.see-grip i::after{right:6px;border-left-color:var(--see-ink)}
-.see.cmp .see-grip{pointer-events:auto}
-.see-grip:hover i,.see-grip.drag i{transform:scale(1.1)}
-.see-grip:focus-visible i{box-shadow:0 0 0 3px var(--see-blue),0 6px 24px rgba(5,7,13,.45)}
-
-/* the words */
-.see-words{position:absolute;inset:auto 0 0 0;z-index:2;padding:0 clamp(20px,5vw,96px) clamp(40px,8vh,96px);pointer-events:none}
-.see-w{position:absolute;inset:auto 0 0 0;padding:inherit;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,1.4vh,18px);text-align:center;visibility:hidden;transform:translateY(calc(var(--out,0)*-28px))}
-.see-w.on{visibility:visible}
-.see-h .wd{display:inline-block;overflow:hidden;vertical-align:top;padding:.06em .07em .16em;margin:-.06em -.07em -.16em}
-.see-h .wd b{display:inline-block;font:inherit;transform:translateY(118%);transition:transform .9s cubic-bezier(.19,.9,.22,1);transition-delay:calc(var(--i,0)*42ms)}
-.see-w.on .see-h .wd b{transform:none}
-.see-p,.see-kinds{opacity:0;transform:translateY(10px);transition:opacity .7s,transform .8s cubic-bezier(.19,.9,.22,1);transition-delay:calc(var(--i,6)*42ms + 120ms)}
-.see-w.on .see-p,.see-w.on .see-kinds{opacity:1;transform:none}
-.see-h,.see-p{margin:0}
-.see-h,.see-p,.see-a,.see-b{text-shadow:0 2px 28px rgba(5,7,13,.55)}
-.see-h{font:600 clamp(1.9rem,1rem + 2.7vw,4.1rem)/1.02 var(--display,"AmI Display",Arial,sans-serif);letter-spacing:-.045em;text-wrap:balance;max-width:16em}
-.see em{font:italic 400 1.1em/1 "Instrument Serif",Georgia,serif;letter-spacing:-.02em;padding-right:.04em}
-.see .see-p{font:400 clamp(1.05rem,.9rem + .55vw,1.5rem)/1.4 var(--text,"AmI Text",Arial,sans-serif);max-width:31em;text-wrap:balance;color:#d3dcec}
-.see-w1 .see-h em{color:#fff;background:linear-gradient(var(--see-amber),var(--see-amber)) 0 94%/100% .07em no-repeat}
-.see-w2 .see-h em{color:var(--see-blue)}
-.see-w4 .see-h em{color:var(--see-amber)}
-
-/* beat 2: the kinds of things, each lights as its tags do */
-.see-kinds{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;margin:4px 0 0;font:500 clamp(.85rem,.8rem + .2vw,1.05rem)/1 var(--text,"AmI Text",Arial,sans-serif);letter-spacing:.01em}
-.see-kinds span{color:rgba(255,255,255,.34);transition:color .45s}
-.see-kinds span.on{color:#fff}
-.see-kinds span::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:8px;vertical-align:.12em;background:currentColor;transition:background .45s,box-shadow .45s}
-.see-kinds span.on::before{background:var(--see-blue);box-shadow:0 0 10px 2px rgba(102,165,250,.7)}
-
-/* beat 3: two sentences either side of the line, and the five tabs */
-.see-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.see-w3{align-items:stretch}
-.see-cmp{position:relative;min-height:6.6em}
-.see-c{position:absolute;inset:auto 0 0 0;display:grid;grid-template-columns:var(--gx,50%) 1fr;align-items:end;opacity:0;transform:translateY(12px);transition:opacity .45s,transform .6s cubic-bezier(.19,.9,.22,1)}
-.see-c.on{opacity:1;transform:none;transition-delay:.08s}
-.see-a,.see-b{margin:0;text-wrap:balance}
-.see-a{justify-self:end;text-align:right;padding-right:clamp(20px,3vw,48px);max-width:17em;font:400 clamp(1.05rem,.9rem + .6vw,1.6rem)/1.3 var(--text,"AmI Text",Arial,sans-serif);color:#aab4c8}
-.see-b{justify-self:start;text-align:left;padding-left:clamp(20px,3vw,48px);max-width:15em;font:600 clamp(1.4rem,1rem + 1.4vw,2.6rem)/1.08 var(--display,"AmI Display",Arial,sans-serif);letter-spacing:-.035em;color:#fff}
-.see-b em{color:var(--see-blue)}
-.see-c[data-k=wip] .see-b em,.see-c[data-k=dock] .see-b em{color:var(--see-amber)}
-.see-tabs{display:flex;justify-content:center;flex-wrap:wrap;gap:4px clamp(14px,2.4vw,34px);margin-top:clamp(14px,3vh,30px);pointer-events:auto}
-.see-tabs button{appearance:none;border:0;background:none;color:rgba(255,255,255,.5);font:500 clamp(.88rem,.82rem + .2vw,1.05rem)/1 var(--text,"AmI Text",Arial,sans-serif);letter-spacing:.01em;padding:10px 0 9px;cursor:pointer;position:relative;transition:color .3s}
-.see-tabs button::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;border-radius:1px;background:#fff;transform:scaleX(0);transition:transform .45s cubic-bezier(.19,.9,.22,1)}
-.see-tabs button:hover{color:#fff}
-.see-tabs button[aria-selected=true]{color:#fff}
-.see-tabs button[aria-selected=true]::after{transform:none}
-.see-tabs button:focus-visible{outline:1px solid #fff;outline-offset:4px}
-
-/* beat 4: the question, typed; then the answer, one row each */
-.see-q{font:400 clamp(1.05rem,.9rem + .7vw,1.6rem)/1.2 var(--text,"AmI Text",Arial,sans-serif);color:#fff;padding:.5em 1em .55em;border-radius:999px;border:1px solid rgba(255,255,255,.34);min-height:2.3em;margin:0;transition:opacity .4s}
-.see-q::after{content:"";display:inline-block;width:1.5px;height:1em;margin-left:3px;vertical-align:-.14em;background:#fff}
-.see-w.on .see-q::after{animation:see-blink 1s steps(1) infinite}
-.see-w4.told .see-q::after{animation:none;opacity:0}
-@keyframes see-blink{50%{opacity:.25}}
-.see-ans{list-style:none;margin:0 0 clamp(4px,1.4vh,14px);padding:0;display:grid;gap:2px;min-width:min(100%,25em)}
-.see-ans li{display:grid;grid-template-columns:5.2em 1fr auto;align-items:baseline;gap:14px;padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.14);text-align:left;font:400 clamp(.98rem,.9rem + .3vw,1.2rem)/1.2 var(--text,"AmI Text",Arial,sans-serif);color:#d3dcec;opacity:0;transform:translateY(10px);transition:opacity .5s,transform .6s cubic-bezier(.19,.9,.22,1);transition-delay:calc(var(--r,0)*110ms)}
-.see-ans li b{font-weight:500;color:#fff}
-.see-ans li em{font-size:1.35em;color:var(--see-amber);text-align:right}
-.see-w4.told .see-ans li{opacity:1;transform:none}
-.see-w4:not(.told) .see-h .wd b{transform:translateY(118%)}
-.see-w4:not(.told) .see-p{opacity:0;transform:translateY(10px)}
-
-/* sound: on by default; it starts on the visitor's first tap, click or key; one tap here turns it off */
-.see-snd{position:absolute;left:clamp(14px,2.2vw,36px);bottom:clamp(14px,2.6vh,30px);z-index:3;display:none;align-items:center;gap:8px;padding:8px 2px;border:0;background:none;color:#fff;font:500 13px/1 var(--text,"AmI Text",Arial,sans-serif);letter-spacing:.02em;opacity:.72;cursor:pointer;transition:opacity .25s}
-.see.live .see-snd{display:flex}
-.see-snd:hover,.see-snd:focus-visible,.see-snd[aria-pressed=true]{opacity:1}
-.see-snd:focus-visible{outline:1px solid #fff;outline-offset:4px}
-.see-snd i{display:flex;align-items:center;gap:2px;height:12px}
-.see-snd i::before,.see-snd i::after,.see-snd i b{content:"";width:2px;height:4px;border-radius:1px;background:currentColor;transition:height .3s}
-.see-snd[aria-pressed=true] i::before{height:8px}.see-snd[aria-pressed=true] i b{height:12px}.see-snd[aria-pressed=true] i::after{height:6px}
-.is-scrolling .see-snd[aria-pressed=true] i::before,.is-scrolling .see-snd[aria-pressed=true] i b,.is-scrolling .see-snd[aria-pressed=true] i::after{animation:see-eq .55s ease-in-out infinite alternate}
-.see-snd[aria-pressed=true] i b{animation-delay:-.2s}.see-snd[aria-pressed=true] i::after{animation-delay:-.37s}
-@keyframes see-eq{0%{transform:scaleY(.45)}100%{transform:scaleY(1)}}
-
-/* four ticks: where you are */
-.see-ticks{position:absolute;right:clamp(14px,2.2vw,36px);top:50%;z-index:2;display:flex;flex-direction:column;gap:8px;transform:translateY(-50%);color:#fff}
-.see-ticks i{width:2px;height:22px;border-radius:2px;background:currentColor;opacity:.28;transition:opacity .4s,height .4s}
-.see-ticks i.on{opacity:.95;height:34px}
-
-/* no script: one picture, then the words as plain text */
-.see:not(.live) .see-stage{height:auto;aspect-ratio:16/9}
-.see:not(.live) .see-box{position:relative;left:0;top:0;width:100%;height:100%}
-.see:not(.live) .see-words{position:relative;padding-block:48px;display:flex;flex-direction:column;gap:48px}
-.see:not(.live) .see-w{position:static;visibility:visible;transform:none;padding:0}
-.see:not(.live) .see-p,.see:not(.live) .see-kinds,.see:not(.live) .see-ans li{opacity:1;transform:none}
-.see:not(.live) .see-w4 .see-h .wd b,.see:not(.live) .see-w4 .see-p{transform:none;opacity:1}
-.see:not(.live) .see-cmp{min-height:0;display:grid;gap:24px}
-.see:not(.live) .see-c{position:static;opacity:1;transform:none;grid-template-columns:1fr 1fr}
-.see:not(.live) .see-tabs,.see:not(.live) .see-ticks,.see:not(.live) .see-shade,.see:not(.live) .see-q::after,.see:not(.live) .see-split,.see:not(.live) .see-grip{display:none}
-.see:not(.live) .see-stage{overflow:visible}
-
-/* phones and tall windows: the portrait picture, the two sentences stacked */
-@media (max-aspect-ratio:4/5){
-  .see-stage{--bw:max(100vw,calc(100vh*9/16));--bw:max(100vw,calc(100svh*9/16));--bh:calc(var(--bw)*16/9)}
-  .see-box{left:auto;right:0}
-  .see.live{height:560vh}
-  .see-words{padding:0 20px clamp(36px,8vh,72px)}
-  .see-h{font-size:clamp(1.9rem,1rem + 5.4vw,3.2rem);line-height:1.02}
-  .see-ticks{right:10px}
-  .see-m b,.see-qm b{font-size:13px}
-  .see-c{grid-template-columns:1fr;gap:10px;justify-items:center;text-align:center}
-  .see-a,.see-b{justify-self:center;text-align:center;padding:0;max-width:20em}
-  .see-a{font-size:1rem}
-  .see-a::before{content:"Without: ";color:#7d889d}
-  .see-b{font-size:clamp(1.45rem,1rem + 3.4vw,2rem)}
-  .see-cmp{min-height:7.6em}
-  .see-tabs{gap:2px 11px;flex-wrap:nowrap}
-  .see-tabs button{font-size:.8rem}
-  .see-side{top:calc(var(--bar,60px) + 12px);font-size:.78rem}
-  .see-long{display:none}
-  .see-split::before{background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.9) 14%,rgba(255,255,255,.9) 46%,rgba(255,255,255,0) 58%)}
-  .see-ans li{grid-template-columns:4.4em 1fr auto;gap:10px}
-  .see:not(.live) .see-stage{aspect-ratio:9/16}
-  .see:not(.live) .see-c{grid-template-columns:1fr}
+@media (max-width:700px){
+  .see-shade{height:72%}
+  .see-words{bottom:clamp(28px,6vh,56px)}
+  .see-m span{font-size:12px;padding:6px 9px}
+  .see-ticks{display:none}
+  .see-ans li{grid-template-columns:auto 1fr auto;font-size:.9rem}
 }
-@media (prefers-reduced-motion:reduce){
-  .see-h .wd b,.see-p,.see-kinds,.see-c,.see-ans li{transition:none}
-  .see-q::after{animation:none}
-}
+@media (prefers-reduced-motion:reduce){.see.live .see-w{transition:none}}
+.see-m.tag i{border-color:var(--see-blue);background:var(--see-blue);box-shadow:0 0 12px var(--see-blue);width:8px;height:8px;left:-4px;top:-4px}
+.see-m.tag span{top:-28px}
