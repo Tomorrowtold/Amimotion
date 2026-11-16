@@ -61,9 +61,10 @@
 
   /* ---------- where a point of the picture lands on the stage ---------- */
   var FOCUS = { a: [.5, .5], b: [.5, .5], c: [.62, .8], d: [.5, .5] };
+  var FOCUSP = { a: [.5, .44], b: [.5, .42], c: [.62, .36], d: [.5, .36] };   /* tall plates carry the subject in their upper half, above the words */
   var view = { su: 1, sv: 1, cu: .5, cv: .5, px: 0, py: 0, foc: .3 }, pan = { x: .5, to: .5 };
   function fit(plate, zoom) {
-    var d = data && data[O][plate], ap = d ? d.w / d.h : (tall ? 9 / 16 : 16 / 9), as = sw / sh, su, sv, f = FOCUS[plate];
+    var d = data && data[O][plate], ap = d ? d.w / d.h : (tall ? 9 / 16 : 16 / 9), as = sw / sh, su, sv, f = (tall ? FOCUSP : FOCUS)[plate];
     if (as > ap) { su = 1; sv = ap / as; } else { sv = 1; su = as / ap; }
     su /= zoom; sv /= zoom;
     view.su = su; view.sv = sv; view.cu = clamp(plate === 'b' ? pan.x - (tall ? 0 : .12 * su) : f[0], su / 2, 1 - su / 2); view.cv = clamp(f[1], sv / 2, 1 - sv / 2);
