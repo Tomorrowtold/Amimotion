@@ -66,49 +66,22 @@
 </section>
 </div>
 
-<!-- 1b. CAN YOU SEE IT: one floor, told in four scrolls; it opens straight on the floor (no pull-back from the hero) -->
-<section class="see" id="see" data-assets="assets/see/" aria-label="What AmIMotion shows you on a factory floor">
+<!-- 1b. THE EXPLAINER: one vast plant, one continuous camera move, four scrolls. The light tells it:
+     1 sodium light (everything one colour, nothing tells itself apart), 2 three anchors find one tag,
+     3 full light and every tag, 4 the roof becomes a mirror: the plant as one live map you can ask. -->
+<section class="see" id="see" data-film="assets/hall/" aria-label="How AmIMotion works, shown in one factory">
   <div class="see-stage">
-    <div class="see-box">
-      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/lit.webp"><img class="see-lit" src="assets/see/L/lit.webp" alt="A working factory floor with trolleys, bins, pallets, racks, a forklift and people." loading="lazy" fetchpriority="low" decoding="async"></picture>
-      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/dim.webp"><img class="see-dim" src="assets/see/L/dim.webp" alt="" loading="lazy" decoding="async"></picture>
-      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/blue.webp"><img class="see-blue" src="assets/see/L/blue.webp" alt="" loading="lazy" decoding="async"></picture>
-      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/amber.webp"><img class="see-amber" src="assets/see/L/amber.webp" alt="" loading="lazy" decoding="async"></picture>
-      <canvas class="see-rise" aria-hidden="true"></canvas>
-      <div class="see-grid"></div>
-      <div class="see-veil"></div>
-      <div class="see-hush" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="see-mono"></div>
-      <picture><source media="(max-aspect-ratio:4/5)" srcset="assets/see/P/lit.webp"><img class="see-spot" src="assets/see/L/lit.webp" alt="" loading="lazy" decoding="async"></picture>
-      <svg class="see-ov" aria-hidden="true" preserveAspectRatio="none"></svg>
-    </div>
-    <div class="see-vig"></div>
-    <div class="see-red"></div>
-    <div class="see-grain"></div>
+    <img class="see-poster" src="assets/hall/frames/s3_059.webp" alt="A vast factory hall in clear light: racks, assembly lines, forklifts, robots and trolleys, each with a small lit tag; one trolley in a work-in-progress buffer glows amber." decoding="async" fetchpriority="low" loading="lazy">
+    <canvas class="see-film" aria-hidden="true"></canvas>
+    <div class="see-marks" aria-hidden="true"></div>
     <div class="see-shade"></div>
-    <div class="see-tip" aria-hidden="true"></div>
-
     <div class="see-words">
-      <div class="see-w see-w1">
-        <h2 class="see-h">One trolley here has <em>waited 42 minutes.</em></h2>
-        <p class="see-p" aria-live="polite"><span class="see-say">Can you tell which one? You have three picks.</span><span class="see-lives" aria-hidden="true"><i></i><i></i><i></i></span></p>
-      </div>
-      <div class="see-w see-w2">
-        <h2 class="see-h">A small tag on each one shows <em>where it is.</em></h2>
-        <p class="see-p">Every trolley, bin, pallet, forklift, robot and person. Right now, typically to within 10 cm.</p>
-      </div>
-      <div class="see-w see-w3">
-        <h2 class="see-h">And <em>how long it has waited.</em></h2>
-        <p class="see-p">There's your trolley. 42 minutes, at the end of the racks.</p>
-      </div>
-      <div class="see-w see-w4">
-        <p class="see-q" data-q="What has waited longest?">What has waited longest?</p>
-        <h2 class="see-h">Trolley 14. End of the racks. <em>42 minutes.</em></h2>
-        <p class="see-p">You find out from a screen, not a walk.</p>
-      </div>
+      <div class="see-w" data-s="1"><h2 class="see-h">Every light is on. <em>You still can’t see the work.</em></h2><p class="see-p">Under one colour, every trolley, bin and forklift looks the same. Somewhere here, one trolley has waited 42 minutes.</p></div>
+      <div class="see-w" data-s="2"><h2 class="see-h">Three anchors hear <em>one small tag.</em></h2><p class="see-p">The tag sends a pulse a few nanoseconds long. Each anchor on the roof measures when it arrived and from where. Where they agree is where it is, typically to within 10 cm.</p></div>
+      <div class="see-w" data-s="3"><h2 class="see-h">Now every tag, <em>all at once.</em></h2><p class="see-p">Forklifts, robots, trolleys and bins across the whole plant: where each one is, and how long it has waited.</p></div>
+      <div class="see-w" data-s="4"><h2 class="see-h">One live map. <em>Ask it.</em></h2><p class="see-q">What is waiting, and where?</p><ol class="see-ans"><li><b>Trolley</b><span>WIP buffer, line 2</span><em>42 min</em></li><li><b>Two forklifts</b><span>Rack aisle 6</span><em>12 min</em></li><li><b>Pallet</b><span>Dispatch lane 3</span><em>9 min</em></li></ol></div>
     </div>
-    <div class="see-keys" role="group" aria-label="Pick the trolley that has waited 42 minutes"></div>
-    <button class="see-snd" type="button" aria-pressed="false"><i aria-hidden="true"><b></b></i><span>Tap for sound</span></button>
+    <button class="see-snd" type="button" aria-pressed="false"><i aria-hidden="true"><b></b></i><span>Sound on</span></button>
     <div class="see-ticks" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
   </div>
 </section>
