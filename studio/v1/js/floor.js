@@ -88,10 +88,10 @@
     blocks.forEach(function (b, k) {
       // a sentence is never left half way: the scroll only says which one is due, the clock brings it in and takes it out
       var inT = k === 0 ? (ap > .5 || tb > .001) : tb >= k, outT = k < NB - 1 && tb >= k + 1, prev = blocks[k - 1], next = blocks[k + 1];
-      b.E = chase(b.E, inT ? ((!prev || prev.X > .6 || !prev.E) ? 1 : b.E) : 0, .85, .3, dt);
-      b.X = chase(b.X, outT ? 1 : (next && next.E > .4 ? b.X : 0), .3, .6, dt);
+      b.E = chase(b.E, inT ? ((!prev || prev.X > .3 || !prev.E) ? 1 : b.E) : 0, .55, .24, dt);
+      b.X = chase(b.X, outT ? 1 : (next && next.E > .6 ? b.X : 0), .24, .45, dt);
       var e = b.E, x = b.X, vis = e > 0 && x < 1, uu = k < i ? 1 : k > i ? 0 : u;
-      b.ps.forEach(function (p) { if (p.ans) { var t = (k < i || (k === i && uu >= p.t0 - .07)) ? 1 : 0; p.A = vis ? chase(p.A, t, .8, .25, dt) : t; } });
+      b.ps.forEach(function (p) { if (p.ans) { var t = (k < i || (k === i && uu >= p.t0 - .07)) ? 1 : 0; p.A = vis ? chase(p.A, t, .55, .22, dt) : t; } });
       if (vis !== b.vis) { b.vis = vis; b.el.style.visibility = vis ? 'visible' : 'hidden'; }
       if (!vis) return;
       b.ps.forEach(function (p) {
@@ -583,15 +583,16 @@
   }
 
   // ---- the loop: runs only while the section is on screen
-  var raf = 0, lastT = 0, slow = 0, frames = 0;
+  var raf = 0, lastT = 0, slow = 0, frames = 0, tbs = -1;
   function tbOf(x) { var i = beatOf(x); return i + Math.min(1, (x - EDGE[i]) / (EDGE[i + 1] - EDGE[i])); }
   function tick(now) {
     raf = 0; if (!onScreen && !SHOT) { snd.gate(); return; }
     var dt = Math.min(.1, (now - lastT) / 1000 || .016); lastT = now;
-    if (ps < 0) ps = p; else ps += (p - ps) * (1 - Math.exp(-dt * 8)); if (Math.abs(p - ps) < .00002) ps = p;
-    setBeat(beatOf(p)); snd.gate(); textFrame(frozen ? frozen[0] : tbOf(ps), frozen ? .2 : dt);
+    if (ps < 0) { ps = p; tbs = -1; } else ps += (p - ps) * (1 - Math.exp(-dt * 8)); if (Math.abs(p - ps) < .00002) ps = p;
+    setBeat(beatOf(p)); snd.gate(); var tbT = tbOf(ps); if (tbs < 0 || ps === p && Math.abs(tbT - tbs) < .0005) tbs = tbT; else { var dq = tbT - tbs, mq = Math.max(1.6, Math.abs(dq) * 1.4) * dt; tbs += Math.max(-mq, Math.min(mq, dq)); }
+    textFrame(frozen ? frozen[0] : tbs, frozen ? .2 : dt);
     if (live) {
-      if (frozen) frame(frozen[0], frozen[1]); else frame(tbOf(ps), (now - T0) / 1000);
+      if (frozen) frame(frozen[0], frozen[1]); else frame(tbs, (now - T0) / 1000);
       hover();
       if (!FULL && frames < 90) { frames++; if (dt > .055) slow++; if (frames === 90 && slow > 45) { toStills(); } }
     }
