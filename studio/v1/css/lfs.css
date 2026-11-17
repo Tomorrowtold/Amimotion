@@ -1,7 +1,7 @@
 /* LOST. FOUND. SEEN: the explainer after the hero. Every rule starts with .lfs, so the site build needs no scoping.
    Without scripts (or with reduced motion) this file lays the five pictures out one under another with their words.
    With scripts the section becomes one pinned stage and the words are placed over the picture. */
-.lfs{--lfs-black:#05060d;--lfs-text:#f4f6fa;--lfs-soft:rgba(244,246,250,.62);--lfs-blue:#66a5fa;--lfs-amber:#f0a43a;--lfs-m:clamp(20px,4vw,112px);
+.lfs{--lfs-black:#05060d;--lfs-text:#f4f6fa;--lfs-soft:rgba(244,246,250,.62);--lfs-blue:#66a5fa;--lfs-amber:#f0a43a;--lfs-m:clamp(20px,4.6vw,72px);
   position:relative;background:var(--lfs-black);color:var(--lfs-text);font-family:"AmI Text",Arial,sans-serif;font-weight:400;-webkit-font-smoothing:antialiased;overflow-anchor:none}
 .lfs *{box-sizing:border-box}
 .lfs-stage{position:relative}
@@ -101,30 +101,3 @@
   .lfs-on .lfs-top{right:0}
 }
 @media (prefers-reduced-motion:reduce){.lfs-ctl a,.lfs-ctl button,.lfs-top{transition:none}}
-
-/* ===== UPLIFT, 17 Nov: the sentence is the headline. Lost, Found, Seen is the small name of the step above it.
-   The words stand in one place at every stop: low on the left, on the page margin, above the controls. ===== */
-.lfs-word{font-family:"AmI Text",Arial,sans-serif;font-weight:500;font-size:clamp(17px,1.4vw,22px);line-height:1.2;letter-spacing:0;color:var(--lfs-soft)}
-.lfs-lines{margin-top:14px}
-.lfs-lines p{margin:0 0 .5em;max-width:15em;font-family:"AmI Display",Arial,sans-serif;font-weight:600;font-size:clamp(28px,3.3vw,48px);line-height:1.06;letter-spacing:-.03em;color:#fff}
-.lfs-lines p:last-child{margin-bottom:0}
-.lfs-facts li{font-size:clamp(16px,1.25vw,22px)}
-.lfs-names strong{font-size:clamp(20px,1.5vw,26px)}
-.lfs-close{font-size:clamp(34px,6.6vw,96px);letter-spacing:-.045em;line-height:.95}
-.lfs-on .lfs-t{top:auto;bottom:calc(100% - var(--sv) + 108px);width:min(46vw,680px);display:flex;flex-direction:column}
-.lfs-on .lfs-word{position:relative;left:auto;top:auto}
-.lfs-on .lfs-lines{position:relative;left:auto;top:auto;margin-top:16px}
-.lfs-on .lfs-end{top:auto;bottom:calc(100% - var(--sv) + 108px);display:flex;flex-direction:column}
-.lfs-on .lfs-count{position:static;order:2;margin:22px 0 0}
-.lfs-on .lfs-ctl{font-size:15px}
-.lfs-on .lfs-shade{background:linear-gradient(0deg,rgba(5,6,13,.78) 0,rgba(5,6,13,.5) 30%,rgba(5,6,13,0) 62%),linear-gradient(90deg,rgba(5,6,13,.5) 0,rgba(5,6,13,.2) 30%,rgba(5,6,13,0) 52%)}
-@media (max-aspect-ratio:4/5){
-  .lfs-word{font-size:16px}
-  .lfs-lines p{font-size:28px;max-width:none}
-  .lfs-facts li{font-size:15px}
-  .lfs-close{font-size:40px}
-  .lfs-on .lfs-t,.lfs-on .lfs-end{width:auto;top:auto;bottom:calc(100% - var(--sv) + 84px)}
-  .lfs-on .lfs-lines{top:auto}
-  .lfs-on .lfs-count{font-size:15px}
-  .lfs-on .lfs-ctl{font-size:14px}
-}
