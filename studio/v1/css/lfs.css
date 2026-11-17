@@ -28,6 +28,12 @@
 
 /* ---------- the pinned stage ---------- */
 .lfs.lfs-on{height:480vh}
+/* how far through the section the scroll is, and a quiet mark that says there is more below */
+.lfs-prog,.lfs-cue{display:none}
+.lfs-on .lfs-prog{display:block;position:absolute;z-index:6;left:0;right:0;bottom:0;height:2px;background:rgba(244,246,250,.7);transform:scaleX(0);transform-origin:0 50%;will-change:transform}
+.lfs-on .lfs-cue{display:block;position:absolute;z-index:6;left:50%;top:calc(var(--sv) - 44px);width:11px;height:11px;margin-left:-6px;border-right:1.5px solid #f4f6fa;border-bottom:1.5px solid #f4f6fa;transform:rotate(45deg);opacity:0;transition:opacity .5s}
+.lfs-on .lfs-cue.on{opacity:.8;animation:lfs-cue 1.8s ease-in-out infinite}
+@keyframes lfs-cue{0%,100%{translate:0 -3px}50%{translate:0 4px}}
 .lfs-on .lfs-stage{position:sticky;top:0;height:100vh;height:100lvh;overflow:hidden;background:var(--lfs-black);--sv:100vh}
 @supports (height:100svh){.lfs-on .lfs-stage{--sv:100svh}}
 .lfs-on .lfs-f{position:absolute;inset:0;pointer-events:none}
@@ -89,6 +95,7 @@
   .lfs-on .lfs-end{display:flex;flex-direction:column}
   .lfs-on .lfs-count{position:static;order:2;margin:16px 0 0;white-space:normal;font-size:14px}
   .lfs-on .lfs-ctl{top:calc(var(--sv) - 52px)}
+  .lfs-on .lfs-cue{top:calc(var(--sv) - 80px)}
   .lfs-top{position:absolute;right:calc(var(--lfs-m) - 10px);top:-44px}
   .lfs-right{position:relative}
   .lfs-on .lfs-top{right:0}

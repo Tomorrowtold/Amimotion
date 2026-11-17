@@ -54,7 +54,7 @@
     var y = window.pageYOffset; if (y < lastY - 2 && p > .02 && p < 1) upT = performance.now(); lastY = y;
   }
   function goTo(t) { var top = sec.getBoundingClientRect().top + window.pageYOffset, span = sec.offsetHeight - sh; window.scrollTo({ top: top + span * t + 2, behavior: 'smooth' }); }
-  rail.forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); goTo(Number(a.getAttribute('data-go')) + .012); }); });
+  rail.forEach(function (a, i) { a.addEventListener('click', function (e) { e.preventDefault(); goTo([.01, .35, .685][i]); }); });
   skip.addEventListener('click', function (e) { e.preventDefault(); var n = sec.nextElementSibling; window.scrollTo({ top: (n ? n.getBoundingClientRect().top : sec.getBoundingClientRect().bottom) + window.pageYOffset, behavior: 'smooth' }); if (n) { n.setAttribute('tabindex', '-1'); n.focus({ preventScroll: true }); } });
   topLink.addEventListener('click', function (e) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
   window.addEventListener('pointermove', function (e) { if (e.pointerType === 'mouse') { ptr.x = e.clientX / innerWidth - .5; ptr.y = e.clientY / innerHeight - .5; } }, { passive: true });
@@ -193,7 +193,7 @@
       var files = FILES[name], keys = Object.keys(files), left = keys.length, P = { o: o, t: {}, ok: false }, bad = false;
       keys.forEach(function (k) {
         var im = new Image(); im.decoding = 'async';
-        im.onload = function () { if (O === o && !gl.isContextLost()) P.t[k] = tex(im, k[0] !== 'c'); if (!--left) fin(); };
+        im.onload = function () { var up = function () { if (O === o && !gl.isContextLost()) P.t[k] = tex(im, k[0] !== 'c'); if (!--left) fin(); }; if (im.decode) im.decode().then(up, up); else up(); };
         im.onerror = function () { bad = true; if (!--left) fin(); };
         im.src = base + o + '/' + name + '_' + files[k] + '.webp';
       });
@@ -284,6 +284,27 @@
     l.setAttribute('x1', A[0].toFixed(1)); l.setAttribute('y1', A[1].toFixed(1)); l.setAttribute('x2', mix(A[0], B[0], k).toFixed(1)); l.setAttribute('y2', mix(A[1], B[1], k).toFixed(1)); l.setAttribute('opacity', op.toFixed(3)); l._o = op;
   }
 
+  /* ---------- the story plays itself: the scroll only chooses the scene ----------
+     The section is six equal bands of scroll, one per scene. Entering a band sets where the story should rest; the playhead then
+     travels there at reading speed on the clock, forwards or backwards, whatever the speed of the hand. A fast flick over several
+     scenes plays them quicker, in order, and slows into the last one. So nothing is skipped and nothing is ever half way. */
+  var STOPS = [.135, .355, .462, .685, .915, 1], si = 0, pinAt = null, dwell = 0, dwellAt = -1, prog = document.createElement('i'), cue = document.createElement('i');
+  prog.className = 'lfs-prog'; cue.className = 'lfs-cue'; prog.setAttribute('aria-hidden', 'true'); cue.setAttribute('aria-hidden', 'true'); stage.appendChild(prog); stage.appendChild(cue);
+  function play(now, dt, entered) {
+    if (pinAt != null) { ps = pinAt; return; }
+    var f = p * 6; if (f > si + 1.05 || f < si - .05) si = clamp(Math.floor(f), 0, 5);
+    var target = !entered ? 0 : p >= .999 ? 1 : STOPS[si], d = target - ps, ad = Math.abs(d), dts = Math.min(dt, 50) / 1000;
+    if (ad > 0) {
+      var rate = (d > 0 ? .07 : .16) + Math.max(0, ad - .25) * 1.7; if (rate > .6) rate = .6;
+      var step = Math.min(ad, rate * dts), to = ps + (d > 0 ? step : -step);
+      /* on a tall screen the facts come two at a time: the story waits a moment on each pair */
+      if (tall && d > 0 && ad < .25) { var W = [.293, .84]; for (var i = 0; i < 2; i++) if (ps < W[i] && to >= W[i] && dwellAt !== i) { dwellAt = i; dwell = now + 2300; to = W[i]; } if (now < dwell) to = ps; } else if (d < 0) dwellAt = -1;
+      ps = to;
+    }
+    var pv = Math.round(p * 1000) / 1000; if (pv !== prog._p) { prog._p = pv; prog.style.transform = 'scaleX(' + pv + ')'; }
+    var rest = ad < .001 && entered && si < 5 && p < .97; if (rest !== cue._on) { cue._on = rest; cue.classList.toggle('on', rest); }
+  }
+
   /* ---------- one frame ---------- */
   var current = null, lastT = 0;
   function set(t, o, rise) {
@@ -294,7 +315,9 @@
     if (!vis) return; requestAnimationFrame(tick);
     var t = (now - T0) / 1000, dt = now - lastT; lastT = now;
     var rc0 = sec.getBoundingClientRect(), ons = rc0.top < innerHeight && rc0.bottom > 0;
-    readScroll(); ps += (p - ps) * (Math.abs(p - ps) > .2 ? 1 : .18); if (Math.abs(p - ps) < .0002) ps = p;
+    readScroll();
+    if (!ons && !pinAt) { SND.gate(0); if (GL) GL.next(); return; }
+    play(now, dt, rc0.top < innerHeight * .5);
     ptr.sx += (ptr.x - ptr.sx) * .05; ptr.sy += (ptr.y - ptr.sy) * .05;
     var best = null, bf = -1, other = null, of = 0;
     frames.forEach(function (f) { f.f = fadeOf(f, ps); if (f.f > bf) { bf = f.f; best = f; } });
@@ -367,6 +390,6 @@
     fetch(base + 'lfs.json').then(function (r) { return r.json(); }).then(function (j) { data = j; if (GL) GL.next(); }).catch(function () { data0 = false; });
   }
   window.addEventListener('resize', function () { size(); texts.forEach(function (x) { x.w = 0; x.x = -1; x.rc = null; }); }, { passive: true });
-  window.__lfs = { at: function (v) { ps = p = v; }, ready: function () { return !!(data && (!GL || ['a', 'b', 'c', 'd'].every(GL.ready))); }, clock: function (s) { T0 = performance.now() - s * 1000; } };
+  window.__lfs = { at: function (v) { pinAt = v; ps = p = v; }, ready: function () { return !!(data && (!GL || ['a', 'b', 'c', 'd'].every(GL.ready))); }, clock: function (s) { T0 = performance.now() - s * 1000; } };
   size();
 })();

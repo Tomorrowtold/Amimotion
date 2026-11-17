@@ -34,42 +34,8 @@ const glideTo = (to, ms = 1050, hero = false, out = false) => {
   const step = (now) => { const k = Math.min(1, (now - t0) / ms); scrollTo(0, from + (to - from) * ease(k)); if (k < 1) requestAnimationFrame(step); else { glide.on = false; glide.end = performance.now(); document.documentElement.classList.remove('gliding'); } };
   requestAnimationFrame(step);
 };
-const inHero = (dir) => { const fs = fsNow(); return dir > 0 ? scrollY < fs - 4 : scrollY > 4 && scrollY <= fs + 4; };
-if (!reduce && !STILL) {
-  // a trackpad keeps sending wheel events for a second or two after the fingers lift; after a glide those belong to the same
-  // gesture, so they are held until the stream pauses (a new gesture), instead of flinging the visitor past the film's first beats
-  let lastWheel = 0, lastMag = 0;
-  const onWheel = (e) => {
-    const now = performance.now(), gap = now - lastWheel, mag = Math.abs(e.deltaY), prev = lastMag; lastWheel = now; lastMag = mag;
-    if (e.ctrlKey || document.documentElement.classList.contains('sim-lock')) return;
-    // what this handler takes, nothing after it sees (the explainer's beat stepper must not step on the hero's momentum)
-    const mine = glide.hero;   // a glide started by another section (guides) is that section's to manage
-    if (glide.on && mine) { e.preventDefault(); e.stopImmediatePropagation(); return; }
-    // still the same flick: no pause, and the deltas are dying away rather than a fresh push
-    if (mine && !glide.on && gap < 110 && now - glide.end < 2600 && mag <= prev * 1.15 + 1) { e.preventDefault(); e.stopImmediatePropagation(); return; }
-    const dir = Math.sign(e.deltaY); if (!dir || !inHero(dir)) return;
-    e.preventDefault(); e.stopImmediatePropagation(); glideTo(dir > 0 ? (fsCache = filmStart()) : 0, dir > 0 ? 2100 : 900, true);
-  };
-  let ty0 = null;
-  const onTouchStart = (e) => { ty0 = e.touches[0].clientY; };
-  const onTouchMove = (e) => { if (glide.on && glide.hero) { e.preventDefault(); e.stopImmediatePropagation(); return; } if (ty0 == null) return; const dy = ty0 - e.touches[0].clientY; if (Math.abs(dy) < 12) return; const dir = Math.sign(dy); if (inHero(dir)) { e.preventDefault(); e.stopImmediatePropagation(); ty0 = null; glideTo(dir > 0 ? (fsCache = filmStart()) : 0, dir > 0 ? 1900 : 900, true); } };
-  let armed = false;
-  const arm = () => {
-    const want = scrollY <= fsNow() + innerHeight * .5 || (glide.hero && (glide.on || performance.now() - glide.end < 2600));
-    if (want === armed) return; armed = want;
-    const f = want ? addEventListener : removeEventListener;
-    // capture phase: the hero always decides first, whatever was attached later
-    f('wheel', onWheel, { passive: false, capture: true }); f('touchmove', onTouchMove, { passive: false, capture: true }); f('touchstart', onTouchStart, { passive: true, capture: true });
-  };
-  addEventListener('scroll', arm, { passive: true }); queueMicrotask(arm);
-  addEventListener('keydown', (e) => {
-    if (!armed) return;
-    const dir = ['ArrowDown', 'PageDown', ' '].includes(e.key) ? 1 : ['ArrowUp', 'PageUp'].includes(e.key) ? -1 : 0;
-    if (!dir || e.target.closest('input,textarea,select,button,[contenteditable]')) return;
-    if (glide.on && glide.hero) { e.preventDefault(); e.stopImmediatePropagation(); return; }
-    if (inHero(dir)) { e.preventDefault(); e.stopImmediatePropagation(); glideTo(dir > 0 ? (fsCache = filmStart()) : 0, dir > 0 ? 2100 : 900, true); }
-  }, true);
-}
+/* The hero no longer takes the first scroll (17 Nov): the page moves with the hand from the first pixel, like every other part. */
+
 
 /* ---------- while the page is moving, nothing under a still cursor reacts (cards would grow and relayout mid-scroll) ---------- */
 {
@@ -250,9 +216,12 @@ const startTag = () => {
 if (!slow && !reduce && window.WebGLRenderingContext) {
   if (!touchFirst) { document.documentElement.classList.add('tag-live'); startTag(); }
   else {
-    let go = false; const once = () => { if (go) return; go = true; ['touchstart', 'scroll', 'pointerdown', 'keydown'].forEach((t) => removeEventListener(t, once)); startTag(); };
-    ['touchstart', 'scroll', 'pointerdown', 'keydown'].forEach((t) => addEventListener(t, once, { passive: true, once: true }));
-    addEventListener('load', () => setTimeout(once, 6000), { once: true });
+    // 17 Nov: never at the first touch or scroll (loading and compiling the 3D there made the first swipe stutter). It starts a
+    // moment after the page has loaded, and only while the visitor is resting at the top; otherwise the resting picture stays.
+    let go = false, tq = 0; const tryTag = () => { if (go || scrollY > innerHeight * .25) return; go = true; removeEventListener('scroll', later); startTag(); };
+    const later = () => { clearTimeout(tq); tq = setTimeout(tryTag, 700); };
+    const armTag = () => setTimeout(() => { tryTag(); if (!go) addEventListener('scroll', later, { passive: true }); }, 2200);
+    if (document.readyState === 'complete') armTag(); else addEventListener('load', armTag, { once: true });
   }
 }
 addEventListener('load', () => idle(() => {
@@ -427,7 +396,7 @@ if (simSec) {
     const { t, pinned } = progress();
     if (phase === 0 && t > 1.2) { measure(); finish(); }
     if (phase === 0 && pinned) { phase = 1; t0 = now; pinnedAt = now; if (!iv.src) iv.src = iv.dataset.src; const pr = iv.play(); if (pr) pr.catch(() => {}); }
-    if (phase === 1 && smiled(now)) rise();
+    if (phase === 1 && (smiled(now) || t > .4)) rise();   // a scroll past the opening film asks for the spiral at once
     if (phase === 2) {
       const m = clamp((now - t0) / 1000 / MORPH), e = easeX(m);
       rk = e; setIntro(e); fan = 1 - easeX(clamp((m - .25) / .75)); cur = -1;
@@ -447,46 +416,8 @@ if (simSec) {
   const wake = () => { if (seen && !ticking) { ticking = true; last = 0; requestAnimationFrame(tick); } };
   addEventListener('scroll', wake, { passive: true });
 
-  /* one scroll, one guide: armed only while the guides fill the screen */
-  if (!reduce && !STILL && fixed == null) {
-    let lastWheel = 0, lastMag = 0, lastStep = 0, asked = 0;   // asked: scrolls during the opening film; a second one means 'go on', nobody is held
-    const inBand = () => { const g = geom(); return g.top <= 4 && g.top + g.h >= innerHeight - 4; };
-    const go = (dir) => {   // true when the guides took the gesture
-      if (phase < 3 || performance.now() - doneAt < 450) { if (dir < 0 && phase < 3) return false; if (phase === 1 && (smiled(performance.now()) || ++asked >= 2)) rise(); if (phase < 3 && scrollY < posOf(0) - 2) glideTo(posOf(0), 900); lastStep = performance.now(); return true; }
-      const next = gi + dir; if (next < 0 || next > N - 1) return false;   // past the first or last guide the page scrolls on as usual
-      gi = next; lastStep = performance.now(); glideTo(posOf(next), 760, false, true); haptic(); land(); return true;
-    };
-    let stream = 0, pinSeen = 0;   // the gesture under way: once it has moved a guide, the rest of it (and its momentum) is absorbed
-    const onWheel = (e) => {
-      const now = performance.now(), gap = now - lastWheel, mag = Math.abs(e.deltaY), prev = lastMag; lastWheel = now; lastMag = mag;
-      if (gap > 450) stream = 0;
-      // scroll audit: a mouse wheel spun on keeps sending even notches (no decay) — once the guide has landed, that is the next request, not momentum
-      else if (stream && !glide.on && now - lastStep > 750 && gap > 30 && mag > 8 && mag >= prev) stream = 0;
-      if (pinnedAt !== pinSeen) { pinSeen = pinnedAt; if (gap <= 450) { stream = 1; lastStep = pinnedAt; } }   // the flick that brought the page here is not a request
-      // scroll audit: the last guide rests exactly where the band unpins, so the flick that landed it must stay absorbed there too
-      if (e.ctrlKey || (!inBand() && !(stream && now - lastStep < 1500))) return;
-      if (glide.on || stream) { e.preventDefault(); return; }
-      if (now - lastStep < 2500 && gap < 200 && mag <= prev * 1.2 + 2) { e.preventDefault(); return; }   // (only a close stream is momentum: a separate notch after a pause is a new step)   // a slow device's momentum, still dying away
-      if (mag < 3) { e.preventDefault(); return; }
-      if (go(Math.sign(e.deltaY))) { stream = 1; e.preventDefault(); }
-    };
-    let ty = null;
-    const onTouchStart = (e) => { ty = e.touches[0].clientY; };
-    const onTouchMove = (e) => {
-      if (!inBand()) return; if (glide.on) { e.preventDefault(); return; } if (ty == null) { e.preventDefault(); return; }
-      const dy = ty - e.touches[0].clientY; if (Math.abs(dy) < 14) { e.preventDefault(); return; }
-      const dir = Math.sign(dy); if (go(dir)) { e.preventDefault(); ty = null; }
-    };
-    const onKey = (e) => {
-      const dir = ['ArrowDown', 'PageDown', ' '].includes(e.key) ? 1 : ['ArrowUp', 'PageUp'].includes(e.key) ? -1 : 0;
-      if (!dir || !inBand() || e.target.closest('input,textarea,select,button,[contenteditable]')) return;
-      if (glide.on || go(dir)) e.preventDefault();
-    };
-    let armed = false;
-    const arm = (want) => { if (want === armed) return; armed = want; const f = want ? addEventListener : removeEventListener;
-      f('wheel', onWheel, { passive: false }); f('touchstart', onTouchStart, { passive: true }); f('touchmove', onTouchMove, { passive: false }); f('keydown', onKey); };
-    new IntersectionObserver((es) => arm(es[0].isIntersecting), { rootMargin: '0px 0px -40% 0px' }).observe(sec);
-  }
+  /* The guides no longer take the scroll (17 Nov): the spiral follows the page, and rests on each guide as the page passes it. */
+
 
   measure(); place(); setIntro(0); if (phase === 3) sec.style.setProperty('--pool', 1);
   addEventListener('resize', () => { measure(); cur = -1; active = -1; place(); if (phase < 2) setIntro(0); });

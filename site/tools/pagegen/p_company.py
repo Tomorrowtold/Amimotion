@@ -262,7 +262,7 @@ write("/company/", "About AmIMotion: spatial intelligence from Bengaluru",
       "AmIMotion, a brand of Locatepro Technologies, designs and builds UWB tags, anchors and AmIHub software in Bengaluru. Led by Kaushal Kukkar and Vivek Dham.",
       [
           head("Designed in Bengaluru.", "Built in India.", "AmIMotion makes the tags, the anchors and the software that show where work is in a plant, and where it waits. One team builds all three.",
-               short="AmIMotion is spatial intelligence for factories and warehouses. It is a brand of Locatepro Technologies Pvt Ltd, Bengaluru, India. AmIMotion designs and builds AmIGo tags, AmIMo anchors and AmIHub software, on NXP Trimension UWB silicon. "
+               short="AmIMotion is spatial intelligence for factories and warehouses. It is a brand of Locatepro Technologies Pvt Ltd, Bengaluru, India. AmIMotion designs and builds AmIGo tags, AmIMo anchors and AmIHub software. "
                      "It is built on the FiRa and omlox specifications. AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO.",
                trail=[("About us", None)], actions=(("What is AmIMotion?", "/what-is-amimotion/"), ("How to buy", "/how-to-buy/")),
                media=still("pair", eager=True, alt="The AmIGo tag and the AmIMo anchor side by side, both dark grey with amimotion on the cover.")),
@@ -483,7 +483,7 @@ write("/how-to-buy/", "How to buy: call, NDA pack, survey, pilot",
               ("What does AmIMotion cost?", "After the first call, we share datasheets, architecture, prices and pilot options under NDA. The cost depends on your floor, so it follows the survey and the anchor plan."),
               ("Can we buy through our integrator?", "Your team or your integrator can build on AmIMotion at any layer, through open interfaces. Tell us on the first call who else will be involved."),
               ("Does AmIMotion hold a formal certification?", "AmIMotion is built on the FiRa and omlox specifications. It claims no formal certification."),
-              ("Where is AmIMotion made?", "Designed and built in India, on NXP Trimension UWB silicon. AmIMotion is a brand of Locatepro Technologies Pvt Ltd, Bengaluru."),
+              ("Where is AmIMotion made?", "Designed and built in India. AmIMotion is a brand of Locatepro Technologies Pvt Ltd, Bengaluru."),
           ])),
           close("Talk to the team.", "Tell us the flow you want to see. We walk through it with you."),
       ])

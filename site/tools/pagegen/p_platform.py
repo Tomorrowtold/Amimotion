@@ -176,8 +176,7 @@ write("/products/amimo/", "AmIMo UWB anchor: power only, no sync cable, 3D angle
                         ("Tag capacity", "Hundreds of active tags per anchor cell (UL-TDoA), indicative"),
                         ("Mounting", "3 to 8 m recommended; wall, column, ceiling and pole brackets"),
                         ("Operating temperature", "−20 °C to +60 °C, typical; indoor and sheltered outdoor"),
-                        ("Commissioning", "Phone app; found by AmIHub on its own"),
-                        ("Silicon", "NXP Trimension UWB")],
+                        ("Commissioning", "Phone app; found by AmIHub on its own")],
                        "Indicative values. Coverage and spacing change with ceiling height, racking and metal. The final count comes from a site survey. Full datasheets are shared under NDA."),
                   id="specs"),
           section(faq([
@@ -341,7 +340,7 @@ write("/technology/", "How AmIMotion locates a tag: UWB timing, angle and steel"
                       ("BLE and Wi-Fi FTM", "Bluetooth ranging and Wi-Fi fine timing from the same anchors", "BLE and Wi-Fi devices, and yards. Device support confirmed per site")],
                       "Which modes your hardware revision supports is in the datasheet, shared under NDA."), id="modes"),
           section(vp("Open standards."),
-                  prose("<p>AmIMotion is built on the FiRa and omlox specifications. Its UWB radio follows IEEE 802.15.4z HRP on channels 5 and 9, on NXP Trimension UWB silicon. "
+                  prose("<p>AmIMotion is built on the FiRa and omlox specifications. Its UWB radio follows IEEE 802.15.4z HRP on channels 5 and 9. "
                         "AmIHub has an omlox hub interface, so your location data is not tied to one vendor's format. AmIMotion claims no formal certification.</p>"),
                   figures([("802.15.4z", "The IEEE UWB standard", "HRP, channels 5 and 9"), ("FiRa · omlox", "Built on the specifications", "No certification claimed"),
                            ("3 radios", "UWB, BLE, Wi-Fi FTM", "On the same anchors"), ("±10 cm", "Down to, in 3D", "Typical, with AmIMo anchors. Depends on your floor")]),
@@ -376,7 +375,7 @@ write("/specs/", "AmIMotion specifications: AmIGo, AmIMo and AmIHub",
                         ("Update rate", "0.1 to 10 Hz, set per tag group; tags send when they move"),
                         ("Latency", "Under a second from pulse to map, indicative"),
                         ("Additional ranging", "BLE ranging and Wi-Fi FTM (IEEE 802.11mc) on the same anchors. Device support confirmed per site"),
-                        ("Silicon", "NXP Trimension UWB"),
+                        
                         ("Standards", "Built on the FiRa and omlox specifications. No certification claimed")])),
           section(vp("AmIGo tag."),
                   spec([("Forms", "Asset tag, vehicle tag, personnel badge"),
@@ -496,7 +495,7 @@ write("/what-is-amimotion/", "What is AmIMotion? Spatial intelligence from Benga
               ("start", "How it starts",
                '<p>A pilot follows one flow in one bay or line. You see your own waits in that bay, and prove the numbers, before you decide on more. Then AmIMotion grows plant-wide on the same AmIHub, without re-fitting the first bay. <a href="/pilot/">How a pilot runs</a>.</p>'),
               ("who", "Who leads it",
-               "<p>AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO. Its tags and anchors are designed and built in India on NXP Trimension UWB silicon, with local stock and local engineers on your site.</p>"),
+               "<p>AmIMotion is led by Kaushal Kukkar, founder and CEO, and Vivek Dham, CTO. Its tags and anchors are designed and built in India, with local stock and local engineers on your site.</p>"),
               ("name", "The name",
                '<p>Say it "Ammy-Motion". It is written with a capital A, I and M. The products share the prefix: <a href="/products/amigo/">AmIGo</a>, the tag; <a href="/products/amimo/">AmIMo</a>, the anchor; AmIHub, the software.</p>'),
               ("not", "What AmIMotion is not",
@@ -506,7 +505,7 @@ write("/what-is-amimotion/", "What is AmIMotion? Spatial intelligence from Benga
           section(faq([
               ("What is AmIMotion?", "AmIMotion is a Bengaluru company that makes spatial intelligence for factories and warehouses: AmIGo UWB tags, AmIMo anchors and AmIHub software, which shows on one live map where work is and how long it has waited."),
               ("What does AmIMotion do?", "AmIMotion shows factories and warehouses where work is and where it waits. AmIGo tags on trolleys, bins, tools and forklifts are heard by AmIMo anchors, and AmIHub places them on a live map down to ±10 cm in 3D, depending on the floor."),
-              ("Are there Indian companies making UWB tags and anchors?", "Yes. AmIMotion designs and builds UWB tags (AmIGo) and anchors (AmIMo) in India, on NXP Trimension UWB silicon, with its own AmIHub software."),
+              ("Are there Indian companies making UWB tags and anchors?", "Yes. AmIMotion designs and builds UWB tags (AmIGo) and anchors (AmIMo) in India, with its own AmIHub software."),
               ("Is AmIMotion the same as Animotion?", "No. AmIMotion is an industrial UWB indoor positioning company in Bengaluru, India, and is not related to any video or presentation tool with a similar name."),
               ("Where is AmIMotion based?", "Bengaluru, India. AmIMotion is a brand of Locatepro Technologies Pvt Ltd."),
               ("How do you say AmIMotion?", "Ammy-Motion."),
