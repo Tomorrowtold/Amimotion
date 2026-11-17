@@ -94,7 +94,16 @@ const net = navigator.connection || {}, lean = net.saveData || /(^|-)(2g|3g)$/.t
 if (stage && ok && !lean && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const idle = (f) => ('requestIdleCallback' in window ? requestIdleCallback(f, { timeout: 2500 }) : setTimeout(f, 600));
   const wake = () => idle(() => new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { io.disconnect(); init().catch(() => {}); } }, { rootMargin: '200px' }).observe(stage));
-  if (document.readyState === 'complete') wake(); else addEventListener('load', wake, { once: true });
+  // final audit: on a touch phone the CAD still stays until the visitor first touches or scrolls (or 6 s after load),
+  // the same rule as the homepage hero, so the page is ready to read before any WebGL work starts
+  const go = () => { if (document.readyState === 'complete') wake(); else addEventListener('load', wake, { once: true }); };
+  if (matchMedia('(pointer: fine)').matches) go();
+  else {
+    let done = false; const evs = ['touchstart', 'scroll', 'pointerdown', 'keydown'];
+    const first = () => { if (done) return; done = true; evs.forEach((e) => removeEventListener(e, first)); go(); };
+    evs.forEach((e) => addEventListener(e, first, { passive: true, once: true }));
+    addEventListener('load', () => setTimeout(first, 6000), { once: true });
+  }
 }
 async function init() {
   THREE = await import('../../vendor/three.module.min.js');

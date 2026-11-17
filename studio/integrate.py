@@ -91,7 +91,7 @@ def rel(m):
     if LAUNCH: return f'href="{u}"'
     return f'href="./{u.strip("/")}/index.html"' if u != "/" else 'href="./index.html"'
 main = re.sub(r'href="(/[^"#]*)"', rel, main)
-main = main.replace('src="assets/', 'src="./assets/studio/assets/').replace('poster="assets/', 'poster="./assets/studio/assets/')
+main = main.replace('src="assets/', 'src="./assets/studio/assets/').replace('poster="assets/', 'poster="./assets/studio/assets/').replace('data-assets="assets/', 'data-assets="./assets/studio/assets/')
 main = re.sub(r'srcset="([^"]+)"', lambda m: 'srcset="' + re.sub(r'(^|,\s*)assets/', r'\1./assets/studio/assets/', m.group(1)) + '"', main)
 # rename studio classes that the main site's own stylesheet also uses, so neither side bleeds into the other
 CLS = ['hero','hero-stage','hero-copy','system','start','start-row','stage','stage-pics','stage-side','stage-floor','cards','card','card-pic','cta','ctas','cta-h','cta-p','cta-plan','cta-call','btn','btn-primary','btn-secondary','links','lead','panel','tabs','tab-ink','big','copy','two','screen','mega','display','lede','lede-lead','h2','h3','small','strong','more','caps','cap','rail','story','story-sticky','floor-media','floor-poster','floor-gl','floor-hud','wire','wire-line','wire-glow','world-gl','spec-line','arrow-link','magnet','tilt','ideas','sp','sp-hub','vh','q-big','tag-fallback','tag-shadow','scroll-cue','hero-foot','hero-part','wrap']
@@ -101,8 +101,11 @@ main = re.sub(r'class="([^"]*)"', cls_attr, main)
 cursor = '<div class="cursor" id="cursor" aria-hidden="true"><i class="c-ring"></i><i class="c-dot"></i><i class="c-h"></i><i class="c-v"></i></div>'
 a, z = home.index("<main"), home.index("</main>") + 7
 home = home[:a] + main + home[z:]   # the normal system cursor (Shiv, 2 Nov): no custom cursor
-home = home.replace("</head>", '<link rel="stylesheet" href="./assets/studio/css/studio.css">\n<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("tag-live")</script>\n<link rel="modulepreload" href="./assets/studio/js/tag.js">\n<link rel="modulepreload" href="./assets/studio/assets/vendor/three.module.min.js">\n<link rel="preload" href="./assets/studio/assets/cad/mesh.json" as="fetch" crossorigin="anonymous">\n<link rel="preload" href="./assets/studio/assets/cad/top_cover.mesh" as="fetch" crossorigin="anonymous">\n<link rel="preload" href="./assets/studio/assets/cad/bottom_cover.mesh" as="fetch" crossorigin="anonymous">\n</head>', 1)
-home = home.replace("</body>", '<script type="module" src="./assets/studio/js/studio.js"></script>\n</body>', 1)
+home = home.replace("</head>", '<link rel="stylesheet" href="./assets/studio/css/studio.css">\n<link rel="stylesheet" href="./assets/studio/css/lfs.css">\n<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&matchMedia("(pointer: fine)").matches)document.documentElement.classList.add("tag-live")</script>\n<link rel="modulepreload" href="./assets/studio/js/tag.js" media="(pointer: fine)">\n<link rel="modulepreload" href="./assets/studio/assets/vendor/three.module.min.js" media="(pointer: fine)">\n<link rel="preload" href="./assets/studio/assets/cad/mesh.json" as="fetch" crossorigin="anonymous" media="(pointer: fine)">\n<link rel="preload" href="./assets/studio/assets/cad/top_cover.mesh" as="fetch" crossorigin="anonymous" media="(pointer: fine)">\n<link rel="preload" href="./assets/studio/assets/cad/bottom_cover.mesh" as="fetch" crossorigin="anonymous" media="(pointer: fine)">\n</head>', 1)
+home = home.replace("</body>", '<script src="./assets/studio/js/lfs.js" defer></script>\n<script type="module" src="./assets/studio/js/studio.js"></script>\n</body>', 1)
+# the homepage ends on "Start with one bay": its two asks are right above, so the footer's closing band is left out here only
+home, n = re.subn(r'<div class="ft-close">.*?</div></div>\n', '', home, count=1, flags=re.S)
+assert n == 1, "homepage: footer closing band not found"
 (dist / "index.html").write_text(home)
 
 # studio assets under assets/studio/
@@ -112,6 +115,8 @@ for sub in ("js", "assets"):
     shutil.copytree(STUDIO / sub, sa / sub)
 css = CRE.sub(lambda m: '.z-' + m.group(1), css)
 (sa / "css").mkdir(parents=True); (sa / "css" / "studio.css").write_text(css)
+# the section after the hero has its own small stylesheet: every rule in it already starts with .lfs, so it needs no scoping
+(sa / "css" / "lfs.css").write_text((STUDIO / "css" / "lfs.css").read_text())   # the site's own font copies: one download, not two
 shutil.copytree(STUDIO / "assets" / "fonts", sa / "fonts")
 # studio JS fetches assets/... relative to the page: point it at assets/studio/assets/
 for f in (sa / "js").glob("*.js"):
@@ -192,3 +197,19 @@ if _full.exists() and (OUT / "index.html").exists():
         t2 = re.sub(r"(## [^\n]*\nURL: https://www\.amimotion\.com/\n\n)(.*?)(?=\n## )", lambda mm: mm.group(1) + text + "\n", t, count=1, flags=re.S)
         _full.write_text(t2)
         print("llms-full.txt: homepage section from the live homepage" if t2 != t else "llms-full.txt: homepage section not found")
+        # the homepage's Markdown twin (index.md) follows the live homepage too, keeping its front matter
+        _md = OUT / "index.md"
+        if _md.exists():
+            fm = re.match(r"---\n.*?\n---\n", _md.read_text(), re.S)
+            b = re.sub(r"<(script|style|svg|noscript|template|form|button|select|dialog|canvas|picture)\b.*?</\1>", " ", _m.group(0), flags=re.S)
+            for n in (1, 2, 3):
+                b = re.sub(rf"<h{n}\b[^>]*>(.*?)</h{n}>", lambda m, n=n: "\n\n" + "#" * n + " " + " ".join(_html.unescape(re.sub(r"<[^>]+>", " ", m.group(1))).split()) + "\n\n", b, flags=re.S)
+            b = re.sub(r'<a\b[^>]*?href="(/[^"]*)"[^>]*>(.*?)</a>', lambda m: f"[{' '.join(_html.unescape(re.sub(r'<[^>]+>', ' ', m.group(2))).split())}](https://www.amimotion.com{m.group(1)})", b, flags=re.S)
+            b = re.sub(r"</(p|li|figcaption|blockquote|div|section|article)>", "\n", b)
+            out, seen = [], set()
+            for l in _html.unescape(re.sub(r"<[^>]+>", " ", b)).split("\n"):
+                l = " ".join(l.split())
+                if len(l) > 2 and l not in seen and l not in {"Read more", "Read the guide", "×", "[]"} and not re.fullmatch(r"\[\]\([^)]*\)", l):
+                    seen.add(l); out.append(l)
+            _md.write_text((fm.group(0) if fm else "") + "\n" + "\n\n".join(out) + "\n")
+            print("index.md: from the live homepage")

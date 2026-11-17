@@ -178,7 +178,7 @@
     {
       "id": "U17",
       "q": "How do I reduce time spent searching for trolleys and bins in a plant?",
-      "page": "/solutions/assets/",
+      "page": "/solutions/tools-and-vehicles/",
       "facts": [
         "search|find|walk",
         "trolley|bin|carrier",
@@ -298,7 +298,7 @@
     {
       "id": "U29",
       "q": "How do you track tools on a factory floor?",
-      "page": "/solutions/assets/",
+      "page": "/solutions/tools-and-vehicles/",
       "facts": [
         "tool",
         "tag",
@@ -489,7 +489,7 @@
       "id": "M06",
       "q": "Hamare Pune plant mein forklifts aur trolleys ka pata nahi chalta, bahut time waste hota hai. Iska kya solution hai?",
       "market": "India-Hinglish",
-      "page": "/solutions/assets/",
+      "page": "/solutions/tools-and-vehicles/",
       "facts": [
         "forklift",
         "trolley",

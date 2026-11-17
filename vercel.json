@@ -25,7 +25,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob:; connect-src 'self' https://api.hsforms.com; frame-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'sha256-IGAlkvVYE4T3emewGeuMJ11KOgIpT5obpfT6RvdRbns=' 'sha256-Jvr1OrNhvPEWdcClEiVxeu2pcyeygIoofDVcpPsVlCQ=' 'sha256-a+/9YcOLxL6r3jXfSEOgYRBfkJ0jjUmx5eKVOAL1DG0=' 'sha256-dK0qMuLZwrYSmEmypb7CynWPhjlJ+4DMUwg82ad5yp8=' 'sha256-gGXmJFXyK+OowxojaKuTHMkAO+zIsAW7xuZqjS9o5+Q=' 'sha256-iug9J2deVhdFKBFzeUnZ4MoxNvhF2Uxuodh5n44jRNs=' 'sha256-vSzk3YbIZ9k8FzMa0tqdxIUPMhiaf+H8WXXNjGq9wm0=' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob:; connect-src 'self' https://api.hsforms.com; frame-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'; upgrade-insecure-requests"
         },
         {
           "key": "X-Frame-Options",
@@ -85,6 +85,30 @@
       ]
     },
     {
+      "source": "/assets/(.*)",
+      "has": [
+        {
+          "type": "query",
+          "key": "v"
+        }
+      ],
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)\\.(woff2|woff)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000"
+        }
+      ]
+    },
+    {
       "source": "/llms(.*).txt",
       "headers": [
         {
@@ -125,9 +149,41 @@
           "value": "noindex"
         }
       ]
+    },
+    {
+      "source": "/(.*)\\.md",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/markdown; charset=utf-8"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    },
+    {
+      "source": "/.well-known/security.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
     }
   ],
   "redirects": [
+    {
+      "source": "/use-cases/ask-your-plant/",
+      "destination": "/use-cases/ask-your-floor/",
+      "permanent": true
+    },
+    {
+      "source": "/solutions/assets/",
+      "destination": "/solutions/tools-and-vehicles/",
+      "permanent": true
+    },
     {
       "source": "/index.html",
       "destination": "/",
@@ -136,6 +192,91 @@
     {
       "source": "/:path*/index.html",
       "destination": "/:path*/",
+      "permanent": true
+    },
+    {
+      "source": "/blog",
+      "destination": "/learn/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/:path*",
+      "destination": "/learn/",
+      "permanent": true
+    },
+    {
+      "source": "/booking",
+      "destination": "/contact/",
+      "permanent": true
+    },
+    {
+      "source": "/get-started",
+      "destination": "/pilot/",
+      "permanent": true
+    },
+    {
+      "source": "/download",
+      "destination": "/resources/",
+      "permanent": true
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "/privacy/",
+      "permanent": true
+    },
+    {
+      "source": "/terms-of-service",
+      "destination": "/privacy/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/automotive",
+      "destination": "/industries/manufacturing/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/industry-4-0",
+      "destination": "/industries/manufacturing/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/smart-warehouse",
+      "destination": "/industries/warehousing/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/healthcare",
+      "destination": "/industries/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/shopping-mall",
+      "destination": "/industries/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/smart-building",
+      "destination": "/industries/",
+      "permanent": true
+    },
+    {
+      "source": "/verticals/:path*",
+      "destination": "/industries/",
+      "permanent": true
+    },
+    {
+      "source": "/favicon-96x96.png",
+      "destination": "/assets/img/favicon-96.png",
+      "permanent": true
+    },
+    {
+      "source": "/manifest.json",
+      "destination": "/site.webmanifest",
+      "permanent": true
+    },
+    {
+      "source": "/icon-512.png",
+      "destination": "/assets/img/icon-512.png",
       "permanent": true
     }
   ]

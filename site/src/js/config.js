@@ -6,4 +6,7 @@ window.AMIMOTION_CONFIG = {
   leadEndpoint: '',
   leadFormat: 'hubspot',
   salesEmail: 'sales@amimotion.com',
+  // Analytics (measure.js). '' = nothing leaves the browser. 'plausible' = cookieless. 'ga4:G-FVENWVDLHE' = the
+  // Google Analytics property the old amimotion.com uses (keeps history; needs a consent banner and a privacy-notice line).
+  analytics: '',
 };

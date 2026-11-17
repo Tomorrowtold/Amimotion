@@ -1,0 +1,865 @@
+{
+ "about": "Information architecture plan (thread 'Design the AmIMotion site architecture', 16 Nov 2026). parent: the breadcrumb trail, which follows the menu. next: the next step towards a pilot. related: the links each page must carry in its text, most important first. build.py renders the breadcrumb from parent and adds any missing 'related' links (up to 4) to the page's Related pages list, labelled with the target's menu label and its own heading line. tools/ia_check.py fails the build on an orphan, a page deeper than 3 clicks, a breadcrumb that disagrees with this file, more than 60 unique links, or a page without its next step. terms: each glossary term id and the page that explains it in full; build.py links the term's name there.",
+ "pages": {
+  "/company/": {
+   "parent": "/",
+   "next": "/what-is-amimotion/",
+   "related": [
+    "/what-is-amimotion/",
+    "/partners/",
+    "/industrial-spatial-intelligence/",
+    "/platform/",
+    "/trust/",
+    "/trust/people/",
+    "/how-to-buy/",
+    "/contact/"
+   ]
+  },
+  "/contact/": {
+   "parent": "/company/",
+   "next": null,
+   "related": [
+    "/start/",
+    "/pilot/",
+    "/diagnostic/",
+    "/tools/pilot/",
+    "/privacy/"
+   ]
+  },
+  "/developers/": {
+   "parent": "/platform/",
+   "next": "/pilot/",
+   "related": [
+    "/pilot/",
+    "/partners/",
+    "/platform/",
+    "/products/amihub/",
+    "/learn/mcp-location-data/",
+    "/use-cases/ask-your-floor/",
+    "/learn/association/",
+    "/learn/omlox/",
+    "/trust/",
+    "/specs/",
+    "/contact/"
+   ]
+  },
+  "/diagnostic/": {
+   "parent": "/start/",
+   "next": "/contact/",
+   "related": [
+    "/contact/",
+    "/start/",
+    "/pilot/",
+    "/solutions/wip/",
+    "/tools/anchors/",
+    "/tools/pilot/",
+    "/privacy/"
+   ]
+  },
+  "/faq/": {
+   "parent": "/resources/",
+   "next": "/pilot/",
+   "related": [
+    "/pilot/",
+    "/resources/",
+    "/specs/",
+    "/trust/",
+    "/learn/accuracy/",
+    "/learn/association/",
+    "/how-to-buy/",
+    "/glossary/",
+    "/contact/"
+   ]
+  },
+  "/films/": {
+   "parent": "/resources/",
+   "next": "/solutions/wip/",
+   "related": [
+    "/solutions/wip/",
+    "/resources/",
+    "/pilot/",
+    "/use-cases/station-to-station/",
+    "/use-cases/find-the-asset/",
+    "/use-cases/ask-your-floor/",
+    "/technology/"
+   ]
+  },
+  "/glossary/": {
+   "parent": "/resources/",
+   "next": "/industrial-spatial-intelligence/",
+   "related": [
+    "/industrial-spatial-intelligence/",
+    "/resources/",
+    "/learn/wip-visibility/",
+    "/learn/dwell-time/",
+    "/learn/association/",
+    "/learn/rtls/",
+    "/learn/omlox/",
+    "/learn/uwb-vs-rfid/",
+    "/learn/accuracy/",
+    "/learn/anchor-planning/",
+    "/faq/"
+   ]
+  },
+  "/how-to-buy/": {
+   "parent": "/start/",
+   "next": "/contact/",
+   "related": [
+    "/contact/",
+    "/partners/",
+    "/proof/",
+    "/start/",
+    "/pilot/",
+    "/tools/pilot/",
+    "/tools/anchors/",
+    "/company/",
+    "/trust/",
+    "/specs/",
+    "/developers/"
+   ]
+  },
+  "/industrial-spatial-intelligence/": {
+   "parent": "/company/",
+   "next": "/solutions/wip/",
+   "related": [
+    "/solutions/wip/",
+    "/company/",
+    "/platform/",
+    "/pilot/",
+    "/what-is-amimotion/",
+    "/learn/wip-visibility/",
+    "/learn/rtls/",
+    "/learn/association/",
+    "/use-cases/ask-your-floor/",
+    "/glossary/"
+   ]
+  },
+  "/industries/": {
+   "parent": "/solutions/",
+   "next": "/industries/manufacturing/",
+   "related": [
+    "/industries/manufacturing/",
+    "/solutions/",
+    "/industries/warehousing/",
+    "/industries/robotics/",
+    "/diagnostic/"
+   ]
+  },
+  "/industries/manufacturing/": {
+   "parent": "/industries/",
+   "next": "/solutions/wip/",
+   "related": [
+    "/solutions/wip/",
+    "/solutions/",
+    "/pilot/",
+    "/use-cases/station-to-station/",
+    "/learn/association/",
+    "/learn/dwell-time/",
+    "/learn/uwb-rtls-india/",
+    "/solutions/tools-and-vehicles/",
+    "/technology/",
+    "/specs/",
+    "/diagnostic/"
+   ]
+  },
+  "/industries/robotics/": {
+   "parent": "/industries/",
+   "next": "/use-cases/amr-hand-off/",
+   "related": [
+    "/use-cases/amr-hand-off/",
+    "/industries/",
+    "/pilot/",
+    "/solutions/tools-and-vehicles/",
+    "/use-cases/ask-your-floor/",
+    "/developers/",
+    "/learn/omlox/",
+    "/diagnostic/"
+   ]
+  },
+  "/industries/warehousing/": {
+   "parent": "/industries/",
+   "next": "/solutions/tools-and-vehicles/",
+   "related": [
+    "/solutions/tools-and-vehicles/",
+    "/industries/",
+    "/pilot/",
+    "/use-cases/find-the-asset/",
+    "/learn/dwell-time/",
+    "/tools/anchors/",
+    "/specs/",
+    "/tools/search-time/",
+    "/diagnostic/"
+   ]
+  },
+  "/learn/": {
+   "parent": "/resources/",
+   "next": "/learn/wip-visibility/",
+   "related": [
+    "/learn/wip-visibility/",
+    "/resources/",
+    "/industrial-spatial-intelligence/",
+    "/solutions/wip/",
+    "/learn/accuracy/",
+    "/learn/alternatives/",
+    "/learn/anchor-planning/",
+    "/learn/association/",
+    "/learn/dwell-time/",
+    "/learn/location-data-quality/",
+    "/learn/mcp-location-data/",
+    "/learn/omlox/",
+    "/learn/pilot-baseline/",
+    "/learn/rtls/",
+    "/learn/uwb-rtls-india/",
+    "/learn/uwb-vs-rfid/",
+    "/learn/value-without-mes/",
+    "/glossary/",
+    "/faq/",
+    "/diagnostic/"
+   ]
+  },
+  "/learn/accuracy/": {
+   "parent": "/learn/",
+   "next": "/specs/",
+   "related": [
+    "/specs/",
+    "/proof/",
+    "/learn/",
+    "/learn/anchor-planning/",
+    "/learn/location-data-quality/",
+    "/technology/",
+    "/products/amimo/",
+    "/learn/pilot-baseline/",
+    "/contact/"
+   ]
+  },
+  "/learn/alternatives/": {
+   "parent": "/learn/",
+   "next": "/solutions/wip/",
+   "related": [
+    "/solutions/wip/",
+    "/learn/",
+    "/pilot/",
+    "/learn/rtls/",
+    "/learn/uwb-vs-rfid/",
+    "/learn/wip-visibility/",
+    "/contact/"
+   ]
+  },
+  "/learn/anchor-planning/": {
+   "parent": "/learn/",
+   "next": "/tools/anchors/",
+   "related": [
+    "/tools/anchors/",
+    "/learn/",
+    "/learn/accuracy/",
+    "/products/amimo/",
+    "/technology/",
+    "/specs/",
+    "/contact/"
+   ]
+  },
+  "/learn/association/": {
+   "parent": "/learn/",
+   "next": "/solutions/wip/",
+   "related": [
+    "/solutions/wip/",
+    "/learn/",
+    "/pilot/",
+    "/learn/dwell-time/",
+    "/learn/value-without-mes/",
+    "/learn/wip-visibility/",
+    "/developers/",
+    "/products/amihub/"
+   ]
+  },
+  "/learn/dwell-time/": {
+   "parent": "/learn/",
+   "next": "/solutions/wip/",
+   "related": [
+    "/solutions/wip/",
+    "/learn/",
+    "/pilot/",
+    "/learn/association/",
+    "/learn/pilot-baseline/",
+    "/learn/wip-visibility/",
+    "/use-cases/station-to-station/",
+    "/products/amihub/"
+   ]
+  },
+  "/learn/location-data-quality/": {
+   "parent": "/learn/",
+   "next": "/products/amihub/",
+   "related": [
+    "/products/amihub/",
+    "/learn/",
+    "/learn/accuracy/",
+    "/learn/association/",
+    "/learn/mcp-location-data/",
+    "/technology/",
+    "/contact/"
+   ]
+  },
+  "/learn/mcp-location-data/": {
+   "parent": "/learn/",
+   "next": "/use-cases/ask-your-floor/",
+   "related": [
+    "/use-cases/ask-your-floor/",
+    "/learn/",
+    "/learn/location-data-quality/",
+    "/developers/",
+    "/products/amihub/",
+    "/trust/",
+    "/contact/"
+   ]
+  },
+  "/learn/omlox/": {
+   "parent": "/learn/",
+   "next": "/developers/",
+   "related": [
+    "/developers/",
+    "/learn/",
+    "/learn/uwb-vs-rfid/",
+    "/technology/",
+    "/glossary/",
+    "/industries/robotics/",
+    "/contact/"
+   ]
+  },
+  "/learn/pilot-baseline/": {
+   "parent": "/start/",
+   "next": "/pilot/",
+   "related": [
+    "/pilot/",
+    "/proof/",
+    "/learn/",
+    "/solutions/wip/",
+    "/learn/dwell-time/",
+    "/learn/value-without-mes/",
+    "/tools/search-time/",
+    "/tools/pilot/"
+   ]
+  },
+  "/learn/rtls/": {
+   "parent": "/learn/",
+   "next": "/learn/wip-visibility/",
+   "related": [
+    "/learn/wip-visibility/",
+    "/learn/",
+    "/industrial-spatial-intelligence/",
+    "/learn/uwb-vs-rfid/",
+    "/learn/alternatives/",
+    "/technology/",
+    "/glossary/",
+    "/contact/"
+   ]
+  },
+  "/learn/uwb-rtls-india/": {
+   "parent": "/learn/",
+   "next": "/industries/manufacturing/",
+   "related": [
+    "/industries/manufacturing/",
+    "/learn/",
+    "/pilot/",
+    "/learn/accuracy/",
+    "/learn/anchor-planning/",
+    "/learn/association/",
+    "/what-is-amimotion/",
+    "/contact/"
+   ]
+  },
+  "/learn/uwb-vs-rfid/": {
+   "parent": "/learn/",
+   "next": "/technology/",
+   "related": [
+    "/technology/",
+    "/learn/",
+    "/learn/alternatives/",
+    "/learn/rtls/",
+    "/learn/accuracy/",
+    "/learn/uwb-rtls-india/",
+    "/learn/association/",
+    "/contact/"
+   ]
+  },
+  "/learn/value-without-mes/": {
+   "parent": "/learn/",
+   "next": "/solutions/wip/",
+   "related": [
+    "/solutions/wip/",
+    "/learn/",
+    "/pilot/",
+    "/learn/association/",
+    "/learn/pilot-baseline/",
+    "/developers/"
+   ]
+  },
+  "/learn/wip-visibility/": {
+   "parent": "/learn/",
+   "next": "/solutions/wip/",
+   "related": [
+    "/solutions/wip/",
+    "/learn/",
+    "/industrial-spatial-intelligence/",
+    "/pilot/",
+    "/learn/dwell-time/",
+    "/learn/association/",
+    "/learn/rtls/",
+    "/learn/alternatives/",
+    "/diagnostic/"
+   ]
+  },
+  "/pilot/": {
+   "parent": "/start/",
+   "next": "/contact/",
+   "related": [
+    "/contact/",
+    "/proof/",
+    "/start/",
+    "/solutions/wip/",
+    "/how-to-buy/",
+    "/learn/pilot-baseline/",
+    "/tools/pilot/",
+    "/diagnostic/",
+    "/technology/",
+    "/trust/people/",
+    "/learn/association/"
+   ]
+  },
+  "/platform/": {
+   "parent": "/",
+   "next": "/solutions/wip/",
+   "related": [
+    "/products/",
+    "/solutions/wip/",
+    "/industrial-spatial-intelligence/",
+    "/pilot/",
+    "/products/amigo/",
+    "/products/amimo/",
+    "/products/amihub/",
+    "/technology/",
+    "/specs/",
+    "/developers/",
+    "/use-cases/ask-your-floor/",
+    "/learn/association/",
+    "/learn/location-data-quality/",
+    "/trust/",
+    "/contact/"
+   ]
+  },
+  "/privacy/": {
+   "parent": "/company/",
+   "next": null,
+   "related": [
+    "/company/",
+    "/trust/",
+    "/trust/people/",
+    "/contact/"
+   ]
+  },
+  "/products/": {
+   "parent": "/platform/",
+   "next": "/specs/",
+   "related": [
+    "/platform/",
+    "/products/amigo/",
+    "/products/amimo/",
+    "/products/amihub/"
+   ],
+   "label": "Side by side"
+  },
+  "/products/amigo/": {
+   "parent": "/platform/",
+   "next": "/products/amimo/",
+   "related": [
+    "/products/amimo/",
+    "/platform/",
+    "/solutions/wip/",
+    "/pilot/",
+    "/products/amihub/",
+    "/specs/",
+    "/solutions/tools-and-vehicles/",
+    "/learn/association/",
+    "/learn/location-data-quality/",
+    "/contact/"
+   ]
+  },
+  "/products/amihub/": {
+   "parent": "/platform/",
+   "next": "/solutions/wip/",
+   "related": [
+    "/solutions/wip/",
+    "/platform/",
+    "/pilot/",
+    "/products/amigo/",
+    "/products/amimo/",
+    "/developers/",
+    "/use-cases/ask-your-floor/",
+    "/learn/dwell-time/",
+    "/learn/association/",
+    "/trust/",
+    "/specs/",
+    "/contact/"
+   ]
+  },
+  "/products/amimo/": {
+   "parent": "/platform/",
+   "next": "/products/amihub/",
+   "related": [
+    "/products/amihub/",
+    "/platform/",
+    "/pilot/",
+    "/products/amigo/",
+    "/technology/",
+    "/specs/",
+    "/learn/anchor-planning/",
+    "/learn/accuracy/",
+    "/tools/anchors/",
+    "/contact/"
+   ]
+  },
+  "/resources/": {
+   "parent": "/",
+   "next": "/learn/",
+   "related": [
+    "/learn/",
+    "/proof/",
+    "/films/",
+    "/tools/",
+    "/industrial-spatial-intelligence/",
+    "/faq/",
+    "/glossary/",
+    "/diagnostic/"
+   ]
+  },
+  "/solutions/": {
+   "parent": "/",
+   "next": "/solutions/wip/",
+   "related": [
+    "/solutions/wip/",
+    "/industries/",
+    "/use-cases/",
+    "/industrial-spatial-intelligence/",
+    "/pilot/",
+    "/industries/manufacturing/",
+    "/industries/warehousing/",
+    "/industries/robotics/",
+    "/solutions/tools-and-vehicles/",
+    "/use-cases/station-to-station/",
+    "/use-cases/find-the-asset/",
+    "/use-cases/amr-hand-off/",
+    "/use-cases/ask-your-floor/",
+    "/diagnostic/"
+   ]
+  },
+  "/solutions/tools-and-vehicles/": {
+   "parent": "/solutions/",
+   "next": "/use-cases/find-the-asset/",
+   "related": [
+    "/use-cases/find-the-asset/",
+    "/solutions/",
+    "/solutions/wip/",
+    "/pilot/",
+    "/products/amigo/",
+    "/tools/search-time/",
+    "/learn/location-data-quality/",
+    "/industries/warehousing/",
+    "/industries/robotics/",
+    "/diagnostic/"
+   ]
+  },
+  "/solutions/wip/": {
+   "parent": "/solutions/",
+   "next": "/pilot/",
+   "related": [
+    "/pilot/",
+    "/solutions/",
+    "/industrial-spatial-intelligence/",
+    "/films/",
+    "/learn/wip-visibility/",
+    "/learn/dwell-time/",
+    "/learn/association/",
+    "/learn/value-without-mes/",
+    "/learn/pilot-baseline/",
+    "/use-cases/station-to-station/",
+    "/industries/manufacturing/",
+    "/products/amihub/",
+    "/tools/pilot/",
+    "/diagnostic/",
+    "/contact/"
+   ]
+  },
+  "/specs/": {
+   "parent": "/platform/",
+   "next": "/pilot/",
+   "related": [
+    "/pilot/",
+    "/proof/",
+    "/platform/",
+    "/products/amigo/",
+    "/products/amimo/",
+    "/products/amihub/",
+    "/technology/",
+    "/developers/",
+    "/learn/accuracy/",
+    "/tools/anchors/",
+    "/contact/"
+   ]
+  },
+  "/start/": {
+   "parent": "/",
+   "next": "/pilot/",
+   "related": [
+    "/pilot/",
+    "/tools/",
+    "/diagnostic/",
+    "/how-to-buy/",
+    "/learn/pilot-baseline/",
+    "/tools/anchors/",
+    "/tools/search-time/",
+    "/tools/pilot/",
+    "/trust/people/",
+    "/contact/"
+   ]
+  },
+  "/technology/": {
+   "parent": "/platform/",
+   "next": "/specs/",
+   "related": [
+    "/specs/",
+    "/platform/",
+    "/products/amimo/",
+    "/learn/accuracy/",
+    "/learn/anchor-planning/",
+    "/learn/location-data-quality/",
+    "/learn/omlox/",
+    "/learn/uwb-vs-rfid/",
+    "/tools/anchors/",
+    "/contact/"
+   ]
+  },
+  "/tools/": {
+   "parent": "/start/",
+   "next": "/diagnostic/",
+   "related": [
+    "/diagnostic/",
+    "/start/",
+    "/pilot/",
+    "/tools/anchors/",
+    "/tools/search-time/",
+    "/tools/pilot/",
+    "/contact/"
+   ]
+  },
+  "/tools/anchors/": {
+   "parent": "/tools/",
+   "next": "/diagnostic/",
+   "related": [
+    "/diagnostic/",
+    "/tools/",
+    "/learn/anchor-planning/",
+    "/products/amimo/",
+    "/specs/",
+    "/technology/",
+    "/contact/"
+   ]
+  },
+  "/tools/pilot/": {
+   "parent": "/tools/",
+   "next": "/contact/",
+   "related": [
+    "/contact/",
+    "/tools/",
+    "/pilot/",
+    "/learn/pilot-baseline/",
+    "/learn/association/",
+    "/how-to-buy/"
+   ]
+  },
+  "/tools/search-time/": {
+   "parent": "/tools/",
+   "next": "/diagnostic/",
+   "related": [
+    "/diagnostic/",
+    "/tools/",
+    "/learn/pilot-baseline/",
+    "/use-cases/find-the-asset/",
+    "/solutions/tools-and-vehicles/",
+    "/contact/"
+   ]
+  },
+  "/trust/": {
+   "parent": "/company/",
+   "next": "/pilot/",
+   "related": [
+    "/pilot/",
+    "/company/",
+    "/trust/people/",
+    "/privacy/",
+    "/developers/",
+    "/products/amihub/",
+    "/specs/",
+    "/use-cases/ask-your-floor/",
+    "/contact/"
+   ]
+  },
+  "/trust/people/": {
+   "parent": "/trust/",
+   "next": "/pilot/",
+   "related": [
+    "/pilot/",
+    "/trust/",
+    "/privacy/",
+    "/contact/"
+   ]
+  },
+  "/use-cases/": {
+   "parent": "/solutions/",
+   "next": "/use-cases/station-to-station/",
+   "related": [
+    "/use-cases/station-to-station/",
+    "/solutions/",
+    "/use-cases/find-the-asset/",
+    "/use-cases/amr-hand-off/",
+    "/use-cases/ask-your-floor/",
+    "/diagnostic/"
+   ]
+  },
+  "/use-cases/amr-hand-off/": {
+   "parent": "/use-cases/",
+   "next": "/industries/robotics/",
+   "related": [
+    "/industries/robotics/",
+    "/pilot/",
+    "/use-cases/station-to-station/",
+    "/use-cases/find-the-asset/",
+    "/use-cases/ask-your-floor/",
+    "/learn/association/",
+    "/developers/"
+   ]
+  },
+  "/use-cases/ask-your-floor/": {
+   "parent": "/solutions/",
+   "next": "/pilot/",
+   "related": [
+    "/pilot/",
+    "/solutions/",
+    "/industrial-spatial-intelligence/",
+    "/learn/mcp-location-data/",
+    "/developers/",
+    "/products/amihub/",
+    "/trust/",
+    "/use-cases/find-the-asset/",
+    "/use-cases/station-to-station/",
+    "/contact/"
+   ]
+  },
+  "/use-cases/find-the-asset/": {
+   "parent": "/use-cases/",
+   "next": "/tools/search-time/",
+   "related": [
+    "/tools/search-time/",
+    "/solutions/tools-and-vehicles/",
+    "/films/",
+    "/pilot/",
+    "/use-cases/station-to-station/",
+    "/use-cases/amr-hand-off/",
+    "/use-cases/ask-your-floor/",
+    "/learn/pilot-baseline/"
+   ]
+  },
+  "/use-cases/station-to-station/": {
+   "parent": "/use-cases/",
+   "next": "/solutions/wip/",
+   "related": [
+    "/solutions/wip/",
+    "/solutions/",
+    "/films/",
+    "/pilot/",
+    "/learn/dwell-time/",
+    "/learn/association/",
+    "/industries/manufacturing/",
+    "/use-cases/find-the-asset/",
+    "/use-cases/amr-hand-off/",
+    "/use-cases/ask-your-floor/",
+    "/diagnostic/"
+   ]
+  },
+  "/what-is-amimotion/": {
+   "parent": "/company/",
+   "next": "/platform/",
+   "related": [
+    "/platform/",
+    "/company/",
+    "/industrial-spatial-intelligence/",
+    "/solutions/wip/",
+    "/pilot/",
+    "/products/amigo/",
+    "/products/amimo/",
+    "/products/amihub/",
+    "/contact/"
+   ]
+  },
+  "/proof/": {
+   "parent": "/resources/",
+   "next": "/pilot/",
+   "related": [
+    "/pilot/",
+    "/learn/pilot-baseline/",
+    "/learn/accuracy/",
+    "/specs/",
+    "/trust/people/",
+    "/how-to-buy/",
+    "/solutions/wip/",
+    "/tools/pilot/"
+   ]
+  },
+  "/partners/": {
+   "parent": "/company/",
+   "next": "/contact/",
+   "related": [
+    "/contact/",
+    "/developers/",
+    "/learn/association/",
+    "/learn/omlox/",
+    "/how-to-buy/",
+    "/trust/",
+    "/products/amihub/",
+    "/learn/mcp-location-data/",
+    "/use-cases/ask-your-floor/"
+   ]
+  },
+  "/accessibility/": {
+   "parent": "/company/",
+   "next": null,
+   "related": [
+    "/privacy/",
+    "/trust/",
+    "/contact/"
+   ]
+  }
+ },
+ "terms": {
+  "rtls": "/learn/rtls/",
+  "uwb": "/technology/",
+  "tag": "/products/amigo/",
+  "anchor": "/products/amimo/",
+  "aoa": "/technology/",
+  "multipath": "/technology/",
+  "survey": "/learn/anchor-planning/",
+  "omlox": "/learn/omlox/",
+  "certification": "/learn/omlox/",
+  "wip": "/solutions/wip/",
+  "wip-visibility": "/learn/wip-visibility/",
+  "carrier": "/solutions/wip/",
+  "association": "/learn/association/",
+  "zone": "/learn/dwell-time/",
+  "dwell": "/learn/dwell-time/",
+  "last-seen": "/learn/location-data-quality/",
+  "freshness": "/learn/location-data-quality/",
+  "mes": "/learn/value-without-mes/",
+  "amr": "/industries/robotics/",
+  "amihub": "/products/amihub/",
+  "mcp": "/learn/mcp-location-data/",
+  "isi": "/industrial-spatial-intelligence/"
+ }
+}

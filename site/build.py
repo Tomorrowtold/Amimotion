@@ -18,8 +18,8 @@ python3 build.py --indexable           public build for amimotion.com (only afte
 python3 build.py --share               preview build: relative links ending in index.html, runs from an artifact
 python3 tools/pickability.py dist      the AI pickability test on whatever was built
 """
-import argparse, html, json, re, shutil, subprocess
-from datetime import date
+import argparse, html, json, re, shutil, subprocess, sys
+from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).parent
@@ -36,12 +36,19 @@ if args.out: DIST = Path(args.out).resolve()
 SITE, SHARE, BRIEF, TODAY = args.base_url.rstrip("/"), args.share, not args.no_brief, date.today().isoformat()
 ENTITY = json.loads((SRC / "data" / "entity.json").read_text())
 NAV = json.loads((SRC / "data" / "nav.json").read_text())
+# the information architecture plan (thread "Design the AmIMotion site architecture", 16 Nov 2026): each page's
+# breadcrumb parent, its next step towards a pilot and the links it must carry. See ia_links() and tools/ia_check.py.
+_IA = json.loads((SRC / "data" / "ia.json").read_text())
+IA, TERMS = _IA["pages"], _IA.get("terms", {})
 # one label per URL (homepage-final.md, Nav panels): bar, sheet, footer, section bars, breadcrumbs and llms.txt
 LABEL = {s["url"]: s["label"] for s in NAV["sections"]}
 for _s in NAV["sections"]:
     for _l, _u, _line in _s["items"]: LABEL.setdefault(_u, _l)
 
 part = lambda n: (SRC / "partials" / n).read_text()
+sys.path.insert(0, str(ROOT / "tools"))
+import purge   # per-page CSS trim (tools/purge.py): keeps only rules a page or a first-party script can use
+JS_WORDS = set().union(*(purge.js_words(f.read_text()) for f in sorted((SRC / "js").rglob("*.js"))))
 # colours live only in core.css: the browser bar colour is read from the --ground token, so a palette swap is one file
 GROUND = re.search(r"--ground:\s*(#[0-9a-fA-F]{3,8})", (SRC / "css" / "core.css").read_text()).group(1)
 
@@ -131,8 +138,8 @@ def videos_of(body, url):
 
 # HowTo only where the page itself sets out steps a buyer follows, in order (not where it explains how the system works):
 # url -> the <h2> the steps sit under. The HowTo is named by the page title (the question the steps answer).
-HOWTO = {"/pilot/": "Five steps, in order.", "/how-to-buy/": "Four steps.",
-         "/learn/anchor-planning/": "How to get to a number", "/learn/value-without-mes/": "A pilot plan that works"}
+# 16 Nov 2026 (site architecture): HowTo no longer earns anything in search, so no page carries it. Kept as a hook.
+HOWTO = {}
 
 
 def howto_of(meta, url, body):
@@ -212,6 +219,37 @@ def page_schema(meta, url, body, titles):
     return json.dumps({"@context": "https://schema.org", "@graph": g}, ensure_ascii=False, separators=(",", ":"))
 
 
+def md_url(url):
+    """Each public page has a Markdown twin next to it (agents and answer engines read it without the page chrome)."""
+    return url + "index.md" if url.endswith("/") else url + ".md"
+
+
+def to_markdown(body, url, meta):
+    """A plain Markdown version of a page body: headings, paragraphs, lists, links, questions with answers, tables."""
+    b = re.sub(r"<(script|style|svg|template|figure|picture|canvas|noscript|form|button|dialog)\b.*?</\1>", " ", body, flags=re.S | re.I)
+    b = re.sub(r'<nav class="(crumbs|ia-strip)[^"]*".*?</nav>', " ", b, flags=re.S)
+    b = re.sub(r"<!--.*?-->", " ", b, flags=re.S)
+    def link(m):
+        h, t = m.group(1), text_of(m.group(2)).strip()
+        if not t: return ""
+        return f"[{t}]({SITE + h if h.startswith('/') else h})" if not h.startswith("#") else t
+    b = re.sub(r'<a\b[^>]*?href="([^"]+)"[^>]*>(.*?)</a>', link, b, flags=re.S)
+    b = re.sub(r"<summary\b[^>]*>(.*?)</summary>", lambda m: "\n\n### " + text_of(m.group(1)).strip() + "\n\n", b, flags=re.S)
+    for n in (1, 2, 3, 4):
+        b = re.sub(rf"<h{n}\b[^>]*>(.*?)</h{n}>", lambda m, n=n: "\n\n" + "#" * n + " " + " ".join(text_of(m.group(1)).split()) + "\n\n", b, flags=re.S)
+    b = re.sub(r"<li\b[^>]*>(.*?)</li>", lambda m: "\n- " + " ".join(text_of(re.sub(r"\n\n#+ (.*?)\n\n", r"**\1** ", m.group(1))).split()), b, flags=re.S)
+    b = re.sub(r"<dt\b[^>]*>(.*?)</dt>", lambda m: "\n\n**" + " ".join(text_of(m.group(1)).split()) + "**", b, flags=re.S)
+    b = re.sub(r"<tr\b[^>]*>(.*?)</tr>", lambda m: "\n| " + " | ".join(" ".join(text_of(c).split()) for c in re.findall(r"<t[hd]\b[^>]*>(.*?)</t[hd]>", m.group(1), re.S)) + " |", b, flags=re.S)
+    b = re.sub(r"</(p|dd|div|section|ul|ol|table|details|blockquote)>", "\n\n", b)
+    b = re.sub(r"<br\s*/?>", "\n", b)
+    t = html.unescape(re.sub(r"<[^>]+>", " ", b))
+    t = "\n".join(" ".join(l.split()) if not l.lstrip().startswith(("- ", "| ")) else l.strip() for l in t.split("\n"))
+    t = re.sub(r"\n{3,}", "\n\n", t).strip()
+    title = meta.get("title", "AmIMotion")
+    return (f"---\ntitle: {title}\nurl: {SITE}{url}\ndescription: {meta.get('description', '')}\nupdated: {meta.get('_modified', TODAY)}\n"
+            f"publisher: AmIMotion (Locatepro Technologies Pvt Ltd, Bengaluru)\n---\n\n{t}\n")
+
+
 def head(meta, url, body, titles):
     t = meta.get("title", "AmIMotion")
     t = t if "AmIMotion" in t else f"{t} | AmIMotion"
@@ -229,12 +267,18 @@ def head(meta, url, body, titles):
 <meta name="robots" content="{robots}">
 <link rel="canonical" href="{SITE}{url}">
 <meta name="theme-color" content="{GROUND}">
+<meta name="color-scheme" content="light">
 <meta property="og:type" content="website"><meta property="og:site_name" content="AmIMotion"><meta property="og:locale" content="en_IN">
 <meta property="og:title" content="{e(t)}"><meta property="og:description" content="{e(d)}">
 <meta property="og:url" content="{SITE}{url}"><meta property="og:image" content="{SITE}{og}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="image_src" href="{og}">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="{e(t)}">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/assets/img/AmIMotion_Icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+{f'<link rel="alternate" type="text/markdown" title="This page as Markdown" href="{md_url(url)}">' if url not in ("/404.html",) and meta.get("noindex") != "true" else ''}
 <link rel="alternate" type="text/plain" title="AmIMotion for AI assistants" href="/llms.txt">
 <link rel="alternate" type="text/plain" title="AmIMotion, the full site as text" href="/llms-full.txt">
 {styles(meta)}
@@ -253,7 +297,7 @@ def css_min(css):
 
 def body_class(meta):
     """The shared class plus the page's looks (front matter look: serif sidehead cards ...): kit.css restyles by them."""
-    return " ".join(["ds"] + (["pl", "site-" + meta["id"]] if meta.get("layout") == "product" else []) + ["look-" + x for x in meta.get("look", "").split()])
+    return " ".join(["ds"] + (["pl", "site-" + meta["id"]] if meta.get("layout") == "product" else ["page-" + meta["id"]] if meta.get("id") else []) + ["look-" + x for x in meta.get("look", "").split()])
 
 
 # Every page opens at its top when a link is followed (a link to a section, Back/Forward and reload keep the browser's own
@@ -299,13 +343,13 @@ def styles(meta):
     # the product sites (thread "Build AmIGo, AmIMo and AmIHub product sites"): each product page is its own small
     # site under the AmIMotion nav, so it carries core.css plus its own two files, none of the inner-page kit
     if meta.get("layout") == "product":
-        css = css_min("".join((SRC / "css" / f).read_text() for f in ["core.css", "products/base.css", f"products/{meta['id']}.css"] + ([] if meta["id"] in ("amigo", "amimo", "amihub") else ["house.css"])))
+        css = css_min("".join((SRC / "css" / f).read_text() for f in ["core.css", "products/base.css", f"products/{meta['id']}.css"] + ([] if meta["id"] in ("amigo", "amimo", "amihub") else ["house.css"]) + ["uplift.css"]))
         return (FONT_PRELOAD +
                 f"<style>{css}</style>")
     files = ["core.css"] + (["home.css"] if meta.get("layout") == "home" else ["inner.css"] + [f"{x}.css" for x in meta.get("css", "").split()] + ["worlds.css", "kit.css"])
     if meta.get("layout") != "home" and meta.get("id") and (SRC / "css" / "id" / f"{meta['id']}.css").exists(): files.append(f"id/{meta['id']}.css")
     # house.css last (site audit, 12 Nov 2026): one house style settles the tokens of every older layer; not on the homepage
-    if meta.get("layout") != "home": files.append("house.css")
+    if meta.get("layout") != "home": files += ["house.css", "uplift.css"]   # uplift.css: the inner-page system on the new IA (16 Nov 2026)
     css = css_min("".join((SRC / "css" / f).read_text() for f in files))
     return (FONT_PRELOAD +
             f"<style>{css}</style>")
@@ -355,7 +399,7 @@ def ask_form(i, hint="Ask about tags, anchors, pilots or data"):
             '</form><p class="vh" role="status" data-ask-status></p><div class="nask-out"></div>')
 
 
-WORLD_DOOR = {"steel": "Products", "shift": "Solutions", "floor": "Solutions", "morning": "Start small", "paper": "Resources", "studio": "Company"}
+WORLD_DOOR = {"steel": "Products", "shift": "Solutions", "floor": "Solutions", "morning": "Pilot", "paper": "Resources", "studio": "Company"}
 GUIDES = []   # every field guide as [url, short title, cover colour]; build() fills it from the pages before rendering
 CHEV = '<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5"/></svg>'
 DOWN = '<svg class="down" viewBox="0 0 12 12" aria-hidden="true"><path d="m3 4.75 3 3 3-3"/></svg>'
@@ -385,7 +429,11 @@ def still(u):
 
 
 def panel_group(name, kind, items, cur, where):
-    """One group of a panel. Every link is plain HTML, so crawlers and answer engines read the whole tree."""
+    """One group of a panel. Every link is plain HTML, so crawlers and answer engines read the whole tree.
+    A group may name its own hub page (nav.json groups [name, count, kind, url]): its name then links there, the way the
+    field-guide shelf's name links to /learn/, so hubs like Industries and Use cases are one click from every page."""
+    hub = None
+    if isinstance(name, tuple): name, hub = name
     a = lambda l, u, line, cls="": (f'<a class="{cls}" href="{u}"{cur(u)} data-nav-id="{where}.{slug(name)}.{slug(l)}">'
                                      f'{still(u) if cls else ""}<b>{html.escape(l)}</b><span>{html.escape(line)}</span>'
                                      f'{"" if cls else CHEV}</a>')
@@ -396,7 +444,8 @@ def panel_group(name, kind, items, cur, where):
                 f'<ul class="guides">{rows}</ul></div>')
     cls = {"plinths": "plinth", "photos": "photo", "feature": "photo feature"}.get(kind, "")
     body = "".join(f"<li>{a(*it, cls)}</li>" for it in items)
-    return f'<div class="grp g-{kind}"><p class="grp-name">{html.escape(name)}</p><ul class="{kind}">{body}</ul></div>'
+    nm = f'<a href="{hub}"{cur(hub)} data-nav-id="{where}.{slug(name)}.hub">{html.escape(name)}{CHEV}</a>' if hub else html.escape(name)
+    return f'<div class="grp g-{kind}"><p class="grp-name">{nm}</p><ul class="{kind}">{body}</ul></div>'
 
 
 def over_photo(meta, body):
@@ -416,11 +465,17 @@ def header_html(url="/", world=None, over=False):
     so it opens on click, tap and keyboard with JavaScript off. Phones: the same bar at the top (logo, Book a call,
     Menu); Menu opens a full-screen sheet with Ask on top and the five doors as pages."""
     here_label = WORLD_DOOR.get(world) if world else None
-    here = next((s for s in NAV["sections"] if s["label"] == here_label), None) or section_of(url)
+    # the lit door is the one the breadcrumb and the section strip name: the nav section that lists the page, else
+    # the door at the top of its ia.json parent chain; a page's picture world only decides when neither knows
+    def ia_door(u, seen=()):
+        par = (IA.get(u) or {}).get("parent")
+        if not par or par in seen: return None
+        return next((x for x in NAV["sections"] if x["url"] == par), None) or ia_door(par, seen + (u,))
+    here = section_of(url) or ia_door(url) or next((s for s in NAV["sections"] if s["label"] == here_label), None)
     cur = lambda u: ' aria-current="page"' if u == url else ""
     doors, panes = [], []
     for s in NAV["sections"]:
-        sl = slug(s["label"]); gs = [(n, k, its) for (n, _, k), (_, its) in zip(s["groups"], grouped(s))]
+        sl = slug(s["label"]); gs = [((n, g[3]) if len(g) > 3 else n, g[2], its) for g, (n, its) in zip(s["groups"], grouped(s))]
         groups = "".join(panel_group(n, k, its, cur, f"header.{sl}") for n, k, its in gs)
         foot = f'<p class="drop-foot"><a class="drop-hub" href="{s["url"]}"{cur(s["url"])} data-nav-id="header.{sl}.hub">{html.escape(s["hub"])}{CHEV}</a></p>'
         kinds = " ".join(sorted({k for _, k, _ in gs}))
@@ -470,7 +525,8 @@ def footer_html(url="/", world=None):
     vb, paths = word.group(1), word.group(2).replace('fill="currentColor"', 'fill="url(#ft-wg)"')
     at = door_index(url, world)
     bays = "".join(
-        f'<div class="ft-bay"{" data-here" if i == at else ""}>{A(s["url"], s["label"], " class=\"ft-door\"")}<ul>'
+        f'<div class="ft-bay"{" data-here" if i == at else ""}>{A(s["url"], s["label"], " class=\"ft-door\"")}'
+        f'<button class="ft-fold" type="button" aria-expanded="false" aria-controls="ft-b{i}"><span class="ft-sr">Show {html.escape(s["label"])} links</span></button><ul id="ft-b{i}"><li class="ft-all">{A(s["url"], "Overview")}</li>'
         + "".join(f"<li>{A(u, l)}</li>" for l, u, _ in s["items"]) + "</ul></div>" for i, s in enumerate(NAV["sections"]))
     chips = "".join(f'<li>{A(roles[r][0][1], r)}</li>' for r in ROLE_ORDER)
     style = f' style="--at:{at}"' if at is not None else ""
@@ -482,16 +538,16 @@ def footer_html(url="/", world=None):
             '<div class="ft-base">'
             f'<p class="ft-entity">{html.escape(ENTITY["long"])}</p>\n'
             '<address class="ft-reach"><a href="mailto:sales@amimotion.com">sales@amimotion.com</a><span>Locatepro Technologies Pvt Ltd</span><span>Bengaluru, India</span></address>\n'
-            '<ul class="ft-small">' + "".join(f"<li>{A(u, l)}</li>" for l, u in (("Privacy", "/privacy/"), ("Trust and data", "/trust/"), ("People and privacy", "/trust/people/"))) +
+            '<ul class="ft-small">' + "".join(f"<li>{A(u, l)}</li>" for l, u in (("Privacy", "/privacy/"), ("Trust and data", "/trust/"), ("People and privacy", "/trust/people/"), ("Accessibility", "/accessibility/"))) +
             '<li><a href="https://www.youtube.com/@locateprotech" rel="me noopener">YouTube</a></li><li><a href="/llms.txt">For AI assistants</a></li></ul>\n'
-            f'<p class="ft-legal">© {TODAY[:4]} Locatepro Technologies Pvt Ltd. NXP and Trimension are trademarks of NXP B.V. FiRa and omlox are trademarks of their owners. Specifications are indicative. Final datasheets are shared under NDA.</p>'
+            f'<p class="ft-legal">© {TODAY[:4]} Locatepro Technologies Pvt Ltd. FiRa and omlox are trademarks of their owners. Specifications are indicative. Final datasheets are shared under NDA.</p>'
             '</div>\n'
             f'<div class="ft-word" aria-hidden="true"><svg viewBox="{vb}" preserveAspectRatio="xMidYMin meet"><defs><linearGradient id="ft-wg" x1="0" y1="0" x2="0" y2="1">'
             '<stop offset="0" stop-color="#e4e9ff" stop-opacity=".22"/><stop offset=".45" stop-color="#9aabff" stop-opacity=".08"/><stop offset=".9" stop-color="#6b7cff" stop-opacity="0"/></linearGradient></defs>'
             f'{paths}</svg></div>\n</div></footer>')
 
 
-NAV_JS = '<script src="/assets/js/nav.js" defer></script>'
+NAV_JS = '<script src="/assets/js/nav.js" defer></script>\n<script src="/assets/js/config.js" defer></script>\n<script src="/assets/js/measure.js" defer></script>'
 # the inbound agent (Ask AmIMotion): every page but the homepage; it loads its core, magnets and styles itself, lazily
 AGENT_JS = '<script src="/assets/js/agent.js" defer></script>'
 
@@ -503,9 +559,9 @@ MAGNETS = {
     "floor": ["/technology/", "/learn/accuracy/", "/learn/anchor-planning/", "/learn/uwb-vs-rfid/", "/learn/rtls/", "/specs/", "/learn/location-data-quality/",
               "/learn/uwb-rtls-india/", "/learn/alternatives/", "/faq/", "/glossary/"],
     "exchange": ["/platform/", "/learn/value-without-mes/", "/learn/association/", "/learn/omlox/"],
-    "tags": ["/solutions/assets/", "/use-cases/find-the-asset/", "/industries/robotics/", "/use-cases/amr-hand-off/"],
+    "tags": ["/solutions/tools-and-vehicles/", "/use-cases/find-the-asset/", "/industries/robotics/", "/use-cases/amr-hand-off/"],
     "committee": ["/how-to-buy/", "/pilot/", "/start/", "/learn/pilot-baseline/", "/company/", "/trust/", "/trust/people/", "/resources/"],
-    "plant": ["/use-cases/ask-your-plant/", "/learn/mcp-location-data/", "/developers/", "/use-cases/"],
+    "plant": ["/use-cases/ask-your-floor/", "/learn/mcp-location-data/", "/developers/", "/use-cases/"],
 }
 MAGNET_OF = {u: k for k, us in MAGNETS.items() for u in us}
 
@@ -529,7 +585,7 @@ def scripts(meta):
     out = [NAV_JS]
     if meta.get("layout") == "product":
         return "\n".join(out + [AGENT_JS] + ['<script src="/assets/js/products/site.js" defer></script>'] + [f'<script type="module" src="/assets/js/products/{x}.js"></script>' for x in s])
-    if "diag" in s: out.append('<script src="/assets/js/config.js" defer></script><script src="/assets/js/diagnostic.js" defer></script>')
+    if "diag" in s: out.append('<script src="/assets/js/diagnostic.js" defer></script>')
     out += [f'<script src="/assets/js/{x}.js" defer></script>' for x in s if x not in ("hero", "diag")]
     return "\n".join(out + [AGENT_JS])
 
@@ -548,6 +604,131 @@ def relativise(page, url):
     page = page.replace('"three":"/assets/', f'"three":"{pre}assets/')
     page = page.replace("url(\"/assets/", f"url(\"{pre}assets/")
     return page.replace('<html lang="en-IN"', f'<html lang="en-IN" data-root="{pre}" data-index="index.html"', 1)
+
+
+def crumb_trail(url, titles):
+    """The breadcrumb from ia.json: each parent up to Home, named by its menu label (or its own crumb), so the trail,
+    the bar and the BreadcrumbList always agree."""
+    chain, u = [], IA.get(url, {}).get("parent")
+    while u and u != "/":
+        chain.insert(0, u); u = IA.get(u, {}).get("parent")
+    name = lambda x: IA.get(x, {}).get("label") or LABEL.get(x) or titles.get(x, "")
+    sep = '<span aria-hidden="true"> / </span>'
+    return ('<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a>' + "".join(f'{sep}<a href="{x}">{html.escape(name(x))}</a>' for x in chain)
+            + f'{sep}<span aria-current="page">{html.escape(name(url))}</span></nav>')
+
+
+def full_stop(t):
+    """Lines under related links end like the hand-written ones do."""
+    return t if not t or t[-1] in ".?!" else t + "."
+
+
+def ia_links(body, url, titles, lines):
+    """Adds the links a page must carry (ia.json 'related', most important first) that its text does not have yet, to
+    its own Related pages list, so they look exactly like the links already there. A page without a plain list gets the
+    site's usual Read next section above the closing band. The list stays a whole number of rows of three."""
+    plan = IA.get(url)
+    if not plan: return body
+    text = re.sub(r'<nav class="crumbs".*?</nav>', "", body, flags=re.S)
+    have = set(re.findall(r'href="(/[^"#?]*)"', text))
+    cands = [u for u in plan.get("related", []) if u not in have and u in titles]
+    if not cands: return body
+    lists = list(re.finditer(r'<nav class="related" aria-label="Related pages"><ul>(.*?)</ul></nav>', body, re.S))
+    target = next((m for m in lists if 'id="read-next"' in body[max(0, m.start() - 160):m.start()]), lists[-1] if lists else None)
+    n = len(re.findall(r"<li\b", target.group(1))) if target else 0
+    k = next((k for k in (3, 2, 1) if k <= len(cands) and (n + k) % 3 == 0), min(3, len(cands)))
+    li = "".join(f'<li><a href="{u}">{html.escape(LABEL.get(u) or titles[u])}</a> <span>{html.escape(full_stop(lines.get(u, "")))}</span></li>' for u in cands[:k])
+    if target:
+        return body[:target.end(1)] + li + body[target.end(1):]
+    block = ('<section class="sec" aria-labelledby="read-next">\n<h2 id="read-next"><span>Read next.</span></h2>\n'
+             f'<nav class="related" aria-label="Related pages"><ul>{li}</ul></nav>\n</section>\n')
+    i = body.rfind('<section class="close"')
+    return body[:i] + block + body[i:] if i >= 0 else body + "\n" + block
+
+
+# ---- the IA on every inner page (thread "Redesign AmIMotion inner pages on new IA", 16 Nov 2026) ----
+# The way every page feeds (site architecture, 16 Nov): see where work waits, how a pilot runs, book a call.
+ROUTE = [("/solutions/wip/", "See where work waits"), ("/pilot/", "How a pilot runs"), ("/contact/", "Book a call")]
+
+
+def ia_strip(url):
+    """The door you are in and every page behind it, in menu order and groups: a stranger who lands deep sees where
+    the page sits and what sits next to it. Built from nav.json, so it always agrees with the bar and the breadcrumb."""
+    s = section_of(url)
+    if not s or url == "/": return ""
+    owner = max([(len(u), u) for _, u, _ in s["items"] if u == url or (url.startswith(u) and u != "/")] + [(0, None)])[1]
+    groups = []
+    for (name, items), g in zip(grouped(s), s["groups"]):
+        li = "".join(f'<li><a href="{u}"{" aria-current=\"page\"" if u == url else " aria-current=\"true\"" if u == owner else ""}>{html.escape(l)}</a></li>' for l, u, _ in items)
+        groups.append(f'<li class="ia-g"><ul aria-label="{html.escape(name)}">{li}</ul></li>')
+    hub = f'<a class="ia-door" href="{s["url"]}"{" aria-current=\"page\"" if s["url"] == url else ""}>{html.escape(s["label"])}</a>'
+    return f'<nav class="ia-strip" aria-label="In {html.escape(s["label"])}"><div class="ia-in">{hub}<ul class="ia-list">{"".join(groups)}</ul></div></nav>\n'
+
+
+def ia_route(url, nxt):
+    """The three steps to a pilot, with this page's place on it: the step it is (or leads to) is marked."""
+    on = next((i for i, (u, _) in enumerate(ROUTE) if u == url), None)
+    to = next((i for i, (u, _) in enumerate(ROUTE) if u == nxt), None)
+    li = "".join(f'<li{" class=\"on\"" if i == on else " class=\"to\"" if on is None and i == to else ""}>'
+                 + (f'<span aria-current="step">{html.escape(t)}</span>' if i == on else f'<a href="{u}">{html.escape(t)}</a>') + "</li>"
+                 for i, (u, t) in enumerate(ROUTE))
+    return f'<ol class="ia-route" aria-label="The way to a pilot">{li}</ol>'
+
+
+def ia_next(body, url, titles, lines):
+    """Every page ends on its next step (ia.json next): one clear card above the related links, and the way to a
+    pilot under it. Pages without a Read next list get one above their closing line."""
+    plan = IA.get(url)
+    if not plan or url == "/": return body
+    nxt = plan.get("next")
+    card = ""
+    if nxt and nxt in titles:
+        label, line = html.escape(LABEL.get(nxt) or titles[nxt]), html.escape(full_stop(lines.get(nxt, "")))
+        # when the page's own Read next list already names the next step, its words move into the card unchanged
+        own = re.search(r'aria-labelledby="read-next".*?<li><a href="' + re.escape(nxt) + r'">(.*?)</a>\s*<span>(.*?)</span></li>', body, re.S)
+        if own and "<" not in own.group(1) + own.group(2): label, line = own.group(1), own.group(2)
+        card = (f'<a class="ia-go" href="{nxt}"><span class="ia-go-k">Next step</span><b>{label}</b>'
+                f'<span class="ia-go-l">{line}</span></a>')
+    block = card + ia_route(url, nxt)
+    # the next step is the big card: the same page is not listed again under it (when the list keeps others)
+    def drop_next(lst):
+        items = re.findall(r"<li\b.*?</li>", lst.group(1), re.S)
+        keep = [x for x in items if f'href="{nxt}"' not in x]
+        return lst.group(0).replace(lst.group(1), "".join(keep)) if keep and len(keep) < len(items) else lst.group(0)
+    rn = re.search(r'aria-labelledby="read-next".*?</section>', body, re.S)
+    if rn and nxt:
+        sec = re.sub(r'<nav class="related[^"]*" aria-label="Related pages"><ul>(.*?)</ul></nav>', drop_next, rn.group(0), count=1, flags=re.S)
+        body = body[:rn.start()] + sec + body[rn.end():]
+    m = re.search(r'(<section class="sec)([^"]*)("[^>]*aria-labelledby="read-next"[^>]*>\s*<h2 id="read-next">.*?</h2>)', body, re.S)
+    if m:
+        return body[:m.start()] + m.group(1) + m.group(2) + " ia-next" + m.group(3) + f'<div class="ia-end">{block}</div>' + body[m.end():]
+    sec = ('<section class="sec ia-next" aria-labelledby="read-next">\n<h2 id="read-next"><span>Read next.</span></h2>'
+           f'<div class="ia-end">{block}</div>\n</section>\n')
+    i = body.rfind('<section class="close"')
+    return body[:i] + sec + body[i:] if i >= 0 else body + "\n" + sec
+
+
+def long_head(body):
+    """A headline longer than about two short lines gets the smaller display size, so it still sets in four lines."""
+    h = re.search(r"<h1[^>]*>(.*?)</h1>", body, re.S)
+    if not h or len(text_of(h.group(1))) <= 46: return body
+    return re.sub(r'(<div data-km class="head)', r"\1 h-long", body, count=1)
+
+
+def with_strip(body, url):
+    """The section strip goes right under the page head (the first block that is the head), else at the top."""
+    st = ia_strip(url)
+    if not st: return body
+    m = re.search(r'<div data-km class="head[^"]*"', body) or re.search(r'<(?:div|section|header)\b[^>]*class="[^"]*\bhead\b', body)
+    if not m: return st + body
+    # find the end of that head block by balancing its tag
+    tag = re.match(r"<(\w+)", m.group(0)).group(1)
+    depth, i = 0, m.start()
+    for t in re.finditer(rf"<(/?){tag}\b[^>]*>", body[m.start():]):
+        depth += -1 if t.group(1) else 1
+        if depth == 0:
+            i = m.start() + t.end(); break
+    return body[:i] + "\n" + st + body[i:]
 
 
 def crumb_labels(body, url=None):
@@ -612,6 +793,19 @@ def build():
         meta["_modified"] = last_changed(f)
         pages[url_for(rel) if rel.name != "404.html" else "/404.html"] = (meta, body)
     titles = {u: m.get("crumb") or m.get("title", "").split(" | ")[0] for u, (m, _) in pages.items()}
+    # one line under each added link: its menu line, else the second line of the page's own heading
+    lines = {u: l for s_ in NAV["sections"] for _l, u, l in s_["items"]}
+    for u, (m, b) in pages.items():
+        h = re.search(r'<h1[^>]*>\s*<span>.*?</span>\s*<span>(.*?)</span>', b, re.S)
+        if u not in lines and h: lines[u] = text_of(h.group(1)).strip()
+    # glossary: each term's name links to the page that explains it in full (short answer here, the full one a click away)
+    if "/glossary/" in pages:
+        m_, b_ = pages["/glossary/"]
+        pages["/glossary/"] = (m_, re.sub(r'<dt id="([^"]+)">(.*?)</dt>', lambda t: f'<dt id="{t.group(1)}"><a href="{TERMS[t.group(1)]}">{t.group(2)}</a></dt>' if t.group(1) in TERMS else t.group(0), b_))
+    pages = {u: (m, ia_links(re.sub(r'<nav class="crumbs".*?</nav>', lambda _m: crumb_trail(u, titles), b, count=1, flags=re.S) if u in IA else b, u, titles, lines))
+             for u, (m, b) in pages.items()}
+    # product sites keep their own designed ending (they already carry the next step); they get the strip only
+    pages = {u: (m, b if u in ("/", "/404.html") else with_strip(b if m.get("layout") == "product" else long_head(ia_next(b, u, titles, lines)), u)) for u, (m, b) in pages.items()}
     worlds = {u: m.get("world") for u, (m, _) in pages.items() if m.get("world")}
     covers = {u: m.get("cover") for u, (m, _) in pages.items() if m.get("cover")}
     def connect(body):
@@ -631,13 +825,21 @@ def build():
     public = []
     for url, (meta, body) in pages.items():
         if url != "/": body = with_magnet(body, url)
+        # guides say when they were last changed, in words people see (answer engines weigh freshness; dateModified matches)
+        if url.startswith("/learn/") and url != "/learn/" and 'class="short-answer"' in body:
+            dm = meta.get("_modified", TODAY); y, mo, dd = dm.split("-")
+            when = f"{int(dd)} {['January','February','March','April','May','June','July','August','September','October','November','December'][int(mo) - 1]} {y}"
+            body = re.sub(r'(<p class="short-answer"[^>]*>.*?)(</p>)', lambda m: m.group(1) + f'<span class="updated">Updated <time datetime="{dm}">{when}</time></span>' + m.group(2), body, count=1, flags=re.S)
         header = header_html(url, meta.get("world"), over_photo(meta, body))
         page = head(meta, url, body, titles) + "\n" + header + f'\n<main id="main" tabindex="-1">\n{body}\n</main>\n' + footer_html(url, meta.get("world")) + "\n" + scripts(meta) + "\n</body>\n</html>\n"
         page = phone_dpr_cap(page)
+        if url != "/": page = purge.trim_page(page, JS_WORDS)   # the homepage is locked (its own thread): left whole
         if SHARE: page = relativise(page, url)
         out = DIST / ("404.html" if url == "/404.html" else url.strip("/") + "/index.html" if url != "/" else "index.html")
         out.parent.mkdir(parents=True, exist_ok=True); out.write_text(page)
-        if meta.get("noindex") != "true" and url != "/404.html": public.append(url)
+        if meta.get("noindex") != "true" and url != "/404.html":
+            public.append(url)
+            (DIST / md_url(url).lstrip("/")).write_text(to_markdown(body, url, meta))
 
     # sitemap with the pictures each page carries (image search and answer engines use them)
     def imgs(url):
@@ -672,6 +874,7 @@ def build():
     lines = dict(sections)
     (DIST / "llms.txt").write_text(f"# AmIMotion\n\n> {ENTITY['long']}\n\n{ENTITY['short']}\n\n## Key facts (with their qualifiers)\n\n{facts}\n\n"
         + "\n\n".join(f"## {k}\n\n" + "\n".join(v) for k, v in lines.items() if v) + f"\n\n## Home\n\n- [AmIMotion]({SITE}/): {pages['/'][0].get('description', '')}\n"
+        + f"\n## For AI agents\n\n- Every page above has a Markdown copy: add index.md to its address, for example {SITE}/pilot/index.md.\n- Every figure on this site carries its condition. Quote it with the condition, for example \"down to ±10 cm with AmIMo anchors, depending on the site\".\n- Prices, datasheets and pilot options are shared under NDA after a first call: {SITE}/contact/\n"
         + f"\n## Optional\n\n- [The full site as text]({SITE}/llms-full.txt): every public page above, as plain text, with its questions and answers.\n"
         + f"- [Sitemap]({SITE}/sitemap.xml): every public page with its pictures.\n")
     (DIST / "llms-full.txt").write_text(f"# AmIMotion: the full site as text\n\n> {ENTITY['long']}\n\n## Key facts\n\n{facts}\n\n"
@@ -720,6 +923,16 @@ def build():
     shutil.copytree(SRC / "desk", DIST / "desk")   # the founders' lead desk (noindex; its data needs the desk key)
     (DIST / "assets" / "agent" / "kb.json").write_text(json.dumps({"v": TODAY, "pages": kb_pages, "passages": kb_rows}, ensure_ascii=False, separators=(",", ":")))
 
+    # icons, the web manifest and security.txt (RFC 9116): what browsers, phones and security researchers look for
+    shutil.copy(SRC / "assets" / "img" / "favicon.ico", DIST / "favicon.ico")
+    (DIST / "site.webmanifest").write_text(json.dumps({"name": "AmIMotion", "short_name": "AmIMotion", "start_url": "/", "display": "browser",
+        "background_color": GROUND, "theme_color": GROUND, "icons": [
+            {"src": "/assets/img/icon-192.png", "sizes": "192x192", "type": "image/png"},
+            {"src": "/assets/img/icon-512.png", "sizes": "512x512", "type": "image/png"},
+            {"src": "/assets/img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}]}, indent=1))
+    (DIST / ".well-known").mkdir(exist_ok=True)
+    expires = (date.today() + timedelta(days=330)).isoformat()
+    (DIST / ".well-known" / "security.txt").write_text(f"Contact: mailto:{ENTITY['email']}\nExpires: {expires}T00:00:00.000Z\nPreferred-Languages: en\nCanonical: {SITE}/.well-known/security.txt\n")
     if args.indexnow_key: (DIST / f"{args.indexnow_key}.txt").write_text(args.indexnow_key)
     # Security headers for a static host. Every script and style is first-party; inline ones are the per-page CSS, the
     # JSON-LD, the motion flag and the speculation rules, so 'unsafe-inline' stays and nothing else is allowed in.

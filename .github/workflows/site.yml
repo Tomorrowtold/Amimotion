@@ -17,7 +17,13 @@ jobs:
         run: bash vercel-build.sh
       - name: Copy lock (no words change without saving the lock)
         run: python3 studio/copylock.py check
+      - name: CSP hashes cover every inline script
+        run: python3 studio/csp.py check
       - name: Links, meta, structured data
         run: python3 studio/check.py
+      - name: Information architecture (no orphans, depth, breadcrumbs, next steps)
+        run: python3 site/tools/ia_check.py studio/out
       - name: Agent server tests
         run: npm test
+      - name: AWS edge rules follow every redirect and header in vercel.json
+        run: node aws/test_edge.mjs

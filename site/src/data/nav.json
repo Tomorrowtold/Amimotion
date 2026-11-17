@@ -1,5 +1,5 @@
 {
- "about": "The one nav tree (round 3 nav, thread 'Perfect the site navigation', 2 Nov 2026). Five doors, each one of the inner-page worlds: Products (steel), Solutions (shift and floor), Start small (morning), Resources (paper), Company (studio). One label per URL: build.py renders the capsule, its panels, Ask, the phone sheet, the footer columns, BreadcrumbList JSON-LD, llms.txt and assets/ask.json from this file. 'groups' splits each section's items in order: [group name, how many items, how they show: plinths (CAD on clay), photos (the graded still the page opens on), feature (one big still), list, shelf (every field guide as a spine in its cover colour, read from the pages)]. 'hub' is the overview link at the foot of the panel. 'pictures' gives a still to an item: a bare key is assets/nav/<key>-640.webp, 'w:<name>' is assets/worlds/<name>-800.webp, 'n:<file>' is assets/nav/<file>.webp (the nav's own pictures).",
+ "about": "The one nav tree (round 3 nav, thread 'Perfect the site navigation', 2 Nov 2026). Five doors, each one of the inner-page worlds: Products (steel), Solutions (shift and floor), Pilot (morning), Resources (paper), Company (studio). One label per URL: build.py renders the capsule, its panels, Ask, the phone sheet, the footer columns, BreadcrumbList JSON-LD, llms.txt and assets/ask.json from this file. 'groups' splits each section's items in order: [group name, how many items, how they show: plinths (CAD on clay), photos (the graded still the page opens on), feature (one big still), list, shelf (every field guide as a spine in its cover colour, read from the pages)]. 'hub' is the overview link at the foot of the panel. 'pictures' gives a still to an item: a bare key is assets/nav/<key>-640.webp, 'w:<name>' is assets/worlds/<name>-800.webp, 'n:<file>' is assets/nav/<file>.webp (the nav's own pictures).",
  "sections": [
   {
    "label": "Products",
@@ -9,12 +9,12 @@
    "groups": [
     [
      "The system",
-     4,
+     3,
      "plinths"
     ],
     [
      "For the technical review",
-     4,
+     3,
      "list"
     ]
    ],
@@ -35,19 +35,9 @@
      "One live map"
     ],
     [
-     "Ask your floor",
-     "/use-cases/ask-your-plant/",
-     "AI assistants and MCP"
-    ],
-    [
      "How it locates a tag",
      "/technology/",
      "Steel, racking, signal and outages"
-    ],
-    [
-     "When a tag goes quiet",
-     "/learn/location-data-quality/",
-     "Last seen, sleep and gaps"
     ],
     [
      "Specifications",
@@ -70,7 +60,8 @@
     [
      "By industry",
      3,
-     "photos"
+     "photos",
+     "/industries/"
     ],
     [
      "By problem",
@@ -78,9 +69,10 @@
      "list"
     ],
     [
-     "Four jobs",
+     "Use cases",
      3,
-     "list"
+     "list",
+     "/use-cases/"
     ]
    ],
    "items": [
@@ -106,33 +98,33 @@
     ],
     [
      "Tools and vehicles",
-     "/solutions/assets/",
+     "/solutions/tools-and-vehicles/",
      "Fixtures, forklifts, AMRs"
     ],
     [
-     "Which job is on the trolley?",
-     "/learn/association/",
-     "Linking trolleys to jobs"
+     "Ask your floor",
+     "/use-cases/ask-your-floor/",
+     "AI assistants and MCP"
     ],
     [
-     "Where is that trolley?",
+     "Find a trolley",
      "/use-cases/find-the-asset/",
      "Find it from a screen"
     ],
     [
-     "The robot brings a trolley.",
+     "Log a robot drop-off",
      "/use-cases/amr-hand-off/",
-     "AmIHub records the arrival."
+     "AmIHub records the arrival"
     ],
     [
-     "Each station is a zone.",
+     "Time each station",
      "/use-cases/station-to-station/",
-     "Each move gets a time."
+     "Each move gets a time"
     ]
    ]
   },
   {
-   "label": "Start small",
+   "label": "Pilot",
    "url": "/start/",
    "hub": "Start small",
    "world": "morning",
@@ -150,7 +142,8 @@
     [
      "Your numbers",
      3,
-     "list"
+     "list",
+     "/tools/"
     ]
    ],
    "items": [
@@ -204,7 +197,7 @@
     ],
     [
      "Answers",
-     3,
+     4,
      "list"
     ]
    ],
@@ -228,6 +221,11 @@
      "Glossary",
      "/glossary/",
      "Floor words and tech words"
+    ],
+    [
+     "How we prove it",
+     "/proof/",
+     "Baseline, accuracy, conditions"
     ]
    ]
   },
@@ -244,7 +242,7 @@
     ],
     [
      "The company",
-     4,
+     5,
      "list"
     ]
    ],
@@ -270,6 +268,11 @@
      "What a pilot tags, and why"
     ],
     [
+     "For integrators",
+     "/partners/",
+     "Build on open interfaces"
+    ],
+    [
      "Book a call",
      "/contact/",
      "Talk to the team"
@@ -281,7 +284,7 @@
   "/products/amigo/": "n:amigo-studio-800",
   "/products/amimo/": "n:amimo-studio-800",
   "/products/amihub/": "n:hublive-800",
-  "/use-cases/ask-your-plant/": "n:asklive-800",
+  "/use-cases/ask-your-floor/": "n:asklive-800",
   "/industries/manufacturing/": "w:mfg-hero",
   "/industries/warehousing/": "w:wh-hero",
   "/industries/robotics/": "w:rob-hero",

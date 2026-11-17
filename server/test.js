@@ -78,6 +78,10 @@ await t('lead: needs consent, drops bots, stores a scored dossier with the deskâ
   assert.ok(r.ok); const d = JSON.parse([...store.values()].pop());
   assert.equal(d.desk, 'claude'); assert.match(d.reply, /Hi Asha/); assert.ok(d.score.fit > 50); assert.equal(d.consent.reply, true);
 });
+await t('lead: with nowhere to send it, the API refuses so the page falls back to an email draft', async () => {
+  const r = await handle(new Request(site + '/api/lead', { method: 'POST', headers: { 'content-type': 'application/json', origin: site }, body: JSON.stringify({ profile: { name: 'Asha Rao', email: 'asha@example.com' }, consent: { reply: true } }) }), { ANTHROPIC_API_KEY: 'test' });
+  assert.equal(r.status, 503); assert.equal((await r.json()).fallback, 'email');
+});
 await t('desk: key required, lists leads, updates status', async () => {
   const bad = await handle(new Request(site + '/api/desk'), env); assert.equal(bad.status, 401);
   const list = await (await handle(new Request(site + '/api/desk', { headers: { authorization: 'Bearer k' } }), env)).json(); assert.equal(list.leads.length, 1);

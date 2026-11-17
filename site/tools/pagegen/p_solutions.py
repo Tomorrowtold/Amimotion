@@ -1,5 +1,5 @@
 """Where it helps: the solutions squad's round 07 copy (team/rounds/07-pages/solutions/*.md), twelve pages:
-/solutions/, /solutions/wip/, /solutions/assets/, /industries/ and its three floors, /use-cases/ and its four jobs.
+/solutions/, /solutions/wip/, /solutions/tools-and-vehicles/, /industries/ and its three floors, /use-cases/ and its four jobs.
 Use-case heads are model-hall stills, not films (README decision 1): no film(), no VideoObject. One ground, no tone."""
 from lib import *
 
@@ -38,7 +38,7 @@ UC_LINE = {
     "find-the-asset": ("/use-cases/find-the-asset/", "Where is that trolley?", "Find it from a screen."),
     "station-to-station": ("/use-cases/station-to-station/", "Station to station", "Every entry and exit, timed."),
     "amr-hand-off": ("/use-cases/amr-hand-off/", "The hand-off", "What the robot brought, and when."),
-    "ask-your-plant": ("/use-cases/ask-your-plant/", "Ask your floor", "AI assistants and MCP."),
+    "ask-your-plant": ("/use-cases/ask-your-floor/", "Ask your floor", "AI assistants and MCP."),
 }
 
 
@@ -47,7 +47,7 @@ UC_PIC = {
     "/use-cases/find-the-asset/": ("P-UC1-01c", "A model factory floor. One trolley stopped behind the racks is marked blue."),
     "/use-cases/station-to-station/": ("P-UC3-01c", "A model factory floor. Blue lines show each trolley's full path between checkpoint desks."),
     "/use-cases/amr-hand-off/": ("P-UC2-01c", "A model back aisle. A robot and the trolley it tows are marked blue."),
-    "/use-cases/ask-your-plant/": ("P-UC4-01c", "A model factory floor, all pale except three trolleys at inspection, marked amber."),
+    "/use-cases/ask-your-floor/": ("P-UC4-01c", "A model factory floor, all pale except three trolleys at inspection, marked amber."),
 }
 ucpics = lambda: {u: pic(c, "4:3 cut of the use case's head still (job tile).", "photo", a) for u, (c, a) in UC_PIC.items()}
 
@@ -72,7 +72,7 @@ write("/solutions/", "Where AmIMotion helps: WIP, tools and vehicles",
                       ("/solutions/wip/", pic("P-SOL-02", f"{CAM}, --state after, border 0.05,0.50,0.20,0.62 (4:3): inspection station and its queue. One trolley inside the station zone on a blue tint, three in the queue on amber, a short blue trail leading in. Everything else pale.", "photo",
                                               "A model inspection station. Three trolleys in its queue are amber because they are waiting."),
                        "Work in progress", "See which trolley waits where, and for how long, linked to the job it carries."),
-                      ("/solutions/assets/", pic("P-SOL-03", f"{CAM}, --state after, border 0.20,0.75,0.55,0.97 (4:3): the back aisle. The tool cart, the fixture and the AMR in colour on blue, each with its trail ending where it stands. Everything else pale.", "photo",
+                      ("/solutions/tools-and-vehicles/", pic("P-SOL-03", f"{CAM}, --state after, border 0.20,0.75,0.55,0.97 (4:3): the back aisle. The tool cart, the fixture and the AMR in colour on blue, each with its trail ending where it stands. Everything else pale.", "photo",
                                                  "A model factory floor. A tool cart, a fixture and a robot are marked blue where they stopped."),
                        "Tools and vehicles", "Find fixtures, tool carts, forklifts and AMRs from a screen, with when each was last seen."),
                   ], 2)),
@@ -140,8 +140,8 @@ write("/solutions/wip/", "WIP visibility: see where work waits",
           close(),
       ])
 
-# ---------------- /solutions/assets/ ----------------
-write("/solutions/assets/", "Find tools, fixtures and forklifts from a screen",
+# ---------------- /solutions/tools-and-vehicles/ ----------------
+write("/solutions/tools-and-vehicles/", "Find tools, fixtures and forklifts from a screen",
       "AmIMotion finds tagged tools, fixtures, trolleys, forklifts and AMRs on one live map, with where and when each was last seen. The search starts on a screen.",
       [
           head("Find it from a screen.", "Not a walk.", "Tag the fixtures, tool carts, trolleys and vehicles your team looks for. AmIHub shows where each one is, or where it was last seen.",
@@ -318,7 +318,7 @@ write("/industries/robotics/", "UWB location for robotics and AMR floors",
                                "Asking changes nothing. Any change, such as raising a work order in AmIHub, needs a person's approval. We show it live on a call."], (),
                         pic("P-ROB-02", f"{CAM}, --state after, isolate pass: everything pale except one drop-off zone at the line end of the back aisle, where two trolleys stand on amber (needs the drop-off zone outline added to the hall). No answer card, no data.", "photo",
                             "A model floor, all pale except two trolleys at a drop-off point, marked amber because they are waiting."),
-                        extra=more([("Ask your floor", "/use-cases/ask-your-plant/")]))),
+                        extra=more([("Ask your floor", "/use-cases/ask-your-floor/")]))),
           section(faq([
               ("Why not use each robot's own localisation?", "A robot's own map covers that maker's robots. AmIHub also covers forklifts, tuggers and trolleys, on one map that runs inside your plant."),
               ("How precise is a robot's position on AmIHub?", "The same as any AmIGo tag: down to ±10 cm, with AmIMo anchors. How close depends on your floor."),
@@ -344,7 +344,7 @@ write("/use-cases/", "AmIMotion use cases: find, time, hand off, ask",
                                                      "A model factory floor. Blue lines show each trolley's full path between checkpoint desks."), "Station to station", "Status changes when someone scans. AmIHub times every station in between."),
               ("/use-cases/amr-hand-off/", pic("P-UC2-01c", "4:3 cut of the /use-cases/amr-hand-off/ head still (P-UC2-01): the AMR and its towed trolley on blue, two trails side by side to the drop-off zone.", "photo",
                                                "A model back aisle. A robot and the trolley it tows are marked blue."), "The hand-off", "A robot brings a trolley. AmIHub records where and when it arrived."),
-              ("/use-cases/ask-your-plant/", pic("P-UC4-01c", "4:3 cut of the /use-cases/ask-your-plant/ head still (P-UC4-01): everything pale, only the three inspection-queue trolleys on amber.", "photo",
+              ("/use-cases/ask-your-floor/", pic("P-UC4-01c", "4:3 cut of the /use-cases/ask-your-floor/ head still (P-UC4-01): everything pale, only the three inspection-queue trolleys on amber.", "photo",
                                                  "A model factory floor, all pale except three trolleys at inspection, marked amber."), "Ask your floor", "Someone goes to look. An AI assistant answers from the live map instead."),
           ], 2), label="The four use cases"),
           section(vp("Pick the one", "your team lives with.", "Each AmIMotion use case answers a question someone on your floor asks every shift."),
@@ -368,7 +368,7 @@ write("/use-cases/find-the-asset/", "Find a trolley or tool from a screen",
           head("Where is that trolley?", "Look it up.", "Today someone walks the hall to find it. With an AmIGo tag on it, the trolley is a place on AmIHub's map.",
                short="With AmIMotion, every tagged trolley, bin, tool and fixture shows on one live map in AmIHub. AmIMo anchors place each tag down to ±10 cm, depending on your floor. "
                      "You see where it is, or where it was last seen and when. Finding one starts with a search, not a walk.",
-               trail=[UC, ("Where is that trolley?", None)], actions=(("Tools and vehicles", "/solutions/assets/"),),
+               trail=[UC, ("Where is that trolley?", None)], actions=(("Tools and vehicles", "/solutions/tools-and-vehicles/"),),
                media=pic("P-UC1-01", f"The homepage screen 2 still, recut 16:9: {CAM}, --state after, isolate pass, border 0.25,0.95,0.30,0.85. The press line on the left, the racks on the right. Everything pale except one trolley stopped behind the racks, on a blue floor tint. Its one blue trail runs from the press and ends where it stands. No UI, no phone, no numbers.", "wide",
                          "A model factory floor. One trolley stopped behind the racks is marked blue. A blue line shows its path from the press and ends where it stopped.")),
           section(vp("Today,", "and with AmIMotion."),
@@ -459,8 +459,8 @@ write("/use-cases/amr-hand-off/", "AMR hand-off: see what a robot brought",
           close(),
       ])
 
-# ---------------- /use-cases/ask-your-plant/ ----------------
-write("/use-cases/ask-your-plant/", "Ask your floor: AI assistants over MCP",
+# ---------------- /use-cases/ask-your-floor/ ----------------
+write("/use-cases/ask-your-floor/", "Ask your floor: AI assistants over MCP",
       "Ask an AI assistant where tagged work is and how long it has waited, answered from AmIHub's live map over MCP. Any change needs a person's approval.",
       [
           head("Ask your floor a question.", "The live map answers.", "Ask in plain words. An AI assistant answers from AmIHub's live map. Asking changes nothing.",
