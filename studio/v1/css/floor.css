@@ -88,6 +88,14 @@
 /* the ruler: a true length at the picture's present distance */
 .flr-on .flr-scale{display:flex;position:absolute;z-index:5;right:var(--flr-m);top:calc(var(--sv) - 96px);align-items:center;gap:10px;font-weight:500;font-size:13px;line-height:1;color:var(--flr-soft);font-variant-numeric:tabular-nums;pointer-events:none}
 .flr-scale i{display:block;height:7px;border:1px solid var(--flr-soft);border-top:0;transition:width .25s cubic-bezier(.2,.7,.2,1)}
+.flr-ov .l-lay .pl{fill:rgba(240,246,255,.5);stroke:#8fa9de;stroke-width:1;stroke-linejoin:round}
+.flr-ov .l-lay .pl.top{fill:rgba(250,252,255,.82);stroke:var(--flr-blue)}
+.flr-ov .l-lay .post{stroke:#8fa9de;stroke-width:1;stroke-dasharray:2 5}
+.flr-ov .l-lay .drop{stroke:var(--flr-blue);stroke-width:1}
+.flr-ov .l-lay .an{fill:var(--flr-ink)}
+.flr-ov .l-lay .aisle{stroke:var(--flr-line);stroke-width:1.5}
+.flr-ov .l-lay .d{fill:var(--flr-blue)}
+.flr-ov .l-lay .dw{fill:var(--flr-amber)}
 .flr-ov .l-axes line{stroke:var(--flr-soft);stroke-width:1;opacity:.7}
 .flr-ov .l-axes text{font:400 11.5px "AmI Text",Arial,sans-serif;fill:var(--flr-soft);text-anchor:middle;font-variant-numeric:tabular-nums}
 .flr-on .flr-count{opacity:0}
@@ -133,6 +141,7 @@
   .flr-rail{margin-left:-8px}.flr-right{margin-right:-8px}
   .flr-rail a::after{left:8px;right:8px}
   .flr-on .flr-n{font-size:13.5px}
+  .flr-on .flr-n li[data-at^="L"] .flr-xy,.flr-on .flr-n li[data-at^="L"] br{display:none}
   .flr-ctl .flr-top{display:none}
   .flr-dot,.flr-pin{width:7px;height:7px;margin:-3.5px 0 0 -3.5px;box-shadow:0 0 0 2px rgba(255,255,255,.95)}
   .flr-pin{left:-3.5px;top:-3.5px;margin:0}

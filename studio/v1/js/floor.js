@@ -11,7 +11,7 @@
   var rail = [].slice.call(S.querySelectorAll('.flr-rail a')), topA = S.querySelector('.flr-top'), sndB = S.querySelector('.flr-snd');
   var Q = new URLSearchParams(location.search), SHOT = !!window.__flrShot, FULL = SHOT || Q.get('flr') === 'full', FORCE_STILLS = Q.get('flr') === 'stills';
   var base = S.getAttribute('data-assets');
-  var WGT = [.9, 1.5, 1.15, 1.1, 1.2, 1.1, 1.45, 1.25, 1.1], SUM = WGT.reduce(function (a, b) { return a + b; }, 0), UNIT = 50;   // vh of scroll per unit
+  var WGT = [.9, 1.5, 1.15, 1.1, 1.2, 1.1, 1.45, 1.25, 1.5, .9], SUM = WGT.reduce(function (a, b) { return a + b; }, 0), UNIT = 50;   // vh of scroll per unit
   var EDGE = [0]; WGT.forEach(function (w) { EDGE.push(EDGE[EDGE.length - 1] + w / SUM); });
   S.style.setProperty('--flr-run', (SUM * UNIT) + 'vh');
   S.classList.add('flr-on');
@@ -26,7 +26,7 @@
   var roll = document.createElement('div'); roll.className = 'flr-roll'; col.appendChild(head); col.appendChild(roll); stage.insertBefore(col, cv);
   var hn = head.querySelector('b'), hp = [].slice.call(head.querySelectorAll('i')), CH = ['Lost', 'Found', 'Seen'], chNow = -1;
   var SS = { 3: [.14, .5], 4: [.22, .46], 5: [.06, .34] };                            // when a sentence's words light, where the picture needs them later than usual
-  var AS = { 3: [.5, .78], 6: [.44, .78], 7: [.46, .62] }, AW = { 6: [.44, .55, .66, .75] };   // the same for the second line; some words are timed to things in the picture
+  var AS = { 3: [.5, .78], 6: [.44, .78], 7: [.46, .62], 8: [.2, .7] }, AW = { 6: [.44, .55, .66, .75], 8: [.2, .22, .24, .26, .4, .42, .6, .62, .64] };   // the same for the second line; some words are timed to things in the picture
   var KC = { due: 'amber', pallet: 'amber', walker: 'ink', mid: 'ink' };
   var blocks = beats.map(function (b, bi) {
     var t = b.querySelector('.flr-t'), ps = [], keys = [];
@@ -79,7 +79,7 @@
   function easeI(x) { x = x < 0 ? 0 : x > 1 ? 1 : x; return x * x * x; }
   var leads = [];
   function textFrame(tb) {
-    var i = Math.min(NB - 1, Math.floor(tb)), u = Math.min(1, tb - i), ch = Math.floor(i / 3);
+    var i = Math.min(NB - 1, Math.floor(tb)), u = Math.min(1, tb - i), ch = Math.min(2, Math.floor(i / 3));
     if (ch !== chNow) { chNow = ch; hn.textContent = CH[ch]; hn.classList.remove('sw'); void hn.offsetWidth; hn.classList.add('sw'); }
     hp.forEach(function (e, k) { var f = Math.max(0, Math.min(1, tb - ch * 3 - k)); if (f !== e.f) { e.f = f; e.style.setProperty('--f', f.toFixed(3)); } });
     head.style.opacity = ease(seg(ap, .3, .7));
@@ -104,7 +104,7 @@
       b.keys.forEach(function (K) {
         var at = k === 0 ? .1 : K.at, kv = ease(seg(uu, at, at + .1)) * (1 - seg(x, 0, .25)); kv = Math.round(kv * 50) / 50;
         if (kv !== K.v) { K.v = kv; K.ws.forEach(function (w) { w.el.style.setProperty('--kv', kv); }); }
-        if (k === i) leads.push({ K: K, d: seg(u, at + .03, at + .2), a: Math.min(seg(u, at + .03, at + .06), 1 - seg(u, .84, .9)) });
+        if (k === i && K.k[0] !== 'L') leads.push({ K: K, d: seg(u, at + .03, at + .2), a: Math.min(seg(u, at + .03, at + .06), 1 - seg(u, .84, .9)) });
       });
     });
   }
@@ -148,7 +148,7 @@
   function setBeat(i) {
     if (i === bi) return; var was = bi; bi = i;
     beats.forEach(function (b, k) { b.classList.toggle('on', k === i); b.classList.toggle('flr-near', Math.abs(k - i) <= 1); });
-    rail.forEach(function (a) { var g = +a.getAttribute('data-go'); a.classList.toggle('on', i >= g && i < g + 3); });
+    rail.forEach(function (a) { var g = +a.getAttribute('data-go'); a.classList.toggle('on', i >= g && (g === 6 || i < g + 3)); });
     stage.style.setProperty('--end', i === NB - 1 ? 1 : 0);
     if (was >= 0) snd.beat(i, was);
   }
@@ -193,7 +193,7 @@
       pop: function (k) { var n = performance.now(); if (n - lastPop < 45) return; lastPop = n; tone(SC[k % SC.length], 0, .5, .085); },
       pulse: function (d) { tone(1568, 0, .35, .11); tone(784, 0, .5, .05); d.forEach(function (x, i) { tone([1174.7, 1318.5, 1046.5][i], .12 + x * .012, .7, .07); }); },
       fix: function () { tone(659.25, 0, .9, .09); tone(987.77, .09, 1.1, .07); },
-      beat: function (i, was) { if (i === 8 && was === 7) { tone(261.6, 0, 2.2, .07); tone(392, .05, 2.2, .06); tone(659.25, .1, 2.4, .05); } else tone(i > was ? 196 : 174.6, 0, .22, .07, 'triangle'); }
+      beat: function (i, was) { if (i === 9 && was === 8) { tone(261.6, 0, 2.2, .07); tone(392, .05, 2.2, .06); tone(659.25, .1, 2.4, .05); } else tone(i > was ? 196 : 174.6, 0, .22, .07, 'triangle'); }
     };
   })();
 
@@ -254,10 +254,10 @@
       case 5: return phone ? { f: [H[0], H[1], .8], s: 5.4 } : { f: [H[0] - .2, H[1], .8], s: 8.4 };
       case 6: return phone ? { f: [14.5, 10, .5], s: 31 } : { f: [16, 9.6, .5], s: 38 };
       case 7: return phone ? { f: [15.5, 9.6, .5], s: 28 } : { f: [16.4, 9.4, .5], s: 35 };
-      default: return phone ? { f: [14.5, 10, .5], s: 34 } : { f: [15.6, 9.6, .5], s: 41 };
+      default: var e8 = i === 8 ? ease5(seg(u, .3, .8)) : 1; return phone ? { f: [lerp(14.5, 13.5, e8), lerp(10, 11, e8), lerp(.5, 9.5, e8)], s: lerp(34, 46, e8) } : { f: [lerp(15.6, 14.6, e8), lerp(9.6, 10.4, e8), lerp(.5, 10, e8)], s: lerp(41, 62, e8) };
     }
   }
-  var MOVE = [0, .4, .3, .44, .5, .42, .42, .4, .5];      // the share of each sentence's scroll in which the camera travels to it; then it rests
+  var MOVE = [0, .4, .3, .44, .5, .42, .42, .4, .2, 0];      // the share of each sentence's scroll in which the camera travels to it; then it rests
   function camAt(i, u, st) {
     var b = shotOf(i, u, st);
     if (i > 0 && u < MOVE[i]) {
@@ -288,7 +288,8 @@
     st.wave = i < 6 ? 0 : i === 6 ? u : 2;
     st.all = i < 6 ? 0 : i === 6 ? ease(seg(u, .86, .97)) : 1;
     st.dots = i < 5 ? 0 : 1;
-    st.amber = i === 7 ? ease(seg(u, .56, .68)) : i === 8 ? 1 : 0;
+    st.amber = i === 7 ? ease(seg(u, .56, .68)) : i >= 8 ? 1 : 0;
+    st.l1 = i < 8 ? 0 : i === 8 ? ease(seg(u, .2, .3)) : 1; st.l2 = i < 8 ? 0 : i === 8 ? ease5(seg(u, .36, .56)) : 1; st.l3 = i < 8 ? 0 : i === 8 ? ease5(seg(u, .56, .82)) : 1;
     st.axes = i < 5 ? 0 : i === 5 ? seg(u, .5, .7) : 1;
     return st;
   }
@@ -304,6 +305,12 @@
   var tl = [0, 1, 2].map(function () { var d = document.createElement('div'); d.className = 'flr-dot'; d.style.cssText = 'width:auto;height:auto;margin:0;border-radius:0;background:none;box-shadow:none;font:500 14px/1 "AmI Text",Arial,sans-serif;color:#1f6bff;white-space:nowrap;text-shadow:0 0 6px #f0f6ff,0 0 12px #f0f6ff;font-variant-numeric:tabular-nums'; dotsEl.appendChild(d); return d; });
   var axG = el('g', 'l-axes'), axT = [];
   (function () { for (var k = 0; k <= 10; k++) { var l = document.createElementNS(NS, 'line'); axG.appendChild(l); var t = document.createElementNS(NS, 'text'); axG.appendChild(t); axT.push({ l: l, t: t, x: k <= 6 ? k * 5 : 30, y: k <= 6 ? 0 : (k - 6) * 5, ex: k > 6 }); } })();
+  // the three layers: the floor with its tags, the anchors above, the live map on top
+  var LZ = [0, 0], layG = el('g', 'l-lay'), lay2 = document.createElementNS(NS, 'polygon'), lay3 = document.createElementNS(NS, 'polygon'), layP = [0, 1, 2, 3].map(function () { var l = document.createElementNS(NS, 'line'); l.setAttribute('class', 'post'); layG.appendChild(l); return l; });
+  lay2.setAttribute('class', 'pl'); lay3.setAttribute('class', 'pl top'); layG.appendChild(lay2);
+  var layA = [0, 1, 2].map(function () { var l = document.createElementNS(NS, 'line'); l.setAttribute('class', 'drop'); layG.appendChild(l); var r = document.createElementNS(NS, 'rect'); r.setAttribute('width', 7); r.setAttribute('height', 7); r.setAttribute('class', 'an'); layG.appendChild(r); return { l: l, r: r }; });
+  layG.appendChild(lay3); var layL = [[17, 11.4, 17, 19], [19.5, 11.4, 19.5, 19], [17, .9, 17, 7.6], [19.5, .9, 19.5, 7.6], [1.2, 8, 16.6, 8], [19.9, 8, 29, 8], [1.2, 11, 16.6, 11], [19.9, 11, 29, 11]].map(function (q) { var l = document.createElementNS(NS, 'line'); l.setAttribute('class', 'aisle'); layG.appendChild(l); return { l: l, q: q }; }), layD = [];
+  function poly(e, z) { e.setAttribute('points', [[0, 0], [30, 0], [30, 20], [0, 20]].map(function (v) { var q = scr(v[0], v[1], z); return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' ')); }
   var lead = S.querySelector('.flr-lead'), leadEls = [0, 1].map(function () { var pth = document.createElementNS(NS, 'path'); lead.appendChild(pth); var c = document.createElementNS(NS, 'circle'); c.setAttribute('r', 3); lead.appendChild(c); return { p: pth, c: c }; });
   var scaleEl = S.querySelector('.flr-scale'), scaleI = scaleEl.querySelector('i'), scaleT = scaleEl.querySelector('span'), NICE = [.02, .05, .1, .2, .5, 1, 2, 5, 10, 20];
   var searchEl = S.querySelector('[data-search]'), walkedEl = S.querySelector('[data-walked]');
@@ -475,7 +482,7 @@
     // --- dots
     things.forEach(function (t, n) {
       var a = t.hero ? (i === 5 ? ease(seg(u, .26, .36)) : i > 5 ? 1 : 0) : ease(seg(st.wave, t.at + .02, t.at + .06));
-      if (i === 7 || i === 8) a = 1;
+      if (i >= 7) a = 1;
       if (a > .5 && !t.on && i === 6) snd.pop(n); t.on = a > .5;
       if (a <= 0) { if (t.vis) { t.el.style.opacity = 0; t.vis = false; } return; } t.vis = true;
       var s = scr(t.x, t.y, t.z), amb = t.amber && st.amber > .5; if (amb !== t.amb) { t.amb = amb; t.el.classList.toggle('w', amb); }
@@ -486,12 +493,12 @@
       var inn;
       if (n.at === 'due') inn = st.due > .5 && i < 3; else if (n.at === 'mid') inn = i === 2 && st.meas >= 1 && u < .93;
       else if (n.at === 'walker') inn = (i === 1 && u > .3) || (i === 2 && u < .34); else if (n.bi === 3) inn = i === 3 && u > .5; else if (n.bi === 4) inn = i === 4 && st.anch > .7 && u < .97;
-      else if (n.bi === 5) inn = i === 5 && st.fix > .4; else if (n.bi === 7) inn = i === 7 && (n.at === 'amr0' ? u > .2 && AMRI[0].x > 5 && AMRI[0].x < 20.5 && AMRI[0].y < 9.5 : st.amber > .5) && u < .96; else if (n.bi === 8) inn = i === 8 && u > .5; else inn = n.bi === i;
-      var pt = n.at === 'amr0' ? [AMRI[0].x, AMRI[0].y, 1.9] : n.at === 'walker' ? [w.x, w.y, 1.95] : M.pt[n.at], s = scr(pt[0], pt[1], pt[2]);
+      else if (n.bi === 5) inn = i === 5 && st.fix > .4; else if (n.bi === 7) inn = i === 7 && (n.at === 'amr0' ? u > .2 && AMRI[0].x > 5 && AMRI[0].x < 20.5 && AMRI[0].y < 9.5 : st.amber > .5) && u < .96; else if (n.bi === 8) inn = i >= 8 && st['l' + n.at[1]] > .6; else inn = n.bi === i;
+      var pt = n.at[0] === 'L' ? [30, 0, [0, 0, LZ[0], LZ[1]][+n.at[1]]] : n.at === 'amr0' ? [AMRI[0].x, AMRI[0].y, 1.9] : n.at === 'walker' ? [w.x, w.y, 1.95] : M.pt[n.at], s = scr(pt[0], pt[1], pt[2]);
       if (phone ? s[1] < vh * .4 : s[0] < vw * .42) inn = false;          // never over the copy
       if (inn && n.at === 'amr0' && phone) ['buf', 'pallet', 'hero'].forEach(function (q) { var o = scr(M.pt[q][0], M.pt[q][1], M.pt[q][2]); if (Math.abs(o[0] - s[0]) < 190 && Math.abs(o[1] - s[1]) < 70) inn = false; });
       if (inn !== n.inn) { n.inn = inn; n.el.classList.toggle('in', inn); }
-      if (Math.abs(n.bi - i) <= 1 || n.at === 'due' || n.inn) { n.el.style.transform = 'translate(' + s[0].toFixed(1) + 'px,' + s[1].toFixed(1) + 'px)'; }
+            if (Math.abs(n.bi - i) <= 1 || n.at === 'due' || n.inn) { n.el.style.transform = 'translate(' + s[0].toFixed(1) + 'px,' + s[1].toFixed(1) + 'px)'; }
     });
     if (xyEl && i === 7) { var xv = 'x ' + AMRI[0].x.toFixed(1) + ' m, y ' + AMRI[0].y.toFixed(1) + ' m'; if (xv !== xyEl.t) { xyEl.t = xv; xyEl.textContent = xv; } }
     if (searchEl) { var sm = fmt(st.wd / WTOT * 561, false), wm = Math.round(st.wd) + ' m walked'; if (sm !== searchEl.t) { searchEl.t = sm; searchEl.textContent = sm; } if (wm !== walkedEl.t) { walkedEl.t = wm; walkedEl.textContent = wm; } }
@@ -505,6 +512,19 @@
       t.l.setAttribute('x1', p0[0]); t.l.setAttribute('y1', p0[1]); t.l.setAttribute('x2', p1[0]); t.l.setAttribute('y2', p1[1]); t.t.setAttribute('x', p2[0]); t.t.setAttribute('y', p2[1] + 4);
       if (!t.t.textContent) t.t.textContent = (t.ex ? t.y : t.x) + (t.x === 30 && t.y === 0 || t.y === 20 ? ' m' : '');
     });
+    // --- the layers
+    var la = Math.max(st.l2, st.l3); show(layG, la > 0 ? 1 : 0);
+    if (la > 0) {
+      LZ[0] = lerp(5.25, 11.5, st.l2); LZ[1] = lerp(LZ[0], 23, st.l3);
+      lay2.style.opacity = st.l2; poly(lay2, LZ[0]); lay3.style.opacity = st.l3; poly(lay3, LZ[1]);
+      [[0, 0], [30, 0], [30, 20], [0, 20]].forEach(function (v, k) { var a = scr(v[0], v[1], 0), b = scr(v[0], v[1], LZ[1]); layP[k].setAttribute('x1', a[0]); layP[k].setAttribute('y1', a[1]); layP[k].setAttribute('x2', b[0]); layP[k].setAttribute('y2', b[1]); layP[k].style.opacity = st.l2 * .8; });
+      layA.forEach(function (A, k) { var an = M.anch[k], a = scr(an[0], an[1], an[2]), b = scr(an[0], an[1], LZ[0]); A.l.setAttribute('x1', a[0]); A.l.setAttribute('y1', a[1]); A.l.setAttribute('x2', b[0]); A.l.setAttribute('y2', b[1]); A.r.setAttribute('x', b[0] - 3.5); A.r.setAttribute('y', b[1] - 3.5); A.l.style.opacity = A.r.style.opacity = st.l2; });
+      layL.forEach(function (A) { var a = scr(A.q[0], A.q[1], LZ[1]), b = scr(A.q[2], A.q[3], LZ[1]); A.l.setAttribute('x1', a[0]); A.l.setAttribute('y1', a[1]); A.l.setAttribute('x2', b[0]); A.l.setAttribute('y2', b[1]); A.l.style.opacity = st.l3; });
+      things.forEach(function (t, n) {
+        var c = layD[n]; if (!c) { c = layD[n] = document.createElementNS(NS, 'circle'); c.setAttribute('r', 2.6); layG.appendChild(c); }
+        var q = scr(t.x, t.y, LZ[1]); c.setAttribute('cx', q[0]); c.setAttribute('cy', q[1]); c.setAttribute('class', t.amber ? 'dw' : 'd'); c.style.opacity = st.l3;
+      });
+    }
     // --- the hairs that tie a word to its thing
     var sr = stage.getBoundingClientRect();
     leadEls.forEach(function (L, k) {
