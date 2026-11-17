@@ -1220,20 +1220,21 @@ html.tag-live .hero .hx-act.k-fade,html.tag-live .hero .hx-facts.k-fade{transiti
 
 /* ===== UPLIFT, 17 Nov: one type scale, one accent, one set of text colours for the whole homepage.
    XL = the hero line and "Start with one bay". L = every section headline. M = names inside a section.
-   Headlines are ink; a second line is the same face in quiet ink, never a second colour or a second typeface.
-   Blue marks what is located, amber what waits. Nothing else is coloured. ===== */
+   Headlines are ink; a second line is the same face in the one accent (indigo, as in the explainer), never a second typeface.
+   Blue marks what is located, amber what waits. Buttons are ink. ===== */
 :root{--h-xl:clamp(2.9rem,1rem + 6.6vw,6.6rem);--h-l:clamp(1.9rem,1.1rem + 2.1vw,3rem);--h-m:clamp(1.25rem,1rem + .7vw,1.65rem);
-  --quiet:rgba(11,18,56,.5);--night-text:#f4f6fa;--night-quiet:rgba(244,246,250,.62);
+  --accent:#4b3df0;--night-text:#f4f6fa;--night-quiet:rgba(244,246,250,.62);
   --action:#0b1238;--action-hover:#1c2350}
 .hero .display{font-size:var(--h-xl)}
 .start .mega{font-size:var(--h-xl);line-height:.92;letter-spacing:-.05em}
-.hero .display em{color:var(--ink)}
+.display em,.hero .display em{color:var(--accent)}
+.arrow-link{color:var(--ink)}
 .team-h,.trio .team-h,.kn-title,.trio .kn-title,.inds-h,.cta-h{font-size:var(--h-l);line-height:1.02;letter-spacing:-.04em}
 .bs-t{font-size:var(--h-l);line-height:1.04;letter-spacing:-.04em}
 .kn-name,.trio .kn-name,.ind-n{font-size:var(--h-m);line-height:1.1;letter-spacing:-.025em}
-.kn-title span+span{color:var(--quiet)}
-.team-h span+span{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--quiet)}
-.cta-plan .cta-h{color:var(--ink)}
+.kn-title span+span{color:var(--accent)}
+.team-h span+span{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--accent)}
+.cta-plan .cta-h{color:var(--accent)}
 .inds-h{color:var(--night-text)}
 .inds-h em{font:inherit;letter-spacing:inherit;color:var(--night-quiet);padding-left:0}
 .ind-n{color:var(--night-text)}
