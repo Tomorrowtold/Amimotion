@@ -249,12 +249,12 @@
       case 0: var e0 = ease5(seg(u, .08, .5)); return phone ? { f: [lerp(14.5, 10.2, e0), lerp(10, 15.2, e0), .6], s: lerp(34, 14, e0) } : { f: [lerp(15.6, 10.6, e0), lerp(9.6, 15.2, e0), .6], s: lerp(41, 26, e0) };
       case 1: return phone ? { f: [lerp(w.x, 12, .25), lerp(w.y, 10, .25), .8], s: 17 } : { f: [lerp(w.x, 14, .55), lerp(w.y, 10, .6), .6], s: 31 };
       case 2: var e = ease(seg(u, .5, .95)); return phone ? { f: [lerp(21, H[0], e), lerp(9.5, H[1], e), .6], s: lerp(26, 11, e) } : { f: [lerp(19.5, H[0] - 1, e), lerp(10.2, H[1] + .4, e), .6], s: lerp(33, 15, e) };
-      case 3: return phone ? { f: [T[0], T[1], T[2] - .01], s: .2 } : { f: [T[0], T[1], T[2]], s: .32 };
+      case 3: return phone ? { f: [T[0], T[1], T[2] - .01], s: .17 } : { f: [T[0], T[1], T[2]], s: .22 };
       case 4: return phone ? { f: [21.5, 8, 2.6], s: 23 } : { f: [17, 8.6, 2.4], s: 35 };
       case 5: return phone ? { f: [H[0], H[1], .8], s: 5.4 } : { f: [H[0] - .2, H[1], .8], s: 8.4 };
       case 6: return phone ? { f: [14.5, 10, .5], s: 31 } : { f: [16, 9.6, .5], s: 38 };
       case 7: return phone ? { f: [15.5, 9.6, .5], s: 28 } : { f: [16.4, 9.4, .5], s: 35 };
-      default: var e8 = i === 8 ? ease5(seg(u, .3, .8)) : 1; return phone ? { f: [lerp(14.5, 13.5, e8), lerp(10, 11, e8), lerp(.5, 9.5, e8)], s: lerp(34, 46, e8) } : { f: [lerp(15.6, 14.6, e8), lerp(9.6, 10.4, e8), lerp(.5, 10, e8)], s: lerp(41, 62, e8) };
+      default: var e8 = i === 8 ? ease5(seg(u, .3, .8)) : 1; return phone ? { f: [lerp(14.5, 16.7, e8), lerp(10, 7.8, e8), lerp(.5, 9.5, e8)], s: lerp(34, 48, e8) } : { f: [lerp(15.6, 14.6, e8), lerp(9.6, 10.4, e8), lerp(.5, 10, e8)], s: lerp(41, 62, e8) };
     }
   }
   var MOVE = [0, .4, .3, .44, .5, .42, .42, .4, .2, 0];      // the share of each sentence's scroll in which the camera travels to it; then it rests
@@ -318,13 +318,13 @@
 
   // ---- WebGL
   var VS1 = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
-  var FS1 = 'precision highp float;uniform vec2 uRes,uA,uF,uPl;uniform float uPpm;uniform sampler2D tWc,tWk,tMc,tMk,tCc,tCk,tXc,tXk,tWi,tMi,tCi,tXi,tLut;uniform vec4 uMid,uClose,uMac;uniform vec3 uW;' +
-    'float edge(vec2 u){vec2 d=min(u,1.-u);return smoothstep(0.,.07,min(d.x,d.y));}float rv(sampler2D t,vec2 u){return texture2D(tLut,vec2((texture2D(t,u).r*255.+.5)/256.,.5)).r;}' +
+  var FS1 = 'precision highp float;uniform vec2 uRes,uA,uF,uPl;uniform float uPpm;uniform sampler2D tWc,tWk,tMc,tMk,tCc,tCk,tXc,tXk,tWi,tMi,tCi,tXi,tLut;uniform vec4 uMid,uClose,uMac,uTx;uniform vec3 uW;' +
+    'float edge(vec2 u){vec2 d=min(u,1.-u);return smoothstep(0.,.07,min(d.x,d.y));}float r1(sampler2D t,vec2 u){return texture2D(tLut,vec2((texture2D(t,u).r*255.+.5)/256.,.5)).r;}float rv(sampler2D t,vec2 u,float d){vec2 o=vec2(d*.5,d*.5*uRes.x/uRes.y*0.+d*.5);return(r1(t,u+vec2(-o.x,-o.y))+r1(t,u+vec2(o.x,-o.y))+r1(t,u+vec2(-o.x,o.y))+r1(t,u+vec2(o.x,o.y)))*.25;}' +
     'void main(){vec2 s=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y);vec2 m=(s-uA)/uPpm+uF;vec2 uv=m/uPl;' +
-    'vec4 c=vec4(0.);if(uv.x>0.&&uv.x<1.&&uv.y>0.&&uv.y<1.)c=mix(texture2D(tWk,uv),texture2D(tWc,uv),rv(tWi,uv));' +
-    'if(uW.x>0.){vec2 u=(uv-uMid.xy)/uMid.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tMk,u),texture2D(tMc,u),rv(tMi,u)),edge(u)*uW.x);}' +
-    'if(uW.y>0.){vec2 u=(uv-uClose.xy)/uClose.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tCk,u),texture2D(tCc,u),rv(tCi,u)),edge(u)*uW.y);}' +
-    'if(uW.z>0.){vec2 u=(uv-uMac.xy)/uMac.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tXk,u),texture2D(tXc,u),rv(tXi,u)),edge(u)*uW.z);}' +
+    'vec4 c=vec4(0.);if(uv.x>0.&&uv.x<1.&&uv.y>0.&&uv.y<1.)c=mix(texture2D(tWk,uv),texture2D(tWc,uv),rv(tWi,uv,uTx.x));' +
+    'if(uW.x>0.){vec2 u=(uv-uMid.xy)/uMid.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tMk,u),texture2D(tMc,u),rv(tMi,u,uTx.y)),edge(u)*uW.x);}' +
+    'if(uW.y>0.){vec2 u=(uv-uClose.xy)/uClose.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tCk,u),texture2D(tCc,u),rv(tCi,u,uTx.z)),edge(u)*uW.y);}' +
+    'if(uW.z>0.){vec2 u=(uv-uMac.xy)/uMac.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tXk,u),texture2D(tXc,u),rv(tXi,u,uTx.w)),edge(u)*uW.z);}' +
     'gl_FragColor=c;}';
   var VS2 = 'attribute vec2 a;uniform vec2 uRes,uA,uF;uniform float uPpm;uniform vec4 uR;varying vec2 vU,vM;void main(){vU=a;vM=uR.xy+a*uR.zw;vec2 s=uA+(vM-uF)*uPpm;gl_Position=vec4(s.x/uRes.x*2.-1.,1.-s.y/uRes.y*2.,0.,1.);}';
   var FS2 = 'precision highp float;varying vec2 vU,vM;uniform sampler2D tAt,tD;uniform vec2 uCa,uCb,uPl,uDr;uniform float uMix,uAl,uBy,uBd,uTan;' +
@@ -434,7 +434,7 @@
     var U = P1.u; gl.useProgram(P1.p); gl.bindBuffer(gl.ARRAY_BUFFER, tex.full); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     gl.uniform2f(U.uRes, W, Hh); gl.uniform2f(U.uA, cam.ax * dpr, cam.ay * dpr); gl.uniform2f(U.uF, cam.fx, cam.fy); gl.uniform1f(U.uPpm, cam.ppm * dpr); gl.uniform2f(U.uPl, M.scale, M.scale / M.aspect); setLut(st); gl.uniform1i(U.tLut, 12);
     ['wide_col', 'wide_clay', 'mid_col', 'mid_clay', 'close_col', 'close_clay', 'macro_col', 'macro_clay', 'wide_id', 'mid_id', 'close_id', 'macro_id'].forEach(function (n, k) { gl.activeTexture(gl.TEXTURE0 + k); gl.bindTexture(gl.TEXTURE_2D, tex[n].t); gl.uniform1i(U[['tWc', 'tWk', 'tMc', 'tMk', 'tCc', 'tCk', 'tXc', 'tXk', 'tWi', 'tMi', 'tCi', 'tXi'][k]], k); });
-    gl.uniform4fv(U.uMid, M.mid); gl.uniform4fv(U.uClose, M.close); gl.uniform4fv(U.uMac, M.macro);
+    gl.uniform4f(U.uTx, 1 / tex.wide_id.w, 1 / tex.mid_id.w, 1 / tex.close_id.w, 1 / tex.macro_id.w); gl.uniform4fv(U.uMid, M.mid); gl.uniform4fv(U.uClose, M.close); gl.uniform4fv(U.uMac, M.macro);
     var dp = cam.ppm * dpr, wp = tex.wide_col.w / M.scale, mp = tex.mid_col.w / (M.mid[2] * M.scale), cp = tex.close_col.w / (M.close[2] * M.scale);
     gl.uniform3f(U.uW, ease(seg(dp / wp, .85, 1.5)), ease(seg(dp / mp, .85, 1.5)), ease(seg(dp / cp, .85, 1.5)));
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -506,7 +506,7 @@
     var nk = 0; while (nk < NICE.length - 1 && NICE[nk] * cam.ppm < 56) nk++;
     var nl = NICE[nk] < 1 ? Math.round(NICE[nk] * 100) + ' cm' : NICE[nk] + ' m'; scaleI.style.width = (NICE[nk] * cam.ppm).toFixed(1) + 'px'; if (nl !== scaleT.t) { scaleT.t = nl; scaleT.textContent = nl; }
     // --- the plant's own grid lines, in metres: what x and y are measured from
-    var axa = st.axes * seg(c.s, 15, 24) * (phone ? 0 : 1); show(axG, axa);
+    var axa = st.axes * (1 - (st.l1 || 0)) * seg(c.s, 15, 24) * (phone ? 0 : 1); show(axG, axa);
     if (axa > 0) axT.forEach(function (t) {
       var p0 = scr(t.x, t.y, -.5), p1 = t.ex ? scr(t.x + .45, t.y, -.5) : scr(t.x, t.y - .45, -.5), p2 = t.ex ? scr(t.x + 1.5, t.y, -.5) : scr(t.x, t.y - 1.5, -.5);
       t.l.setAttribute('x1', p0[0]); t.l.setAttribute('y1', p0[1]); t.l.setAttribute('x2', p1[0]); t.l.setAttribute('y2', p1[1]); t.t.setAttribute('x', p2[0]); t.t.setAttribute('y', p2[1] + 4);
@@ -535,7 +535,7 @@
       var len = Math.hypot(x1 - x0, y1 - y0) + Math.hypot(T[0] - x1, T[1] - y1);
       L.p.setAttribute('d', 'M' + x0.toFixed(1) + ' ' + y0.toFixed(1) + 'L' + x1.toFixed(1) + ' ' + y1.toFixed(1) + 'L' + T[0].toFixed(1) + ' ' + T[1].toFixed(1));
       L.p.style.strokeDasharray = len.toFixed(1); L.p.style.strokeDashoffset = (len * (1 - ease(ld.d))).toFixed(1);
-      L.c.setAttribute('cx', T[0]); L.c.setAttribute('cy', T[1]); L.c.style.opacity = (ld.a * seg(ld.d, .9, 1)).toFixed(2);
+      L.c.setAttribute('cx', T[0]); L.c.setAttribute('cy', T[1]); L.c.style.opacity = K.k === 'tag' ? 0 : (ld.a * seg(ld.d, .9, 1)).toFixed(2);
       if (L.cls !== K.c) { L.cls = K.c; L.p.setAttribute('class', 'k-' + K.c); L.c.setAttribute('class', 'k-' + K.c); }
       L.on = true; L.p.style.display = L.c.style.display = ''; L.p.style.opacity = (ld.a * .7).toFixed(2);
     });

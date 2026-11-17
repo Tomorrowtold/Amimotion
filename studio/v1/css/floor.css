@@ -142,6 +142,7 @@
   .flr-rail a::after{left:8px;right:8px}
   .flr-on .flr-n{font-size:13.5px}
   .flr-on .flr-n li[data-at^="L"] .flr-xy,.flr-on .flr-n li[data-at^="L"] br{display:none}
+  .flr-on .flr-n .flr-wd{display:none}
   .flr-ctl .flr-top{display:none}
   .flr-dot,.flr-pin{width:7px;height:7px;margin:-3.5px 0 0 -3.5px;box-shadow:0 0 0 2px rgba(255,255,255,.95)}
   .flr-pin{left:-3.5px;top:-3.5px;margin:0}
