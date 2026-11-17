@@ -11,7 +11,7 @@
   var rail = [].slice.call(S.querySelectorAll('.flr-rail a')), topA = S.querySelector('.flr-top'), sndB = S.querySelector('.flr-snd');
   var Q = new URLSearchParams(location.search), SHOT = !!window.__flrShot, FULL = SHOT || Q.get('flr') === 'full', FORCE_STILLS = Q.get('flr') === 'stills';
   var base = S.getAttribute('data-assets');
-  var WGT = [.9, 1.5, 1.15, 1.1, 1.2, 1.1, 1.45, 1.25, 1.5, .9], SUM = WGT.reduce(function (a, b) { return a + b; }, 0), UNIT = 50;   // vh of scroll per unit
+  var WGT = [.9, 1.5, 1.15, 1.1, 1.2, 1.1, 1.45, 1.25, 1.5, .9], SUM = WGT.reduce(function (a, b) { return a + b; }, 0), UNIT = 32;   // vh of scroll per unit
   var EDGE = [0]; WGT.forEach(function (w) { EDGE.push(EDGE[EDGE.length - 1] + w / SUM); });
   S.style.setProperty('--flr-run', (SUM * UNIT) + 'vh');
   S.classList.add('flr-on');
@@ -44,9 +44,9 @@
         if (tk[1]) { var K = keys.filter(function (x) { return x.k === tk[1]; })[0]; if (!K) { K = { k: tk[1], at: w.at, ws: [], c: KC[tk[1]] || 'blue' }; keys.push(K); } K.ws.push(w); }
         return w;
       });
-      ps.push({ el: p, ans: ans, words: words, lines: [], t0: sp[0] });
+      ps.push({ el: p, ans: ans, words: words, lines: [], t0: sp[0], A: 0 });
     });
-    roll.appendChild(t); return { el: t, ps: ps, keys: keys, vis: null };
+    roll.appendChild(t); return { el: t, ps: ps, keys: keys, vis: null, E: 0, X: 0 };
   });
   function split() {                                                                   // wrap every visual line in its own slot
     blocks.forEach(function (b) {
@@ -78,25 +78,30 @@
   function easeO(x) { x = x < 0 ? 0 : x > 1 ? 1 : x; return 1 - Math.pow(1 - x, 4); }
   function easeI(x) { x = x < 0 ? 0 : x > 1 ? 1 : x; return x * x * x; }
   var leads = [];
-  function textFrame(tb) {
+  function chase(v, t, up, dn, dt) { return t > v ? Math.min(t, v + dt / up) : Math.max(t, v - dt / dn); }
+  function textFrame(tb, dt) {
     var i = Math.min(NB - 1, Math.floor(tb)), u = Math.min(1, tb - i), ch = Math.min(2, Math.floor(i / 3));
     if (ch !== chNow) { chNow = ch; hn.textContent = CH[ch]; hn.classList.remove('sw'); void hn.offsetWidth; hn.classList.add('sw'); }
     hp.forEach(function (e, k) { var f = Math.max(0, Math.min(1, tb - ch * 3 - k)); if (f !== e.f) { e.f = f; e.style.setProperty('--f', f.toFixed(3)); } });
     head.style.opacity = ease(seg(ap, .3, .7));
     leads.length = 0;
     blocks.forEach(function (b, k) {
-      var e = k === 0 ? Math.max(seg(ap, .3, .9), tb > .001 ? 1 : 0) : seg(tb, k - .03, k + .12), x = k < NB - 1 ? seg(tb, k + .9, k + .995) : 0, vis = e > 0 && x < 1;
+      // a sentence is never left half way: the scroll only says which one is due, the clock brings it in and takes it out
+      var inT = k === 0 ? (ap > .5 || tb > .001) : tb >= k, outT = k < NB - 1 && tb >= k + 1, prev = blocks[k - 1], next = blocks[k + 1];
+      b.E = chase(b.E, inT ? ((!prev || prev.X > .6 || !prev.E) ? 1 : b.E) : 0, .85, .3, dt);
+      b.X = chase(b.X, outT ? 1 : (next && next.E > .4 ? b.X : 0), .3, .6, dt);
+      var e = b.E, x = b.X, vis = e > 0 && x < 1, uu = k < i ? 1 : k > i ? 0 : u;
+      b.ps.forEach(function (p) { if (p.ans) { var t = (k < i || (k === i && uu >= p.t0 - .07)) ? 1 : 0; p.A = vis ? chase(p.A, t, .8, .25, dt) : t; } });
       if (vis !== b.vis) { b.vis = vis; b.el.style.visibility = vis ? 'visible' : 'hidden'; }
       if (!vis) return;
-      var uu = k < i ? 1 : k > i ? 0 : u;
       b.ps.forEach(function (p) {
-        var pe = p.ans ? seg(uu, p.t0 - .07, p.t0 + .05) : e;
+        var a = p.ans ? p.A : e, N = p.words.length, timed = p.ans && AW[k];
         p.lines.forEach(function (l, n) {
-          var en = easeO(seg(pe, n * .16, n * .16 + .62)), ex = easeI(seg(x, l.j * .09, l.j * .09 + .55)), y = Math.round(((1 - en) * 108 - ex * 108) * 10) / 10;
+          var en = easeO(seg(a, n * .16, n * .16 + .62)), ex = easeI(seg(x, l.j * .09, l.j * .09 + .55)), y = Math.round(((1 - en) * 108 - ex * 108) * 10) / 10;
           if (y !== l.y) { l.y = y; l.li.style.transform = y ? 'translate3d(0,' + y + '%,0)' : ''; }
         });
         p.words.forEach(function (w, n) {
-          var v = k === 0 && !p.ans ? Math.max(ease(seg(ap, .5 + .4 * n / p.words.length, .62 + .4 * n / p.words.length)), tb > .001 ? 1 : 0) : ease(seg(uu, w.at, w.at + .08)); v = Math.round(v * 40) / 40;
+          var v = timed ? ease(seg(uu, w.at, w.at + .08)) : ease(seg(a, .15 + .55 * n / N, .45 + .55 * n / N)); v = Math.round(v * 40) / 40;
           if (v !== w.v) { w.v = v; w.el.style.opacity = (.26 + .74 * v).toFixed(3); }
         });
       });
@@ -138,11 +143,23 @@
     });
     split();
   }
+  // Once the whole story has been scrolled and left behind, the section folds to one screen: coming back shows the last picture only.
+  var done = false, seenEnd = false, RUN = SUM * UNIT;
+  function fold() {
+    done = true; var b0 = S.getBoundingClientRect().bottom; S.classList.add('flr-done'); S.style.setProperty('--flr-run', '0vh');
+    var d = S.getBoundingClientRect().bottom - b0; if (d) window.scrollBy({ top: d, behavior: 'instant' });
+  }
+  function unfold(g) {
+    done = false; seenEnd = false; S.classList.remove('flr-done'); S.style.setProperty('--flr-run', RUN + 'vh'); ps = -1;
+    var r = S.getBoundingClientRect(); window.scrollTo({ top: window.scrollY + r.top + (g ? (EDGE[g] + .012) * (r.height - vh) : 0), behavior: 'instant' });
+  }
   function readScroll() {
-    var r = S.getBoundingClientRect(), run = r.height - vh; p = run > 0 ? Math.min(1, Math.max(0, -r.top / run)) : 0;
+    var r = S.getBoundingClientRect(), run = r.height - vh; p = done ? 1 : run > 0 ? Math.min(1, Math.max(0, -r.top / run)) : 0;
+    if (p > .985) seenEnd = true;
+    if (seenEnd && !done && !SHOT && r.bottom <= 0) { fold(); r = S.getBoundingClientRect(); }
     ap = r.top > 0 ? Math.max(0, Math.min(1, 1 - r.top / vh)) : 1;
     onScreen = r.top < vh && r.bottom > 0; near = r.top < vh * 1.3 && r.bottom > -vh;
-    topA.classList.toggle('show', r.top < -vh * .4 && r.bottom > vh);
+    topA.classList.toggle('show', done || (r.top < -vh * .4 && r.bottom > vh));
   }
   function beatOf(x) { for (var i = NB - 1; i >= 0; i--) if (x >= EDGE[i]) return i; return 0; }
   function setBeat(i) {
@@ -154,10 +171,12 @@
   }
   rail.forEach(function (a) {
     a.addEventListener('click', function (e) {
-      e.preventDefault(); var g = +a.getAttribute('data-go'), r = S.getBoundingClientRect(), run = r.height - vh;
+      e.preventDefault(); var g = +a.getAttribute('data-go'); if (done) { unfold(g); return; } var r = S.getBoundingClientRect(), run = r.height - vh;
       window.scrollTo({ top: window.scrollY + r.top + (EDGE[g] + .012) * run, behavior: 'smooth' });
     });
   });
+
+  var reB = S.querySelector('.flr-re'); if (reB) reB.addEventListener('click', function () { unfold(0); });
 
   // ---- sound: made here, nothing to download. It starts only after a tap, a click or a key.
   var snd = (function () {
@@ -371,7 +390,11 @@
     var L = (phone || Math.max(screen.width, screen.height) * (window.devicePixelRatio || 1) < 1500) ? 'P/' : 'L/';
     var names = ['wide_col', 'wide_clay', 'mid_col', 'mid_clay', 'close_col', 'close_clay', 'macro_col', 'macro_clay', 'sprites'];
     var idn = ['wide_id', 'mid_id', 'close_id', 'macro_id'];
-    Promise.all([fetch(base + 'floor.json').then(function (r) { return r.json(); }), loadImg(base + 'depth.png')].concat(names.map(function (n) { return loadImg(base + L + n + '.webp'); }), idn.map(function (n) { return loadImg(base + L + n + '.png'); }))).then(function (r) {
+    // floor.json is always checked with the server and names the present set of pictures, so a new set is never mixed with a kept old one
+    fetch(base + 'floor.json').then(function (r) { return r.json(); }).then(function (m) {
+      var q = m.v ? '?v=' + m.v : '';
+      return Promise.all([m, loadImg(base + 'depth.png' + q)].concat(names.map(function (n) { return loadImg(base + L + n + '.webp' + q); }), idn.map(function (n) { return loadImg(base + L + n + '.png' + q); })));
+    }).then(function (r) {
       M = r[0];
       gl = cv.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: 'high-performance' }); gl2 = !!gl;
       if (!gl) gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false });
@@ -561,7 +584,7 @@
     raf = 0; if (!onScreen && !SHOT) { snd.gate(); return; }
     var dt = Math.min(.1, (now - lastT) / 1000 || .016); lastT = now;
     if (ps < 0) ps = p; else ps += (p - ps) * (1 - Math.exp(-dt * 8)); if (Math.abs(p - ps) < .00002) ps = p;
-    setBeat(beatOf(p)); snd.gate(); var tbn = frozen ? frozen[0] : tbOf(ps); if (tbn !== textFrame.tb || ap !== textFrame.ap) { textFrame.tb = tbn; textFrame.ap = ap; textFrame(tbn); }
+    setBeat(beatOf(p)); snd.gate(); textFrame(frozen ? frozen[0] : tbOf(ps), frozen ? .2 : dt);
     if (live) {
       if (frozen) frame(frozen[0], frozen[1]); else frame(tbOf(ps), (now - T0) / 1000);
       hover();

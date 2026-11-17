@@ -29,3 +29,10 @@ Claims: every sentence and label was checked against the claims register. Positi
 `blender/bay2.py`, `sprites2.py`, `pack2.py` and `renderall2.sh` made the pictures now in `assets/floor`: the same bay in AmIMotion's colours, the AmIGo tag from the founders' CAD with a moulded finish, and a closer macro (0.36 m). `pack2.py` reads `BAY` and `SPR` for the render folders. The CAD files themselves are not in this repository.
 
 The section closes on the three layers: tags on the floor, anchors above, AmIHub on top. They are drawn as lines over the plant in `floor.js` (`l-lay`).
+
+## Round 3 behaviour
+
+- A sentence is never left half shown. The scroll decides which sentence is due; the clock brings it in and takes it out.
+- One typeface for both lines (AmI Display), as in the first screen.
+- The scroll run is about four screens. Once the whole story has been scrolled and left behind, the section folds to one screen showing the last picture, with Back to top and Replay.
+- `ver.py` writes a hash of the pictures into `floor.json`; `floor.js` adds it to every picture link so a kept old set is never shown. Run it after packing new pictures.

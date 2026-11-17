@@ -12,7 +12,7 @@
 .flr-ch{margin:0 0 18px;font-family:"AmI Text",Arial,sans-serif;font-weight:500;font-size:15px;line-height:1;letter-spacing:0;color:var(--flr-ink);display:flex;align-items:center;gap:10px}
 .flr-ch::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--flr-blue)}
 .flr-s{margin:0;font-family:"AmI Display",Arial,sans-serif;font-weight:600;font-size:clamp(30px,3.35vw,50px);line-height:1;letter-spacing:-.05em;color:var(--flr-ink);text-wrap:balance}
-.flr-a{margin:.16em 0 0;font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400;font-size:clamp(30px,3.3vw,49px);line-height:1.02;letter-spacing:-.02em;color:var(--flr-action);text-wrap:balance}
+.flr-a{margin:.1em 0 0;font-family:"AmI Display",Arial,sans-serif;font-weight:600;font-size:clamp(30px,3.35vw,50px);line-height:1;letter-spacing:-.05em;color:var(--flr-action);text-wrap:balance}
 .flr-s b,.flr-a b{font-weight:inherit}
 .flr-count{margin:26px 0 0;font-size:clamp(16px,1.25vw,19px);line-height:1.4;color:var(--flr-soft);font-variant-numeric:tabular-nums}
 .flr-count b{font-weight:500;color:var(--flr-ink)}
@@ -121,6 +121,9 @@
 .flr-right{display:flex;margin-right:-11px}
 .flr-top{opacity:0;pointer-events:none;transition:opacity .3s,color .2s}
 .flr-top.show{opacity:1;pointer-events:auto}
+.flr-re{display:none!important}
+.flr-done .flr-re{display:inline-flex!important}
+.flr-done .flr-skip{display:none}
 .flr-shot .flr-col,.flr-shot .flr-ctl,.flr-shot .flr-fog,.flr-shot .flr-lead,.flr-shot .flr-scale{visibility:hidden}
 
 /* ---------- narrow screens: words above, the plant below ---------- */
@@ -130,7 +133,7 @@
   .flr-on .flr-scale{right:auto;left:var(--flr-m);top:calc(var(--sv) - 84px)}
   .flr-on .flr-ch{margin-bottom:14px}
   .flr-s{font-size:clamp(29px,8.2vw,46px)}
-  .flr-a{font-size:clamp(29px,8.1vw,45px)}
+  .flr-a{font-size:clamp(29px,8.2vw,46px)}
   .flr-on .flr-fog{background:linear-gradient(0deg,var(--flr-ground) 0,rgba(240,246,255,.9) 7%,rgba(240,246,255,0) 15%),linear-gradient(180deg,var(--flr-ground) 0,rgba(240,246,255,.95) 30%,rgba(240,246,255,0) 44%)}
   .flr-on .flr-fog::after{background:linear-gradient(180deg,var(--flr-ground) 0,rgba(240,246,255,.96) 36%,rgba(240,246,255,0) 52%)}
   .flr-on .flr-stage::before{background:radial-gradient(120% 70% at 50% 64%,rgba(240,246,255,0) 34%,var(--flr-ground) 84%)}
@@ -144,6 +147,8 @@
   .flr-on .flr-n li[data-at^="L"] .flr-xy,.flr-on .flr-n li[data-at^="L"] br{display:none}
   .flr-on .flr-n .flr-wd{display:none}
   .flr-ctl .flr-top{display:none}
+  .flr-done .flr-ctl .flr-top{display:inline-flex}
+  .flr-done .flr-snd{display:none}
   .flr-dot,.flr-pin{width:7px;height:7px;margin:-3.5px 0 0 -3.5px;box-shadow:0 0 0 2px rgba(255,255,255,.95)}
   .flr-pin{left:-3.5px;top:-3.5px;margin:0}
 }
