@@ -346,7 +346,7 @@
     'if(uW.x>0.){vec2 u=(uv-uMid.xy)/uMid.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tMk,u),texture2D(tMc,u),rv(tMi,u,uTx.y)),edge(u)*uW.x);}' +
     'if(uW.y>0.){vec2 u=(uv-uClose.xy)/uClose.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tCk,u),texture2D(tCc,u),rv(tCi,u,uTx.z)),edge(u)*uW.y);}' +
     'if(uW.z>0.){vec2 u=(uv-uMac.xy)/uMac.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tXk,u),texture2D(tXc,u),rv(tXi,u,uTx.w)),edge(u)*uW.z);}' +
-    'c.rgb*=mix(vec3(.925,.94,.965),vec3(1.),max(gF,uDay));gl_FragColor=c;}';
+    'c.rgb*=mix(vec3(.9,.92,.955),vec3(1.),max(gF,uDay));gl_FragColor=c;}';
   var VS2 = 'attribute vec2 a;uniform vec2 uRes,uA,uF;uniform float uPpm;uniform vec4 uR;varying vec2 vU,vM;void main(){vU=a;vM=uR.xy+a*uR.zw;vec2 s=uA+(vM-uF)*uPpm;gl_Position=vec4(s.x/uRes.x*2.-1.,1.-s.y/uRes.y*2.,0.,1.);}';
   var FS2 = 'precision highp float;varying vec2 vU,vM;uniform sampler2D tAt,tD;uniform vec2 uCa,uCb,uPl,uDr;uniform float uMix,uAl,uBy,uBd,uTan;' +
     'void main(){vec2 q=clamp(vU,.004,.996)*.125;vec4 c=mix(texture2D(tAt,uCb+q),texture2D(tAt,uCa+q),uMix);vec4 dd=texture2D(tD,vM/uPl);float D=uDr.x+(dd.r*65280.+dd.g*255.)/65535.*(uDr.y-uDr.x);' +
