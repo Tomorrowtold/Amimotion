@@ -322,7 +322,7 @@
     // tagged things, ordered by how far they are from the first one: colour spreads outward from the trolley that was found
     var H = M.hero, zt = { trolley: 1.02, pallet: 1.25, forklift: 2.2, amr: .34 };
     things = M.things.map(function (t) { return { k: t[0], x: t[1], y: t[2], z: zt[t[0]], d: Math.hypot(t[1] - H[0], t[2] - H[1]) }; });
-    things.push({ k: 'amr', amr: 0, x: 0, y: 0, z: .34, d: 14 }, { k: 'amr', amr: 1, x: 0, y: 0, z: .34, d: 9 });
+    things.push({ k: 'amr', amr: 0, x: 0, y: 0, z: 1.9, d: 14 }, { k: 'amr', amr: 1, x: 0, y: 0, z: 1.9, d: 9 });
     var KA = { trolley: [.44, .09], pallet: [.55, .09], forklift: [.66, .02], amr: [.75, .04] }, cnt = {}, seen = {};
     things.forEach(function (t) { cnt[t.k] = (cnt[t.k] || 0) + 1; });
     things.slice().sort(function (a, b) { return a.d - b.d; }).forEach(function (t) { seen[t.k] = (seen[t.k] || 0) + 1; t.at = KA[t.k][0] + KA[t.k][1] * (seen[t.k] - 1) / cnt[t.k]; });
@@ -421,7 +421,7 @@
       var inn;
       if (n.at === 'due') inn = st.due > .5 && i < 3; else if (n.at === 'mid') inn = i === 2 && st.meas >= 1 && u < .93;
       else if (n.bi === 3) inn = i === 3 && u > .5; else if (n.bi === 4) inn = i === 4 && st.anch > .7 && u < .97;
-      else if (n.bi === 5) inn = i === 5 && st.fix > .4; else if (n.bi === 7) inn = i === 7 && (n.at === 'amr0' ? u > .2 : st.amber > .5) && u < .96; else inn = n.bi === i;
+      else if (n.bi === 5) inn = i === 5 && st.fix > .4; else if (n.bi === 7) inn = i === 7 && (n.at === 'amr0' ? u > .2 && AMRI[0].x > 5 && AMRI[0].x < 20.5 && AMRI[0].y < 9.5 : st.amber > .5) && u < .96; else inn = n.bi === i;
       var pt = n.at === 'amr0' ? [AMRI[0].x, AMRI[0].y, 1.9] : M.pt[n.at], s = scr(pt[0], pt[1], pt[2]);
       if (phone ? s[1] < vh * .4 : s[0] < vw * .42) inn = false;          // never over the copy
       if (inn !== n.inn) { n.inn = inn; n.el.classList.toggle('in', inn); }
