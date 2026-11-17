@@ -11,42 +11,100 @@
   var rail = [].slice.call(S.querySelectorAll('.flr-rail a')), topA = S.querySelector('.flr-top'), sndB = S.querySelector('.flr-snd');
   var Q = new URLSearchParams(location.search), SHOT = !!window.__flrShot, FULL = SHOT || Q.get('flr') === 'full', FORCE_STILLS = Q.get('flr') === 'stills';
   var base = S.getAttribute('data-assets');
-  var WGT = [1, 1.5, 1.15, 1, 1.2, 1, 1.45, 1.25, 1.1], SUM = WGT.reduce(function (a, b) { return a + b; }, 0), UNIT = 50;   // vh of scroll per unit
+  var WGT = [.9, 1.5, 1.15, 1.1, 1.2, 1.1, 1.45, 1.25, 1.1], SUM = WGT.reduce(function (a, b) { return a + b; }, 0), UNIT = 50;   // vh of scroll per unit
   var EDGE = [0]; WGT.forEach(function (w) { EDGE.push(EDGE[EDGE.length - 1] + w / SUM); });
   S.style.setProperty('--flr-run', (SUM * UNIT) + 'vh');
   S.classList.add('flr-on');
   if (SHOT) S.classList.add('flr-shot');
 
-  // ---- words: each sentence is split into words so it can arrive word by word
-  // The copy is one running column on the left. The sentence being told stands at a fixed line; told ones move up and dim.
-  // Every word lights as the scroll passes it, and each picture event is tied to the same point of the scroll as its words.
-  var col = document.createElement('div'); col.className = 'flr-col'; var roll = document.createElement('div'); roll.className = 'flr-roll'; col.appendChild(roll); stage.insertBefore(col, cv);
-  var AW = { 3: [.5, .56, .6, .64, .68, .72, .76], 6: [.44, .55, .66, .75] };       // answers whose words are timed to things in the picture
+  // ---- words
+  // The copy owns the left side and tells one sentence at a time. Each line rises out of its own slot, each word lights as the scroll
+  // passes it, and a word that names a thing in the picture is tied to that thing: it is underlined in the thing's colour and a hair
+  // runs from its line to the thing at the moment the picture shows it.
+  var col = document.createElement('div'); col.className = 'flr-col';
+  var head = document.createElement('div'); head.className = 'flr-head'; head.innerHTML = '<span class="flr-hn"><b></b></span><span class="flr-hp"><i></i><i></i><i></i></span>';
+  var roll = document.createElement('div'); roll.className = 'flr-roll'; col.appendChild(head); col.appendChild(roll); stage.insertBefore(col, cv);
+  var hn = head.querySelector('b'), hp = [].slice.call(head.querySelectorAll('i')), CH = ['Lost', 'Found', 'Seen'], chNow = -1;
+  var SS = { 3: [.14, .5], 4: [.22, .46], 5: [.06, .34] };                            // when a sentence's words light, where the picture needs them later than usual
+  var AS = { 3: [.5, .78], 6: [.44, .78], 7: [.46, .62] }, AW = { 6: [.44, .55, .66, .75] };   // the same for the second line; some words are timed to things in the picture
+  var KC = { due: 'amber', pallet: 'amber', walker: 'ink', mid: 'ink' };
   var blocks = beats.map(function (b, bi) {
-    var t = b.querySelector('.flr-t'), words = [];
+    var t = b.querySelector('.flr-t'), ps = [], keys = [];
     [].forEach.call(t.querySelectorAll('.flr-s,.flr-a'), function (p) {
-      var ans = p.classList.contains('flr-a'), out = document.createDocumentFragment(), ws = p.textContent.split(' ');
-      ws.forEach(function (w, k) {
-        if (k) out.appendChild(document.createTextNode(' '));
-        var s = document.createElement('span'); s.className = 'w'; s.textContent = w; out.appendChild(s);
-        var at = ans ? (AW[bi] ? AW[bi][k] : .44 + .2 * k / ws.length) : .02 + .27 * k / ws.length;
-        words.push({ el: s, at: at, v: -1 });
+      var ans = p.classList.contains('flr-a'), toks = [];
+      [].forEach.call(p.childNodes, function (n) {
+        var k = n.nodeType === 1 ? n.getAttribute('data-k') : null;
+        var tx = n.textContent, glue = !k && toks.length && /^\S/.test(tx);
+        tx.split(/\s+/).forEach(function (w, q) { if (!w) return; if (glue && q === 0) toks[toks.length - 1][2] = w; else toks.push([w, k, '']); });
       });
-      p.textContent = ''; p.appendChild(out);
+      var sp = ans ? (AS[bi] || [.46, .62]) : (SS[bi] || [.04, .28]), words = toks.map(function (tk, k) {
+        var e = document.createElement('span'); e.className = 'w' + (tk[1] ? ' k k-' + (KC[tk[1]] || 'blue') : ''); e.textContent = tk[0];
+        var m = /^(.*?)([.,]+)$/.exec(tk[0]); var tail = tk[2] || ''; if (tk[1] && m) { e.textContent = m[1]; tail = m[2] + tail; }
+        var w = { el: e, at: ans && AW[bi] ? AW[bi][k] : sp[0] + (sp[1] - sp[0]) * k / toks.length, v: -1, key: tk[1], tail: tail };
+        if (tk[1]) { var K = keys.filter(function (x) { return x.k === tk[1]; })[0]; if (!K) { K = { k: tk[1], at: w.at, ws: [], c: KC[tk[1]] || 'blue' }; keys.push(K); } K.ws.push(w); }
+        return w;
+      });
+      ps.push({ el: p, ans: ans, words: words, lines: [], t0: sp[0] });
     });
-    roll.appendChild(t); return { el: t, words: words, top: 0, st: '' };
+    roll.appendChild(t); return { el: t, ps: ps, keys: keys, vis: null };
   });
+  function split() {                                                                   // wrap every visual line in its own slot
+    blocks.forEach(function (b) {
+      b.el.style.display = 'block';
+      b.ps.forEach(function (p) {
+        p.el.textContent = ''; p.words.forEach(function (w, k) { if (k) p.el.appendChild(document.createTextNode(' ')); p.el.appendChild(w.el); if (w.tail) p.el.appendChild(document.createTextNode(w.tail)); });
+      });
+    });
+    blocks.forEach(function (b) {
+      b.ps.forEach(function (p) {
+        var rows = [], top = null; p.words.forEach(function (w) { var y = w.el.offsetTop; if (top === null || Math.abs(y - top) > 4) { rows.push([]); top = y; } rows[rows.length - 1].push(w); });
+        p.rows = rows;
+      });
+    });
+    blocks.forEach(function (b) {
+      var j = 0;
+      b.ps.forEach(function (p) {
+        p.el.textContent = ''; p.lines = p.rows.map(function (row) {
+          var ln = document.createElement('span'); ln.className = 'flr-ln'; var li = document.createElement('span'); li.className = 'flr-li'; ln.appendChild(li); p.el.appendChild(ln);
+          row.forEach(function (w, k) { if (k) li.appendChild(document.createTextNode(' ')); li.appendChild(w.el); if (w.tail) li.appendChild(document.createTextNode(w.tail)); w.v = -1; w.row = ln; });
+          return { ln: ln, li: li, j: j++, y: null };
+        });
+      });
+      b.keys.forEach(function (K) { K.h = b.el.offsetHeight; });
+      b.vis = null; b.el.style.display = '';
+    });
+    textFrame.tb = null;
+  }
+  function easeO(x) { x = x < 0 ? 0 : x > 1 ? 1 : x; return 1 - Math.pow(1 - x, 4); }
+  function easeI(x) { x = x < 0 ? 0 : x > 1 ? 1 : x; return x * x * x; }
+  var leads = [];
   function textFrame(tb) {
-    var i = Math.min(NB - 1, Math.floor(tb)), u = Math.min(1, tb - i), line = phone ? vh * .1 : vh * .3;
-    var y = i < NB - 1 ? lerp(blocks[i].top, blocks[i + 1].top, ease5(seg(u, .86, 1))) : blocks[i].top;
-    roll.style.transform = 'translate3d(0,' + (line - y).toFixed(1) + 'px,0)';
+    var i = Math.min(NB - 1, Math.floor(tb)), u = Math.min(1, tb - i), ch = Math.floor(i / 3);
+    if (ch !== chNow) { chNow = ch; hn.textContent = CH[ch]; hn.classList.remove('sw'); void hn.offsetWidth; hn.classList.add('sw'); }
+    hp.forEach(function (e, k) { var f = Math.max(0, Math.min(1, tb - ch * 3 - k)); if (f !== e.f) { e.f = f; e.style.setProperty('--f', f.toFixed(3)); } });
+    head.style.opacity = ease(seg(ap, .3, .7));
+    leads.length = 0;
     blocks.forEach(function (b, k) {
-      var st = k < i ? 'past' : k === i ? 'on' : 'next'; if (st !== b.st) { b.st = st; b.el.className = 'flr-t ' + st; }
-      if (Math.abs(k - i) > 1 && b.done === st) return; b.done = st;
-      b.words.forEach(function (w) {
-        var v = k < i ? 1 : k > i ? 0 : ease(seg(u, w.at, w.at + .09)); v = Math.round(v * 50) / 50;
-        if (v === w.v) return; w.v = v; w.el.style.opacity = (.13 + .87 * v).toFixed(3);
-        w.el.style.transform = v < 1 ? 'translate3d(0,' + ((1 - v) * .16).toFixed(3) + 'em,0)' : ''; w.el.style.filter = v > 0 && v < 1 ? 'blur(' + ((1 - v) * 5).toFixed(1) + 'px)' : '';
+      var e = k === 0 ? Math.max(seg(ap, .3, .9), tb > .001 ? 1 : 0) : seg(tb, k - .03, k + .12), x = k < NB - 1 ? seg(tb, k + .9, k + .995) : 0, vis = e > 0 && x < 1;
+      if (vis !== b.vis) { b.vis = vis; b.el.style.visibility = vis ? 'visible' : 'hidden'; }
+      if (!vis) return;
+      var uu = k < i ? 1 : k > i ? 0 : u;
+      b.ps.forEach(function (p) {
+        var pe = p.ans ? seg(uu, p.t0 - .07, p.t0 + .05) : e;
+        p.lines.forEach(function (l, n) {
+          var en = easeO(seg(pe, n * .16, n * .16 + .62)), ex = easeI(seg(x, l.j * .09, l.j * .09 + .55)), y = Math.round(((1 - en) * 108 - ex * 108) * 10) / 10;
+          if (y !== l.y) { l.y = y; l.li.style.transform = y ? 'translate3d(0,' + y + '%,0)' : ''; }
+        });
+        p.words.forEach(function (w, n) {
+          var v = k === 0 && !p.ans ? Math.max(ease(seg(ap, .5 + .4 * n / p.words.length, .62 + .4 * n / p.words.length)), tb > .001 ? 1 : 0) : ease(seg(uu, w.at, w.at + .08)); v = Math.round(v * 40) / 40;
+          if (v !== w.v) { w.v = v; w.el.style.opacity = (.26 + .74 * v).toFixed(3); }
+        });
+      });
+      if (k === NB - 1) { var cn = b.el.querySelector('.flr-count'); if (cn) cn.style.opacity = ease(seg(uu, .66, .8)); }
+      b.keys.forEach(function (K) {
+        var at = k === 0 ? .1 : K.at, kv = ease(seg(uu, at, at + .1)) * (1 - seg(x, 0, .25)); kv = Math.round(kv * 50) / 50;
+        if (kv !== K.v) { K.v = kv; K.ws.forEach(function (w) { w.el.style.setProperty('--kv', kv); }); }
+        if (k === i) leads.push({ K: K, d: seg(u, at + .03, at + .2), a: Math.min(seg(u, at + .03, at + .06), 1 - seg(u, .84, .9)) });
       });
     });
   }
@@ -66,22 +124,23 @@
   function fmt(s, sec) { var m = Math.floor(s / 60), r = Math.floor(s % 60); return sec ? m + ' min ' + (r < 10 ? '0' : '') + r + ' s' : m + ' min'; }
 
   // ---- layout and scroll
-  var vw = 0, vh = 0, dpr = 1, phone = false, p = 0, ps = -1, bi = -1, live = false, stills = false, onScreen = false, near = false;
+  var ap = 1, vw = 0, vh = 0, dpr = 1, phone = false, p = 0, ps = -1, bi = -1, live = false, stills = false, onScreen = false, near = false;
   function measure() {
     var r = stage.getBoundingClientRect(); vw = r.width; vh = r.height; phone = vw / vh < .8;
     dpr = Math.min(window.devicePixelRatio || 1, phone ? 2 : 1.75);
     if (live) { cv.width = Math.round(vw * dpr); cv.height = Math.round(vh * dpr); }
-    ov.setAttribute('viewBox', '0 0 ' + vw + ' ' + vh);
+    ov.setAttribute('viewBox', '0 0 ' + vw + ' ' + vh); S.querySelector('.flr-lead').setAttribute('viewBox', '0 0 ' + vw + ' ' + vh);
     notes.forEach(function (n) {
       var o = phone ? n.om : n.o; n.sp.style.left = o[0] + 'px'; n.sp.style.top = o[1] + 'px';
       var w = n.sp.offsetWidth, h = n.sp.offsetHeight, ex = o[0] >= 0 ? o[0] - 7 : o[0] + w + 7, ey = o[1] + (o[1] < 0 ? h - 4 : 4);
       if (n.at === 'mid') { n.hair.style.display = n.pin.style.display = 'none'; return; }
       n.hair.style.width = Math.hypot(ex, ey) + 'px'; n.hair.style.transform = 'rotate(' + Math.atan2(ey, ex) + 'rad)';
     });
-    blocks.forEach(function (b) { b.top = b.el.offsetTop; });
+    split();
   }
   function readScroll() {
     var r = S.getBoundingClientRect(), run = r.height - vh; p = run > 0 ? Math.min(1, Math.max(0, -r.top / run)) : 0;
+    ap = r.top > 0 ? Math.max(0, Math.min(1, 1 - r.top / vh)) : 1;
     onScreen = r.top < vh && r.bottom > 0; near = r.top < vh * 1.3 && r.bottom > -vh;
     topA.classList.toggle('show', r.top < -vh * .4 && r.bottom > vh);
   }
@@ -187,15 +246,15 @@
   function shotOf(i, u, st) {
     var H = M.hero, T = M.tag, D = M.due, w = st.walker;
     switch (i) {
-      case 0: return phone ? { f: [10.2, 15.2, .6], s: 13 } : { f: [10.6, 15.4, .6], s: 18 };
-      case 1: return phone ? { f: [lerp(w.x, 12, .25), lerp(w.y, 10, .25), .8], s: 17 } : { f: [lerp(w.x, 14, .5), lerp(w.y, 10, .55), .6], s: 27 };
-      case 2: var e = ease(seg(u, .5, .95)); return phone ? { f: [lerp(21, H[0], e), lerp(9.5, H[1], e), .6], s: lerp(26, 11, e) } : { f: [lerp(19.5, H[0] - 1, e), lerp(10.2, H[1] + .4, e), .6], s: lerp(31, 13, e) };
+      case 0: var e0 = ease5(seg(u, .08, .5)); return phone ? { f: [lerp(14.5, 10.2, e0), lerp(10, 15.2, e0), .6], s: lerp(34, 14, e0) } : { f: [lerp(15.6, 10.6, e0), lerp(9.6, 15.2, e0), .6], s: lerp(41, 26, e0) };
+      case 1: return phone ? { f: [lerp(w.x, 12, .25), lerp(w.y, 10, .25), .8], s: 17 } : { f: [lerp(w.x, 14, .55), lerp(w.y, 10, .6), .6], s: 31 };
+      case 2: var e = ease(seg(u, .5, .95)); return phone ? { f: [lerp(21, H[0], e), lerp(9.5, H[1], e), .6], s: lerp(26, 11, e) } : { f: [lerp(19.5, H[0] - 1, e), lerp(10.2, H[1] + .4, e), .6], s: lerp(33, 15, e) };
       case 3: return phone ? { f: [T[0], T[1], T[2] - .01], s: .2 } : { f: [T[0], T[1], T[2]], s: .32 };
       case 4: return phone ? { f: [21.5, 8, 2.6], s: 23 } : { f: [17, 8.6, 2.4], s: 35 };
-      case 5: return phone ? { f: [H[0], H[1], .8], s: 5.4 } : { f: [H[0] - .2, H[1], .8], s: 7.2 };
-      case 6: return phone ? { f: [14.5, 10, .5], s: 31 } : { f: [16, 9.6, .5], s: 36 };
-      case 7: return phone ? { f: [15.5, 9.6, .5], s: 28 } : { f: [16.4, 9.4, .5], s: 33.5 };
-      default: return phone ? { f: [14.5, 10, .5], s: 34 } : { f: [15.6, 9.6, .5], s: 39 };
+      case 5: return phone ? { f: [H[0], H[1], .8], s: 5.4 } : { f: [H[0] - .2, H[1], .8], s: 8.4 };
+      case 6: return phone ? { f: [14.5, 10, .5], s: 31 } : { f: [16, 9.6, .5], s: 38 };
+      case 7: return phone ? { f: [15.5, 9.6, .5], s: 28 } : { f: [16.4, 9.4, .5], s: 35 };
+      default: return phone ? { f: [14.5, 10, .5], s: 34 } : { f: [15.6, 9.6, .5], s: 41 };
     }
   }
   var MOVE = [0, .4, .3, .44, .5, .42, .42, .4, .5];      // the share of each sentence's scroll in which the camera travels to it; then it rests
@@ -218,18 +277,19 @@
     st.wd = wd * WTOT; st.walker = walkAt(st.wd);
     st.walkA = i < 3 ? 1 : i === 3 ? 1 - seg(u, 0, .2) : i === 4 ? seg(u, .3, .5) : 1;
     st.trail = i === 1 ? 1 : i === 2 ? 1 : i === 3 ? 1 - seg(u, 0, .3) : 0;
-    st.due = i <= 2 ? (i === 0 ? seg(u, .44, .58) : 1) : i === 3 ? 1 - seg(u, 0, .25) : 0;
+    st.due = i <= 2 ? (i === 0 ? seg(u, .1, .22) : 1) : i === 3 ? 1 - seg(u, 0, .25) : 0;
     st.meas = i === 2 ? ease(seg(u, .08, .42)) : 0; st.measA = i === 2 ? 1 : i === 3 ? 1 - seg(u, 0, .25) : 0;
-    st.tag = i < 3 ? 0 : i === 3 ? ease(seg(u, .3, .46)) : 1;
+    st.tag = i < 3 ? 0 : i === 3 ? ease(seg(u, .3, .44)) : 1;
     st.lines = i === 3 ? ease(seg(u, .6, .86)) * .12 : i === 4 ? lerp(.12, 1, ease(seg(u, .04, .5))) : i === 5 ? 1 : 0;
     st.linesA = i === 3 ? seg(u, .6, .64) : i === 4 ? 1 : i === 5 ? lerp(1, .0, seg(u, .3, .5)) : 0;
-    st.anch = i < 4 ? 0 : i === 4 ? ease(seg(u, .3, .5)) : 1;
-    st.heroC = i < 5 ? 0 : i === 5 ? ease(seg(u, .16, .3)) : 1;
+    st.anch = i < 4 ? 0 : i === 4 ? ease(seg(u, .22, .4)) : 1;
+    st.heroC = i < 5 ? 0 : i === 5 ? ease(seg(u, .2, .34)) : 1;
     st.fix = i === 5 ? ease(seg(u, .46, .6)) : 0;
     st.wave = i < 6 ? 0 : i === 6 ? u : 2;
     st.all = i < 6 ? 0 : i === 6 ? ease(seg(u, .86, .97)) : 1;
     st.dots = i < 5 ? 0 : 1;
-    st.amber = i === 7 ? ease(seg(u, .44, .58)) : i === 8 ? 1 : 0;
+    st.amber = i === 7 ? ease(seg(u, .56, .68)) : i === 8 ? 1 : 0;
+    st.axes = i < 5 ? 0 : i === 5 ? seg(u, .5, .7) : 1;
     return st;
   }
 
@@ -242,6 +302,11 @@
   barT.setAttribute('style', 'font:500 14px "AmI Text",Arial,sans-serif;fill:#0b1238'); barT.textContent = '10 cm';
   [measA, measB].forEach(function (c) { c.setAttribute('r', 3.5); }); rays.forEach(function (r) { r.d.setAttribute('r', 4); });
   var tl = [0, 1, 2].map(function () { var d = document.createElement('div'); d.className = 'flr-dot'; d.style.cssText = 'width:auto;height:auto;margin:0;border-radius:0;background:none;box-shadow:none;font:500 14px/1 "AmI Text",Arial,sans-serif;color:#1f6bff;white-space:nowrap;text-shadow:0 0 6px #f0f6ff,0 0 12px #f0f6ff;font-variant-numeric:tabular-nums'; dotsEl.appendChild(d); return d; });
+  var axG = el('g', 'l-axes'), axT = [];
+  (function () { for (var k = 0; k <= 10; k++) { var l = document.createElementNS(NS, 'line'); axG.appendChild(l); var t = document.createElementNS(NS, 'text'); axG.appendChild(t); axT.push({ l: l, t: t, x: k <= 6 ? k * 5 : 30, y: k <= 6 ? 0 : (k - 6) * 5, ex: k > 6 }); } })();
+  var lead = S.querySelector('.flr-lead'), leadEls = [0, 1].map(function () { var pth = document.createElementNS(NS, 'path'); lead.appendChild(pth); var c = document.createElementNS(NS, 'circle'); c.setAttribute('r', 3); lead.appendChild(c); return { p: pth, c: c }; });
+  var scaleEl = S.querySelector('.flr-scale'), scaleI = scaleEl.querySelector('i'), scaleT = scaleEl.querySelector('span'), NICE = [.02, .05, .1, .2, .5, 1, 2, 5, 10, 20];
+  var searchEl = S.querySelector('[data-search]'), walkedEl = S.querySelector('[data-walked]');
   function show(e, a) { e.style.opacity = a; e.style.display = a > .003 ? '' : 'none'; }
 
   // ---- WebGL
@@ -334,7 +399,7 @@
     var buf = nearest(8.46, 5.6); amberIdx = { hero: nearest(H[0], H[1]), pallet: nearest(M.pallet[0], M.pallet[1]), buf: buf };
     for (var k in amberIdx) amberIdx[k].amber = true;
     M.pt = { due: [M.due[0], M.due[1], 0], hero: [H[0], H[1], 1.02], tag: M.tag, a0: M.anch[0], a1: M.anch[1], a2: M.anch[2], pallet: [M.pallet[0], M.pallet[1], 1.25], buf: [buf.x, buf.y, 1.02],
-      mid: [(M.due[0] + H[0]) / 2, (M.due[1] + H[1]) / 2, 0] };
+      mid: [(M.due[0] + H[0]) / 2, (M.due[1] + H[1]) / 2, 0], corner: [30, 0, 0], tr: [15, 16.3, 1.02] };
     M.ns = M.anch.map(function (a) { return Math.hypot(a[0] - M.tag[0], a[1] - M.tag[1], a[2] - M.tag[2]) / .299792458; });
     var c = S.querySelector('.flr-count');
     if (c) { var n = { trolley: 0, pallet: 0, forklift: 0, amr: 0 }; things.forEach(function (t) { n[t.k]++; }); var bs = c.querySelectorAll('b'); bs[0].textContent = n.trolley; bs[1].textContent = n.pallet; bs[2].textContent = n.amr; bs[3].textContent = n.forklift; }
@@ -353,8 +418,8 @@
   function frame(tb, time) {
     var i = Math.min(NB - 1, Math.floor(tb)), u = Math.min(1, tb - i), st = story(i, u), c = camAt(i, u, st);
     // camera
-    var area = phone ? vw * .98 : vw * .57, f = Mxy(c.f[0], c.f[1], c.f[2]);
-    cam.ppm = area / c.s; cam.fx = f[0]; cam.fy = f[1]; cam.ax = phone ? vw * .5 : vw * .695; cam.ay = phone ? vh * .63 : vh * .525;
+    var area = phone ? vw * .98 : vw * .6, f = Mxy(c.f[0], c.f[1], c.f[2]), arr = 1 - easeO(seg(ap, .1, 1));
+    cam.ppm = area / (c.s * (1 + .22 * arr)); cam.fx = f[0]; cam.fy = f[1]; cam.ax = phone ? vw * .5 : vw * .685; cam.ay = (phone ? vh * .63 : vh * .525) + arr * vh * .1;
     // moving things
     var a0 = amrPos(0, time), a1 = amrPos(1, time); AMRI[0].x = a0.x; AMRI[0].y = a0.y; AMRI[0].th = a0.th; AMRI[1].x = a1.x; AMRI[1].y = a1.y; AMRI[1].th = a1.th;
     // --- plate
@@ -398,7 +463,7 @@
       show(r.l, st.linesA * (st.lines > 0 ? .9 : 0)); r.l.setAttribute('x1', tg[0]); r.l.setAttribute('y1', tg[1]); r.l.setAttribute('x2', e[0]); r.l.setAttribute('y2', e[1]);
       var t = cyc * 1.5 * mx / M.ns[k], vis = st.lines >= 1 && t <= 1 ? st.linesA : 0; show(r.d, vis); r.d.setAttribute('cx', lerp(tg[0], an[0], Math.min(1, t))); r.d.setAttribute('cy', lerp(tg[1], an[1], Math.min(1, t)));
       var la = i === 4 ? ease(seg(u, .5 + k * .06, .58 + k * .06)) : i === 5 ? 1 - seg(u, .1, .3) : 0; tl[k].style.opacity = la; tl[k].style.display = la > 0 ? '' : 'none';
-      if (la > 0) { tl[k].style.transform = 'translate(' + (an[0] + 12).toFixed(1) + 'px,' + (an[1] - 24).toFixed(1) + 'px)'; if (!tl[k].textContent) tl[k].textContent = M.ns[k].toFixed(1) + ' ns'; }
+      if (la > 0) { tl[k].style.transform = 'translate(' + (an[0] + 12).toFixed(1) + 'px,' + (an[1] - 24).toFixed(1) + 'px)'; var gp = (i === 4 && u > .6) || i === 5, tv = gp ? '+' + (M.ns[k] - Math.min.apply(null, M.ns)).toFixed(1) + ' ns' : M.ns[k].toFixed(1) + ' ns'; if (tl[k].tv !== tv) { tl[k].tv = tv; tl[k].textContent = tv; } }
     });
     if (i === 3 && u > .62 && !pulsed) { pulsed = true; snd.pulse(M.ns); } if (i < 3 || (i === 3 && u < .5)) pulsed = false;
     if (i === 4 && st.lines >= 1 && Math.floor(time / 2.6) !== frame.cy) { frame.cy = Math.floor(time / 2.6); snd.pulse(M.ns); }
@@ -420,16 +485,53 @@
     notes.forEach(function (n) {
       var inn;
       if (n.at === 'due') inn = st.due > .5 && i < 3; else if (n.at === 'mid') inn = i === 2 && st.meas >= 1 && u < .93;
-      else if (n.bi === 3) inn = i === 3 && u > .5; else if (n.bi === 4) inn = i === 4 && st.anch > .7 && u < .97;
-      else if (n.bi === 5) inn = i === 5 && st.fix > .4; else if (n.bi === 7) inn = i === 7 && (n.at === 'amr0' ? u > .2 && AMRI[0].x > 5 && AMRI[0].x < 20.5 && AMRI[0].y < 9.5 : st.amber > .5) && u < .96; else inn = n.bi === i;
-      var pt = n.at === 'amr0' ? [AMRI[0].x, AMRI[0].y, 1.9] : M.pt[n.at], s = scr(pt[0], pt[1], pt[2]);
+      else if (n.at === 'walker') inn = (i === 1 && u > .3) || (i === 2 && u < .34); else if (n.bi === 3) inn = i === 3 && u > .5; else if (n.bi === 4) inn = i === 4 && st.anch > .7 && u < .97;
+      else if (n.bi === 5) inn = i === 5 && st.fix > .4; else if (n.bi === 7) inn = i === 7 && (n.at === 'amr0' ? u > .2 && AMRI[0].x > 5 && AMRI[0].x < 20.5 && AMRI[0].y < 9.5 : st.amber > .5) && u < .96; else if (n.bi === 8) inn = i === 8 && u > .5; else inn = n.bi === i;
+      var pt = n.at === 'amr0' ? [AMRI[0].x, AMRI[0].y, 1.9] : n.at === 'walker' ? [w.x, w.y, 1.95] : M.pt[n.at], s = scr(pt[0], pt[1], pt[2]);
       if (phone ? s[1] < vh * .4 : s[0] < vw * .42) inn = false;          // never over the copy
+      if (inn && n.at === 'amr0' && phone) ['buf', 'pallet', 'hero'].forEach(function (q) { var o = scr(M.pt[q][0], M.pt[q][1], M.pt[q][2]); if (Math.abs(o[0] - s[0]) < 190 && Math.abs(o[1] - s[1]) < 70) inn = false; });
       if (inn !== n.inn) { n.inn = inn; n.el.classList.toggle('in', inn); }
-      if (Math.abs(n.bi - i) <= 1 || n.at === 'due') { n.el.style.transform = 'translate(' + s[0].toFixed(1) + 'px,' + s[1].toFixed(1) + 'px)'; }
+      if (Math.abs(n.bi - i) <= 1 || n.at === 'due' || n.inn) { n.el.style.transform = 'translate(' + s[0].toFixed(1) + 'px,' + s[1].toFixed(1) + 'px)'; }
     });
     if (xyEl && i === 7) { var xv = 'x ' + AMRI[0].x.toFixed(1) + ' m, y ' + AMRI[0].y.toFixed(1) + ' m'; if (xv !== xyEl.t) { xyEl.t = xv; xyEl.textContent = xv; } }
+    if (searchEl) { var sm = fmt(st.wd / WTOT * 561, false), wm = Math.round(st.wd) + ' m walked'; if (sm !== searchEl.t) { searchEl.t = sm; searchEl.textContent = sm; } if (wm !== walkedEl.t) { walkedEl.t = wm; walkedEl.textContent = wm; } }
+    // --- the ruler: a true length at this distance
+    var nk = 0; while (nk < NICE.length - 1 && NICE[nk] * cam.ppm < 56) nk++;
+    var nl = NICE[nk] < 1 ? Math.round(NICE[nk] * 100) + ' cm' : NICE[nk] + ' m'; scaleI.style.width = (NICE[nk] * cam.ppm).toFixed(1) + 'px'; if (nl !== scaleT.t) { scaleT.t = nl; scaleT.textContent = nl; }
+    // --- the plant's own grid lines, in metres: what x and y are measured from
+    var axa = st.axes * seg(c.s, 15, 24) * (phone ? 0 : 1); show(axG, axa);
+    if (axa > 0) axT.forEach(function (t) {
+      var p0 = scr(t.x, t.y, -.5), p1 = t.ex ? scr(t.x + .45, t.y, -.5) : scr(t.x, t.y - .45, -.5), p2 = t.ex ? scr(t.x + 1.5, t.y, -.5) : scr(t.x, t.y - 1.5, -.5);
+      t.l.setAttribute('x1', p0[0]); t.l.setAttribute('y1', p0[1]); t.l.setAttribute('x2', p1[0]); t.l.setAttribute('y2', p1[1]); t.t.setAttribute('x', p2[0]); t.t.setAttribute('y', p2[1] + 4);
+      if (!t.t.textContent) t.t.textContent = (t.ex ? t.y : t.x) + (t.x === 30 && t.y === 0 || t.y === 20 ? ' m' : '');
+    });
+    // --- the hairs that tie a word to its thing
+    var sr = stage.getBoundingClientRect();
+    leadEls.forEach(function (L, k) {
+      var ld = leads[k]; if (!ld || ld.a <= 0 || !live) { if (L.on !== false) { L.on = false; L.p.style.display = L.c.style.display = 'none'; } return; }
+      var K = ld.K, wl = K.ws[K.ws.length - 1], rr = wl.row.getBoundingClientRect(), wr = wl.el.getBoundingClientRect();
+      var pt = K.k === 'walker' ? [w.x, w.y, 1.0] : K.k === 'due' ? [D[0], D[1], 0] : K.k === 'mid' ? M.pt.mid : M.pt[K.k], T = scr(pt[0], pt[1], pt[2]), x0, y0, x1, y1;
+      if (phone) { x0 = (wr.left + wr.right) / 2 - sr.left; y0 = roll.getBoundingClientRect().top - sr.top + K.h + 12; x1 = x0; y1 = y0 + 18; } else { x0 = wl.row.querySelector('.flr-li').getBoundingClientRect().right - sr.left + 12; y0 = (wr.top + wr.bottom) / 2 - sr.top + 2; x1 = x0 + 26; y1 = y0; }
+      var len = Math.hypot(x1 - x0, y1 - y0) + Math.hypot(T[0] - x1, T[1] - y1);
+      L.p.setAttribute('d', 'M' + x0.toFixed(1) + ' ' + y0.toFixed(1) + 'L' + x1.toFixed(1) + ' ' + y1.toFixed(1) + 'L' + T[0].toFixed(1) + ' ' + T[1].toFixed(1));
+      L.p.style.strokeDasharray = len.toFixed(1); L.p.style.strokeDashoffset = (len * (1 - ease(ld.d))).toFixed(1);
+      L.c.setAttribute('cx', T[0]); L.c.setAttribute('cy', T[1]); L.c.style.opacity = (ld.a * seg(ld.d, .9, 1)).toFixed(2);
+      if (L.cls !== K.c) { L.cls = K.c; L.p.setAttribute('class', 'k-' + K.c); L.c.setAttribute('class', 'k-' + K.c); }
+      L.on = true; L.p.style.display = L.c.style.display = ''; L.p.style.opacity = (ld.a * .7).toFixed(2);
+    });
     // --- clocks
     clocks.forEach(function (c) { var v = c.due ? fmt(c.base + st.wd / WTOT * 561, false) : fmt(c.base + time, true); if (v !== c.last) { c.last = v; c.el.textContent = v; } });
+  }
+
+  // ---- point at a located thing to read where it is
+  var hov = document.createElement('div'); hov.className = 'flr-hov'; stage.appendChild(hov); var hovT = null, NAME = { trolley: 'Trolley', pallet: 'Pallet', forklift: 'Forklift', amr: 'AMR' }, mouse = null;
+  stage.addEventListener('pointermove', function (e) { if (e.pointerType === 'touch') return; var r = stage.getBoundingClientRect(); mouse = [e.clientX - r.left, e.clientY - r.top]; kick(); });
+  stage.addEventListener('pointerleave', function () { mouse = null; kick(); });
+  function hover() {
+    var best = null, bd = 26;
+    if (mouse && live) things.forEach(function (t) { if (!t.vis) return; var s = scr(t.x, t.y, t.z), d = Math.hypot(s[0] - mouse[0], s[1] - mouse[1]); if (d < bd) { bd = d; best = t; best.s = s; } });
+    if (best !== hovT) { hovT = best; hov.classList.toggle('in', !!best); }
+    if (best) { var tx = NAME[best.k] + '  x ' + best.x.toFixed(1) + ' m, y ' + best.y.toFixed(1) + ' m'; if (tx !== hov.tx) { hov.tx = tx; hov.textContent = tx; } hov.style.transform = 'translate(' + (best.s[0] + 14).toFixed(1) + 'px,' + (best.s[1] - 30).toFixed(1) + 'px)'; }
   }
 
   // ---- the loop: runs only while the section is on screen
@@ -439,9 +541,10 @@
     raf = 0; if (!onScreen && !SHOT) { snd.gate(); return; }
     var dt = Math.min(.1, (now - lastT) / 1000 || .016); lastT = now;
     if (ps < 0) ps = p; else ps += (p - ps) * (1 - Math.exp(-dt * 8)); if (Math.abs(p - ps) < .00002) ps = p;
-    setBeat(beatOf(p)); snd.gate(); textFrame(frozen ? frozen[0] : tbOf(ps));
+    setBeat(beatOf(p)); snd.gate(); var tbn = frozen ? frozen[0] : tbOf(ps); if (tbn !== textFrame.tb || ap !== textFrame.ap) { textFrame.tb = tbn; textFrame.ap = ap; textFrame(tbn); }
     if (live) {
       if (frozen) frame(frozen[0], frozen[1]); else frame(tbOf(ps), (now - T0) / 1000);
+      hover();
       if (!FULL && frames < 90) { frames++; if (dt > .055) slow++; if (frames === 90 && slow > 45) { toStills(); } }
     }
     kick();

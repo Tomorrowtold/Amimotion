@@ -2,6 +2,10 @@
 
 One small plant, seen from one fixed direction, and nine sentences. The sentence leads; the picture follows it.
 
+The copy stands on the left and tells one sentence at a time. Each line rises out of its own slot, each word lights as the scroll passes it, and a word that names a thing in the picture (`<b data-k="…">` in `section.html`) is underlined in that thing's colour while a hair runs from its line to the thing. The picture event for that word happens at the same point of the scroll.
+
+Small true details: the ruler at the bottom shows a real length at the present distance; the metre marks along the plant's edges are the frame that x and y are measured from; the arrival times are the real flight times from the tag to each anchor; pointing at a located thing shows its kind and position.
+
 - `section.html` is the section's markup. `merge.py` puts it into `studio/v1/index.html`.
 - `studio/v1/css/floor.css` and `studio/v1/js/floor.js` are its styles and script. Every rule starts with `.flr`.
 - `studio/v1/assets/floor/` holds the pictures: `L/` for large screens, `P/` for phones.
