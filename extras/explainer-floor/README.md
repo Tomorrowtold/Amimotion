@@ -36,3 +36,8 @@ The section closes on the three layers: tags on the floor, anchors above, AmIHub
 - One typeface for both lines (AmI Display), as in the first screen.
 - The scroll run is about four screens. Once the whole story has been scrolled and left behind, the section folds to one screen showing the last picture, with Back to top and Replay.
 - `ver.py` writes a hash of the pictures into `floor.json`; `floor.js` adds it to every picture link so a kept old set is never shown. Run it after packing new pictures.
+
+## Round 4: light, and signals as the founders describe them
+
+- Lost stands under a flat sky: `blender/bay3.py` renders the unlocated (clay) plates with the sun off (`renderall3.sh`). The located plates keep the sun. In `floor.js` sunlight opens around the first located trolley and then crosses the floor (`st.sun`, `uSun`), so shadows and colour arrive with location. No extra pictures are loaded and the shader does one more distance test per pixel.
+- Signals follow the brochure's three steps: the tag sends a pulse a few nanoseconds wide when it moves; every anchor in range records the arrival time and the direction; AmIHub turns timing, direction and the map into a position. Lines leave the tag at one speed, so the nearest anchor is reached first. The moving pulse is drawn to scale (3 ns is about 0.9 m). Arrival times are the true 3D distances divided by the speed of light.

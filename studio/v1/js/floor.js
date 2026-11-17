@@ -181,7 +181,7 @@
   // ---- sound: made here, nothing to download. It starts only after a tap, a click or a key.
   var snd = (function () {
     var on = true, ctx = null, out = null, air = null, lastPop = 0;
-    try { if (localStorage.getItem('flr-snd') === '0') on = false; } catch (e) {}
+    try { if (localStorage.getItem('flr-snd2') === '0') on = false; } catch (e) {}
     function label() { sndB.textContent = on ? 'Sound on' : 'Sound off'; sndB.setAttribute('aria-pressed', on ? 'true' : 'false'); }
     label();
     function boot() {
@@ -192,8 +192,8 @@
       air = ctx.createBufferSource(); air.buffer = buf; air.loop = true; var f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 420; var g = ctx.createGain(); g.gain.value = .5;
       air.connect(f); f.connect(g); g.connect(out); air.start();
     }
-    ['pointerdown', 'keydown', 'touchend'].forEach(function (ev) { window.addEventListener(ev, function () { boot(); if (ctx && ctx.state === 'suspended') ctx.resume(); }, { passive: true }); });
-    sndB.addEventListener('click', function () { on = !on; try { localStorage.setItem('flr-snd', on ? '1' : '0'); } catch (e) {} label(); if (on) boot(); });
+    ['pointerdown', 'keydown', 'touchend', 'click'].forEach(function (ev) { window.addEventListener(ev, function () { boot(); if (ctx && ctx.state === 'suspended') ctx.resume(); }, { passive: true }); });
+    sndB.addEventListener('click', function () { on = !on; try { localStorage.setItem('flr-snd2', on ? '1' : '0'); } catch (e) {} label(); if (on) boot(); });
     function gate() { if (!ctx) return; var t = (on && onScreen && !document.hidden) ? .55 : 0; out.gain.setTargetAtTime(t, ctx.currentTime, .25); }
     function tone(f, t0, dur, vol, type) {
       if (!ctx || !on || !onScreen) return; var t = ctx.currentTime + (t0 || 0), o = ctx.createOscillator(), g = ctx.createGain();
@@ -309,6 +309,8 @@
     st.dots = i < 5 ? 0 : 1;
     st.amber = i === 7 ? ease(seg(u, .56, .68)) : i >= 8 ? 1 : 0;
     st.l1 = i < 8 ? 0 : i === 8 ? ease(seg(u, .2, .3)) : 1; st.l2 = i < 8 ? 0 : i === 8 ? ease5(seg(u, .36, .56)) : 1; st.l3 = i < 8 ? 0 : i === 8 ? ease5(seg(u, .56, .82)) : 1;
+    // sunlight: Lost stands under a flat sky. Light opens around the first thing that is located, then crosses the whole floor.
+    st.sun = i < 5 ? 0 : i === 5 ? 4.5 * ease(seg(u, .2, .5)) : i === 6 ? lerp(4.5, 48, ease(seg(u, .03, .42))) : 99;
     st.axes = i < 5 ? 0 : i === 5 ? seg(u, .5, .7) : 1;
     return st;
   }
@@ -317,10 +319,10 @@
   var NS = 'http://www.w3.org/2000/svg';
   function el(n, c) { var e = document.createElementNS(NS, n); if (c) e.setAttribute('class', c); ov.appendChild(e); return e; }
   var bayP = el('polygon', 'l-bay'), trailP = el('polyline', 'l-trail'), measL = el('line', 'l-ink'), measA = el('circle', 'f-ink'), measB = el('circle', 'f-ink');
-  var rays = [0, 1, 2].map(function () { return { l: el('line', 'l-blue'), d: el('circle', 'f-blue') }; });
+  var rays = [0, 1, 2].map(function () { return { l: el('line', 'l-blue'), d: el('line', 'l-pulse') }; });
   var bar = el('line', 'l-ink'), barA = el('line', 'l-ink'), barB = el('line', 'l-ink'), barT = el('text');
   barT.setAttribute('style', 'font:500 14px "AmI Text",Arial,sans-serif;fill:#0b1238'); barT.textContent = '10 cm';
-  [measA, measB].forEach(function (c) { c.setAttribute('r', 3.5); }); rays.forEach(function (r) { r.d.setAttribute('r', 4); });
+  [measA, measB].forEach(function (c) { c.setAttribute('r', 3.5); }); 
   var tl = [0, 1, 2].map(function () { var d = document.createElement('div'); d.className = 'flr-dot'; d.style.cssText = 'width:auto;height:auto;margin:0;border-radius:0;background:none;box-shadow:none;font:500 14px/1 "AmI Text",Arial,sans-serif;color:#1f6bff;white-space:nowrap;text-shadow:0 0 6px #f0f6ff,0 0 12px #f0f6ff;font-variant-numeric:tabular-nums'; dotsEl.appendChild(d); return d; });
   var axG = el('g', 'l-axes'), axT = [];
   (function () { for (var k = 0; k <= 10; k++) { var l = document.createElementNS(NS, 'line'); axG.appendChild(l); var t = document.createElementNS(NS, 'text'); axG.appendChild(t); axT.push({ l: l, t: t, x: k <= 6 ? k * 5 : 30, y: k <= 6 ? 0 : (k - 6) * 5, ex: k > 6 }); } })();
@@ -337,14 +339,14 @@
 
   // ---- WebGL
   var VS1 = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
-  var FS1 = 'precision highp float;uniform vec2 uRes,uA,uF,uPl;uniform float uPpm;uniform sampler2D tWc,tWk,tMc,tMk,tCc,tCk,tXc,tXk,tWi,tMi,tCi,tXi,tLut;uniform vec4 uMid,uClose,uMac,uTx;uniform vec3 uW;' +
-    'float edge(vec2 u){vec2 d=min(u,1.-u);return smoothstep(0.,.07,min(d.x,d.y));}float r1(sampler2D t,vec2 u){return texture2D(tLut,vec2((texture2D(t,u).r*255.+.5)/256.,.5)).r;}float rv(sampler2D t,vec2 u,float d){vec2 o=vec2(d*.5,d*.5*uRes.x/uRes.y*0.+d*.5);return(r1(t,u+vec2(-o.x,-o.y))+r1(t,u+vec2(o.x,-o.y))+r1(t,u+vec2(-o.x,o.y))+r1(t,u+vec2(o.x,o.y)))*.25;}' +
-    'void main(){vec2 s=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y);vec2 m=(s-uA)/uPpm+uF;vec2 uv=m/uPl;' +
+  var FS1 = 'precision highp float;uniform vec2 uRes,uA,uF,uPl;uniform float uPpm;uniform sampler2D tWc,tWk,tMc,tMk,tCc,tCk,tXc,tXk,tWi,tMi,tCi,tXi,tLut;uniform vec4 uMid,uClose,uMac,uTx,uSun;uniform vec3 uW;uniform vec2 uO,uIa,uIb;uniform float uDay;float gF;' +
+    'float edge(vec2 u){vec2 d=min(u,1.-u);return smoothstep(0.,.07,min(d.x,d.y));}float r1(sampler2D t,vec2 u){float id=texture2D(t,u).r*255.;float v=texture2D(tLut,vec2((id+.5)/256.,.5)).r;return id<.5?max(v,gF):v;}float rv(sampler2D t,vec2 u,float d){vec2 o=vec2(d*.5,d*.5*uRes.x/uRes.y*0.+d*.5);return(r1(t,u+vec2(-o.x,-o.y))+r1(t,u+vec2(o.x,-o.y))+r1(t,u+vec2(-o.x,o.y))+r1(t,u+vec2(o.x,o.y)))*.25;}' +
+    'void main(){vec2 s=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y);vec2 m=(s-uA)/uPpm+uF;vec2 uv=m/uPl;vec2 wq=uv-uO;gF=1.-smoothstep(uSun.z-uSun.w,uSun.z,distance(vec2(dot(uIa,wq),dot(uIb,wq)),uSun.xy));' +
     'vec4 c=vec4(0.);if(uv.x>0.&&uv.x<1.&&uv.y>0.&&uv.y<1.)c=mix(texture2D(tWk,uv),texture2D(tWc,uv),rv(tWi,uv,uTx.x));' +
     'if(uW.x>0.){vec2 u=(uv-uMid.xy)/uMid.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tMk,u),texture2D(tMc,u),rv(tMi,u,uTx.y)),edge(u)*uW.x);}' +
     'if(uW.y>0.){vec2 u=(uv-uClose.xy)/uClose.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tCk,u),texture2D(tCc,u),rv(tCi,u,uTx.z)),edge(u)*uW.y);}' +
     'if(uW.z>0.){vec2 u=(uv-uMac.xy)/uMac.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tXk,u),texture2D(tXc,u),rv(tXi,u,uTx.w)),edge(u)*uW.z);}' +
-    'gl_FragColor=c;}';
+    'c.rgb*=mix(vec3(.925,.94,.965),vec3(1.),max(gF,uDay));gl_FragColor=c;}';
   var VS2 = 'attribute vec2 a;uniform vec2 uRes,uA,uF;uniform float uPpm;uniform vec4 uR;varying vec2 vU,vM;void main(){vU=a;vM=uR.xy+a*uR.zw;vec2 s=uA+(vM-uF)*uPpm;gl_Position=vec4(s.x/uRes.x*2.-1.,1.-s.y/uRes.y*2.,0.,1.);}';
   var FS2 = 'precision highp float;varying vec2 vU,vM;uniform sampler2D tAt,tD;uniform vec2 uCa,uCb,uPl,uDr;uniform float uMix,uAl,uBy,uBd,uTan;' +
     'void main(){vec2 q=clamp(vU,.004,.996)*.125;vec4 c=mix(texture2D(tAt,uCb+q),texture2D(tAt,uCa+q),uMix);vec4 dd=texture2D(tD,vM/uPl);float D=uDr.x+(dd.r*65280.+dd.g*255.)/65535.*(uDr.y-uDr.x);' +
@@ -457,6 +459,9 @@
     var U = P1.u; gl.useProgram(P1.p); gl.bindBuffer(gl.ARRAY_BUFFER, tex.full); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     gl.uniform2f(U.uRes, W, Hh); gl.uniform2f(U.uA, cam.ax * dpr, cam.ay * dpr); gl.uniform2f(U.uF, cam.fx, cam.fy); gl.uniform1f(U.uPpm, cam.ppm * dpr); gl.uniform2f(U.uPl, M.scale, M.scale / M.aspect); setLut(st); gl.uniform1i(U.tLut, 12);
     ['wide_col', 'wide_clay', 'mid_col', 'mid_clay', 'close_col', 'close_clay', 'macro_col', 'macro_clay', 'wide_id', 'mid_id', 'close_id', 'macro_id'].forEach(function (n, k) { gl.activeTexture(gl.TEXTURE0 + k); gl.bindTexture(gl.TEXTURE_2D, tex[n].t); gl.uniform1i(U[['tWc', 'tWk', 'tMc', 'tMk', 'tCc', 'tCk', 'tXc', 'tXk', 'tWi', 'tMi', 'tCi', 'tXi'][k]], k); });
+    var dt2 = M.x[0] * M.y[1] - M.y[0] * M.x[1]; gl.uniform2f(U.uO, M.o[0], M.o[1]); gl.uniform2f(U.uIa, M.y[1] / dt2, -M.y[0] / dt2); gl.uniform2f(U.uIb, -M.x[1] / dt2, M.x[0] / dt2);
+    gl.uniform1f(U.uDay, st.all);
+    gl.uniform4f(U.uSun, M.hero[0], M.hero[1], st.sun, Math.min(6, st.sun * .8) + .01);
     gl.uniform4f(U.uTx, 1 / tex.wide_id.w, 1 / tex.mid_id.w, 1 / tex.close_id.w, 1 / tex.macro_id.w); gl.uniform4fv(U.uMid, M.mid); gl.uniform4fv(U.uClose, M.close); gl.uniform4fv(U.uMac, M.macro);
     var dp = cam.ppm * dpr, wp = tex.wide_col.w / M.scale, mp = tex.mid_col.w / (M.mid[2] * M.scale), cp = tex.close_col.w / (M.close[2] * M.scale);
     gl.uniform3f(U.uW, ease(seg(dp / wp, .85, 1.5)), ease(seg(dp / mp, .85, 1.5)), ease(seg(dp / cp, .85, 1.5)));
@@ -489,9 +494,9 @@
     measL.setAttribute('x1', a[0]); measL.setAttribute('y1', a[1]); measL.setAttribute('x2', b2[0]); measL.setAttribute('y2', b2[1]); measA.setAttribute('cx', a[0]); measA.setAttribute('cy', a[1]); measB.setAttribute('cx', q[0]); measB.setAttribute('cy', q[1]);
     var tg = scr(M.tag[0], M.tag[1], M.tag[2]), cyc = (time % 2.6) / 2.6, mx = Math.max.apply(null, M.ns);
     rays.forEach(function (r, k) {
-      var an = scr(M.anch[k][0], M.anch[k][1], M.anch[k][2] - .12), e = [lerp(tg[0], an[0], st.lines), lerp(tg[1], an[1], st.lines)];
+      var an = scr(M.anch[k][0], M.anch[k][1], M.anch[k][2] - .12), gk = Math.min(1, st.lines * mx / M.ns[k]), e = [lerp(tg[0], an[0], gk), lerp(tg[1], an[1], gk)];
       show(r.l, st.linesA * (st.lines > 0 ? .9 : 0)); r.l.setAttribute('x1', tg[0]); r.l.setAttribute('y1', tg[1]); r.l.setAttribute('x2', e[0]); r.l.setAttribute('y2', e[1]);
-      var t = cyc * 1.5 * mx / M.ns[k], vis = st.lines >= 1 && t <= 1 ? st.linesA : 0; show(r.d, vis); r.d.setAttribute('cx', lerp(tg[0], an[0], Math.min(1, t))); r.d.setAttribute('cy', lerp(tg[1], an[1], Math.min(1, t)));
+      var t = cyc * 1.5 * mx / M.ns[k], vis = st.lines >= 1 && t <= 1 ? st.linesA : 0; var t0 = Math.max(0, t - 3 / M.ns[k]); show(r.d, vis); r.d.setAttribute('x1', lerp(tg[0], an[0], t0)); r.d.setAttribute('y1', lerp(tg[1], an[1], t0)); r.d.setAttribute('x2', lerp(tg[0], an[0], Math.min(1, t))); r.d.setAttribute('y2', lerp(tg[1], an[1], Math.min(1, t)));
       var la = i === 4 ? ease(seg(u, .5 + k * .06, .58 + k * .06)) : i === 5 ? 1 - seg(u, .1, .3) : 0; tl[k].style.opacity = la; tl[k].style.display = la > 0 ? '' : 'none';
       if (la > 0) { tl[k].style.transform = 'translate(' + (an[0] + 12).toFixed(1) + 'px,' + (an[1] - 24).toFixed(1) + 'px)'; var gp = (i === 4 && u > .6) || i === 5, tv = gp ? '+' + (M.ns[k] - Math.min.apply(null, M.ns)).toFixed(1) + ' ns' : M.ns[k].toFixed(1) + ' ns'; if (tl[k].tv !== tv) { tl[k].tv = tv; tl[k].textContent = tv; } }
     });
