@@ -1248,55 +1248,45 @@ html.tag-live .hero .hx-act.k-fade,html.tag-live .hero .hx-facts.k-fade{transiti
 @media (max-width:860px){.bs-t{font-size:1.75rem}}
 @media (max-width:860px){.trio .tm-name{font-size:1rem}.trio .tm-role{font-size:.8125rem}}
 
-/* ===== RECOGNITION TRAY, 17 Nov: three stories on one white tray. On a tall laptop screen it rests inside the foot of the hero; elsewhere it follows it. ===== */
-.nb{position:relative;z-index:3;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;align-items:stretch;margin:0 var(--m);background:#fff;border-radius:18px;box-shadow:0 0 0 1px rgba(11,18,56,.07),0 1px 2px rgba(11,18,56,.05),0 18px 40px -22px rgba(11,18,56,.28)}
-.nb-i{display:flex;align-items:center;gap:16px;padding:14px clamp(14px,1.5vw,24px);min-width:0;color:var(--ink);text-decoration:none;position:relative}
-.nb-i+.nb-i::before,.nb-all::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:1px;background:rgba(11,18,56,.1)}
-.nb-i img{flex:none;width:56px;height:56px;border-radius:12px;object-fit:cover;transition:transform .6s var(--ease-out)}
-.nb-w{display:grid;gap:3px;min-width:0}
-.nb-w b{font:500 .9375rem/1.28 var(--text);letter-spacing:-.005em;text-wrap:balance;transition:color .25s}
-.nb-d{font:400 .8125rem/1.3 var(--text);color:var(--ink-soft);font-variant-numeric:tabular-nums}
-.nb-i:hover b,.nb-i:focus-visible b{color:var(--accent)}
-.nb-i:hover img{transform:scale(1.06)}
-.nb-all{position:relative;display:flex;align-items:center;gap:10px;padding:0 clamp(18px,2vw,30px);font:500 .9375rem/1 var(--text);color:var(--ink);text-decoration:none;white-space:nowrap}
-.nb-all::after{content:"\2192";transition:transform .35s var(--ease-out)}
-.nb-all:hover{color:var(--accent)}
-.nb-all:hover::after{transform:translateX(4px)}
-.nb a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:14px}
-@media (min-width:1100px) and (min-height:800px){.nb{margin-top:-116px;margin-bottom:30px;margin-right:calc(var(--m) + 72px)}}
-@media (max-width:1099px){.nb{margin-top:20px}}
-@media (max-width:860px){
-  .nb{grid-template-columns:minmax(0,1fr);margin-top:8px}
-  .nb-i+.nb-i::before,.nb-all::before{left:16px;right:16px;top:0;bottom:auto;width:auto;height:1px}
-  .nb-all{padding:16px;justify-content:space-between}
+/* ===== RECOGNITION, 17 Nov: three awards and events on the facts row of the hero, in the facts' own language
+   (hairline dividers, ink name, quiet result), each with its photograph. Each opens its story on /company/news/. ===== */
+.hero .hx-base{display:flex;align-items:flex-end;justify-content:space-between;gap:clamp(20px,3vw,48px);flex-wrap:wrap;pointer-events:auto}
+.hero .hx-rec{opacity:1}
+.hero .hx-rec ul{list-style:none;margin:0;padding:0;display:flex}
+.hero .hx-rec li{padding:2px 0 2px clamp(14px,1.4vw,22px);border-left:1px solid rgba(11,18,56,.14);margin-left:clamp(14px,1.4vw,22px)}
+.hero .hx-rec li:first-child{margin-left:0;padding-left:0;border-left:0}
+.hero .hx-rec a{display:flex;align-items:center;gap:12px;max-width:15.5em;color:var(--ink-soft);text-decoration:none;font-size:.84rem;line-height:1.35}
+.hero .hx-rec img{flex:none;width:40px;height:40px;border-radius:9px;object-fit:cover;box-shadow:0 0 0 1px rgba(11,18,56,.08);transition:transform .6s var(--ease-out),box-shadow .6s var(--ease-out)}
+.hero .hx-rec b{display:block;font-weight:500;color:var(--ink);transition:color .25s}
+.hero .hx-rec a:hover b,.hero .hx-rec a:focus-visible b{color:var(--accent)}
+.hero .hx-rec a:hover img,.hero .hx-rec a:focus-visible img{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(11,18,56,.08),0 10px 18px -10px rgba(11,18,56,.5)}
+.hero .hx-rec a:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:10px}
+html.tag-live .hero .hx-rec.k-fade{transition:opacity .9s var(--ease) .15s,transform 1.2s var(--ease-out) .15s}
+html.tag-live .hero .hx-rec.k-fade:not(.in){opacity:0;transform:translateY(18px)}
+@media (min-width:901px){.hero .hx-base{margin-top:clamp(4px,1.2vh,16px)}.hero .hx-base .hx-facts{margin-top:0}}
+@media (max-width:1279px) and (min-width:901px){.hero .hx-rec a{max-width:13em}}
+@media (max-width:900px){
+  .hero .hx-base{display:block}
+  .hero .hx-rec{margin-top:26px}
+  .hero .hx-rec ul{display:grid;gap:0;border-top:1px solid rgba(11,18,56,.1)}
+  .hero .hx-rec li{margin:0;padding:12px 0;border-left:0;border-bottom:1px solid rgba(11,18,56,.1)}
+  .hero .hx-rec li:first-child{padding:12px 0}
+  .hero .hx-rec a{max-width:none;font-size:.875rem}
+  .hero .hx-rec a::after{content:"";margin-left:auto;width:7px;height:7px;border-top:1.5px solid var(--ink-soft);border-right:1.5px solid var(--ink-soft);transform:rotate(45deg);opacity:.6;flex:none}
+  .hero .hx-rec b{display:inline}
 }
+@media (prefers-reduced-motion:reduce){.hero .hx-rec img{transition:none}}
 
-/* ===== THE BROCHURE, 17 Nov: one dark card after the three parts. The cover and two pages lean out of it; the whole card downloads the PDF. ===== */
-.bro{padding:clamp(28px,4vw,72px) var(--m);background:var(--ground)}
-.bro-card{position:relative;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:center;gap:clamp(24px,4vw,80px);min-height:clamp(300px,30vw,440px);padding:clamp(28px,4vw,72px);border-radius:28px;background:#0b1238;color:var(--night-text);text-decoration:none;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),0 30px 60px -34px rgba(11,18,56,.6)}
-.bro-w{display:grid;gap:18px;justify-items:start;position:relative;z-index:1}
-.bro-h{font:600 var(--h-l)/1.04 var(--display);letter-spacing:-.03em;display:grid}
-.bro-h span+span{color:#a9a3ff}
-.bro-p{font:400 1.0625rem/1.5 var(--text);color:var(--night-quiet);max-width:30em}
-.bro-a{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;margin-top:10px}
-.bro-btn{display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 26px 0 22px;border-radius:999px;background:#fff;color:#0b1238;font:500 1rem/1 var(--text);transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
-.bro-btn svg{transition:transform .5s var(--ease-out)}
-.bro-card:hover .bro-btn,.bro-card:focus-visible .bro-btn{transform:translateY(-1px);box-shadow:0 0 0 6px rgba(255,255,255,.1)}
-.bro-card:hover .bro-btn svg{transform:translateY(2px)}
-.bro-m{font:400 .875rem/1 var(--text);color:var(--night-quiet);font-variant-numeric:tabular-nums}
-.bro-card:focus-visible{outline:2px solid #a9a3ff;outline-offset:4px}
-.bro-pages{position:relative;align-self:stretch;min-height:280px}
-.bro-pages img{position:absolute;left:50%;top:50%;width:min(46%,250px);height:auto;border-radius:6px;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 24px 44px -18px rgba(0,0,0,.7);transition:transform .9s var(--ease-out)}
-.bro-pages .p1{transform:translate(-88%,-46%) rotate(-5deg)}
-.bro-pages .p2{transform:translate(-44%,-52%) rotate(1.5deg)}
-.bro-pages .p3{transform:translate(2%,-47%) rotate(7deg)}
-.bro-card:hover .p1{transform:translate(-98%,-48%) rotate(-8deg)}
-.bro-card:hover .p2{transform:translate(-44%,-56%) rotate(1.5deg)}
-.bro-card:hover .p3{transform:translate(12%,-48%) rotate(10deg)}
-@media (max-width:860px){
-  .bro-card{grid-template-columns:minmax(0,1fr);border-radius:22px;padding:28px 22px 0}
-  .bro-pages{min-height:230px;margin-top:6px}
-  .bro-pages img{top:62%;width:42%}
-}
-@media (prefers-reduced-motion:reduce){.bro-pages img,.bro-btn,.nb-i img{transition:none}}
+/* ===== THE BROCHURE, 17 Nov: one small button under the three parts. A thumbnail of the real cover, the action, the file's
+   type and size. Quiet like the index above it; the cover lifts a little on hover. ===== */
+.kn-bro{align-self:flex-start;display:inline-flex;white-space:nowrap;align-items:center;gap:12px;margin-top:clamp(16px,2.4vh,26px);padding:7px 18px 7px 7px;border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font:500 .9375rem/1 var(--text);box-shadow:0 0 0 1px rgba(11,18,56,.1),0 1px 2px rgba(11,18,56,.05);transition:box-shadow .45s var(--ease-out),transform .45s var(--ease-out)}
+.kn-bro img{width:26px;height:36px;border-radius:3px;object-fit:cover;object-position:top;box-shadow:0 0 0 1px rgba(11,18,56,.12),0 3px 6px -2px rgba(11,18,56,.35);transform:rotate(-4deg);transition:transform .5s var(--ease-out)}
+.kn-bro-m{font-weight:400;font-size:.8125rem;color:var(--ink-soft);font-variant-numeric:tabular-nums;padding-left:12px;border-left:1px solid rgba(11,18,56,.14)}
+.kn-bro svg{color:var(--ink-soft);transition:transform .45s var(--ease-out),color .25s}
+.kn-bro:hover,.kn-bro:focus-visible{box-shadow:0 0 0 1px rgba(11,18,56,.18),0 12px 24px -14px rgba(11,18,56,.45);transform:translateY(-1px)}
+.kn-bro:hover img,.kn-bro:focus-visible img{transform:rotate(0) translateY(-2px) scale(1.06)}
+.kn-bro:hover svg,.kn-bro:focus-visible svg{transform:translateY(2px);color:var(--accent)}
+.kn-bro:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media (max-width:860px){.kn-bro{order:3;margin-top:18px;align-self:center;width:auto;max-width:100%}}
+@media (prefers-reduced-motion:reduce){.kn-bro,.kn-bro img,.kn-bro svg{transition:none}}
 .nb .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}

@@ -319,7 +319,7 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
 .ft-close{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s-7);flex-wrap:wrap}
 .ft-line{margin:0;font:600 clamp(2.75rem,1.2rem + 4.6vw,7rem)/.98 var(--font-display);letter-spacing:-.04em;color:var(--ft-ink);max-width:11em}
 .ft-line span{display:block}
-.ft-line em{display:block;font:400 italic 1.08em/.95 var(--n-serif,"AmI Serif",Georgia,serif);letter-spacing:-.015em;color:#b8c3ff;
+.ft-line em{display:block;font:inherit;font-style:normal;letter-spacing:inherit;color:#b8c3ff;
   background:linear-gradient(100deg,#c9d1ff 10%,#8ea6ff 55%,#6f8dff 90%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;padding-bottom:.08em}
 .ft-act{display:flex;gap:12px;flex-wrap:wrap;padding-bottom:.6em}
 .ft-clay,.ft-glass{display:inline-flex;align-items:center;gap:.6em;height:52px;padding:0 24px;border-radius:999px;font:500 16px/1 var(--font-text);white-space:nowrap;
@@ -365,7 +365,7 @@ html main [id]{scroll-margin-top:calc(var(--bar) + var(--local,0px) + var(--s-5)
 
 /* 3. the jobs row */
 .ft-roles{display:flex;align-items:center;gap:var(--s-5);margin-top:clamp(56px,6vw,96px);padding-top:var(--s-6);border-top:1px solid var(--ft-line)}
-.ft-roles p{margin:0;flex:none;font:400 italic 22px/1 var(--n-serif,"AmI Serif",Georgia,serif);color:var(--ft-soft)}
+.ft-roles p{margin:0;flex:none;font:500 15px/1 var(--n-sans,"AmI Text",Arial,sans-serif);color:var(--ft-soft)}
 .ft-roles ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
 .ft-roles li{margin:0}
 .ft-roles a{display:inline-flex;align-items:center;height:36px;padding:0 15px;border-radius:999px;font:400 14px/1 var(--font-text);color:var(--ft-ink);
