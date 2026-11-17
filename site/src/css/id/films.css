@@ -10,3 +10,14 @@ main .crumbs,main .crumbs a{color:#9a9fa9}
 .band{background:#121418!important}
 /* phones: the logo sits on the screening room's dark ground, so its wordmark takes the page's ink, not navy */
 @media (max-width:1023px){.top .plogo{color:#f2f3f5}}
+
+/* the four use-case films: two by two, the film first, its name and length under it */
+.films4{grid-column:1 / -1;list-style:none;margin:0 0 var(--s-7);padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,3.2vw,56px) var(--gutter)}
+.films4 .pic{border-radius:14px;overflow:hidden;background:#000;margin:0 0 18px}
+.films4 video{display:block;width:100%;height:auto;aspect-ratio:16 / 9}
+.films4 h3{font-size:1.375rem;letter-spacing:-.01em;margin:0 0 6px;display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.films4 h3 a{color:#fff;text-decoration:none}
+.films4 h3 a:hover,.films4 h3 a:focus-visible{text-decoration:underline;text-underline-offset:.18em}
+.films4 .mm{font-size:.875rem;font-weight:400;color:#a3a8b2;font-variant-numeric:tabular-nums}
+.films4 p{color:#a3a8b2;margin:0;max-width:34em}
+@media (max-width:759px){.films4{grid-template-columns:minmax(0,1fr)}}

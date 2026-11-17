@@ -1,0 +1,21 @@
+/* /company/news/: each story is one picture and a few plain lines. Hairlines between stories; the picture leads. */
+.news .story{grid-column:1 / -1;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,4vw,72px);align-items:center;padding:clamp(28px,3.4vw,56px) 0;border-top:1px solid rgba(11,18,56,.12);scroll-margin-top:96px}
+.news .story:last-child{border-bottom:1px solid rgba(11,18,56,.12)}
+.news .story:nth-of-type(even) .pic{order:2}
+.news .story .pic{border-radius:14px;overflow:hidden;background:#0b1238;aspect-ratio:3 / 2}
+.news .story .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.news .story-d{font-size:.875rem;color:var(--ink-soft);margin:0 0 14px;font-variant-numeric:tabular-nums}
+.news .story h3{font-size:clamp(1.5rem,1.1rem + 1.2vw,2.25rem);line-height:1.12;letter-spacing:-.02em;margin:0 0 16px;text-wrap:balance}
+.news .story p:last-child{font-size:1.0625rem;line-height:1.55;color:var(--ink-soft);margin:0;max-width:34em}
+.news .story:target h3{color:#4b3df0}
+.press{grid-column:1 / -1;list-style:none;margin:0 0 var(--s-7);padding:0;border-top:1px solid rgba(11,18,56,.12)}
+.press a{display:grid;grid-template-columns:9rem minmax(0,1fr) auto;gap:24px;align-items:baseline;padding:22px 0;border-bottom:1px solid rgba(11,18,56,.12);color:var(--ink);text-decoration:none}
+.press-d,.press-s{font-size:.875rem;color:var(--ink-soft)}
+.press-t{font-size:1.25rem;font-weight:500;letter-spacing:-.01em}
+.press-s::after{content:"\2197";margin-left:.4em}
+.press a:hover .press-t,.press a:focus-visible .press-t{color:#4b3df0}
+@media (max-width:859px){
+  .news .story{grid-template-columns:minmax(0,1fr);gap:20px}
+  .news .story:nth-of-type(even) .pic{order:0}
+  .press a{grid-template-columns:minmax(0,1fr);gap:4px}
+}

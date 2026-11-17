@@ -6,6 +6,7 @@
    "next": "/what-is-amimotion/",
    "related": [
     "/what-is-amimotion/",
+    "/company/news/",
     "/partners/",
     "/industrial-spatial-intelligence/",
     "/platform/",
@@ -834,6 +835,16 @@
    "related": [
     "/privacy/",
     "/trust/",
+    "/contact/"
+   ]
+  },
+  "/company/news/": {
+   "parent": "/company/",
+   "next": "/contact/",
+   "related": [
+    "/company/",
+    "/what-is-amimotion/",
+    "/films/",
     "/contact/"
    ]
   }
