@@ -197,8 +197,12 @@ export async function init(canvas, fallback, hero) {
   const ANCR = ANCH.map((a) => a.length());
   // ?hero=1.2 holds the hero at that second (for stills and review)
   const FREEZE = (() => { const m = /[?&]hero=([\d.]+)/.exec(location.search); return m ? +m[1] : -1; })();
+  // a device that cannot hold the frame rate gets its resting picture back: 40 slow frames in a row end the live tag
+  let lastNow = 0, slow = 0, dead = false;
   function loop(now) {
-    raf = 0; if (!on) return;
+    raf = 0; if (!on || dead) return;
+    if (FREEZE < 0 && lastNow && now - lastNow < 1000) { slow = now - lastNow > 50 ? slow + 1 : 0; if (slow >= 40) { dead = true; canvas.classList.remove('ready'); fallback.classList.remove('gone'); hero.style.setProperty('--wait', '0'); return; } }
+    lastNow = now;
     const t = FREEZE >= 0 ? FREEZE : (now - t0) / 1000 + (late ? REST : 0);
     const r = hero.getBoundingClientRect(); const sp = clamp(-r.top / r.height);
     px = lerp(px, tx, .04); py = lerp(py, ty, .04);

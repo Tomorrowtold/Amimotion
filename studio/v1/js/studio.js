@@ -208,7 +208,10 @@ const tagFb = $('#tagFallback');
 // phones and tablets (12 Nov): the hero paints at once from its resting frame, which is the 3D tag at rest, and the live tag
 // cross-fades in over it at the first touch or a few seconds after load, so the first view never waits on 3D
 const touchFirst = !matchMedia('(pointer: fine)').matches;
+// no graphics chip (a software renderer): the 3D tag would take the whole processor, so the resting picture stays
+const softGL = () => { try { const g = document.createElement('canvas').getContext('webgl'), x = g && g.getExtension('WEBGL_debug_renderer_info'); return !g || (x && /swiftshader|llvmpipe|softpipe|software|basic render/i.test(String(g.getParameter(x.UNMASKED_RENDERER_WEBGL)))); } catch (e) { return true; } };
 const startTag = () => {
+  if (!/[?&]hero=/.test(location.search) && softGL()) { document.documentElement.classList.remove('tag-live'); return; }
   const live = document.documentElement.classList.contains('tag-live');
   import('./tag.js').then((m) => m.init($('#tagGL'), tagFb, $('#hero'))).catch(() => document.documentElement.classList.remove('tag-live'));
   if (live) setTimeout(() => { if (!$('#tagGL').classList.contains('ready')) document.documentElement.classList.remove('tag-live'); }, 3000);
