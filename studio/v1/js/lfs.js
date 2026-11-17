@@ -168,6 +168,9 @@
     try { gl = cv.getContext('webgl', { alpha: false, antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: !!window.__lfsShot }) || cv.getContext('experimental-webgl'); } catch (e) {}
     var c = navigator.connection || {};
     if (!gl || c.saveData || /2g/.test(c.effectiveType || '')) return null;
+    /* no graphics chip (the picture would be drawn by the processor): show the finished pictures */
+    var FULL = !!window.__lfsShot || /[?&]lfs=full/.test(location.search), vslow = 0;
+    try { var ri = gl.getExtension('WEBGL_debug_renderer_info'), rn = ri ? String(gl.getParameter(ri.UNMASKED_RENDERER_WEBGL)) : ''; if (!FULL && /swiftshader|llvmpipe|softpipe|software|basic render/i.test(rn)) return null; } catch (e) {}
     function mk(t, s) { var o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; }
     function init() {
       prog = gl.createProgram(); gl.attachShader(prog, mk(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, mk(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(prog);
@@ -225,7 +228,8 @@
         gl.uniform1f(loc.fade, fade); gl.uniform1f(loc.time, t); gl.uniform1f(loc.dmax, d.dmax || 1); gl.uniform1f(loc.asp, d.w / d.h); gl.uniform2f(loc.res, bw, bh);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         /* a chip that cannot keep up gets a smaller picture, and after that the finished pictures */
-        if (!add && dt < 250 && !window.__lfsShot && !/[?&]lfs=full/.test(location.search)) { tAcc += dt; if (++frames === 50) { var avg = tAcc / 50; frames = 0; tAcc = 0; if (avg > 34) { if (++slowN >= 2) { if (scale > .55) { scale *= .7; slowN = 0; this.resize(); } else { GL = null; sec.classList.remove('lfs-live'); } } } else slowN = 0; } }
+        if (!add && !FULL && dt >= 250 && dt < 4000) { if (++vslow >= 3) { GL = null; sec.classList.remove('lfs-live'); } } else if (!add) vslow = 0;
+        if (!add && dt < 250 && !FULL) { tAcc += dt; if (++frames === 50) { var avg = tAcc / 50; frames = 0; tAcc = 0; if (avg > 34) { if (++slowN >= 2) { if (scale > .55) { scale *= .7; slowN = 0; this.resize(); } else { GL = null; sec.classList.remove('lfs-live'); } } } else slowN = 0; } }
       }
     };
   })();
@@ -289,6 +293,7 @@
   function tick(now) {
     if (!vis) return; requestAnimationFrame(tick);
     var t = (now - T0) / 1000, dt = now - lastT; lastT = now;
+    var rc0 = sec.getBoundingClientRect(), ons = rc0.top < innerHeight && rc0.bottom > 0;
     readScroll(); ps += (p - ps) * (Math.abs(p - ps) > .2 ? 1 : .18); if (Math.abs(p - ps) < .0002) ps = p;
     ptr.sx += (ptr.x - ptr.sx) * .05; ptr.sy += (ptr.y - ptr.sy) * .05;
     var best = null, bf = -1, other = null, of = 0;
@@ -298,9 +303,9 @@
     if (data) {
       var k = tall ? .5 : 1, px = (Math.sin(t * .23) * .0035 + ptr.sx * .008) * k, py = (Math.cos(t * .19) * .002 + ptr.sy * .004) * k;
       view.px = px; view.py = py; view.foc = .25;
-      if (other) { look(other, clamp((ps - other.a) / (other.b - other.a), 0, 1), t, false); fit(other.plate, U.zoom); if (live) GL.draw(other, of, t, dt, false); }
+      if (other) { look(other, clamp((ps - other.a) / (other.b - other.a), 0, 1), t, false); fit(other.plate, U.zoom); if (live && ons) GL.draw(other, of, t, dt, false); }
       look(best, q, t, true); fit(best.plate, U.zoom);
-      if (live) GL.draw(best, bf, t, dt, !!other);
+      if (live && ons) GL.draw(best, bf, t, dt, !!other);
     }
     if (live !== (mode === 'gl')) { mode = live ? 'gl' : 'pics'; sec.classList.toggle('lfs-live', live); }
     frames.forEach(function (f) { var o = live ? 0 : Math.round(f.f * 100) / 100; if (o !== f.o) { f.o = o; f.img.style.opacity = o; } });
