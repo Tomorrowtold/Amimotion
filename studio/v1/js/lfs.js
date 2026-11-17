@@ -23,8 +23,8 @@
   /* into and out of the tag close-up the picture dips: the plant dims first, then the tag arrives (no ghost of one over the other) */
   function fadeOf(f, p) {
     var di = f.k === 'tag' || f.k === 'found', dout = f.k === 'isl' || f.k === 'tag';
-    var i = f.a <= 0 ? 1 : di ? ss(f.a - FADE * .4, f.a + FADE * 2.4, p) : ss(f.a - FADE, f.a + FADE, p);
-    var o = f.b >= 1 ? 1 : dout ? 1 - ss(f.b - FADE * 2.4, f.b + FADE * .4, p) : 1 - ss(f.b - FADE, f.b + FADE, p);
+    var i = f.a <= 0 ? 1 : di ? ss(f.a - FADE * .5, f.a + FADE * 1.7, p) : ss(f.a - FADE, f.a + FADE, p);
+    var o = f.b >= 1 ? 1 : dout ? 1 - ss(f.b - FADE * 1.7, f.b + FADE * .5, p) : 1 - ss(f.b - FADE, f.b + FADE, p);
     return i * o;
   }
   var texts = $$('[data-p]').filter(function (el) { return !el.classList.contains('lfs-f'); }).map(function (el) {

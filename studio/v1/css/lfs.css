@@ -82,6 +82,7 @@
   .lfs-on .lfs-lines{top:68px}
   .lfs-lines p{font-size:18px;max-width:19em}
   .lfs-facts li{font-size:15px}
+  .lfs-on .lfs-facts li>span::before{background:rgba(5,6,13,.9);inset:-10px -16px}
   .lfs-on .lfs-end{left:var(--lfs-m);right:var(--lfs-m);width:auto;top:calc(var(--sv)*.6)}
   .lfs-close{font-size:34px}
   .lfs-brm{display:inline}
