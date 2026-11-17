@@ -25,3 +25,5 @@ jobs:
         run: python3 site/tools/ia_check.py studio/out
       - name: Agent server tests
         run: npm test
+      - name: AWS edge rules follow every redirect and header in vercel.json
+        run: node aws/test_edge.mjs
