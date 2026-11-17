@@ -183,18 +183,22 @@
     var on = true, ctx = null, out = null, air = null, lastPop = 0;
     try { if (localStorage.getItem('flr-snd2') === '0') on = false; } catch (e) {}
     function label() { sndB.textContent = on ? 'Sound on' : 'Sound off'; sndB.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+    // Browsers keep a page silent until the first click, tap or key. Until then a quiet line says that one click anywhere starts the sound.
+    var hint = document.createElement('span'); hint.className = 'flr-hint'; hint.setAttribute('aria-hidden', 'true');
+    hint.textContent = (matchMedia('(hover:none)').matches ? 'Tap' : 'Click') + ' anywhere for sound'; head.appendChild(hint);
+    function hintSet() { hint.classList.toggle('show', on && onScreen && !(ctx && ctx.state === 'running')); }
     label();
     function boot() {
       if (ctx || !on) return; var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
-      ctx = new AC(); out = ctx.createGain(); out.gain.value = 0; out.connect(ctx.destination);
+      ctx = new AC(); ctx.onstatechange = hintSet; out = ctx.createGain(); out.gain.value = 0; out.connect(ctx.destination);
       var n = ctx.sampleRate * 2, buf = ctx.createBuffer(1, n, ctx.sampleRate), d = buf.getChannelData(0), v = 0;
       for (var i = 0; i < n; i++) { v = (v + (Math.random() * 2 - 1) * .02) / 1.02; d[i] = v * 3.2; }
       air = ctx.createBufferSource(); air.buffer = buf; air.loop = true; var f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 420; var g = ctx.createGain(); g.gain.value = .5;
       air.connect(f); f.connect(g); g.connect(out); air.start();
     }
-    ['pointerdown', 'keydown', 'touchend', 'click'].forEach(function (ev) { window.addEventListener(ev, function () { boot(); if (ctx && ctx.state === 'suspended') ctx.resume(); }, { passive: true }); });
-    sndB.addEventListener('click', function () { on = !on; try { localStorage.setItem('flr-snd2', on ? '1' : '0'); } catch (e) {} label(); if (on) boot(); });
-    function gate() { if (!ctx) return; var t = (on && onScreen && !document.hidden) ? .55 : 0; out.gain.setTargetAtTime(t, ctx.currentTime, .25); }
+    ['pointerdown', 'pointerup', 'keydown', 'touchend', 'click'].forEach(function (ev) { window.addEventListener(ev, function () { boot(); if (ctx && ctx.state === 'suspended') ctx.resume(); hintSet(); }, { passive: true }); });
+    sndB.addEventListener('click', function () { on = !on; try { localStorage.setItem('flr-snd2', on ? '1' : '0'); } catch (e) {} label(); if (on) boot(); hintSet(); });
+    function gate() { hintSet(); if (!ctx) return; var t = (on && onScreen && !document.hidden) ? .55 : 0; out.gain.setTargetAtTime(t, ctx.currentTime, .25); }
     function tone(f, t0, dur, vol, type) {
       if (!ctx || !on || !onScreen) return; var t = ctx.currentTime + (t0 || 0), o = ctx.createOscillator(), g = ctx.createGain();
       o.type = type || 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
@@ -589,7 +593,8 @@
     raf = 0; if (!onScreen && !SHOT) { snd.gate(); return; }
     var dt = Math.min(.1, (now - lastT) / 1000 || .016); lastT = now;
     if (ps < 0) { ps = p; tbs = -1; } else ps += (p - ps) * (1 - Math.exp(-dt * 8)); if (Math.abs(p - ps) < .00002) ps = p;
-    setBeat(beatOf(p)); snd.gate(); var tbT = tbOf(ps); if (tbs < 0 || ps === p && Math.abs(tbT - tbs) < .0005) tbs = tbT; else { var dq = tbT - tbs, mq = Math.max(1.6, Math.abs(dq) * 1.4) * dt; tbs += Math.max(-mq, Math.min(mq, dq)); }
+    snd.gate(); var tbT = tbOf(ps); if (tbs < 0 || ps === p && Math.abs(tbT - tbs) < .0005) tbs = tbT; else { var dq = tbT - tbs, mq = Math.max(1.6, Math.abs(dq) * 1.4) * dt; tbs += Math.max(-mq, Math.min(mq, dq)); }
+    if (!frozen) setBeat(Math.min(NB - 1, Math.floor(tbs + 1e-6)));
     textFrame(frozen ? frozen[0] : tbs, frozen ? .2 : dt);
     if (live) {
       if (frozen) frame(frozen[0], frozen[1]); else frame(tbs, (now - T0) / 1000);
@@ -599,7 +604,7 @@
     kick();
   }
   function kick() { if (!raf && (onScreen || SHOT)) raf = requestAnimationFrame(tick); }
-  function onScroll() { readScroll(); if (near) start(); setBeat(beatOf(p)); kick(); }
+  function onScroll() { readScroll(); if (near) start(); if (bi < 0) setBeat(beatOf(p)); kick(); }
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', function () { measure(); onScroll(); });
   document.addEventListener('visibilitychange', function () { snd.gate(); kick(); });
