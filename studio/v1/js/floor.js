@@ -88,8 +88,13 @@
     blocks.forEach(function (b, k) {
       // a sentence is never left half way: the scroll only says which one is due, the clock brings it in and takes it out
       var inT = k === 0 ? (ap > .5 || tb > .001) : tb >= k, outT = k < NB - 1 && tb >= k + 1, prev = blocks[k - 1], next = blocks[k + 1];
-      b.E = chase(b.E, inT ? ((!prev || prev.X > .3 || !prev.E) ? 1 : b.E) : 0, .55, .24, dt);
-      b.X = chase(b.X, outT ? 1 : (next && next.E > .6 ? b.X : 0), .24, .45, dt);
+      // a jump over several sentences: the ones passed over never show, and the one due waits for the one leaving
+      if (outT && !b.E) { b.E = 1; b.X = 1; } else if (!inT && b.X >= 1) { b.E = 0; b.X = 0; }
+      var below = false, above = false, j, o;
+      for (j = 0; j < k; j++) { o = blocks[j]; if (o.E > 0 && o.X <= .6) below = true; }
+      for (j = k + 1; j < NB; j++) { o = blocks[j]; if (o.E > .6 && o.X < 1) above = true; }
+      b.E = chase(b.E, inT ? (below ? b.E : 1) : 0, .55, .24, dt);
+      b.X = chase(b.X, outT ? 1 : (above ? b.X : 0), .24, .45, dt);
       var e = b.E, x = b.X, vis = e > 0 && x < 1, uu = k < i ? 1 : k > i ? 0 : u;
       b.ps.forEach(function (p) { if (p.ans) { var t = (k < i || (k === i && uu >= p.t0 - .07)) ? 1 : 0; p.A = vis ? chase(p.A, t, .55, .22, dt) : t; } });
       if (vis !== b.vis) { b.vis = vis; b.el.style.visibility = vis ? 'visible' : 'hidden'; }
