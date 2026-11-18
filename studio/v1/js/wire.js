@@ -12,7 +12,7 @@
   let at = 0, timer = 0, busy = false, paused = false, held = false, seen = true;
   const fill = (pod, n) => {
     const d = src[n % src.length], a = pod.querySelector('a');
-    a.href = '/company/news/#' + d.id; pod.querySelector('.pod-k').textContent = d.k; pod.querySelector('.pod-h').textContent = d.h;
+    a.href = '/company/news/#' + d.id; pod.querySelector('.pod-h').textContent = d.h;
   };
   const turn = (pod, n, delay) => new Promise((done) => setTimeout(() => {
     const a = pod.querySelector('a'), t = pod.querySelector('.pod-t');
