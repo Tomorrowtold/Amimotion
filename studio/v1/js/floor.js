@@ -24,6 +24,8 @@
   var col = document.createElement('div'); col.className = 'flr-col';
   var head = document.createElement('div'); head.className = 'flr-head'; head.innerHTML = '<span class="flr-hn"><b></b></span><span class="flr-hp"><i></i><i></i><i></i></span>';
   var roll = document.createElement('div'); roll.className = 'flr-roll'; col.appendChild(head); col.appendChild(roll); stage.insertBefore(col, cv);
+  var dimEl = document.createElement('div'); dimEl.className = 'flr-dim'; dimEl.setAttribute('aria-hidden', 'true'); stage.insertBefore(dimEl, col);
+  var cardEl = document.createElement('div'); cardEl.className = 'flr-card'; cardEl.setAttribute('aria-hidden', 'true'); stage.insertBefore(cardEl, col);
   var hn = head.querySelector('b'), hp = [].slice.call(head.querySelectorAll('i')), CH = ['Lost', 'Found', 'Seen'], chNow = -1;
   var SS = { 3: [.14, .5], 4: [.22, .46], 5: [.06, .34] };                            // when a sentence's words light, where the picture needs them later than usual
   var AS = { 3: [.5, .78], 6: [.44, .78], 7: [.46, .62], 8: [.2, .7] }, AW = { 6: [.44, .55, .66, .75], 8: [.2, .22, .24, .26, .6, .62, .64] };   // the same for the second line; some words are timed to things in the picture
@@ -81,7 +83,7 @@
   function chase(v, t, up, dn, dt) { return t > v ? Math.min(t, v + dt / up) : Math.max(t, v - dt / dn); }
   function textFrame(tb, dt) {
     var i = Math.min(NB - 1, Math.floor(tb)), u = Math.min(1, tb - i), ch = Math.min(2, Math.floor(i / 3));
-    if (ch !== chNow) { chNow = ch; hn.textContent = CH[ch]; hn.classList.remove('sw'); void hn.offsetWidth; hn.classList.add('sw'); }
+    if (ch !== chNow) { if (live && onScreen && (ch > chNow || chNow < 0) && ap > .6) { cardEl.textContent = CH[ch]; cardEl.classList.remove('go'); void cardEl.offsetWidth; cardEl.classList.add('go', 'c' + ch); cardEl.classList.remove('c' + (ch ? ch - 1 : 2)); } chNow = ch; hn.textContent = CH[ch]; hn.classList.remove('sw'); void hn.offsetWidth; hn.classList.add('sw'); }
     hp.forEach(function (e, k) { var f = Math.max(0, Math.min(1, tb - ch * 3 - k)); if (f !== e.f) { e.f = f; e.style.setProperty('--f', f.toFixed(3)); } });
     head.style.opacity = ease(seg(ap, .3, .7));
     leads.length = 0;
@@ -185,7 +187,7 @@
 
   // ---- sound: made here, nothing to download. It starts only after a tap, a click or a key.
   var snd = (function () {
-    var on = true, ctx = null, out = null, air = null, lastPop = 0;
+    var on = true, ctx = null, out = null, air = null, lastPop = 0, roomG = null, roomV = -1;
     try { if (localStorage.getItem('flr-snd2') === '0') on = false; } catch (e) {}
     function label() { sndB.textContent = on ? 'Sound on' : 'Sound off'; sndB.setAttribute('aria-pressed', on ? 'true' : 'false'); }
     // Browsers keep a page silent until the first click, tap or key. Until then a quiet line says that one click anywhere starts the sound.
@@ -198,8 +200,9 @@
       ctx = new AC(); ctx.onstatechange = hintSet; out = ctx.createGain(); out.gain.value = 0; out.connect(ctx.destination);
       var n = ctx.sampleRate * 2, buf = ctx.createBuffer(1, n, ctx.sampleRate), d = buf.getChannelData(0), v = 0;
       for (var i = 0; i < n; i++) { v = (v + (Math.random() * 2 - 1) * .02) / 1.02; d[i] = v * 3.2; }
-      air = ctx.createBufferSource(); air.buffer = buf; air.loop = true; var f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 420; var g = ctx.createGain(); g.gain.value = .5;
+      air = ctx.createBufferSource(); air.buffer = buf; air.loop = true; var f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 420; var g = ctx.createGain(); g.gain.value = .5; roomG = g;
       air.connect(f); f.connect(g); g.connect(out); air.start();
+      var hum = ctx.createOscillator(), hg = ctx.createGain(); hum.frequency.value = 55; hg.gain.value = .035; hum.connect(hg); hg.connect(g); hum.start();   // the plant's own low hum, under the air
     }
     ['pointerdown', 'pointerup', 'keydown', 'touchend', 'click'].forEach(function (ev) { window.addEventListener(ev, function () { boot(); if (ctx && ctx.state === 'suspended') ctx.resume(); hintSet(); }, { passive: true }); });
     sndB.addEventListener('click', function () { on = !on; try { localStorage.setItem('flr-snd2', on ? '1' : '0'); } catch (e) {} label(); if (on) boot(); hintSet(); });
@@ -218,6 +221,8 @@
     var SC = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.7, 1318.5];
     return {
       gate: gate, step: function () { tick(.5); },
+      tock: function (v) { if (!ctx || !on || !onScreen) return; tone(2093, 0, .045, v * .5, 'square'); tick(v); },
+      room: function (v) { v = Math.round(v * 20) / 20; if (!roomG || v === roomV) return; roomV = v; roomG.gain.setTargetAtTime(.5 * v + .02, ctx.currentTime, .35); },
       pop: function (k) { var n = performance.now(); if (n - lastPop < 45) return; lastPop = n; tone(SC[k % SC.length], 0, .5, .085); },
       pulse: function (d) { tone(1568, 0, .35, .11); tone(784, 0, .5, .05); d.forEach(function (x, i) { tone([1174.7, 1318.5, 1046.5][i], .12 + x * .012, .7, .07); }); },
       fix: function () { tone(659.25, 0, .9, .09); tone(987.77, .09, 1.1, .07); },
@@ -286,6 +291,8 @@
       case 5: return phone ? { f: [H[0], H[1], .8], s: 5.4 } : { f: [H[0] - .2, H[1], .8], s: 8.4 };
       case 6: return phone ? { f: [14.5, 10, .5], s: 31 } : { f: [16, 9.6, .5], s: 38 };
       case 7: return phone ? { f: [15.5, 9.6, .5], s: 28 } : { f: [16.4, 9.4, .5], s: 35 };
+      case 9: var L9 = shotOf(8, 1, st), e9 = ease5(seg(u, .06, .56)), T9 = phone ? { f: [WALK[0][0], WALK[0][1] - .6, .9], s: 10 } : { f: [WALK[0][0] - .4, WALK[0][1] - .2, .9], s: 16 };
+        return { f: [0, 1, 2].map(function (k) { return lerp(L9.f[k], T9.f[k], e9); }), s: Math.exp(lerp(Math.log(L9.s), Math.log(T9.s), e9)) };
       default: var e8 = i === 8 ? ease5(seg(u, .3, .8)) : 1; return phone ? { f: [lerp(14.5, 16.7, e8), lerp(10, 7.8, e8), lerp(.5, 9.5, e8)], s: lerp(34, 48, e8) } : { f: [lerp(15.6, 14.6, e8), lerp(9.6, 10.4, e8), lerp(.5, 10, e8)], s: lerp(41, 62, e8) };
     }
   }
@@ -305,10 +312,26 @@
   var things = [], amberIdx = {}, AMRI = [];
   function story(i, u) {
     var st = {};
-    var wd = i < 1 ? 0 : i === 1 ? .7 * ease(seg(u, .12, 1)) : i === 2 ? .7 + .3 * ease(seg(u, 0, .6)) : 1;
-    st.wd = wd * WTOT; st.walker = walkAt(st.wd);
-    st.walkA = i < 3 ? 1 : i === 3 ? 1 - seg(u, 0, .2) : i === 4 ? seg(u, .3, .5) : 1;
-    st.trail = i === 1 ? 1 : i === 2 ? 1 : i === 3 ? 1 - seg(u, 0, .3) : 0;
+    // the clock runs straight on; his walk stops twice: at the first corner he looks both ways, at the dead end he just stands
+    st.clk = i < 1 ? 0 : i === 1 ? .7 * ease(seg(u, .12, 1)) : i === 2 ? .7 + .3 * ease(seg(u, 0, .6)) : 1;
+    var c1 = WL[2], c2 = WL[3], d1 = .7 * WTOT, d, pose = null;
+    if (i < 1) { d = 0; pose = [1, 1]; }
+    else if (i === 1) {
+      if (u < .12) { d = 0; pose = [1, 1]; } else if (u < .32) d = c1 * seg(u, .12, .32); else if (u < .44) { d = c1; pose = [u < .38 ? 1 : 2, 3]; }
+      else if (u < .54) d = lerp(c1, c2, seg(u, .44, .54)); else if (u < .66) { d = c2; pose = [3, 2]; } else d = lerp(c2, d1, seg(u, .66, 1));
+    } else if (i === 2) { d = lerp(d1, WTOT, ease(seg(u, 0, .6))); if (u >= .6) pose = [4, 3]; }
+    else { d = WTOT; pose = i < 6 ? [0, 2] : [i === 9 && u > .55 && u < .68 ? 6 : 5, 1]; }
+    st.wd = d; st.walker = i < 6 ? walkAt(d) : { x: WALK[0][0], y: WALK[0][1], h: 1, seg: 1 }; st.pose = pose;
+    st.walkA = i < 3 ? 1 : i === 3 ? 1 - seg(u, 0, .2) : i === 4 ? seg(u, .3, .5) : i === 5 ? 1 - seg(u, .88, 1) : i === 6 ? seg(u, .3, .5) : 1;
+    // his wasted walk stays on the floor while the trolley's own journey is drawn beside it
+    st.trail = i === 1 ? 1 : i === 2 ? 1 : i === 3 ? 1 : i === 4 ? 1 : i === 5 ? 1 - seg(u, .1, .3) : 0;
+    // the turn: the light drops and the plant goes quiet for a moment before Found
+    st.dim = i === 2 ? ease(seg(u, .8, 1)) : i === 3 ? 1 - ease(seg(u, .05, .3)) : 0;
+    // window light crawling across the floor while the minutes pass
+    st.shaft = i < 3 ? [lerp(-2, 26, (i + u) / 3), .16 * (1 - st.dim)] : [0, 0];
+    // focus: the far plant goes soft on the close shots
+    st.dof = i === 3 ? 2.6 * ease(seg(u, .1, .5)) : i === 4 ? 2.6 * (1 - seg(u, 0, .3)) : i === 5 ? 1.8 * ease(seg(u, .3, .6)) : i === 9 ? 1.1 * ease(seg(u, .3, .6)) : 0;
+    st.fp = i <= 4 ? M.tag : i === 5 ? [M.hero[0], M.hero[1], .9] : [WALK[0][0], WALK[0][1], .9];
     st.due = i <= 2 ? (i === 0 ? seg(u, .1, .22) : 1) : i === 3 ? 1 - seg(u, 0, .25) : 0;
     st.meas = i === 2 ? ease(seg(u, .08, .42)) : 0; st.measA = i === 2 ? 1 : i === 3 ? 1 - seg(u, 0, .25) : 0;
     st.tag = i < 3 ? 0 : i === 3 ? ease(seg(u, .3, .44)) : 1;
@@ -321,7 +344,7 @@
     st.all = i < 6 ? 0 : i === 6 ? ease(seg(u, .86, .97)) : 1;
     st.dots = i < 5 ? 0 : 1;
     st.amber = i === 7 ? ease(seg(u, .56, .68)) : i >= 8 ? 1 : 0;
-    st.l1 = i < 8 ? 0 : i === 8 ? ease(seg(u, .2, .3)) : 1; st.l2 = 0; st.l3 = i < 8 ? 0 : i === 8 ? ease5(seg(u, .34, .8)) : 1;
+    st.l1 = i < 8 ? 0 : i === 8 ? ease(seg(u, .2, .3)) : 1; st.l2 = 0; st.l3 = i < 8 ? 0 : i === 8 ? ease5(seg(u, .34, .8)) : 1 - ease(seg(u, .02, .32));
     // sunlight: Lost stands under a flat sky. Light opens around the first thing that is located, then crosses the whole floor.
     st.sun = i < 5 ? 0 : i === 5 ? 4.5 * ease(seg(u, .2, .5)) : i === 6 ? lerp(4.5, 48, ease(seg(u, .03, .42))) : 99;
     // colour script: Lost is a cold, drained morning; the light that comes with the first located trolley warms the plant for good
@@ -356,17 +379,18 @@
 
   // ---- WebGL
   var VS1 = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
-  var FS1 = 'precision highp float;uniform vec2 uRes,uA,uF,uPl;uniform float uPpm;uniform sampler2D tWc,tWk,tMc,tMk,tCc,tCk,tXc,tXk,tWi,tMi,tCi,tXi,tLut;uniform vec4 uMid,uClose,uMac,uTx,uSun;uniform vec3 uW;uniform vec2 uO,uIa,uIb,uDr;uniform float uDay,uCool;uniform sampler2D tD;float gF;' +
+  var FS1 = 'precision highp float;uniform vec2 uRes,uA,uF,uPl;uniform float uPpm;uniform sampler2D tWc,tWk,tMc,tMk,tCc,tCk,tXc,tXk,tWi,tMi,tCi,tXi,tLut;uniform vec4 uMid,uClose,uMac,uTx,uSun;uniform vec3 uW;uniform vec2 uO,uIa,uIb,uDr;uniform float uDay,uCool,uDof,uFd;uniform vec2 uSh;uniform sampler2D tD;float gF;' +
     'vec3 grade(vec3 col,float L,float dn,vec2 s){float lum=dot(col,vec3(.2126,.7152,.0722));float q=uCool*(1.-.6*L);float wv=L*(1.-uCool);col=mix(col,col*col*(3.-2.*col),.22+.18*wv);col=mix(col,vec3(lum)*vec3(.87,.92,1.04),q*.5);col*=1.-.07*q;col+=wv*(vec3(.05,.025,-.035)*(1.-.35*uDay)*smoothstep(.3,1.,lum)+vec3(-.02,-.006,.03)*(1.-smoothstep(0.,.55,lum)));col=mix(col,mix(vec3(.8,.85,.94),vec3(.98,.95,.9),wv),smoothstep(.3,1.,dn)*(.24-.1*wv));float vg=smoothstep(.35,1.15,length((s-uA)/uRes.y));col*=1.-vg*(.1+.08*q);col.b+=vg*.02*q;return clamp(col,0.,1.);}' +
     'float edge(vec2 u){vec2 d=min(u,1.-u);return smoothstep(0.,.07,min(d.x,d.y));}float r1(sampler2D t,vec2 u){float id=texture2D(t,u).r*255.;float v=texture2D(tLut,vec2((id+.5)/256.,.5)).r;return id<.5?max(v,gF):v;}float rv(sampler2D t,vec2 u,float d){vec2 o=vec2(d*.5,d*.5*uRes.x/uRes.y*0.+d*.5);return(r1(t,u+vec2(-o.x,-o.y))+r1(t,u+vec2(o.x,-o.y))+r1(t,u+vec2(-o.x,o.y))+r1(t,u+vec2(o.x,o.y)))*.25;}' +
     'void main(){vec2 s=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y);vec2 m=(s-uA)/uPpm+uF;vec2 uv=m/uPl;vec2 wq=uv-uO;gF=1.-smoothstep(uSun.z-uSun.w,uSun.z,distance(vec2(dot(uIa,wq),dot(uIb,wq)),uSun.xy));' +
-    'vec4 c=vec4(0.);if(uv.x>0.&&uv.x<1.&&uv.y>0.&&uv.y<1.)c=mix(texture2D(tWk,uv),texture2D(tWc,uv),rv(tWi,uv,uTx.x));' +
-    'if(uW.x>0.){vec2 u=(uv-uMid.xy)/uMid.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tMk,u),texture2D(tMc,u),rv(tMi,u,uTx.y)),edge(u)*uW.x);}' +
-    'if(uW.y>0.){vec2 u=(uv-uClose.xy)/uClose.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tCk,u),texture2D(tCc,u),rv(tCi,u,uTx.z)),edge(u)*uW.y);}' +
-    'if(uW.z>0.){vec2 u=(uv-uMac.xy)/uMac.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tXk,u),texture2D(tXc,u),rv(tXi,u,uTx.w)),edge(u)*uW.z);}' +
+    'vec4 dd=texture2D(tD,uv);float dn=(dd.r*65280.+dd.g*255.)/65535.;float bb=uDof*smoothstep(.08,2.2,abs(dn-uFd)*(uDr.y-uDr.x));' +
+    'vec4 c=vec4(0.);if(uv.x>0.&&uv.x<1.&&uv.y>0.&&uv.y<1.)c=mix(texture2D(tWk,uv,bb),texture2D(tWc,uv,bb),rv(tWi,uv,uTx.x));' +
+    'if(uW.x>0.){vec2 u=(uv-uMid.xy)/uMid.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tMk,u,bb),texture2D(tMc,u,bb),rv(tMi,u,uTx.y)),edge(u)*uW.x);}' +
+    'if(uW.y>0.){vec2 u=(uv-uClose.xy)/uClose.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tCk,u,bb),texture2D(tCc,u,bb),rv(tCi,u,uTx.z)),edge(u)*uW.y);}' +
+    'if(uW.z>0.){vec2 u=(uv-uMac.xy)/uMac.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tXk,u,bb),texture2D(tXc,u,bb),rv(tXi,u,uTx.w)),edge(u)*uW.z);}' +
     'float L=max(gF,uDay);c.rgb*=mix(vec3(.9,.92,.955),vec3(1.),L);' +
     'vec2 wf=vec2(dot(uIa,wq),dot(uIb,wq));vec2 gp=fract(wf/vec2(7.5,6.6))-.5;float pool=smoothstep(.44,.08,length(gp*vec2(1.,1.25)));' +
-    'if(c.a>.001){vec3 col=c.rgb/c.a;col*=1.+.07*pool*L*(1.-uCool);col+=vec3(.06,.035,0.)*gF*(1.-gF)*4.*(1.-uDay);vec4 dd=texture2D(tD,uv);float dn=(dd.r*65280.+dd.g*255.)/65535.;c.rgb=grade(col,L,dn,s)*c.a;}gl_FragColor=c;}';
+    'if(c.a>.001){vec3 col=c.rgb/c.a;col*=1.+.07*pool*L*(1.-uCool);col+=vec3(.06,.035,0.)*gF*(1.-gF)*4.*(1.-uDay);float pr=dot(wf,vec2(.8,-.6))-uSh.x;float sh=uSh.y*(exp(-pr*pr/1.3)+.7*exp(-(pr-3.4)*(pr-3.4)/1.3));col=col*(1.+sh)+sh*vec3(.035,.025,.0);c.rgb=grade(col,L,dn,s)*c.a;}gl_FragColor=c;}';
   var VS2 = 'attribute vec2 a;uniform vec2 uRes,uA,uF;uniform float uPpm;uniform vec4 uR;varying vec2 vU,vM;void main(){vU=a;vM=uR.xy+a*uR.zw;vec2 s=uA+(vM-uF)*uPpm;gl_Position=vec4(s.x/uRes.x*2.-1.,1.-s.y/uRes.y*2.,0.,1.);}';
   var FS2 = 'precision highp float;varying vec2 vU,vM;uniform sampler2D tAt,tD;uniform vec2 uCa,uCb,uPl,uDr,uRes,uA;uniform float uMix,uAl,uBy,uBd,uTan,uCool,uDay;' +
     'vec3 grade(vec3 col,float L,float dn,vec2 s){float lum=dot(col,vec3(.2126,.7152,.0722));float q=uCool*(1.-.6*L);float wv=L*(1.-uCool);col=mix(col,col*col*(3.-2.*col),.22+.18*wv);col=mix(col,vec3(lum)*vec3(.87,.92,1.04),q*.5);col*=1.-.07*q;col+=wv*(vec3(.05,.025,-.035)*(1.-.35*uDay)*smoothstep(.3,1.,lum)+vec3(-.02,-.006,.03)*(1.-smoothstep(0.,.55,lum)));col=mix(col,mix(vec3(.8,.85,.94),vec3(.98,.95,.9),wv),smoothstep(.3,1.,dn)*(.24-.1*wv));float vg=smoothstep(.35,1.15,length((s-uA)/uRes.y));col*=1.-vg*(.1+.08*q);col.b+=vg*.02*q;return clamp(col,0.,1.);}' +
@@ -411,7 +435,7 @@
     S.classList.add('flr-stills');                                             // the finished picture of this sentence shows while the plant loads
     stills = true;
     var L = (phone || Math.max(screen.width, screen.height) * (window.devicePixelRatio || 1) < 1500) ? 'P/' : 'L/';
-    var names = ['wide_col', 'wide_clay', 'mid_col', 'mid_clay', 'close_col', 'close_clay', 'macro_col', 'macro_clay', 'sprites'];
+    var names = ['wide_col', 'wide_clay', 'mid_col', 'mid_clay', 'close_col', 'close_clay', 'macro_col', 'macro_clay', 'sprites', 'poses'];
     var idn = ['wide_id', 'mid_id', 'close_id', 'macro_id'];
     // floor.json is always checked with the server and names the present set of pictures, so a new set is never mixed with a kept old one
     fetch(base + 'floor.json').then(function (r) { return r.json(); }).then(function (m) {
@@ -470,6 +494,10 @@
   var lastStep = -1, pulsed = false, fixed = false, T0 = performance.now(), frozen = null;
   function frame(tb, time) {
     var i = Math.min(NB - 1, Math.floor(tb)), u = Math.min(1, tb - i), st = story(i, u), c = camAt(i, u, st);
+    var dv = Math.round(st.dim * 100) / 100; if (dv !== frame.dv) { frame.dv = dv; stage.style.setProperty('--dim', dv); }
+    if (i <= 2 && st.dim < .5 && Math.floor(time) !== frame.tk) { frame.tk = Math.floor(time); snd.tock(.09); }
+    if (i === 2 && st.dim > .95 && !frame.held) { frame.held = true; snd.tock(.22); } if (i < 2 || (i === 2 && st.dim < .5)) frame.held = false;
+    snd.room(i <= 2 ? 1 - st.dim : i === 3 ? lerp(0, .35, seg(u, .3, 1)) : .35);
     // camera
     var area = phone ? vw * .98 : vw * .6, f = Mxy(c.f[0], c.f[1], c.f[2]), arr = 1 - easeO(seg(ap, .1, 1));
     cam.ppm = area / (c.s * (1 + .22 * arr)); cam.fx = f[0]; cam.fy = f[1]; cam.ax = phone ? vw * .5 : vw * .685; cam.ay = (phone ? vh * .63 : vh * .525) + arr * vh * .1;
@@ -481,7 +509,7 @@
     gl.uniform2f(U.uRes, W, Hh); gl.uniform2f(U.uA, cam.ax * dpr, cam.ay * dpr); gl.uniform2f(U.uF, cam.fx, cam.fy); gl.uniform1f(U.uPpm, cam.ppm * dpr); gl.uniform2f(U.uPl, M.scale, M.scale / M.aspect); setLut(st); gl.uniform1i(U.tLut, 12);
     ['wide_col', 'wide_clay', 'mid_col', 'mid_clay', 'close_col', 'close_clay', 'macro_col', 'macro_clay', 'wide_id', 'mid_id', 'close_id', 'macro_id'].forEach(function (n, k) { gl.activeTexture(gl.TEXTURE0 + k); gl.bindTexture(gl.TEXTURE_2D, tex[n].t); gl.uniform1i(U[['tWc', 'tWk', 'tMc', 'tMk', 'tCc', 'tCk', 'tXc', 'tXk', 'tWi', 'tMi', 'tCi', 'tXi'][k]], k); });
     var dt2 = M.x[0] * M.y[1] - M.y[0] * M.x[1]; gl.uniform2f(U.uO, M.o[0], M.o[1]); gl.uniform2f(U.uIa, M.y[1] / dt2, -M.y[0] / dt2); gl.uniform2f(U.uIb, -M.x[1] / dt2, M.x[0] / dt2);
-    gl.uniform1f(U.uDay, st.all); gl.uniform1f(U.uCool, st.cool); gl.uniform2f(U.uDr, M.depth[0], M.depth[1]); gl.activeTexture(gl.TEXTURE13); gl.bindTexture(gl.TEXTURE_2D, tex.depth.t); gl.uniform1i(U.tD, 13);
+    gl.uniform1f(U.uDay, st.all); gl.uniform1f(U.uCool, st.cool); gl.uniform2f(U.uDr, M.depth[0], M.depth[1]); gl.uniform1f(U.uDof, st.dof); gl.uniform1f(U.uFd, (depthOf(st.fp[0], st.fp[1], st.fp[2]) - M.depth[0]) / (M.depth[1] - M.depth[0])); gl.uniform2f(U.uSh, st.shaft[0], st.shaft[1]); gl.activeTexture(gl.TEXTURE13); gl.bindTexture(gl.TEXTURE_2D, tex.depth.t); gl.uniform1i(U.tD, 13);
     gl.uniform4f(U.uSun, M.hero[0], M.hero[1], st.sun, Math.min(6, st.sun * .8) + .01);
     gl.uniform4f(U.uTx, 1 / tex.wide_id.w, 1 / tex.mid_id.w, 1 / tex.close_id.w, 1 / tex.macro_id.w); gl.uniform4fv(U.uMid, M.mid); gl.uniform4fv(U.uClose, M.close); gl.uniform4fv(U.uMac, M.macro);
     var dp = cam.ppm * dpr, wp = tex.wide_col.w / M.scale, mp = tex.mid_col.w / (M.mid[2] * M.scale), cp = tex.close_col.w / (M.close[2] * M.scale);
@@ -494,11 +522,12 @@
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex.sprites.t); gl.uniform1i(U.tAt, 0); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, tex.depth.t); gl.uniform1i(U.tD, 1);
     var sp = [], wk = M.spr.walk, ar = M.spr.amr, w = st.walker;
     var fr = Math.floor(st.wd / wk.stride * 8) % 8;
-    if (st.walkA > 0) sp.push({ x: w.x, y: w.y, s: wk.size, an: wk.anchor, ca: [fr, 4 + w.h], cb: [fr, 4 + w.h], mix: 1, al: st.walkA });
+    if (st.walkA > 0) { if (st.pose && tex.poses) sp.push({ x: w.x, y: w.y, s: wk.size, an: wk.anchor, ca: st.pose, cb: st.pose, mix: 1, al: st.walkA, t: tex.poses }); else sp.push({ x: w.x, y: w.y, s: wk.size, an: wk.anchor, ca: [fr, 4 + w.h], cb: [fr, 4 + w.h], mix: 1, al: st.walkA }); }
     for (var k = 0; k < 2; k++) { var A = AMRI[k]; var hd = ((Math.round(A.th / (Math.PI / 8)) % 16) + 16) % 16; sp.push({ x: A.x, y: A.y, s: ar.size, an: ar.anchor, ca: [hd % 8, hd >> 3], cb: [hd % 8, 2 + (hd >> 3)], mix: A.rev, al: 1 }); }
     sp.forEach(function (s) { s.d = depthOf(s.x, s.y, 0); }); sp.sort(function (a, b) { return b.d - a.d; });
     sp.forEach(function (s) {
       var b = Mxy(s.x, s.y, 0); gl.uniform4f(U.uR, b[0] - s.an[0] * s.s, b[1] - s.an[1] * s.s, s.s, s.s);
+      gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, (s.t || tex.sprites).t);
       gl.uniform2f(U.uCa, s.ca[0] / 8, s.ca[1] / 8); gl.uniform2f(U.uCb, s.cb[0] / 8, s.cb[1] / 8); gl.uniform1f(U.uMix, s.mix); gl.uniform1f(U.uAl, s.al); gl.uniform1f(U.uBy, b[1]); gl.uniform1f(U.uBd, s.d);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     });
@@ -557,7 +586,7 @@
             if (Math.abs(n.bi - i) <= 1 || n.at === 'due' || n.inn) { n.el.style.transform = 'translate(' + s[0].toFixed(1) + 'px,' + s[1].toFixed(1) + 'px)'; }
     });
     if (xyEl && i === 7) { var xv = 'x ' + AMRI[0].x.toFixed(1) + ' m, y ' + AMRI[0].y.toFixed(1) + ' m'; if (xv !== xyEl.t) { xyEl.t = xv; xyEl.textContent = xv; } }
-    if (searchEl) { var sm = fmt(st.wd / WTOT * 561, false), wm = Math.round(st.wd) + ' m walked'; if (sm !== searchEl.t) { searchEl.t = sm; searchEl.textContent = sm; } if (wm !== walkedEl.t) { walkedEl.t = wm; walkedEl.textContent = wm; } }
+    if (searchEl) { var sm = fmt(st.clk * 561, false), wm = Math.round(st.wd) + ' m walked'; if (sm !== searchEl.t) { searchEl.t = sm; searchEl.textContent = sm; } if (wm !== walkedEl.t) { walkedEl.t = wm; walkedEl.textContent = wm; } }
     // --- the ruler: a true length at this distance
     var nk = 0; while (nk < NICE.length - 1 && NICE[nk] * cam.ppm < 56) nk++;
     var nl = NICE[nk] < 1 ? Math.round(NICE[nk] * 100) + ' cm' : NICE[nk] + ' m'; scaleI.style.width = (NICE[nk] * cam.ppm).toFixed(1) + 'px'; if (nl !== scaleT.t) { scaleT.t = nl; scaleT.textContent = nl; }
@@ -596,7 +625,7 @@
       L.on = true; L.p.style.display = L.c.style.display = ''; L.p.style.opacity = (ld.a * .7).toFixed(2);
     });
     // --- clocks
-    clocks.forEach(function (c) { var v = c.due ? fmt(c.base + st.wd / WTOT * 561, false) : fmt(c.base + time, true); if (v !== c.last) { c.last = v; c.el.textContent = v; } });
+    clocks.forEach(function (c) { var v = c.due ? fmt(c.base + st.clk * 561, false) : fmt(c.base + time, true); if (v !== c.last) { c.last = v; c.el.textContent = v; } });
   }
 
   // ---- point at a located thing to read where it is
