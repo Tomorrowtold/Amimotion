@@ -1248,45 +1248,61 @@ html.tag-live .hero .hx-act.k-fade,html.tag-live .hero .hx-facts.k-fade{transiti
 @media (max-width:860px){.bs-t{font-size:1.75rem}}
 @media (max-width:860px){.trio .tm-name{font-size:1rem}.trio .tm-role{font-size:.8125rem}}
 
-/* ===== RECOGNITION, 17 Nov: three awards and events on the facts row of the hero, in the facts' own language
-   (hairline dividers, ink name, quiet result), each with its photograph. Each opens its story on /company/news/. ===== */
-.hero .hx-base{display:flex;align-items:flex-end;justify-content:space-between;gap:clamp(20px,3vw,48px);flex-wrap:wrap;pointer-events:auto}
-.hero .hx-rec{opacity:1}
-.hero .hx-rec ul{list-style:none;margin:0;padding:0;display:flex}
-.hero .hx-rec li{padding:2px 0 2px clamp(14px,1.4vw,22px);border-left:1px solid rgba(11,18,56,.14);margin-left:clamp(14px,1.4vw,22px)}
-.hero .hx-rec li:first-child{margin-left:0;padding-left:0;border-left:0}
-.hero .hx-rec a{display:flex;align-items:center;gap:12px;max-width:15.5em;color:var(--ink-soft);text-decoration:none;font-size:.84rem;line-height:1.35}
-.hero .hx-rec img{flex:none;width:40px;height:40px;border-radius:9px;object-fit:cover;box-shadow:0 0 0 1px rgba(11,18,56,.08);transition:transform .6s var(--ease-out),box-shadow .6s var(--ease-out)}
-.hero .hx-rec b{display:block;font-weight:500;color:var(--ink);transition:color .25s}
-.hero .hx-rec a:hover b,.hero .hx-rec a:focus-visible b{color:var(--accent)}
-.hero .hx-rec a:hover img,.hero .hx-rec a:focus-visible img{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(11,18,56,.08),0 10px 18px -10px rgba(11,18,56,.5)}
-.hero .hx-rec a:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:10px}
-html.tag-live .hero .hx-rec.k-fade{transition:opacity .9s var(--ease) .15s,transform 1.2s var(--ease-out) .15s}
-html.tag-live .hero .hx-rec.k-fade:not(.in){opacity:0;transform:translateY(18px)}
-@media (min-width:901px){.hero .hx-base{margin-top:clamp(4px,1.2vh,16px)}.hero .hx-base .hx-facts{margin-top:0}}
-@media (max-width:1279px) and (min-width:901px){.hero .hx-rec a{max-width:13em}}
+/* ===== RECOGNITION, 18 Nov: its own band between the hero and the explainer. The page's own language: a two-line display
+   heading with the accent second line, white 20px frames, and the stage's locator brackets, which close in on a photo on hover. ===== */
+.rec{position:relative;z-index:3;background:linear-gradient(180deg,#ebf1fe 0,var(--ground) clamp(120px,14vw,220px));padding:clamp(64px,9vw,136px) max(var(--m),calc((100% - 1760px) / 2 + var(--m))) clamp(72px,9vw,140px)}
+.rec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:clamp(28px,3.4vw,52px)}
+.rec-title{margin:0;font:600 var(--h-l)/.98 var(--display);letter-spacing:-.05em;color:var(--ink)}
+.rec-title span{display:block}.rec-title span+span{color:var(--accent)}
+.rec-all{display:inline-flex;align-items:center;gap:10px;flex:none;padding:13px 20px;border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font:500 .95rem/1 var(--text);box-shadow:0 0 0 1px rgba(11,18,56,.1);transition:box-shadow .45s var(--ease-out),color .25s}
+.rec-all svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .45s var(--ease-out)}
+.rec-all:hover{color:var(--accent);box-shadow:0 0 0 1px rgba(75,61,240,.35),0 12px 24px -16px rgba(11,18,56,.45)}.rec-all:hover svg{transform:translateX(4px)}
+.rec-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2vw,32px)}
+.rec-i a{display:block;color:var(--ink);text-decoration:none;border-radius:22px}
+.rec-pic{position:relative;margin:0 0 20px;aspect-ratio:4 / 3;border-radius:20px;overflow:hidden;background:var(--pressed);box-shadow:0 0 0 1px rgba(11,18,56,.08),0 30px 60px -40px rgba(11,18,56,.45);isolation:isolate}
+.rec-pic img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.1s var(--ease-out)}
+.rec-pic::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,18,56,0) 55%,rgba(11,18,56,.22));opacity:0;transition:opacity .6s var(--ease-out)}
+.rec-c{position:absolute;z-index:1;width:20px;height:20px;border:0 solid #fff;opacity:0;filter:drop-shadow(0 1px 2px rgba(11,18,56,.35));transition:all .7s var(--ease-out)}
+.rec-c.tl{left:8px;top:8px;border-left-width:1.5px;border-top-width:1.5px}.rec-c.tr{right:8px;top:8px;border-right-width:1.5px;border-top-width:1.5px}
+.rec-c.bl{left:8px;bottom:8px;border-left-width:1.5px;border-bottom-width:1.5px}.rec-c.br{right:8px;bottom:8px;border-right-width:1.5px;border-bottom-width:1.5px}
+.rec-i a:hover .rec-c,.rec-i a:focus-visible .rec-c{opacity:1}
+.rec-i a:hover .rec-c.tl,.rec-i a:focus-visible .rec-c.tl{left:18px;top:18px}.rec-i a:hover .rec-c.tr,.rec-i a:focus-visible .rec-c.tr{right:18px;top:18px}
+.rec-i a:hover .rec-c.bl,.rec-i a:focus-visible .rec-c.bl{left:18px;bottom:18px}.rec-i a:hover .rec-c.br,.rec-i a:focus-visible .rec-c.br{right:18px;bottom:18px}
+.rec-i a:hover img,.rec-i a:focus-visible img{transform:scale(1.035)}
+.rec-i a:hover .rec-pic::after,.rec-i a:focus-visible .rec-pic::after{opacity:1}
+.rec-i a:focus-visible{outline:2px solid var(--accent);outline-offset:6px}
+.rec-meta{display:flex;gap:12px;margin:0 0 10px;font-size:.875rem;line-height:1;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.rec-meta span{padding-left:12px;border-left:1px solid rgba(11,18,56,.18);color:var(--accent);font-weight:500}
+.rec-name{margin:0 0 8px;font:600 var(--h-m)/1.1 var(--display);letter-spacing:-.03em;transition:color .25s}
+.rec-i a:hover .rec-name,.rec-i a:focus-visible .rec-name{color:var(--accent)}
+.rec-sub{margin:0;max-width:24em;font-size:.975rem;line-height:1.5;color:var(--ink-soft)}
 @media (max-width:900px){
-  .hero .hx-base{display:block}
-  .hero .hx-rec{margin-top:26px}
-  .hero .hx-rec ul{display:grid;gap:0;border-top:1px solid rgba(11,18,56,.1)}
-  .hero .hx-rec li{margin:0;padding:12px 0;border-left:0;border-bottom:1px solid rgba(11,18,56,.1)}
-  .hero .hx-rec li:first-child{padding:12px 0}
-  .hero .hx-rec a{max-width:none;font-size:.875rem}
-  .hero .hx-rec a::after{content:"";margin-left:auto;width:7px;height:7px;border-top:1.5px solid var(--ink-soft);border-right:1.5px solid var(--ink-soft);transform:rotate(45deg);opacity:.6;flex:none}
-  .hero .hx-rec b{display:inline}
+  .rec{padding:56px var(--m) 64px}
+  .rec-head{flex-direction:column;align-items:flex-start;gap:18px}
+  .rec-list{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:80%;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 calc(-1 * var(--m));padding:4px var(--m) 8px;scroll-padding:0 var(--m);scrollbar-width:none}
+  .rec-list::-webkit-scrollbar{display:none}
+  .rec-i{scroll-snap-align:start}
+  .rec-pic{margin-bottom:16px;border-radius:16px}
 }
-@media (prefers-reduced-motion:reduce){.hero .hx-rec img{transition:none}}
+@media (prefers-reduced-motion:reduce){.rec-pic img,.rec-c,.rec-pic::after{transition:none}}
 
-/* ===== THE BROCHURE, 17 Nov: one small button under the three parts. A thumbnail of the real cover, the action, the file's
-   type and size. Quiet like the index above it; the cover lifts a little on hover. ===== */
-.kn-bro{align-self:flex-start;display:inline-flex;white-space:nowrap;align-items:center;gap:12px;margin-top:clamp(16px,2.4vh,26px);padding:7px 18px 7px 7px;border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font:500 .9375rem/1 var(--text);box-shadow:0 0 0 1px rgba(11,18,56,.1),0 1px 2px rgba(11,18,56,.05);transition:box-shadow .45s var(--ease-out),transform .45s var(--ease-out)}
-.kn-bro img{width:26px;height:36px;border-radius:3px;object-fit:cover;object-position:top;box-shadow:0 0 0 1px rgba(11,18,56,.12),0 3px 6px -2px rgba(11,18,56,.35);transform:rotate(-4deg);transition:transform .5s var(--ease-out)}
-.kn-bro-m{font-weight:400;font-size:.8125rem;color:var(--ink-soft);font-variant-numeric:tabular-nums;padding-left:12px;border-left:1px solid rgba(11,18,56,.14)}
-.kn-bro svg{color:var(--ink-soft);transition:transform .45s var(--ease-out),color .25s}
-.kn-bro:hover,.kn-bro:focus-visible{box-shadow:0 0 0 1px rgba(11,18,56,.18),0 12px 24px -14px rgba(11,18,56,.45);transform:translateY(-1px)}
-.kn-bro:hover img,.kn-bro:focus-visible img{transform:rotate(0) translateY(-2px) scale(1.06)}
-.kn-bro:hover svg,.kn-bro:focus-visible svg{transform:translateY(2px);color:var(--accent)}
-.kn-bro:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-@media (max-width:860px){.kn-bro{order:3;margin-top:18px;align-self:center;width:auto;max-width:100%}}
-@media (prefers-reduced-motion:reduce){.kn-bro,.kn-bro img,.kn-bro svg{transition:none}}
-.nb .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* ===== THE BROCHURE, 18 Nov: a small ink button under the three parts, in the family of "Plan your first bay". Three real
+   pages of the brochure stand out of its left end like a held stack and fan open on hover; the file's facts sit beside it. ===== */
+.kn-bro{align-self:flex-start;display:inline-flex;align-items:center;gap:16px;margin-top:clamp(22px,3vh,34px);color:var(--ink-soft);text-decoration:none;white-space:nowrap;border-radius:999px}
+.kn-bro-b{position:relative;display:inline-flex;align-items:center;gap:12px;height:50px;padding:0 22px 0 70px;border-radius:999px;background:var(--ink);color:#fff;font:500 .975rem/1 var(--text);box-shadow:0 14px 30px -18px rgba(11,18,56,.7);transition:background .35s var(--ease-out),transform .5s var(--ease-out),box-shadow .5s var(--ease-out)}
+.kn-bro-fan{position:absolute;left:16px;bottom:9px;width:34px;height:46px}
+.kn-bro-fan img{position:absolute;inset:0;width:34px;height:46px;border-radius:3px;object-fit:cover;object-position:top;background:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 6px 12px -4px rgba(0,0,0,.55);transform-origin:50% 100%;transition:transform .6s var(--ease-out)}
+.kn-bro-fan img:nth-child(1){transform:rotate(-14deg) translateX(-3px)}
+.kn-bro-fan img:nth-child(2){transform:rotate(-5deg)}
+.kn-bro-fan img:nth-child(3){transform:rotate(5deg) translateX(2px)}
+.kn-bro-b svg{opacity:.75;transition:transform .45s var(--ease-out),opacity .25s}
+.kn-bro-m{font-size:.8125rem;line-height:1.35;font-variant-numeric:tabular-nums;padding-left:16px;border-left:1px solid rgba(11,18,56,.14)}
+.kn-bro:hover .kn-bro-b,.kn-bro:focus-visible .kn-bro-b{background:var(--accent);transform:translateY(-1px);box-shadow:0 18px 34px -18px rgba(75,61,240,.75)}
+.kn-bro:hover .kn-bro-fan img:nth-child(1),.kn-bro:focus-visible .kn-bro-fan img:nth-child(1){transform:rotate(-24deg) translate(-7px,-3px)}
+.kn-bro:hover .kn-bro-fan img:nth-child(2),.kn-bro:focus-visible .kn-bro-fan img:nth-child(2){transform:rotate(-8deg) translateY(-6px)}
+.kn-bro:hover .kn-bro-fan img:nth-child(3),.kn-bro:focus-visible .kn-bro-fan img:nth-child(3){transform:rotate(10deg) translate(5px,-9px)}
+.kn-bro:hover svg,.kn-bro:focus-visible svg{transform:translateY(2px);opacity:1}
+.kn-bro:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+@media (max-width:860px){.kn-bro{order:3;margin-top:22px;align-self:flex-start}}
+@media (max-width:520px){.kn-bro-m{display:none}.kn-bro-b{padding-right:20px}}
+@media (prefers-reduced-motion:reduce){.kn-bro-b,.kn-bro-fan img,.kn-bro svg{transition:none}}
