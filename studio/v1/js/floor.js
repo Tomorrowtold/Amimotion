@@ -83,32 +83,28 @@
   function chase(v, t, up, dn, dt) { return t > v ? Math.min(t, v + dt / up) : Math.max(t, v - dt / dn); }
   function textFrame(tb, dt) {
     var i = Math.min(NB - 1, Math.floor(tb)), u = Math.min(1, tb - i), ch = Math.min(2, Math.floor(i / 3));
-    if (ch !== chNow) { if (live && onScreen && (ch > chNow || chNow < 0) && ap > .6) { cardEl.textContent = CH[ch]; cardEl.classList.remove('go'); void cardEl.offsetWidth; cardEl.classList.add('go', 'c' + ch); cardEl.classList.remove('c' + (ch ? ch - 1 : 2)); } chNow = ch; hn.textContent = CH[ch]; hn.classList.remove('sw'); void hn.offsetWidth; hn.classList.add('sw'); }
+    if (ch !== chNow) { if (live && onScreen && (ch > chNow || chNow < 0) && ap > .6 && Math.abs(textFrame.v || 0) < 2.5) { cardEl.textContent = CH[ch]; cardEl.classList.remove('go'); void cardEl.offsetWidth; cardEl.classList.add('go', 'c' + ch); cardEl.classList.remove('c' + (ch ? ch - 1 : 2)); } chNow = ch; hn.textContent = CH[ch]; hn.classList.remove('sw'); void hn.offsetWidth; hn.classList.add('sw'); }
     hp.forEach(function (e, k) { var f = Math.max(0, Math.min(1, tb - ch * 3 - k)); if (f !== e.f) { e.f = f; e.style.setProperty('--f', f.toFixed(3)); } });
     head.style.opacity = ease(seg(ap, .3, .7));
     leads.length = 0;
+    // Every sentence, line and word is a function of the same scroll value as the picture, so nothing lags or runs ahead.
+    // Sentence k rises in over the first part of its beat and leaves over the last part: two sentences can never share the screen.
+    // During a fast fling (a menu jump, a hard flick) the words step back and return the moment the scroll settles.
+    var calm = 1 - seg(Math.abs(textFrame.v || 0), 1.6, 4.5); calm = Math.round(calm * 20) / 20;
     blocks.forEach(function (b, k) {
-      // a sentence is never left half way: the scroll only says which one is due, the clock brings it in and takes it out
-      var inT = k === 0 ? (ap > .5 || tb > .001) : tb >= k, outT = k < NB - 1 && tb >= k + 1, prev = blocks[k - 1], next = blocks[k + 1];
-      // a jump over several sentences: the ones passed over never show, and the one due waits for the one leaving
-      if (outT && !b.E) { b.E = 1; b.X = 1; } else if (!inT && b.X >= 1) { b.E = 0; b.X = 0; }
-      var below = false, above = false, j, o;
-      for (j = 0; j < k; j++) { o = blocks[j]; if (o.E > 0 && o.X <= .6) below = true; }
-      for (j = k + 1; j < NB; j++) { o = blocks[j]; if (o.E > .6 && o.X < 1) above = true; }
-      b.E = chase(b.E, inT ? (below ? b.E : 1) : 0, .55, .24, dt);
-      b.X = chase(b.X, outT ? 1 : (above ? b.X : 0), .24, .45, dt);
-      var e = b.E, x = b.X, vis = e > 0 && x < 1, uu = k < i ? 1 : k > i ? 0 : u;
-      b.ps.forEach(function (p) { if (p.ans) { var t = (k < i || (k === i && uu >= p.t0 - .07)) ? 1 : 0; p.A = vis ? chase(p.A, t, .55, .22, dt) : t; } });
+      var e = k === 0 ? Math.max(seg(ap, .45, .85), seg(tb, 0, .02)) : seg(tb, k, k + .16), x = k < NB - 1 ? seg(tb, k + .84, k + 1) : 0;
+      var vis = e > 0 && x < 1, uu = k < i ? 1 : k > i ? 0 : u;
       if (vis !== b.vis) { b.vis = vis; b.el.style.visibility = vis ? 'visible' : 'hidden'; }
       if (!vis) return;
+      if (calm !== b.calm) { b.calm = calm; b.el.style.opacity = calm < 1 ? calm : ''; }
       b.ps.forEach(function (p) {
-        var a = p.ans ? p.A : e, N = p.words.length, timed = p.ans && AW[k];
+        var a = p.ans ? (k < i ? 1 : ease(seg(uu, p.t0 - .12, p.t0 + .02))) : e;
         p.lines.forEach(function (l, n) {
           var en = easeO(seg(a, n * .16, n * .16 + .62)), ex = easeI(seg(x, l.j * .09, l.j * .09 + .55)), y = Math.round(((1 - en) * 108 - ex * 108) * 10) / 10;
           if (y !== l.y) { l.y = y; l.li.style.transform = y ? 'translate3d(0,' + y + '%,0)' : ''; }
         });
-        p.words.forEach(function (w, n) {
-          var v = timed ? ease(seg(uu, w.at, w.at + .08)) : ease(seg(a, .15 + .55 * n / N, .45 + .55 * n / N)); v = Math.round(v * 40) / 40;
+        p.words.forEach(function (w) {
+          var v = ease(seg(uu, w.at, w.at + .08)); v = Math.round(v * 40) / 40;
           if (v !== w.v) { w.v = v; w.el.style.opacity = (.26 + .74 * v).toFixed(3); }
         });
       });
@@ -174,7 +170,7 @@
     beats.forEach(function (b, k) { b.classList.toggle('on', k === i); b.classList.toggle('flr-near', Math.abs(k - i) <= 1); });
     rail.forEach(function (a) { var g = +a.getAttribute('data-go'); a.classList.toggle('on', i >= g && (g === 6 || i < g + 3)); });
     stage.style.setProperty('--end', 0);
-    if (was >= 0) snd.beat(i, was);
+    if (was >= 0 && !frozen) { snd.beat(i, was); if (i === NB - 1 && was === NB - 2) hap.land(); else hap.beat(); }
   }
   rail.forEach(function (a) {
     a.addEventListener('click', function (e) {
@@ -224,10 +220,24 @@
       tock: function (v) { if (!ctx || !on || !onScreen) return; tone(2093, 0, .045, v * .5, 'square'); tick(v); },
       room: function (v) { v = Math.round(v * 20) / 20; if (!roomG || v === roomV) return; roomV = v; roomG.gain.setTargetAtTime(.5 * v + .02, ctx.currentTime, .35); },
       pop: function (k) { var n = performance.now(); if (n - lastPop < 45) return; lastPop = n; tone(SC[k % SC.length], 0, .5, .085); },
-      pulse: function (d) { tone(1568, 0, .35, .11); tone(784, 0, .5, .05); d.forEach(function (x, i) { tone([1174.7, 1318.5, 1046.5][i], .12 + x * .012, .7, .07); }); },
+      tag: function () { tone(1318.5, 0, .45, .085); tone(1975.5, .035, .55, .04); },
+      warn: function () { tone(392, 0, .7, .06, 'triangle'); tone(311.1, .14, .9, .05, 'triangle'); },
+      isOn: function () { return on; },
       fix: function () { tone(659.25, 0, .9, .09); tone(987.77, .09, 1.1, .07); },
       beat: function (i, was) { if (i === NB - 1 && was === NB - 2) { tone(261.6, 0, 2.2, .07); tone(392, .05, 2.2, .06); tone(659.25, .1, 2.4, .05); } else tone(i > was ? 196 : 174.6, 0, .22, .07, 'triangle'); }
     };
+  })();
+
+  // ---- touch feel: a short tick from the phone's motor, only where the picture does something you would feel.
+  // Android browsers allow it after the first tap; iPhone Safari gives web pages no vibration at all, so there it stays still.
+  // It follows the sound switch, and stays off for people who ask their device for reduced motion.
+  var hap = (function () {
+    var ok = 'vibrate' in navigator && !matchMedia('(prefers-reduced-motion: reduce)').matches, last = 0;
+    function go(pat, gap) {
+      if (!ok || !snd.isOn() || !onScreen || document.hidden || SHOT) return; var ua = navigator.userActivation; if (ua && !ua.hasBeenActive) return;
+      if (Math.abs(textFrame.v || 0) > 2.5) return; var n = performance.now(); if (n - last < (gap || 90)) return; last = n; try { navigator.vibrate(pat); } catch (e) {}
+    }
+    return { tick: function () { go(9); }, beat: function () { go(14, 160); }, land: function () { go([12, 60, 22], 200); } };
   })();
 
   // ---- the plant
@@ -495,7 +505,7 @@
   function frame(tb, time) {
     var i = Math.min(NB - 1, Math.floor(tb)), u = Math.min(1, tb - i), st = story(i, u), c = camAt(i, u, st);
     var dv = Math.round(st.dim * 100) / 100; if (dv !== frame.dv) { frame.dv = dv; stage.style.setProperty('--dim', dv); }
-    if (i <= 2 && st.dim < .5 && Math.floor(time) !== frame.tk) { frame.tk = Math.floor(time); snd.tock(.09); }
+    var tk = Math.floor(st.clk * 561 / 30); if (i <= 2 && st.dim < .5 && frame.tk != null && tk !== frame.tk) snd.tock(.09); frame.tk = tk;   // the clock ticks as its numbers move
     if (i === 2 && st.dim > .95 && !frame.held) { frame.held = true; snd.tock(.22); } if (i < 2 || (i === 2 && st.dim < .5)) frame.held = false;
     snd.room(i <= 2 ? 1 - st.dim : i === 3 ? lerp(0, .35, seg(u, .3, 1)) : .35);
     // camera
@@ -549,7 +559,7 @@
       tripP.setAttribute('points', tp.map(function (v) { return v[0].toFixed(1) + ',' + v[1].toFixed(1); }).join(' ')); tripH.setAttribute('cx', thp[0]); tripH.setAttribute('cy', thp[1]);
       tripC.forEach(function (C) { var on = C.d <= td; if (on) { var q = tripAt(C.d), sq = scr(q.x, q.y, .02); C.e.setAttribute('cx', sq[0]); C.e.setAttribute('cy', sq[1]); } show(C.e, on ? st.tripA * (.35 + .65 * Math.max(0, 1 - (td - C.d) / 14)) : 0); });
     } else tripC.forEach(function (C) { show(C.e, 0); });
-    if (i === 4 && st.trip >= 1 && !frame.arr) { frame.arr = true; snd.pop(4); } if (i < 4 || (i === 4 && st.trip < 1)) frame.arr = false;
+    if (i === 4 && st.trip >= 1 && !frame.arr) { frame.arr = true; snd.pop(4); hap.tick(); } if (i < 4 || (i === 4 && st.trip < 1)) frame.arr = false;
     var tg = scr(M.tag[0], M.tag[1], M.tag[2]), cyc = (time % 2.6) / 2.6, mx = Math.max.apply(null, M.ns);
     rays.forEach(function (r, k) {
       var an = scr(M.anch[k][0], M.anch[k][1], M.anch[k][2] - .12), gk = Math.min(1, st.lines * mx / M.ns[k]), e = [lerp(tg[0], an[0], gk), lerp(tg[1], an[1], gk)];
@@ -558,8 +568,9 @@
       var la = 0; tl[k].style.opacity = la; tl[k].style.display = la > 0 ? '' : 'none';
       if (la > 0) { tl[k].style.transform = 'translate(' + (an[0] + 12).toFixed(1) + 'px,' + (an[1] - 24).toFixed(1) + 'px)'; var gp = (i === 4 && u > .6) || i === 5, tv = gp ? '+' + (M.ns[k] - Math.min.apply(null, M.ns)).toFixed(1) + ' ns' : M.ns[k].toFixed(1) + ' ns'; if (tl[k].tv !== tv) { tl[k].tv = tv; tl[k].textContent = tv; } }
     });
-    if (i === 3 && u > .62 && !pulsed) { pulsed = true; snd.pulse(M.ns); } if (i < 3 || (i === 3 && u < .5)) pulsed = false;
-    if (st.fix > .5 && !fixed) { fixed = true; snd.fix(); } if (i < 5) fixed = false;
+    if (st.tag > .5 && !pulsed) { pulsed = true; snd.tag(); hap.tick(); } if (st.tag < .3) pulsed = false;
+    if (st.amber > .5 && !frame.amb) { frame.amb = true; snd.warn(); hap.tick(); } if (st.amber < .3) frame.amb = false;
+    if (st.fix > .5 && !fixed) { fixed = true; snd.fix(); hap.land(); } if (i < 5 || (i === 5 && st.fix < .3)) fixed = false;
     // the 10 cm bar, true to scale, beside the located point
     var hp = scr(M.hero[0], M.hero[1], 1.02), bw = .1 * cam.ppm, bx = hp[0] + 16, by = hp[1] + 22;
     [bar, barA, barB, barT].forEach(function (e) { show(e, st.fix); });
@@ -645,8 +656,8 @@
   function tick(now) {
     raf = 0; if (!onScreen && !SHOT) { snd.gate(); return; }
     var dt = Math.min(.1, (now - lastT) / 1000 || .016); lastT = now;
-    if (ps < 0) { ps = p; tbs = -1; } else ps += (p - ps) * (1 - Math.exp(-dt * 8)); if (Math.abs(p - ps) < .00002) ps = p;
-    snd.gate(); var tbT = tbOf(ps); if (tbs < 0 || ps === p && Math.abs(tbT - tbs) < .0005) tbs = tbT; else { var dq = tbT - tbs, mq = Math.max(1.6, Math.abs(dq) * 1.4) * dt; tbs += Math.max(-mq, Math.min(mq, dq)); }
+    if (ps < 0) { ps = p; tbs = -1; } else ps += (p - ps) * (1 - Math.exp(-dt * 10)); if (Math.abs(p - ps) < .00002) ps = p;
+    snd.gate(); var tbT = tbOf(ps); textFrame.v = tbs < 0 ? 0 : lerp(textFrame.v || 0, (tbT - tbs) / dt, 1 - Math.exp(-dt * 10)); tbs = tbT;
     if (!frozen) setBeat(Math.min(NB - 1, Math.floor(tbs + 1e-6)));
     textFrame(frozen ? frozen[0] : tbs, frozen ? .2 : dt);
     if (live) {
@@ -663,5 +674,5 @@
   document.addEventListener('visibilitychange', function () { snd.gate(); kick(); });
   measure(); onScroll();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
-  window.__flr = { seek: function (tb, time) { frozen = tb == null ? null : [tb, time || 0]; if (tb != null) setBeat(Math.min(NB - 1, Math.floor(tb))); kick(); }, ready: function () { return live; }, edges: EDGE };
+  window.__flr = { seek: function (tb, time) { frozen = tb == null ? null : [tb, time || 0]; if (tb != null) setBeat(Math.min(NB - 1, Math.floor(tb))); kick(); }, ready: function () { return live; }, tb: function () { return tbs; }, edges: EDGE };
 })();
