@@ -324,6 +324,8 @@
     st.l1 = i < 8 ? 0 : i === 8 ? ease(seg(u, .2, .3)) : 1; st.l2 = 0; st.l3 = i < 8 ? 0 : i === 8 ? ease5(seg(u, .34, .8)) : 1;
     // sunlight: Lost stands under a flat sky. Light opens around the first thing that is located, then crosses the whole floor.
     st.sun = i < 5 ? 0 : i === 5 ? 4.5 * ease(seg(u, .2, .5)) : i === 6 ? lerp(4.5, 48, ease(seg(u, .03, .42))) : 99;
+    // colour script: Lost is a cold, drained morning; the light that comes with the first located trolley warms the plant for good
+    st.cool = i < 3 ? 1 : i === 3 ? lerp(1, .6, ease(seg(u, .2, .9))) : i === 4 ? .6 : i === 5 ? lerp(.6, .12, ease(seg(u, .2, .6))) : i === 6 ? lerp(.12, 0, seg(u, 0, .5)) : 0;
     st.axes = i < 5 ? 0 : i === 5 ? seg(u, .5, .7) : 1;
     return st;
   }
@@ -354,18 +356,22 @@
 
   // ---- WebGL
   var VS1 = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
-  var FS1 = 'precision highp float;uniform vec2 uRes,uA,uF,uPl;uniform float uPpm;uniform sampler2D tWc,tWk,tMc,tMk,tCc,tCk,tXc,tXk,tWi,tMi,tCi,tXi,tLut;uniform vec4 uMid,uClose,uMac,uTx,uSun;uniform vec3 uW;uniform vec2 uO,uIa,uIb;uniform float uDay;float gF;' +
+  var FS1 = 'precision highp float;uniform vec2 uRes,uA,uF,uPl;uniform float uPpm;uniform sampler2D tWc,tWk,tMc,tMk,tCc,tCk,tXc,tXk,tWi,tMi,tCi,tXi,tLut;uniform vec4 uMid,uClose,uMac,uTx,uSun;uniform vec3 uW;uniform vec2 uO,uIa,uIb,uDr;uniform float uDay,uCool;uniform sampler2D tD;float gF;' +
+    'vec3 grade(vec3 col,float L,float dn,vec2 s){float lum=dot(col,vec3(.2126,.7152,.0722));float q=uCool*(1.-.6*L);float wv=L*(1.-uCool);col=mix(col,col*col*(3.-2.*col),.22+.18*wv);col=mix(col,vec3(lum)*vec3(.87,.92,1.04),q*.5);col*=1.-.07*q;col+=wv*(vec3(.05,.025,-.035)*(1.-.35*uDay)*smoothstep(.3,1.,lum)+vec3(-.02,-.006,.03)*(1.-smoothstep(0.,.55,lum)));col=mix(col,mix(vec3(.8,.85,.94),vec3(.98,.95,.9),wv),smoothstep(.3,1.,dn)*(.24-.1*wv));float vg=smoothstep(.35,1.15,length((s-uA)/uRes.y));col*=1.-vg*(.1+.08*q);col.b+=vg*.02*q;return clamp(col,0.,1.);}' +
     'float edge(vec2 u){vec2 d=min(u,1.-u);return smoothstep(0.,.07,min(d.x,d.y));}float r1(sampler2D t,vec2 u){float id=texture2D(t,u).r*255.;float v=texture2D(tLut,vec2((id+.5)/256.,.5)).r;return id<.5?max(v,gF):v;}float rv(sampler2D t,vec2 u,float d){vec2 o=vec2(d*.5,d*.5*uRes.x/uRes.y*0.+d*.5);return(r1(t,u+vec2(-o.x,-o.y))+r1(t,u+vec2(o.x,-o.y))+r1(t,u+vec2(-o.x,o.y))+r1(t,u+vec2(o.x,o.y)))*.25;}' +
     'void main(){vec2 s=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y);vec2 m=(s-uA)/uPpm+uF;vec2 uv=m/uPl;vec2 wq=uv-uO;gF=1.-smoothstep(uSun.z-uSun.w,uSun.z,distance(vec2(dot(uIa,wq),dot(uIb,wq)),uSun.xy));' +
     'vec4 c=vec4(0.);if(uv.x>0.&&uv.x<1.&&uv.y>0.&&uv.y<1.)c=mix(texture2D(tWk,uv),texture2D(tWc,uv),rv(tWi,uv,uTx.x));' +
     'if(uW.x>0.){vec2 u=(uv-uMid.xy)/uMid.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tMk,u),texture2D(tMc,u),rv(tMi,u,uTx.y)),edge(u)*uW.x);}' +
     'if(uW.y>0.){vec2 u=(uv-uClose.xy)/uClose.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tCk,u),texture2D(tCc,u),rv(tCi,u,uTx.z)),edge(u)*uW.y);}' +
     'if(uW.z>0.){vec2 u=(uv-uMac.xy)/uMac.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tXk,u),texture2D(tXc,u),rv(tXi,u,uTx.w)),edge(u)*uW.z);}' +
-    'c.rgb*=mix(vec3(.9,.92,.955),vec3(1.),max(gF,uDay));gl_FragColor=c;}';
+    'float L=max(gF,uDay);c.rgb*=mix(vec3(.9,.92,.955),vec3(1.),L);' +
+    'vec2 wf=vec2(dot(uIa,wq),dot(uIb,wq));vec2 gp=fract(wf/vec2(7.5,6.6))-.5;float pool=smoothstep(.44,.08,length(gp*vec2(1.,1.25)));' +
+    'if(c.a>.001){vec3 col=c.rgb/c.a;col*=1.+.07*pool*L*(1.-uCool);col+=vec3(.06,.035,0.)*gF*(1.-gF)*4.*(1.-uDay);vec4 dd=texture2D(tD,uv);float dn=(dd.r*65280.+dd.g*255.)/65535.;c.rgb=grade(col,L,dn,s)*c.a;}gl_FragColor=c;}';
   var VS2 = 'attribute vec2 a;uniform vec2 uRes,uA,uF;uniform float uPpm;uniform vec4 uR;varying vec2 vU,vM;void main(){vU=a;vM=uR.xy+a*uR.zw;vec2 s=uA+(vM-uF)*uPpm;gl_Position=vec4(s.x/uRes.x*2.-1.,1.-s.y/uRes.y*2.,0.,1.);}';
-  var FS2 = 'precision highp float;varying vec2 vU,vM;uniform sampler2D tAt,tD;uniform vec2 uCa,uCb,uPl,uDr;uniform float uMix,uAl,uBy,uBd,uTan;' +
+  var FS2 = 'precision highp float;varying vec2 vU,vM;uniform sampler2D tAt,tD;uniform vec2 uCa,uCb,uPl,uDr,uRes,uA;uniform float uMix,uAl,uBy,uBd,uTan,uCool,uDay;' +
+    'vec3 grade(vec3 col,float L,float dn,vec2 s){float lum=dot(col,vec3(.2126,.7152,.0722));float q=uCool*(1.-.6*L);float wv=L*(1.-uCool);col=mix(col,col*col*(3.-2.*col),.22+.18*wv);col=mix(col,vec3(lum)*vec3(.87,.92,1.04),q*.5);col*=1.-.07*q;col+=wv*(vec3(.05,.025,-.035)*(1.-.35*uDay)*smoothstep(.3,1.,lum)+vec3(-.02,-.006,.03)*(1.-smoothstep(0.,.55,lum)));col=mix(col,mix(vec3(.8,.85,.94),vec3(.98,.95,.9),wv),smoothstep(.3,1.,dn)*(.24-.1*wv));float vg=smoothstep(.35,1.15,length((s-uA)/uRes.y));col*=1.-vg*(.1+.08*q);col.b+=vg*.02*q;return clamp(col,0.,1.);}' +
     'void main(){vec2 q=clamp(vU,.004,.996)*.125;vec4 c=mix(texture2D(tAt,uCb+q),texture2D(tAt,uCa+q),uMix);vec4 dd=texture2D(tD,vM/uPl);float D=uDr.x+(dd.r*65280.+dd.g*255.)/65535.*(uDr.y-uDr.x);' +
-    'float dy=uBy-vM.y;float fd=uBd-(dy>0.?dy*uTan:-dy/uTan);gl_FragColor=c*uAl*smoothstep(-.75,-.3,D-fd);}';
+    'float dy=uBy-vM.y;float fd=uBd-(dy>0.?dy*uTan:-dy/uTan);if(c.a>.001)c.rgb=grade(c.rgb/c.a,max(uDay,1.-uCool),(D-uDr.x)/(uDr.y-uDr.x),vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y))*c.a;gl_FragColor=c*uAl*smoothstep(-.75,-.3,D-fd);}';
   function prog(vs, fs) {
     var pr = gl.createProgram();
     [[gl.VERTEX_SHADER, vs], [gl.FRAGMENT_SHADER, fs]].forEach(function (x) { var s = gl.createShader(x[0]); gl.shaderSource(s, x[1]); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); gl.attachShader(pr, s); });
@@ -475,7 +481,7 @@
     gl.uniform2f(U.uRes, W, Hh); gl.uniform2f(U.uA, cam.ax * dpr, cam.ay * dpr); gl.uniform2f(U.uF, cam.fx, cam.fy); gl.uniform1f(U.uPpm, cam.ppm * dpr); gl.uniform2f(U.uPl, M.scale, M.scale / M.aspect); setLut(st); gl.uniform1i(U.tLut, 12);
     ['wide_col', 'wide_clay', 'mid_col', 'mid_clay', 'close_col', 'close_clay', 'macro_col', 'macro_clay', 'wide_id', 'mid_id', 'close_id', 'macro_id'].forEach(function (n, k) { gl.activeTexture(gl.TEXTURE0 + k); gl.bindTexture(gl.TEXTURE_2D, tex[n].t); gl.uniform1i(U[['tWc', 'tWk', 'tMc', 'tMk', 'tCc', 'tCk', 'tXc', 'tXk', 'tWi', 'tMi', 'tCi', 'tXi'][k]], k); });
     var dt2 = M.x[0] * M.y[1] - M.y[0] * M.x[1]; gl.uniform2f(U.uO, M.o[0], M.o[1]); gl.uniform2f(U.uIa, M.y[1] / dt2, -M.y[0] / dt2); gl.uniform2f(U.uIb, -M.x[1] / dt2, M.x[0] / dt2);
-    gl.uniform1f(U.uDay, st.all);
+    gl.uniform1f(U.uDay, st.all); gl.uniform1f(U.uCool, st.cool); gl.uniform2f(U.uDr, M.depth[0], M.depth[1]); gl.activeTexture(gl.TEXTURE13); gl.bindTexture(gl.TEXTURE_2D, tex.depth.t); gl.uniform1i(U.tD, 13);
     gl.uniform4f(U.uSun, M.hero[0], M.hero[1], st.sun, Math.min(6, st.sun * .8) + .01);
     gl.uniform4f(U.uTx, 1 / tex.wide_id.w, 1 / tex.mid_id.w, 1 / tex.close_id.w, 1 / tex.macro_id.w); gl.uniform4fv(U.uMid, M.mid); gl.uniform4fv(U.uClose, M.close); gl.uniform4fv(U.uMac, M.macro);
     var dp = cam.ppm * dpr, wp = tex.wide_col.w / M.scale, mp = tex.mid_col.w / (M.mid[2] * M.scale), cp = tex.close_col.w / (M.close[2] * M.scale);
@@ -484,7 +490,7 @@
     // --- sprites, far ones first
     U = P2.u; gl.useProgram(P2.p); gl.bindBuffer(gl.ARRAY_BUFFER, tex.quad); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     gl.uniform2f(U.uRes, W, Hh); gl.uniform2f(U.uA, cam.ax * dpr, cam.ay * dpr); gl.uniform2f(U.uF, cam.fx, cam.fy); gl.uniform1f(U.uPpm, cam.ppm * dpr); gl.uniform2f(U.uPl, M.scale, M.scale / M.aspect);
-    gl.uniform2f(U.uDr, M.depth[0], M.depth[1]); gl.uniform1f(U.uTan, TAN);
+    gl.uniform2f(U.uDr, M.depth[0], M.depth[1]); gl.uniform1f(U.uTan, TAN); gl.uniform1f(U.uCool, st.cool); gl.uniform1f(U.uDay, st.all);
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex.sprites.t); gl.uniform1i(U.tAt, 0); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, tex.depth.t); gl.uniform1i(U.tD, 1);
     var sp = [], wk = M.spr.walk, ar = M.spr.amr, w = st.walker;
     var fr = Math.floor(st.wd / wk.stride * 8) % 8;
