@@ -40,7 +40,7 @@
 .flr-on.flr-live .flr-gl{opacity:1}
 /* the words stand on the page's own ground: the picture thins out toward them */
 .flr-on .flr-fog{display:block;position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:linear-gradient(90deg,var(--flr-ground) 0,var(--flr-ground) 25%,rgba(240,246,255,.72) 32%,rgba(240,246,255,.22) 38%,rgba(240,246,255,0) 42%)}
+  background:linear-gradient(90deg,var(--flr-ground) 0,var(--flr-ground) 28%,rgba(240,246,255,.82) 35%,rgba(240,246,255,.3) 40.5%,rgba(240,246,255,0) 45%)}
 .flr-on .flr-fog::after{content:"";position:absolute;inset:0;opacity:var(--end,0);background:linear-gradient(90deg,var(--flr-ground) 0,rgba(240,246,255,.96) 36%,rgba(240,246,255,.5) 52%,rgba(240,246,255,0) 66%)}
 .flr-on .flr-ov{display:block;position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible}
 .flr-on .flr-dots{display:block;position:absolute;inset:0;z-index:1;pointer-events:none}
