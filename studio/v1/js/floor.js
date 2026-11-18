@@ -26,7 +26,7 @@
   var roll = document.createElement('div'); roll.className = 'flr-roll'; col.appendChild(head); col.appendChild(roll); stage.insertBefore(col, cv);
   var hn = head.querySelector('b'), hp = [].slice.call(head.querySelectorAll('i')), CH = ['Lost', 'Found', 'Seen'], chNow = -1;
   var SS = { 3: [.14, .5], 4: [.22, .46], 5: [.06, .34] };                            // when a sentence's words light, where the picture needs them later than usual
-  var AS = { 3: [.5, .78], 6: [.44, .78], 7: [.46, .62], 8: [.2, .7] }, AW = { 6: [.44, .55, .66, .75], 8: [.2, .22, .24, .26, .4, .42, .6, .62, .64] };   // the same for the second line; some words are timed to things in the picture
+  var AS = { 3: [.5, .78], 6: [.44, .78], 7: [.46, .62], 8: [.2, .7] }, AW = { 6: [.44, .55, .66, .75], 8: [.2, .22, .24, .26, .6, .62, .64] };   // the same for the second line; some words are timed to things in the picture
   var KC = { due: 'amber', pallet: 'amber', walker: 'ink', mid: 'ink' };
   var blocks = beats.map(function (b, bi) {
     var t = b.querySelector('.flr-t'), ps = [], keys = [];
@@ -240,6 +240,10 @@
   // routes
   var WALK = [[12.6, 14.6], [9.4, 14.6], [9.4, 7.5], [4.2, 7.5], [28.6, 7.5], [28.6, 4.9]], WL = [0], WTOT = 0;
   for (var wi = 1; wi < WALK.length; wi++) { WTOT += Math.hypot(WALK[wi][0] - WALK[wi - 1][0], WALK[wi][1] - WALK[wi - 1][1]); WL.push(WTOT); }
+  // the trolley's recorded journey, from the line where it was filled to the corner where it stopped
+  var TRIP = [[11.2, 15.2], [9.4, 14.6], [9.4, 9.6], [28.6, 9.6], [28.6, 4.9], [27.1, 4.5]], TL = [0], TTOT = 0;
+  for (var ti = 1; ti < TRIP.length; ti++) { TTOT += Math.hypot(TRIP[ti][0] - TRIP[ti - 1][0], TRIP[ti][1] - TRIP[ti - 1][1]); TL.push(TTOT); }
+  function tripAt(d) { d = Math.max(0, Math.min(TTOT, d)); for (var i = 1; i < TRIP.length; i++) if (d <= TL[i] || i === TRIP.length - 1) { var t = (d - TL[i - 1]) / (TL[i] - TL[i - 1]); return { x: lerp(TRIP[i - 1][0], TRIP[i][0], t), y: lerp(TRIP[i - 1][1], TRIP[i][1], t), seg: i }; } }
   function walkAt(d) {
     d = Math.max(0, Math.min(WTOT, d));
     for (var i = 1; i < WALK.length; i++) if (d <= WL[i] || i === WALK.length - 1) {
@@ -278,7 +282,7 @@
       case 1: return phone ? { f: [lerp(w.x, 12, .25), lerp(w.y, 10, .25), .8], s: 17 } : { f: [lerp(w.x, 14, .55), lerp(w.y, 10, .6), .6], s: 31 };
       case 2: var e = ease(seg(u, .5, .95)); return phone ? { f: [lerp(21, H[0], e), lerp(9.5, H[1], e), .6], s: lerp(26, 11, e) } : { f: [lerp(19.5, H[0] - 1, e), lerp(10.2, H[1] + .4, e), .6], s: lerp(33, 15, e) };
       case 3: return phone ? { f: [T[0], T[1], T[2] - .01], s: .17 } : { f: [T[0], T[1], T[2]], s: .22 };
-      case 4: return phone ? { f: [21.5, 8, 2.6], s: 23 } : { f: [17, 8.6, 2.4], s: 35 };
+      case 4: return phone ? { f: [20.5, 8.6, .5], s: 20.5 } : { f: [19, 9.8, .5], s: 29 };
       case 5: return phone ? { f: [H[0], H[1], .8], s: 5.4 } : { f: [H[0] - .2, H[1], .8], s: 8.4 };
       case 6: return phone ? { f: [14.5, 10, .5], s: 31 } : { f: [16, 9.6, .5], s: 38 };
       case 7: return phone ? { f: [15.5, 9.6, .5], s: 28 } : { f: [16.4, 9.4, .5], s: 35 };
@@ -308,16 +312,16 @@
     st.due = i <= 2 ? (i === 0 ? seg(u, .1, .22) : 1) : i === 3 ? 1 - seg(u, 0, .25) : 0;
     st.meas = i === 2 ? ease(seg(u, .08, .42)) : 0; st.measA = i === 2 ? 1 : i === 3 ? 1 - seg(u, 0, .25) : 0;
     st.tag = i < 3 ? 0 : i === 3 ? ease(seg(u, .3, .44)) : 1;
-    st.lines = i === 3 ? ease(seg(u, .6, .86)) * .12 : i === 4 ? lerp(.12, 1, ease(seg(u, .04, .5))) : i === 5 ? 1 : 0;
-    st.linesA = i === 3 ? seg(u, .6, .64) : i === 4 ? 1 : i === 5 ? lerp(1, .0, seg(u, .3, .5)) : 0;
-    st.anch = i < 4 ? 0 : i === 4 ? ease(seg(u, .22, .4)) : 1;
+    st.lines = 0; st.linesA = 0; st.anch = 0;
+    st.trip = i < 4 ? 0 : i === 4 ? ease(seg(u, .3, .8)) : 1;
+    st.tripA = i < 4 ? 0 : i === 4 ? seg(u, .26, .32) : i === 5 ? 1 - seg(u, .14, .34) : 0;
     st.heroC = i < 5 ? 0 : i === 5 ? ease(seg(u, .2, .34)) : 1;
     st.fix = i === 5 ? ease(seg(u, .46, .6)) : 0;
     st.wave = i < 6 ? 0 : i === 6 ? u : 2;
     st.all = i < 6 ? 0 : i === 6 ? ease(seg(u, .86, .97)) : 1;
     st.dots = i < 5 ? 0 : 1;
     st.amber = i === 7 ? ease(seg(u, .56, .68)) : i >= 8 ? 1 : 0;
-    st.l1 = i < 8 ? 0 : i === 8 ? ease(seg(u, .2, .3)) : 1; st.l2 = i < 8 ? 0 : i === 8 ? ease5(seg(u, .36, .56)) : 1; st.l3 = i < 8 ? 0 : i === 8 ? ease5(seg(u, .56, .82)) : 1;
+    st.l1 = i < 8 ? 0 : i === 8 ? ease(seg(u, .2, .3)) : 1; st.l2 = 0; st.l3 = i < 8 ? 0 : i === 8 ? ease5(seg(u, .34, .8)) : 1;
     // sunlight: Lost stands under a flat sky. Light opens around the first thing that is located, then crosses the whole floor.
     st.sun = i < 5 ? 0 : i === 5 ? 4.5 * ease(seg(u, .2, .5)) : i === 6 ? lerp(4.5, 48, ease(seg(u, .03, .42))) : 99;
     st.axes = i < 5 ? 0 : i === 5 ? seg(u, .5, .7) : 1;
@@ -329,6 +333,8 @@
   function el(n, c) { var e = document.createElementNS(NS, n); if (c) e.setAttribute('class', c); ov.appendChild(e); return e; }
   var bayP = el('polygon', 'l-bay'), trailP = el('polyline', 'l-trail'), measL = el('line', 'l-ink'), measA = el('circle', 'f-ink'), measB = el('circle', 'f-ink');
   var rays = [0, 1, 2].map(function () { return { l: el('line', 'l-blue'), d: el('line', 'l-pulse') }; });
+  var tripP = el('polyline', 'l-trip'), tripC = [], tripH = el('circle', 'f-head'); tripH.setAttribute('r', 5);
+  for (var tc = 1.4; tc < TTOT; tc += 1.4) { var cc = el('circle', 'f-crumb'); cc.setAttribute('r', 2.4); tripC.push({ e: cc, d: tc }); }
   var bar = el('line', 'l-ink'), barA = el('line', 'l-ink'), barB = el('line', 'l-ink'), barT = el('text');
   barT.setAttribute('style', 'font:500 14px "AmI Text",Arial,sans-serif;fill:#0b1238'); barT.textContent = '10 cm';
   [measA, measB].forEach(function (c) { c.setAttribute('r', 3.5); }); 
@@ -439,7 +445,7 @@
     function nearest(x, y) { var b = null; things.forEach(function (t) { if (t.amr === undefined && (!b || Math.hypot(t.x - x, t.y - y) < Math.hypot(b.x - x, b.y - y))) b = t; }); return b; }
     var buf = nearest(8.46, 5.6); amberIdx = { hero: nearest(H[0], H[1]), pallet: nearest(M.pallet[0], M.pallet[1]), buf: buf };
     for (var k in amberIdx) amberIdx[k].amber = true;
-    M.pt = { due: [M.due[0], M.due[1], 0], hero: [H[0], H[1], 1.02], tag: M.tag, a0: M.anch[0], a1: M.anch[1], a2: M.anch[2], pallet: [M.pallet[0], M.pallet[1], 1.25], buf: [buf.x, buf.y, 1.02],
+    M.pt = { stop: [27, 4.5, 1.02], due: [M.due[0], M.due[1], 0], hero: [H[0], H[1], 1.02], tag: M.tag, a0: M.anch[0], a1: M.anch[1], a2: M.anch[2], pallet: [M.pallet[0], M.pallet[1], 1.25], buf: [buf.x, buf.y, 1.02],
       mid: [(M.due[0] + H[0]) / 2, (M.due[1] + H[1]) / 2, 0], corner: [30, 0, 0], tr: [15, 16.3, 1.02] };
     M.ns = M.anch.map(function (a) { return Math.hypot(a[0] - M.tag[0], a[1] - M.tag[1], a[2] - M.tag[2]) / .299792458; });
     var c = S.querySelector('.flr-count');
@@ -501,16 +507,23 @@
     a = scr(D[0], D[1], 0); q = scr(M.hero[0], M.hero[1], 0); b2 = [lerp(a[0], q[0], st.meas), lerp(a[1], q[1], st.meas)];
     show(measL, st.measA * (st.meas > 0 ? 1 : 0)); show(measA, st.measA * (st.meas > 0 ? 1 : 0)); show(measB, st.measA * (st.meas >= 1 ? 1 : 0));
     measL.setAttribute('x1', a[0]); measL.setAttribute('y1', a[1]); measL.setAttribute('x2', b2[0]); measL.setAttribute('y2', b2[1]); measA.setAttribute('cx', a[0]); measA.setAttribute('cy', a[1]); measB.setAttribute('cx', q[0]); measB.setAttribute('cy', q[1]);
+    var td = st.trip * TTOT, th = tripAt(td);
+    show(tripP, st.tripA * (td > .05 ? 1 : 0)); show(tripH, st.tripA * (st.trip > 0 && st.trip < 1 ? 1 : 0));
+    if (st.tripA > 0) {
+      var tp = [scr(TRIP[0][0], TRIP[0][1], .02)]; for (k = 1; k < th.seg; k++) tp.push(scr(TRIP[k][0], TRIP[k][1], .02)); var thp = scr(th.x, th.y, .02); tp.push(thp);
+      tripP.setAttribute('points', tp.map(function (v) { return v[0].toFixed(1) + ',' + v[1].toFixed(1); }).join(' ')); tripH.setAttribute('cx', thp[0]); tripH.setAttribute('cy', thp[1]);
+      tripC.forEach(function (C) { var on = C.d <= td; if (on) { var q = tripAt(C.d), sq = scr(q.x, q.y, .02); C.e.setAttribute('cx', sq[0]); C.e.setAttribute('cy', sq[1]); } show(C.e, on ? st.tripA * (.35 + .65 * Math.max(0, 1 - (td - C.d) / 14)) : 0); });
+    } else tripC.forEach(function (C) { show(C.e, 0); });
+    if (i === 4 && st.trip >= 1 && !frame.arr) { frame.arr = true; snd.pop(4); } if (i < 4 || (i === 4 && st.trip < 1)) frame.arr = false;
     var tg = scr(M.tag[0], M.tag[1], M.tag[2]), cyc = (time % 2.6) / 2.6, mx = Math.max.apply(null, M.ns);
     rays.forEach(function (r, k) {
       var an = scr(M.anch[k][0], M.anch[k][1], M.anch[k][2] - .12), gk = Math.min(1, st.lines * mx / M.ns[k]), e = [lerp(tg[0], an[0], gk), lerp(tg[1], an[1], gk)];
       show(r.l, st.linesA * (st.lines > 0 ? .9 : 0)); r.l.setAttribute('x1', tg[0]); r.l.setAttribute('y1', tg[1]); r.l.setAttribute('x2', e[0]); r.l.setAttribute('y2', e[1]);
       var t = cyc * 1.5 * mx / M.ns[k], vis = st.lines >= 1 && t <= 1 ? st.linesA : 0; var t0 = Math.max(0, t - 3 / M.ns[k]); show(r.d, vis); r.d.setAttribute('x1', lerp(tg[0], an[0], t0)); r.d.setAttribute('y1', lerp(tg[1], an[1], t0)); r.d.setAttribute('x2', lerp(tg[0], an[0], Math.min(1, t))); r.d.setAttribute('y2', lerp(tg[1], an[1], Math.min(1, t)));
-      var la = i === 4 ? ease(seg(u, .5 + k * .06, .58 + k * .06)) : i === 5 ? 1 - seg(u, .1, .3) : 0; tl[k].style.opacity = la; tl[k].style.display = la > 0 ? '' : 'none';
+      var la = 0; tl[k].style.opacity = la; tl[k].style.display = la > 0 ? '' : 'none';
       if (la > 0) { tl[k].style.transform = 'translate(' + (an[0] + 12).toFixed(1) + 'px,' + (an[1] - 24).toFixed(1) + 'px)'; var gp = (i === 4 && u > .6) || i === 5, tv = gp ? '+' + (M.ns[k] - Math.min.apply(null, M.ns)).toFixed(1) + ' ns' : M.ns[k].toFixed(1) + ' ns'; if (tl[k].tv !== tv) { tl[k].tv = tv; tl[k].textContent = tv; } }
     });
     if (i === 3 && u > .62 && !pulsed) { pulsed = true; snd.pulse(M.ns); } if (i < 3 || (i === 3 && u < .5)) pulsed = false;
-    if (i === 4 && st.lines >= 1 && Math.floor(time / 2.6) !== frame.cy) { frame.cy = Math.floor(time / 2.6); snd.pulse(M.ns); }
     if (st.fix > .5 && !fixed) { fixed = true; snd.fix(); } if (i < 5) fixed = false;
     // the 10 cm bar, true to scale, beside the located point
     var hp = scr(M.hero[0], M.hero[1], 1.02), bw = .1 * cam.ppm, bx = hp[0] + 16, by = hp[1] + 22;
@@ -529,7 +542,7 @@
     notes.forEach(function (n) {
       var inn;
       if (n.at === 'due') inn = st.due > .5 && i < 3; else if (n.at === 'mid') inn = i === 2 && st.meas >= 1 && u < .93;
-      else if (n.at === 'walker') inn = (i === 1 && u > .3) || (i === 2 && u < .34); else if (n.bi === 3) inn = i === 3 && u > .5; else if (n.bi === 4) inn = i === 4 && st.anch > .7 && u < .97;
+      else if (n.at === 'walker') inn = (i === 1 && u > .3) || (i === 2 && u < .34); else if (n.bi === 3) inn = i === 3 && u > .5; else if (n.bi === 4) inn = i === 4 && st.trip >= 1 && u < .97;
       else if (n.bi === 5) inn = i === 5 && st.fix > .4; else if (n.bi === 7) inn = i === 7 && (n.at === 'amr0' ? u > .2 && AMRI[0].x > 5 && AMRI[0].x < 20.5 && AMRI[0].y < 9.5 : st.amber > .5) && u < .96; else if (n.bi === 8) inn = i >= 8 && st['l' + n.at[1]] > .6; else inn = n.bi === i;
       var pt = n.at[0] === 'L' ? [30, 0, [0, 0, LZ[0], LZ[1]][+n.at[1]]] : n.at === 'amr0' ? [AMRI[0].x, AMRI[0].y, 1.9] : n.at === 'walker' ? [w.x, w.y, 1.95] : M.pt[n.at], s = scr(pt[0], pt[1], pt[2]);
       if (phone ? s[1] < vh * .4 : s[0] < vw * .42) inn = false;          // never over the copy
@@ -552,14 +565,14 @@
     // --- the layers
     var la = Math.max(st.l2, st.l3); show(layG, la > 0 ? 1 : 0);
     if (la > 0) {
-      LZ[0] = lerp(5.25, 11.5, st.l2); LZ[1] = lerp(LZ[0], 23, st.l3);
-      lay2.style.opacity = st.l2; poly(lay2, LZ[0]); lay3.style.opacity = st.l3; poly(lay3, LZ[1]);
-      [[0, 0], [30, 0], [30, 20], [0, 20]].forEach(function (v, k) { var a = scr(v[0], v[1], 0), b = scr(v[0], v[1], LZ[1]); layP[k].setAttribute('x1', a[0]); layP[k].setAttribute('y1', a[1]); layP[k].setAttribute('x2', b[0]); layP[k].setAttribute('y2', b[1]); layP[k].style.opacity = st.l2 * .8; });
-      layA.forEach(function (A, k) { var an = M.anch[k], a = scr(an[0], an[1], an[2]), b = scr(an[0], an[1], LZ[0]); A.l.setAttribute('x1', a[0]); A.l.setAttribute('y1', a[1]); A.l.setAttribute('x2', b[0]); A.l.setAttribute('y2', b[1]); A.r.setAttribute('x', b[0] - 3.5); A.r.setAttribute('y', b[1] - 3.5); A.l.style.opacity = A.r.style.opacity = st.l2; });
+      LZ[0] = 0; LZ[1] = lerp(2, 23, st.l3);
+      lay2.style.opacity = 0; lay3.style.opacity = st.l3; poly(lay3, LZ[1]);
+      [[0, 0], [30, 0], [30, 20], [0, 20]].forEach(function (v, k) { var a = scr(v[0], v[1], 0), b = scr(v[0], v[1], LZ[1]); layP[k].setAttribute('x1', a[0]); layP[k].setAttribute('y1', a[1]); layP[k].setAttribute('x2', b[0]); layP[k].setAttribute('y2', b[1]); layP[k].style.opacity = st.l3 * .8; });
+      layA.forEach(function (A, k) { var an = M.anch[k], a = scr(an[0], an[1], an[2]), b = scr(an[0], an[1], LZ[0]); A.l.setAttribute('x1', a[0]); A.l.setAttribute('y1', a[1]); A.l.setAttribute('x2', b[0]); A.l.setAttribute('y2', b[1]); A.r.setAttribute('x', b[0] - 3.5); A.r.setAttribute('y', b[1] - 3.5); A.l.style.opacity = A.r.style.opacity = 0; });
       layL.forEach(function (A) { var a = scr(A.q[0], A.q[1], LZ[1]), b = scr(A.q[2], A.q[3], LZ[1]); A.l.setAttribute('x1', a[0]); A.l.setAttribute('y1', a[1]); A.l.setAttribute('x2', b[0]); A.l.setAttribute('y2', b[1]); A.l.style.opacity = st.l3; });
       things.forEach(function (t, n) {
-        var c = layD[n]; if (!c) { c = layD[n] = document.createElementNS(NS, 'circle'); c.setAttribute('r', 2.6); layG.appendChild(c); }
-        var q = scr(t.x, t.y, LZ[1]); c.setAttribute('cx', q[0]); c.setAttribute('cy', q[1]); c.setAttribute('class', t.amber ? 'dw' : 'd'); c.style.opacity = st.l3;
+        var c = layD[n]; if (!c) { var th2 = document.createElementNS(NS, 'line'); th2.setAttribute('class', 'thr'); layG.insertBefore(th2, lay3); c = layD[n] = document.createElementNS(NS, 'circle'); c.setAttribute('r', 2.6); c.thr = th2; layG.appendChild(c); }
+        var q = scr(t.x, t.y, LZ[1]), q0 = scr(t.x, t.y, 1.1); c.thr.setAttribute('x1', q0[0]); c.thr.setAttribute('y1', q0[1]); c.thr.setAttribute('x2', q[0]); c.thr.setAttribute('y2', q[1]); c.thr.style.opacity = (st.l3 * .5).toFixed(2); c.setAttribute('cx', q[0]); c.setAttribute('cy', q[1]); c.setAttribute('class', t.amber ? 'dw' : 'd'); c.style.opacity = st.l3;
       });
     }
     // --- the hairs that tie a word to its thing

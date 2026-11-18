@@ -46,6 +46,10 @@
 .flr-on .flr-dots{display:block;position:absolute;inset:0;z-index:1;pointer-events:none}
 .flr-ov .l-blue{stroke:var(--flr-blue);stroke-width:1.5;fill:none;stroke-linecap:round}
 .flr-ov .l-ink{stroke:var(--flr-ink);stroke-width:1.5;fill:none;stroke-linecap:round}
+.flr-ov .l-trip{stroke:var(--flr-blue);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
+.flr-ov .f-crumb{fill:var(--flr-blue);stroke:#fff;stroke-width:1.2}
+.flr-ov .f-head{fill:var(--flr-blue);stroke:#fff;stroke-width:2.5}
+.flr-ov .l-lay .thr{stroke:var(--flr-blue);stroke-width:1}
 .flr-ov .l-trail{stroke:var(--flr-ink);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:.1 7;opacity:.55}
 .flr-ov .l-bay{stroke:var(--flr-amber);stroke-width:2;fill:rgba(255,176,32,.14);stroke-linejoin:round}
 .flr-ov .f-blue{fill:var(--flr-blue)}
