@@ -1248,26 +1248,31 @@ html.tag-live .hero .hx-act.k-fade,html.tag-live .hero .hx-facts.k-fade{transiti
 @media (max-width:860px){.bs-t{font-size:1.75rem}}
 @media (max-width:860px){.trio .tm-name{font-size:1rem}.trio .tm-role{font-size:.8125rem}}
 
-/* ===== THE FLASH, 18 Nov: Stripe's line above the headline, run like a news flash on a TV screen. One compact pill, text
-   only: an ink label and the headline beside it. Every 5 s the headline rolls up and the next one rolls in. Pure CSS (no
-   script); hover or focus holds it; with reduced motion it shows the first one only. Each opens its story. ===== */
-.hero .hx-flash{display:inline-flex;align-self:flex-start;justify-self:start;width:fit-content;max-width:100%;margin:0 0 clamp(6px,1.4vh,18px);padding:4px 16px 4px 4px;border-radius:999px;background:rgba(255,255,255,.72);box-shadow:0 0 0 1px rgba(11,18,56,.09),0 8px 22px -16px rgba(11,18,56,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);pointer-events:auto}
-.hx-flash ul{list-style:none;margin:0;padding:0;display:grid;overflow:hidden;min-width:0}
-.hx-flash li{grid-area:1 / 1;min-width:0;animation:hx-roll 25s linear infinite both;visibility:hidden}
-.hx-flash li:nth-child(2){animation-delay:5s}.hx-flash li:nth-child(3){animation-delay:10s}.hx-flash li:nth-child(4){animation-delay:15s}.hx-flash li:nth-child(5){animation-delay:20s}
-.hx-flash:hover li,.hx-flash:focus-within li{animation-play-state:paused}
-@keyframes hx-roll{0%{transform:translateY(105%);visibility:visible}2.4%,18%{transform:none;visibility:visible}20.4%{transform:translateY(-105%);visibility:visible}20.5%,100%{transform:translateY(-105%);visibility:hidden}}
-.hx-flash a{display:flex;align-items:center;gap:12px;min-height:32px;color:var(--ink-soft);text-decoration:none;font:400 .9rem/1.3 var(--text);white-space:nowrap}
-.hx-flash b{flex:none;padding:7px 11px;border-radius:999px;background:var(--ink);color:#fff;font:500 .78rem/1 var(--text);letter-spacing:.01em}
-.hx-flash span{overflow:hidden;text-overflow:ellipsis;transition:color .25s}
-.hx-flash svg{flex:none;width:12px;height:12px;fill:none;stroke:var(--accent);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:transform .45s var(--ease-out)}
-.hx-flash a:hover span,.hx-flash a:focus-visible span{color:var(--ink)}
-.hx-flash a:hover svg,.hx-flash a:focus-visible svg{transform:translateX(4px)}
-.hx-flash a:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:999px}
-html.tag-live .hero .hx-flash.k-fade{transition:opacity .9s var(--ease),transform 1.2s var(--ease-out)}
-html.tag-live .hero .hx-flash.k-fade:not(.in){opacity:0;transform:translateY(-10px)}
-@media (max-width:900px){.hero .hx-flash{margin:0 0 14px;padding-right:12px}.hx-flash a{font-size:.84rem;gap:10px}.hx-flash b{padding:6px 10px}}
-@media (prefers-reduced-motion:reduce){.hx-flash li{animation:none;visibility:visible}.hx-flash li+li{display:none}}
+/* ===== THE WIRE, 18 Nov: the hero's lower third. Stripe keeps a slow rail of names along the foot of its hero; TV runs its
+   headlines along the bottom of the screen. This is both: one hairline-topped, frosted rail across the full width, a fixed
+   ink "Latest" key on the left, and the founders' headlines crawling past, each with its kind in the accent. Pure CSS;
+   it holds on hover or focus; with reduced motion it stops and scrolls by hand. Each opens its story. ===== */
+.hero .hx-wire{position:absolute;z-index:4;left:0;right:0;bottom:0;display:flex;align-items:center;height:var(--wire);padding:0 0 0 var(--m);border-top:1px solid rgba(11,18,56,.08);background:rgba(255,255,255,.58);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);font:400 .9rem/1 var(--text);opacity:var(--glow,1)}
+.hero{--wire:58px}
+.hx-wire-k{flex:none;position:relative;z-index:1;display:inline-flex;align-items:center;height:30px;padding:0 14px;border-radius:8px;background:var(--ink);color:#fff;text-decoration:none;font-weight:500;font-size:.8rem;letter-spacing:.01em;transition:background .3s}
+.hx-wire-k:hover,.hx-wire-k:focus-visible{background:var(--accent)}
+.hx-wire-v{position:relative;flex:1;min-width:0;height:100%;overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent 0,#000 22px,#000 calc(100% - 96px),transparent);mask:linear-gradient(90deg,transparent 0,#000 22px,#000 calc(100% - 96px),transparent)}
+.hx-wire-t{display:flex;width:max-content;height:100%;animation:hx-crawl 150s linear infinite}
+.hx-wire:hover .hx-wire-t,.hx-wire:focus-within .hx-wire-t{animation-play-state:paused}
+@keyframes hx-crawl{to{transform:translateX(-50%)}}
+.hx-wire ul{list-style:none;margin:0;padding:0;display:flex;align-items:center}
+.hx-wire li{display:flex;align-items:center;height:100%;padding:0 34px;white-space:nowrap}
+.hx-wire li+li{border-left:1px solid rgba(11,18,56,.12)}
+.hx-wire ul+ul{border-left:1px solid rgba(11,18,56,.12)}
+.hx-wire li a{display:inline-flex;align-items:baseline;gap:10px;color:var(--ink-soft);text-decoration:none;background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;padding:6px 0;transition:color .25s,background-size .45s var(--ease-out)}
+.hx-wire li b{font-weight:500;color:var(--accent)}
+.hx-wire li a:hover,.hx-wire li a:focus-visible{color:var(--ink);background-size:100% 1px}
+.hx-wire a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.hero .hero-foot{display:none}
+@media (min-width:901px){.hero,.hero-copy{min-height:calc(100svh - 64px)}.hero-copy{padding-bottom:calc(var(--wire) + 5vh);gap:clamp(28px,5vh,60px)}}
+@media (min-width:1500px){.hero .display{font-size:clamp(6.6rem,7.5vw - .5rem,8.5rem)}}
+@media (max-width:900px){.hero{--wire:48px}.hero .hx-wire{font-size:.82rem}.hx-wire-k{height:26px;padding:0 11px;font-size:.75rem}.hx-wire li{padding:0 24px}.hero-copy{padding-bottom:calc(var(--wire) + max(24px,3.5svh))}}
+@media (prefers-reduced-motion:reduce){.hx-wire-t{animation:none}.hx-wire-v{overflow-x:auto;scrollbar-width:none}.hx-wire ul[aria-hidden]{display:none}}
 
 /* ===== THE BROCHURE, 18 Nov: one button under the three parts. Ink at rest like the site's buttons; on hover an indigo
    liquid rises through it, its surface turning slowly, and the arrow drops. ===== */
