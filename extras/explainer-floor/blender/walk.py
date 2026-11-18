@@ -44,6 +44,22 @@ def pose_stand():
     u, l = ARM('L'); chain(u, (.2, .1, -1)); chain(l, (-.25, -.5, -.6)); aim('wrist.L', (-.5, -.5, -.3))   # hand on hip-ish / holding a tablet
     u, l = ARM('R'); chain(u, (-.16, -.05, -1)); chain(l, (-.02, -.75, -.55)); aim('wrist.R', (.1, -.9, -.2))
 
+def pose_look(sd):
+    """Stopped, weight on one leg, head and shoulders turned to scan an aisle. sd = +1 left, -1 right."""
+    pose_stand(); turn('head', 12)                         # undo the stand's glance down-left
+    turn('spine03', 9 * sd); turn('spine04', 6 * sd); turn('neck01', 13 * sd); turn('head', 24 * sd); turn('head', -5, (1, 0, 0))
+    u, l = ARM('L'); chain(u, (.16, .02, -1)); chain(l, (.12, -.15, -1)); aim('wrist.L', (.05, -.2, -1))
+    u, l = ARM('R'); chain(u, (-.16, .02, -1)); chain(l, (-.12, -.15, -1)); aim('wrist.R', (-.05, -.2, -1))
+def pose_hips():
+    """Hands on hips, head dropped: the dead end."""
+    pose_stand(); turn('head', 12); turn('head', 14, (1, 0, 0)); turn('neck01', 6, (1, 0, 0))
+    u, l = ARM('L'); chain(u, (.45, .15, -.9)); chain(l, (-.5, -.35, -.25)); aim('wrist.L', (-.5, -.3, -.3))
+    u, l = ARM('R'); chain(u, (-.45, .15, -.9)); chain(l, (.5, -.35, -.25)); aim('wrist.R', (.5, -.3, -.3))
+def pose_tablet(nod):
+    """At his station, a tablet held in both hands; nod tips the head down to read it."""
+    pose_stand(); turn('head', 12); turn('head', 14 + nod * 14, (1, 0, 0))
+    u, l = ARM('L'); chain(u, (.2, -.15, -1)); chain(l, (-.3, -.85, -.1)); aim('wrist.L', (-.4, -.8, .1))
+    u, l = ARM('R'); chain(u, (-.2, -.15, -1)); chain(l, (.3, -.85, -.1)); aim('wrist.R', (.4, -.8, .1))
 import math as _m
 def pose_w(ph):
     """One frame of a plain walk. ph in 0..1; the right leg leads at ph = 0."""
@@ -62,7 +78,7 @@ import plant as P
 P.sc = bpy.context.scene; P.col = bpy.context.scene.collection
 hat0 = P.b_hardhat(); ink = P.M()['ink']
 made = []
-POSES = [('search', pose_search), ('stand', pose_stand)] + [('w%d' % k, (lambda k=k: pose_w(k / 8.))) for k in range(8)]
+POSES = [('search', pose_search), ('stand', pose_stand), ('lookL', lambda: pose_look(1)), ('lookR', lambda: pose_look(-1)), ('hips', pose_hips), ('tab0', lambda: pose_tablet(0)), ('tab1', lambda: pose_tablet(1))] + [('w%d' % k, (lambda k=k: pose_w(k / 8.))) for k in range(8)]
 rb = rig.matrix_world @ rig.pose.bones['root'].head; CXY = None
 for name, fn in POSES:
     fn(); dg = bpy.context.evaluated_depsgraph_get(); parts = []

@@ -166,3 +166,15 @@
   .flr-pin{left:-3.5px;top:-3.5px;margin:0}
 }
 
+/* the turn: the picture side goes dark for a breath before Found */
+.flr-dim{display:none}
+.flr-on .flr-dim{display:block;position:absolute;inset:0;z-index:3;pointer-events:none;opacity:var(--dim,0);background:linear-gradient(90deg,rgba(6,10,30,0) 27%,rgba(6,10,30,.5) 36%,rgba(6,10,30,.76) 48%)}
+/* chapter cards: the title of each chapter, once, like a film */
+.flr-card{display:none}
+.flr-on .flr-card{display:block;position:absolute;left:68.5%;top:50%;z-index:3;pointer-events:none;opacity:0;transform:translate(-50%,-50%);font:600 clamp(56px,8.4vw,132px)/1 "AmI Display","AmI Text",Arial,sans-serif;letter-spacing:-.045em;color:var(--flr-ink);white-space:nowrap}
+.flr-on .flr-card.c1{color:#f4f7ff}
+.flr-on .flr-card.go{animation:flr-card 1.7s cubic-bezier(.2,.7,.2,1) both}
+@keyframes flr-card{0%{opacity:0;transform:translate(-50%,-46%)}22%{opacity:1;transform:translate(-50%,-50%)}62%{opacity:1}100%{opacity:0;transform:translate(-50%,-52%)}}
+@media (max-aspect-ratio:4/5){.flr-on .flr-card{left:50%;top:64%}.flr-on .flr-dim{background:linear-gradient(180deg,rgba(6,10,30,0) 30%,rgba(6,10,30,.74) 54%)}}
+@media (prefers-reduced-motion:reduce){.flr-on .flr-card.go{animation:none}}
+.flr-shot .flr-card{display:none!important}
