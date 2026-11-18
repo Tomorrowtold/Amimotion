@@ -193,9 +193,12 @@ function frame(t) {
   if (drawBridge) drawBridge(t);
   if (drawStory && storyOn) drawStory(t);
   knFrame();
-  if (pf && !reduce) { const r = pro.getBoundingClientRect(); const k = clamp(-r.top / (r.height - innerHeight) * 1.25 + .15); const e = 1 - Math.pow(1 - k, 3);
+  // read every box first, then write: a read after a style write forces a fresh layout on every frame
+  const pr = pf && !reduce ? pro.getBoundingClientRect() : null;
+  const pk = !reduce && pics.length ? pics.map((el) => el.parentElement.getBoundingClientRect()) : null;
+  if (pr) { const k = clamp(-pr.top / (pr.height - innerHeight) * 1.25 + .15); const e = 1 - Math.pow(1 - k, 3);
     pf.style.setProperty('--pi', `${(1 - e) * 18}%`); pf.style.setProperty('--pj', `${(1 - e) * 22}%`); pf.style.setProperty('--pr', `${(1 - e) * 28}px`); pf.style.setProperty('--ps', `${1.18 - e * .18}`); }
-  if (!reduce && pics.length) for (const el of pics) { const r = el.parentElement.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue; const k = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; el.style.setProperty('--py', `${k * -5}%`); }
+  if (pk) pics.forEach((el, i) => { const r = pk[i]; if (r.bottom < 0 || r.top > innerHeight) return; const v = `${((r.top + r.height / 2 - innerHeight / 2) / innerHeight) * -5}%`; if (el._py !== v) { el._py = v; el.style.setProperty('--py', v); } });
   if (t < until) requestAnimationFrame(frame); else looping = false;
 }
 kick();

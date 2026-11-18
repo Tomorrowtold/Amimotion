@@ -82,12 +82,11 @@
   let lastY = scrollY;
   const onScroll = () => {
     const y = scrollY, dy = y - lastY; lastY = y;
+    // reads before writes, so a scroll never forces a fresh layout
+    const past = long ? (head ? head.getBoundingClientRect().bottom < 80 : y > innerHeight * .8) : false;
+    const prog = long ? Math.min(1, y / Math.max(1, d.documentElement.scrollHeight - innerHeight)).toFixed(4) : '';
     top.classList.toggle('compact', y > 8);
-    if (long) {
-      const past = head ? head.getBoundingClientRect().bottom < 80 : y > innerHeight * .8;
-      top.classList.toggle('reading', past);
-      top.style.setProperty('--p', Math.min(1, y / Math.max(1, d.documentElement.scrollHeight - innerHeight)).toFixed(4));
-    }
+    if (long) { top.classList.toggle('reading', past); top.style.setProperty('--p', prog); }
     if (P.some(p => p.open) || top.contains(d.activeElement) && d.activeElement !== d.body) return;
     if (y > innerHeight * .9 && dy > 6) top.classList.add('away'); else if (dy < -6 || y < innerHeight * .9) top.classList.remove('away');
   };
