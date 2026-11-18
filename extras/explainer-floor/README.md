@@ -47,3 +47,11 @@ The section closes on the three layers: tags on the floor, anchors above, AmIHub
 - The truck reads from above: a 40 ft container (corrugation across its length, weathered roof) on a skeletal trailer, coupled to a cab-over tractor in AmIMotion's ink, standing whole on its own apron (`blender/truck2.py`). The wide plates are framed larger (`SCALE=52`, 4405 px) at the same pixels per metre, so nothing is cut at the edge (`renderall4.sh`, then `pack3.py` repacks only the wide plates and updates `floor.json`).
 - Controlled scroll (`floor.js`, "controlled scroll"): inside the story one wheel turn, swipe or key glides to the next resting point, where that sentence's words, picture and sound have all arrived. The page is held while the story runs, so a long flick cannot carry past a sentence. Before the first and after the last resting point the page scrolls as usual. Off for reduced motion.
 - Words, picture, sound and the phone's vibration all follow the one scroll value.
+
+## Round 6 (last-version audit)
+- Supervisor legs restored: floor.json cam/view now match the reframed wide camera (pack3.py writes them), so depth occlusion no longer clips the sprite.
+- Removed depth blur, light shafts and floor pools; grade and the left dim softened so every detail reads sharp.
+- AMR and supervisor caught shadows feather out at the sprite cell edge (FS2), so no hard-edged smudges.
+- pack3.py heals the black slivers where rack tops meet the back wall.
+- Supervisor poses re-rendered at 512 px a cell (`CELL=512 venv/bin/python sprites3.py out/spr3x`, then packposes.py): an 8 x 4 sheet, read with the uK uniform.
+- Notes sit on a crisp paper slip (no blur halo) above the lead lines; the 10 cm bar sits clear of the trolley; axis numbers hide under the copy and at the edge; the text fog is narrower so the truck shows.

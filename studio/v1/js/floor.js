@@ -388,9 +388,9 @@
     // the turn: the light drops and the plant goes quiet for a moment before Found
     st.dim = i === 2 ? ease(seg(u, .8, 1)) : i === 3 ? 1 - ease(seg(u, .05, .3)) : 0;
     // window light crawling across the floor while the minutes pass
-    st.shaft = i < 3 ? [lerp(-2, 26, (i + u) / 3), .16 * (1 - st.dim)] : [0, 0];
+    st.shaft = [0, 0];
     // focus: the far plant goes soft on the close shots
-    st.dof = i === 3 ? 2.6 * ease(seg(u, .1, .5)) : i === 4 ? 2.6 * (1 - seg(u, 0, .3)) : i === 5 ? 1.8 * ease(seg(u, .3, .6)) : i === 9 ? 1.1 * ease(seg(u, .3, .6)) : 0;
+    st.dof = 0;   // everything stays sharp: the plant is read in full detail
     st.fp = i <= 4 ? M.tag : i === 5 ? [M.hero[0], M.hero[1], .9] : [WALK[0][0], WALK[0][1], .9];
     st.due = i <= 2 ? (i === 0 ? seg(u, .1, .22) : 1) : i === 3 ? 1 - seg(u, 0, .25) : 0;
     st.meas = i === 2 ? ease(seg(u, .08, .42)) : 0; st.measA = i === 2 ? 1 : i === 3 ? 1 - seg(u, 0, .25) : 0;
@@ -421,9 +421,9 @@
   var tripP = el('polyline', 'l-trip'), tripC = [], tripH = el('circle', 'f-head'); tripH.setAttribute('r', 5);
   for (var tc = 1.4; tc < TTOT; tc += 1.4) { var cc = el('circle', 'f-crumb'); cc.setAttribute('r', 2.4); tripC.push({ e: cc, d: tc }); }
   var bar = el('line', 'l-ink'), barA = el('line', 'l-ink'), barB = el('line', 'l-ink'), barT = el('text');
-  barT.setAttribute('style', 'font:500 14px "AmI Text",Arial,sans-serif;fill:#0b1238'); barT.textContent = '10 cm';
+  barT.setAttribute('style', 'font:500 14px "AmI Text",Arial,sans-serif;fill:#0b1238;paint-order:stroke;stroke:#f4f7fc;stroke-width:4px;stroke-linejoin:round'); barT.textContent = '10 cm';
   [measA, measB].forEach(function (c) { c.setAttribute('r', 3.5); }); 
-  var tl = [0, 1, 2].map(function () { var d = document.createElement('div'); d.className = 'flr-dot'; d.style.cssText = 'width:auto;height:auto;margin:0;border-radius:0;background:none;box-shadow:none;font:500 14px/1 "AmI Text",Arial,sans-serif;color:#1f6bff;white-space:nowrap;text-shadow:0 0 6px #f0f6ff,0 0 12px #f0f6ff;font-variant-numeric:tabular-nums'; dotsEl.appendChild(d); return d; });
+  var tl = [0, 1, 2].map(function () { var d = document.createElement('div'); d.className = 'flr-dot'; d.style.cssText = 'width:auto;height:auto;margin:0;border-radius:0;background:none;box-shadow:none;font:500 14px/1 "AmI Text",Arial,sans-serif;color:#1f6bff;white-space:nowrap;paint-order:stroke;-webkit-text-stroke:0;text-shadow:0 0 1px #fff,0 0 2px #fff;font-variant-numeric:tabular-nums'; dotsEl.appendChild(d); return d; });
   var axG = el('g', 'l-axes'), axT = [];
   (function () { for (var k = 0; k <= 10; k++) { var l = document.createElementNS(NS, 'line'); axG.appendChild(l); var t = document.createElementNS(NS, 'text'); axG.appendChild(t); axT.push({ l: l, t: t, x: k <= 6 ? k * 5 : 30, y: k <= 6 ? 0 : (k - 6) * 5, ex: k > 6 }); } })();
   // the three layers: the floor with its tags, the anchors above, the live map on top
@@ -440,7 +440,7 @@
   // ---- WebGL
   var VS1 = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
   var FS1 = 'precision highp float;uniform vec2 uRes,uA,uF,uPl;uniform float uPpm;uniform sampler2D tWc,tWk,tMc,tMk,tCc,tCk,tXc,tXk,tWi,tMi,tCi,tXi,tLut;uniform vec4 uMid,uClose,uMac,uTx,uSun;uniform vec3 uW;uniform vec2 uO,uIa,uIb,uDr;uniform float uDay,uCool,uDof,uFd;uniform vec2 uSh;uniform sampler2D tD;float gF;' +
-    'vec3 grade(vec3 col,float L,float dn,vec2 s){float lum=dot(col,vec3(.2126,.7152,.0722));float q=uCool*(1.-.6*L);float wv=L*(1.-uCool);col=mix(col,col*col*(3.-2.*col),.22+.18*wv);col=mix(col,vec3(lum)*vec3(.87,.92,1.04),q*.5);col*=1.-.07*q;col+=wv*(vec3(.05,.025,-.035)*(1.-.35*uDay)*smoothstep(.3,1.,lum)+vec3(-.02,-.006,.03)*(1.-smoothstep(0.,.55,lum)));col=mix(col,mix(vec3(.8,.85,.94),vec3(.98,.95,.9),wv),smoothstep(.3,1.,dn)*(.24-.1*wv));float vg=smoothstep(.35,1.15,length((s-uA)/uRes.y));col*=1.-vg*(.1+.08*q);col.b+=vg*.02*q;return clamp(col,0.,1.);}' +
+    'vec3 grade(vec3 col,float L,float dn,vec2 s){float lum=dot(col,vec3(.2126,.7152,.0722));float q=uCool*(1.-.6*L);float wv=L*(1.-uCool);col=mix(col,col*col*(3.-2.*col),.1+.1*wv);col=mix(col,vec3(lum)*vec3(.9,.94,1.03),q*.22);col*=1.-.025*q;col+=wv*(vec3(.05,.025,-.035)*(1.-.35*uDay)*smoothstep(.3,1.,lum)+vec3(-.02,-.006,.03)*(1.-smoothstep(0.,.55,lum)));col=mix(col,mix(vec3(.8,.85,.94),vec3(.98,.95,.9),wv),smoothstep(.3,1.,dn)*(.05-.03*wv));float vg=smoothstep(.45,1.2,length((s-uA)/uRes.y));col*=1.-vg*.03;return clamp(col,0.,1.);}' +
     'float edge(vec2 u){vec2 d=min(u,1.-u);return smoothstep(0.,.07,min(d.x,d.y));}float r1(sampler2D t,vec2 u){float id=texture2D(t,u).r*255.;float v=texture2D(tLut,vec2((id+.5)/256.,.5)).r;return id<.5?max(v,gF):v;}float rv(sampler2D t,vec2 u,float d){vec2 o=vec2(d*.5,d*.5*uRes.x/uRes.y*0.+d*.5);return(r1(t,u+vec2(-o.x,-o.y))+r1(t,u+vec2(o.x,-o.y))+r1(t,u+vec2(-o.x,o.y))+r1(t,u+vec2(o.x,o.y)))*.25;}' +
     'void main(){vec2 s=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y);vec2 m=(s-uA)/uPpm+uF;vec2 uv=m/uPl;vec2 wq=uv-uO;gF=1.-smoothstep(uSun.z-uSun.w,uSun.z,distance(vec2(dot(uIa,wq),dot(uIb,wq)),uSun.xy));' +
     'vec4 dd=texture2D(tD,uv);float dn=(dd.r*65280.+dd.g*255.)/65535.;float bb=uDof*smoothstep(.08,2.2,abs(dn-uFd)*(uDr.y-uDr.x));' +
@@ -450,11 +450,11 @@
     'if(uW.z>0.){vec2 u=(uv-uMac.xy)/uMac.zw;if(u.x>0.&&u.x<1.&&u.y>0.&&u.y<1.)c=mix(c,mix(texture2D(tXk,u,bb),texture2D(tXc,u,bb),rv(tXi,u,uTx.w)),edge(u)*uW.z);}' +
     'float L=max(gF,uDay);c.rgb*=mix(vec3(.9,.92,.955),vec3(1.),L);' +
     'vec2 wf=vec2(dot(uIa,wq),dot(uIb,wq));vec2 gp=fract(wf/vec2(7.5,6.6))-.5;float pool=smoothstep(.44,.08,length(gp*vec2(1.,1.25)));' +
-    'if(c.a>.001){vec3 col=c.rgb/c.a;col*=1.+.07*pool*L*(1.-uCool);col+=vec3(.06,.035,0.)*gF*(1.-gF)*4.*(1.-uDay);float pr=dot(wf,vec2(.8,-.6))-uSh.x;float sh=uSh.y*(exp(-pr*pr/1.3)+.7*exp(-(pr-3.4)*(pr-3.4)/1.3));col=col*(1.+sh)+sh*vec3(.035,.025,.0);c.rgb=grade(col,L,dn,s)*c.a;}gl_FragColor=c;}';
+    'if(c.a>.001){vec3 col=c.rgb/c.a;col+=vec3(.06,.035,0.)*gF*(1.-gF)*4.*(1.-uDay);float pr=dot(wf,vec2(.8,-.6))-uSh.x;float sh=uSh.y*(exp(-pr*pr/1.3)+.7*exp(-(pr-3.4)*(pr-3.4)/1.3));col=col*(1.+sh)+sh*vec3(.035,.025,.0);c.rgb=grade(col,L,dn,s)*c.a;}gl_FragColor=c;}';
   var VS2 = 'attribute vec2 a;uniform vec2 uRes,uA,uF;uniform float uPpm;uniform vec4 uR;varying vec2 vU,vM;void main(){vU=a;vM=uR.xy+a*uR.zw;vec2 s=uA+(vM-uF)*uPpm;gl_Position=vec4(s.x/uRes.x*2.-1.,1.-s.y/uRes.y*2.,0.,1.);}';
-  var FS2 = 'precision highp float;varying vec2 vU,vM;uniform sampler2D tAt,tD;uniform vec2 uCa,uCb,uPl,uDr,uRes,uA;uniform float uMix,uAl,uBy,uBd,uTan,uCool,uDay;' +
-    'vec3 grade(vec3 col,float L,float dn,vec2 s){float lum=dot(col,vec3(.2126,.7152,.0722));float q=uCool*(1.-.6*L);float wv=L*(1.-uCool);col=mix(col,col*col*(3.-2.*col),.22+.18*wv);col=mix(col,vec3(lum)*vec3(.87,.92,1.04),q*.5);col*=1.-.07*q;col+=wv*(vec3(.05,.025,-.035)*(1.-.35*uDay)*smoothstep(.3,1.,lum)+vec3(-.02,-.006,.03)*(1.-smoothstep(0.,.55,lum)));col=mix(col,mix(vec3(.8,.85,.94),vec3(.98,.95,.9),wv),smoothstep(.3,1.,dn)*(.24-.1*wv));float vg=smoothstep(.35,1.15,length((s-uA)/uRes.y));col*=1.-vg*(.1+.08*q);col.b+=vg*.02*q;return clamp(col,0.,1.);}' +
-    'void main(){vec2 q=clamp(vU,.004,.996)*.125;vec4 c=mix(texture2D(tAt,uCb+q),texture2D(tAt,uCa+q),uMix);vec4 dd=texture2D(tD,vM/uPl);float D=uDr.x+(dd.r*65280.+dd.g*255.)/65535.*(uDr.y-uDr.x);' +
+  var FS2 = 'precision highp float;varying vec2 vU,vM;uniform sampler2D tAt,tD;uniform vec2 uCa,uCb,uPl,uDr,uRes,uA,uK;uniform float uMix,uAl,uBy,uBd,uTan,uCool,uDay;' +
+    'vec3 grade(vec3 col,float L,float dn,vec2 s){float lum=dot(col,vec3(.2126,.7152,.0722));float q=uCool*(1.-.6*L);float wv=L*(1.-uCool);col=mix(col,col*col*(3.-2.*col),.1+.1*wv);col=mix(col,vec3(lum)*vec3(.9,.94,1.03),q*.22);col*=1.-.025*q;col+=wv*(vec3(.05,.025,-.035)*(1.-.35*uDay)*smoothstep(.3,1.,lum)+vec3(-.02,-.006,.03)*(1.-smoothstep(0.,.55,lum)));col=mix(col,mix(vec3(.8,.85,.94),vec3(.98,.95,.9),wv),smoothstep(.3,1.,dn)*(.05-.03*wv));float vg=smoothstep(.45,1.2,length((s-uA)/uRes.y));col*=1.-vg*.03;return clamp(col,0.,1.);}' +
+    'void main(){vec2 q=clamp(vU,.004,.996)*uK;vec4 c=mix(texture2D(tAt,uCb+q),texture2D(tAt,uCa+q),uMix);vec3 un=c.rgb/max(c.a,.001);float shd=step(.08,un.b-un.r)*step(un.r,.16)*step(c.a,.6);vec2 eu=min(vU,1.-vU);c*=mix(1.,.6*smoothstep(0.,.16,min(eu.x,eu.y)),shd);vec4 dd=texture2D(tD,vM/uPl);float D=uDr.x+(dd.r*65280.+dd.g*255.)/65535.*(uDr.y-uDr.x);' +
     'float dy=uBy-vM.y;float fd=uBd-(dy>0.?dy*uTan:-dy/uTan);if(c.a>.001)c.rgb=grade(c.rgb/c.a,max(uDay,1.-uCool),(D-uDr.x)/(uDr.y-uDr.x),vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y))*c.a;gl_FragColor=c*uAl*smoothstep(-.75,-.3,D-fd);}';
   function prog(vs, fs) {
     var pr = gl.createProgram();
@@ -588,7 +588,7 @@
     sp.forEach(function (s) {
       var b = Mxy(s.x, s.y, 0); gl.uniform4f(U.uR, b[0] - s.an[0] * s.s, b[1] - s.an[1] * s.s, s.s, s.s);
       gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, (s.t || tex.sprites).t);
-      gl.uniform2f(U.uCa, s.ca[0] / 8, s.ca[1] / 8); gl.uniform2f(U.uCb, s.cb[0] / 8, s.cb[1] / 8); gl.uniform1f(U.uMix, s.mix); gl.uniform1f(U.uAl, s.al); gl.uniform1f(U.uBy, b[1]); gl.uniform1f(U.uBd, s.d);
+      var kr = s.t === tex.poses ? 4 : 8; gl.uniform2f(U.uK, .125, 1 / kr); gl.uniform2f(U.uCa, s.ca[0] / 8, s.ca[1] / kr); gl.uniform2f(U.uCb, s.cb[0] / 8, s.cb[1] / kr); gl.uniform1f(U.uMix, s.mix); gl.uniform1f(U.uAl, s.al); gl.uniform1f(U.uBy, b[1]); gl.uniform1f(U.uBd, s.d);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     });
     // footsteps
@@ -622,7 +622,7 @@
     if (st.amber > .5 && !frame.amb) { frame.amb = true; snd.warn(); hap.tick(); } if (st.amber < .3) frame.amb = false;
     if (st.fix > .5 && !fixed) { fixed = true; snd.fix(); hap.land(); } if (i < 5 || (i === 5 && st.fix < .3)) fixed = false;
     // the 10 cm bar, true to scale, beside the located point
-    var hp = scr(M.hero[0], M.hero[1], 1.02), bw = .1 * cam.ppm, bx = hp[0] + 16, by = hp[1] + 22;
+    var hp = scr(M.hero[0], M.hero[1], 1.02), bw = .1 * cam.ppm, bx = hp[0] + Math.max(16, .62 * cam.ppm), by = hp[1] + 22;
     [bar, barA, barB, barT].forEach(function (e) { show(e, st.fix); });
     if (st.fix > 0) { bar.setAttribute('x1', bx); bar.setAttribute('x2', bx + bw); bar.setAttribute('y1', by); bar.setAttribute('y2', by); barA.setAttribute('x1', bx); barA.setAttribute('x2', bx); barA.setAttribute('y1', by - 5); barA.setAttribute('y2', by + 5); barB.setAttribute('x1', bx + bw); barB.setAttribute('x2', bx + bw); barB.setAttribute('y1', by - 5); barB.setAttribute('y2', by + 5); barT.setAttribute('x', bx + bw + 14); barT.setAttribute('y', by + 5); }
     // --- dots
@@ -657,6 +657,7 @@
       var p0 = scr(t.x, t.y, -.5), p1 = t.ex ? scr(t.x + .45, t.y, -.5) : scr(t.x, t.y - .45, -.5), p2 = t.ex ? scr(t.x + 1.5, t.y, -.5) : scr(t.x, t.y - 1.5, -.5);
       t.l.setAttribute('x1', p0[0]); t.l.setAttribute('y1', p0[1]); t.l.setAttribute('x2', p1[0]); t.l.setAttribute('y2', p1[1]); t.t.setAttribute('x', p2[0]); t.t.setAttribute('y', p2[1] + 4);
       if (!t.t.textContent) t.t.textContent = (t.ex ? t.y : t.x) + (t.x === 30 && t.y === 0 || t.y === 20 ? ' m' : '');
+      var vw = innerWidth, ok = p2[0] > vw * .42 && p2[0] < vw - 44 ? '' : '0'; if (t.o !== ok) { t.o = ok; t.l.style.opacity = t.t.style.opacity = ok; }
     });
     // --- the layers
     var la = Math.max(st.l2, st.l3); show(layG, la > 0 ? 1 : 0);

@@ -40,7 +40,7 @@
 .flr-on.flr-live .flr-gl{opacity:1}
 /* the words stand on the page's own ground: the picture thins out toward them */
 .flr-on .flr-fog{display:block;position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:linear-gradient(90deg,var(--flr-ground) 0,var(--flr-ground) 30%,rgba(240,246,255,.8) 37%,rgba(240,246,255,0) 47%)}
+  background:linear-gradient(90deg,var(--flr-ground) 0,var(--flr-ground) 25%,rgba(240,246,255,.72) 32%,rgba(240,246,255,.22) 38%,rgba(240,246,255,0) 42%)}
 .flr-on .flr-fog::after{content:"";position:absolute;inset:0;opacity:var(--end,0);background:linear-gradient(90deg,var(--flr-ground) 0,rgba(240,246,255,.96) 36%,rgba(240,246,255,.5) 52%,rgba(240,246,255,0) 66%)}
 .flr-on .flr-ov{display:block;position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible}
 .flr-on .flr-dots{display:block;position:absolute;inset:0;z-index:1;pointer-events:none}
@@ -84,7 +84,7 @@
 .flr-on .w.k+.w.k::after{left:-.3em}
 .flr-on .w.k-amber::after{background:var(--flr-amber)}
 .flr-on .w.k-ink::after{background:var(--flr-ink)}
-.flr-on .flr-lead{display:block;position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none;overflow:visible}
+.flr-on .flr-lead{display:block;position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible}
 .flr-lead path{fill:none;stroke:var(--flr-blue);stroke-width:1;stroke-linejoin:round}
 .flr-lead circle{fill:var(--flr-ground);stroke:var(--flr-blue);stroke-width:1.5}
 .flr-lead path.k-amber{stroke:#c98200}.flr-lead circle.k-amber{stroke:#c98200}
@@ -108,12 +108,12 @@
 .flr-ov .l-axes line{stroke:var(--flr-soft);stroke-width:1;opacity:.7}
 .flr-ov .l-axes text{font:400 11.5px "AmI Text",Arial,sans-serif;fill:var(--flr-soft);text-anchor:middle;font-variant-numeric:tabular-nums}
 .flr-on .flr-count{opacity:0}
-/* notes: a word or two fixed to a thing in the picture. No box, no card: a dot, a hair, the words. */
+/* notes: a word or two fixed to a thing in the picture: a dot, a hair, the words on a crisp paper slip (no blur, no glow). */
 .flr-on .flr-n{display:block;position:absolute;inset:0;z-index:4;margin:0;padding:0}
 .flr-on .flr-n li{position:absolute;left:0;top:0;width:0;height:0;margin:0;opacity:0;transition:opacity .35s;will-change:transform,opacity}
 .flr-on .flr-n li.in{opacity:1;transition:opacity .6s .15s}
-.flr-on .flr-n li>span{position:absolute;white-space:nowrap;text-shadow:0 0 6px var(--flr-ground),0 0 14px var(--flr-ground),0 0 2px #fff}
-.flr-on .flr-n li>span::before{content:"";position:absolute;z-index:-1;inset:-10px -16px;border-radius:26px;background:rgba(240,246,255,.82);filter:blur(10px)}
+.flr-on .flr-n li>span{position:absolute;white-space:nowrap;}
+.flr-on .flr-n li>span::before{content:"";position:absolute;z-index:-1;inset:-7px -10px;border-radius:8px;background:rgba(255,255,255,.94);box-shadow:0 0 0 1px rgba(15,27,45,.07),0 6px 18px -8px rgba(15,27,45,.18)}
 .flr-hair{position:absolute;left:0;top:0;height:1px;background:var(--flr-ink);opacity:.5;transform-origin:0 50%}
 .flr-pin{position:absolute;left:-4.5px;top:-4.5px;width:9px;height:9px;border-radius:50%;background:var(--flr-blue);box-shadow:0 0 0 2.5px rgba(255,255,255,.95)}
 .flr-amber .flr-pin,.flr-n li.flr-due .flr-pin{background:var(--flr-amber)}
@@ -168,14 +168,14 @@
 
 /* the turn: the picture side goes dark for a breath before Found */
 .flr-dim{display:none}
-.flr-on .flr-dim{display:block;position:absolute;inset:0;z-index:3;pointer-events:none;opacity:var(--dim,0);background:linear-gradient(90deg,rgba(6,10,30,0) 27%,rgba(6,10,30,.5) 36%,rgba(6,10,30,.76) 48%)}
+.flr-on .flr-dim{display:block;position:absolute;inset:0;z-index:3;pointer-events:none;opacity:var(--dim,0);background:linear-gradient(90deg,rgba(6,10,30,0) 27%,rgba(6,10,30,.26) 36%,rgba(6,10,30,.38) 48%)}
 /* chapter cards: the title of each chapter, once, like a film */
 .flr-card{display:none}
 .flr-on .flr-card{display:block;position:absolute;left:68.5%;top:50%;z-index:3;pointer-events:none;opacity:0;transform:translate(-50%,-50%);font:600 clamp(56px,8.4vw,132px)/1 "AmI Display","AmI Text",Arial,sans-serif;letter-spacing:-.045em;color:var(--flr-ink);white-space:nowrap}
 .flr-on .flr-card.c1{color:#f4f7ff}
 .flr-on .flr-card.go{animation:flr-card 1.7s cubic-bezier(.2,.7,.2,1) both}
 @keyframes flr-card{0%{opacity:0;transform:translate(-50%,-46%)}22%{opacity:1;transform:translate(-50%,-50%)}62%{opacity:1}100%{opacity:0;transform:translate(-50%,-52%)}}
-@media (max-aspect-ratio:4/5){.flr-on .flr-card{left:50%;top:64%}.flr-on .flr-dim{background:linear-gradient(180deg,rgba(6,10,30,0) 30%,rgba(6,10,30,.74) 54%)}}
+@media (max-aspect-ratio:4/5){.flr-on .flr-card{left:50%;top:64%}.flr-on .flr-dim{background:linear-gradient(180deg,rgba(6,10,30,0) 30%,rgba(6,10,30,.36) 54%)}}
 @media (prefers-reduced-motion:reduce){.flr-on .flr-card.go{animation:none}}
 .flr-shot .flr-card{display:none!important}
 

@@ -8,7 +8,7 @@ OUT = os.path.abspath(sys.argv[-2] if sys.argv[-1] == 'test' else sys.argv[-1]);
 P.reset(); sc = P.sc
 P.worn('amrshell', (.022, .032, .1, 1), (.28, .5), 0., 5); P.worn('body', (.013, .147, 1., 1), (.25, .5), 0., 4); P.worn('powder', (.022, .032, .1, 1), (.3, .6), .2, 7)
 mm = P.M()
-AZ, EL = rad(124), rad(36); CELL = 384
+AZ, EL = rad(124), rad(36); CELL = int(os.environ.get("CELL", 384))
 fl = P.box('catch', (40, 40, .2), (0, 0, -.1), P.mat('catch', (.55, .6, .68, 1), .5), 0); fl.is_shadow_catcher = True
 w = bpy.data.worlds.new('w'); sc.world = w; w.use_nodes = True; bg = w.node_tree.nodes['Background']; bg.inputs['Color'].default_value = (.86, .91, 1.0, 1); bg.inputs['Strength'].default_value = .85
 bpy.ops.object.light_add(type='SUN'); sun = bpy.context.object; sun.data.energy = 5.6; sun.data.angle = rad(6); sun.data.color = (1, .97, .92); sun.rotation_euler = (rad(54), 0, rad(-38))
