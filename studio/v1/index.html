@@ -9,7 +9,7 @@
 <link rel="preload" href="assets/fonts/AmISansDisplay-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/AmISansText-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/studio.css">
-<link rel="stylesheet" href="css/lfs.css">
+<link rel="stylesheet" href="css/floor.css">
 <script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&matchMedia('(pointer: fine)').matches)document.documentElement.classList.add('tag-live')</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"AmIMotion","legalName":"Locatepro Technologies Pvt Ltd","address":{"@type":"PostalAddress","addressLocality":"Bengaluru","addressCountry":"IN"},"email":"sales@amimotion.com","description":"AmIMotion builds industrial spatial intelligence. It gives a time-stamped location to every trolley, bin, tool and vehicle you tag in a plant."}</script>
 </head>
@@ -63,12 +63,15 @@
       <a class="btn btn-primary magnet" href="/diagnostic/" data-ev="hero_plan"><span>Plan your first bay</span></a>
       <a class="hx-link" href="/contact/" data-ev="hero_demo">See a live demo<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6h7M6.5 3 9.5 6l-3 3"/></svg></a>
     </div>
+    <div class="hx-base">
     <ul class="hx-facts k-fade" aria-label="AmIMotion in four facts">
-      <li><b>±10 cm</b> typical, with AmIMo anchors</li>
-      <li><b>Runs in your plant.</b> No internet needed.</li>
-      <li><b>FiRa and omlox</b> specifications</li>
-      <li><b>Designed and built</b> in India</li>
-    </ul>
+        <li><b>±10 cm</b> typical, with AmIMo anchors</li>
+        <li><b>Runs in your plant.</b> No internet needed.</li>
+        <li><b>FiRa and omlox</b> specifications</li>
+        <li><b>Designed and built</b> in India</li>
+      </ul>
+      <div class="hx-pods k-fade" role="region" aria-label="Latest news"><a class="hx-pods-k" href="/company/news/">Latest news<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6h7M6.5 3 9.5 6l-3 3"/></svg></a><ul class="hx-pods-l"><li class="pod p1"><a href="/company/news/#automotive-major"><span class="pod-t"><span class="pod-h">Indian automotive major selects us</span></span></a></li><li class="pod p2"><a href="/company/news/#ati-motors"><span class="pod-t"><span class="pod-h">Ati Motors joins hands with us</span></span></a></li><li class="pod p3"><a href="/company/news/#nxp-india-tech-startup-challenge"><span class="pod-t"><span class="pod-h">Winner, NXP Tech Challenge 2026</span></span></a></li><li class="pod p4"><a href="/company/news/#elevate-nxt"><span class="pod-t"><span class="pod-h">Karnataka’s ELEVATE NxT 2026 grant</span></span></a></li></ul><button type="button" class="hx-pods-p" aria-label="Pause the news" aria-pressed="false"><svg class="i-pa" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2.5v7M8 2.5v7"/></svg><svg class="i-pl" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2.4 9.4 6 4 9.6Z"/></svg></button><ul class="hx-pods-src" hidden><li data-id="automotive-major" data-k="Customer">Indian automotive major selects us</li><li data-id="ati-motors" data-k="Partner">Ati Motors joins hands with us</li><li data-id="nxp-india-tech-startup-challenge" data-k="Award">Winner, NXP Tech Challenge 2026</li><li data-id="elevate-nxt" data-k="Grant">Karnataka’s ELEVATE NxT 2026 grant</li><li data-id="intellistride" data-k="Partner">Intellistride joins hands with us</li><li data-id="foodservice-pilot" data-k="Pilot">US foodservice leader pilots our RTLS</li><li data-id="flowcate" data-k="Partner">Flowcate, Germany, joins hands with us</li><li data-id="nxp-startup-impact-showcase" data-k="Award">First prize, NXP Tech Showcase 2026</li><li data-id="futurism-tech" data-k="Partner">Futurism Tech joins hands with us</li></ul></div>
+    </div>
   </div>
   <script>setTimeout(function(){var h=document.getElementById('h1');if(h&&!h.classList.contains('in')){h.classList.add('in');document.querySelectorAll('#hero .k-fade').forEach(function(e){e.classList.add('in')})}},3200)</script>
   <div class="hero-foot k-fade">
@@ -77,92 +80,81 @@
 </section>
 </div>
 
-<!-- 1b. LOST. FOUND. SEEN: how AmIMotion works, in three scrolls. Without scripts it reads as five pictures with their words. -->
-<section class="lfs" id="see" data-assets="assets/lfs/" aria-label="How AmIMotion works, in three steps: lost, found, seen">
-  <div class="lfs-stage">
+<!-- 1b. LOST. FOUND. SEEN: how AmIMotion works, told in ten sentences over one small plant. Without scripts it reads as ten pictures with their words. -->
+<section class="flr" id="see" data-assets="assets/floor/" aria-label="How AmIMotion works, in three steps: lost, found, seen">
+  <div class="flr-stage">
 
-    <div class="lfs-f" id="lfs-lost" data-k="lost" data-plate="a" data-p="0,.206">
-      <picture class="lfs-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/lfs/P/s_lost.webp" width="720" height="1280"><img src="assets/lfs/L/s_lost.webp" width="1280" height="720" alt="A long factory hall at night under yellow lamps. A worker stands in the main aisle, a hand raised to the eyes, looking down the hall. Rows of trolleys and pallets stand on both sides." loading="lazy" decoding="async"></picture>
-      <div class="lfs-t">
-        <h2 class="lfs-word" data-p="-.03,.382">Lost.</h2>
-        <div class="lfs-lines">
-          <p data-p=".03,.196">Somewhere on this floor is the trolley you need.</p>
-          <p data-p=".085,.196">In a plant this size, finding it means walking.</p>
-        </div>
-      </div>
+    <div class="flr-b" id="flr-lost" data-ch="Lost">
+      <picture class="flr-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/floor/P/s1.webp" width="780" height="1688"><img src="assets/floor/L/s1.webp" width="1440" height="900" alt="A small plant seen from above, all in one pale colour. Along the far wall, four work stations each have a marked bay. Three bays hold a trolley. One is empty." loading="lazy" decoding="async"></picture>
+      <div class="flr-t"><h2 class="flr-ch">Lost</h2><p class="flr-s">A trolley was due at <b data-k="due">line 4</b> ten minutes ago.</p><p class="flr-a">Nobody knows where it is. The line waits.</p></div>
+      <ul class="flr-n"><li data-at="due" data-o="18,-58" data-om="14,-52">Line 4<br><b class="flr-w">Waiting <span data-clock="600">10 min</span></b></li></ul>
     </div>
 
-    <div class="lfs-f" data-k="isl" data-plate="b" data-p=".206,.378">
-      <picture class="lfs-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/lfs/P/s_isl.webp" width="720" height="1280"><img src="assets/lfs/L/s_isl.webp" width="1280" height="720" alt="The same plant seen from high above, almost all of it dark. Four small pools of yellow light show a worker, a parked forklift, an AMR and a truck at a dock." loading="lazy" decoding="async"></picture>
-      <div class="lfs-t">
-        <div class="lfs-lines">
-          <p data-p=".225,.368">A plant this size, and this is all you can see.</p>
-        </div>
-      </div>
-      <ul class="lfs-facts">
-        <li data-at="worker" data-p=".232,.368" data-pm=".24,.3" data-o="38,-92" data-om="0,-84,1"><span>Looking for a free forklift.<br><b>20 minutes</b> so far.</span></li>
-        <li data-at="free" data-p=".262,.368" data-pm=".255,.3" data-o="44,34" data-om="-20,40"><span>Free. Two aisles away.<br>Nobody knows.</span></li>
-        <li data-at="amr" data-p=".292,.368" data-pm=".308,.368" data-o="40,-78" data-om="24,-70"><span><b>Three</b> forklifts are queued ahead.<br>It can't see them.</span></li>
-        <li data-at="dock" data-p=".322,.368" data-pm=".322,.368" data-o="46,-96" data-om="26,-84"><span>Waiting for <b>one</b> pallet.<br>It's still inside.</span></li>
+    <div class="flr-b" data-ch="Lost">
+      <picture class="flr-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/floor/P/s2.webp" width="780" height="1688"><img src="assets/floor/L/s2.webp" width="1440" height="900" alt="A supervisor walks down the main aisle of the plant, past rows of trolleys and pallets that all look the same. A dotted line shows the long way already walked." loading="lazy" decoding="async"></picture>
+      <div class="flr-t"><p class="flr-s">So <b data-k="walker">a supervisor</b> stops work and goes looking.</p><p class="flr-a">Aisle by aisle, on foot.</p></div>
+      <ul class="flr-n"><li data-at="walker" data-o="20,14" data-om="14,12">Searching <span data-search>0 min</span><br><span class="flr-xy" data-walked>0 m walked</span></li></ul>
+    </div>
+
+    <div class="flr-b" data-ch="Lost">
+      <picture class="flr-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/floor/P/s3.webp" width="780" height="1688"><img src="assets/floor/L/s3.webp" width="1440" height="900" alt="The trolley stands among pallets in a far corner of the plant. A straight line joins it to the empty bay at line 4, marked 20 metres." loading="lazy" decoding="async"></picture>
+      <div class="flr-t"><p class="flr-s">It was <b data-k="mid">twenty metres</b> away the whole time.</p><p class="flr-a">Nineteen minutes gone, and no record of it.</p></div>
+      <ul class="flr-n"><li data-at="mid" data-o="14,-34" data-om="10,-30">20 m</li></ul>
+    </div>
+
+    <div class="flr-b" id="flr-found" data-ch="Found">
+      <picture class="flr-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/floor/P/s4.webp" width="780" height="1688"><img src="assets/floor/L/s4.webp" width="1440" height="900" alt="Close on the corner of the trolley. A small dark grey tag with the word amimotion pressed into its face is fixed to the handle post." loading="lazy" decoding="async"></picture>
+      <div class="flr-t"><h2 class="flr-ch">Found</h2><p class="flr-s">Put a small <b data-k="tag">tag</b> on it.</p><p class="flr-a">AmIGo. Now the trolley can be found.</p></div>
+      <ul class="flr-n"><li data-at="tag" data-o="56,-64" data-om="34,-70"><strong>AmIGo</strong> the tag<br><span class="flr-xy">Screws or sticks on</span></li></ul>
+    </div>
+
+    <div class="flr-b" data-ch="Found">
+      <picture class="flr-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/floor/P/s5.webp" width="780" height="1688"><img src="assets/floor/L/s5.webp" width="1440" height="900" alt="The plant from above. A blue line traces the trolley's journey, from the line where it was filled, down the aisle, to the far corner where it stopped." loading="lazy" decoding="async"></picture>
+      <div class="flr-t"><p class="flr-s">From now on, every move is on record.</p><p class="flr-a">Where it went. Where it stopped.</p></div>
+      <ul class="flr-n"><li data-at="stop" data-o="22,-58" data-om="-112,-64">Stopped here<br><span class="flr-xy">19 minutes ago</span></li></ul>
+    </div>
+
+    <div class="flr-b" data-ch="Found">
+      <picture class="flr-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/floor/P/s6.webp" width="780" height="1688"><img src="assets/floor/L/s6.webp" width="1440" height="900" alt="The trolley, now in full colour among pale pallets, with a blue dot on it. A short bar beside the dot shows ten centimetres." loading="lazy" decoding="async"></picture>
+      <div class="flr-t"><p class="flr-s">AmIHub shows where it is, <b data-k="hero">right now</b>.</p><p class="flr-a">Typically to within 10&nbsp;cm.</p></div>
+      <ul class="flr-n"><li data-at="hero" data-o="46,-86" data-om="-40,-120"><strong>Located</strong><br><span class="flr-xy">x 27.00 m, y 4.50 m</span></li></ul>
+    </div>
+
+    <div class="flr-b" id="flr-seen" data-ch="Seen">
+      <picture class="flr-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/floor/P/s7.webp" width="780" height="1688"><img src="assets/floor/L/s7.webp" width="1440" height="900" alt="The whole plant from above. Colour is spreading across it: each trolley, pallet, forklift and AMR that has a tag shows its real colours and a blue dot." loading="lazy" decoding="async"></picture>
+      <div class="flr-t"><h2 class="flr-ch">Seen</h2><p class="flr-s">Now tag everything that moves.</p><p class="flr-a">Trolleys, pallets, forklifts, AMRs.</p></div>
+    </div>
+
+    <div class="flr-b" data-ch="Seen">
+      <picture class="flr-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/floor/P/s8.webp" width="780" height="1688"><img src="assets/floor/L/s8.webp" width="1440" height="900" alt="The whole plant in full colour. Every tagged thing carries a blue dot. Three carry an amber dot and a waiting time." loading="lazy" decoding="async"></picture>
+      <div class="flr-t"><p class="flr-s">One live map shows where each thing is.</p><p class="flr-a">And how long it has <b data-k="pallet">waited</b>.</p></div>
+      <ul class="flr-n">
+        <li data-at="amr0" data-o="16,20" data-om="-120,18">AMR, moving<br><span class="flr-xy" data-xy>x 14.2 m, y 8.9 m</span></li>
+        <li data-at="pallet" class="flr-amber" data-o="20,-52" data-om="12,-46">Pallet for the truck<br><b class="flr-w">Waiting <span data-clock="1574">26 min 14 s</span></b></li>
+        <li data-at="buf" class="flr-amber" data-o="-176,34" data-om="12,16">Trolley, buffer<br><b class="flr-w">Waiting <span data-clock="2468">41 min 08 s</span></b></li>
+        <li data-at="hero" class="flr-amber" data-o="22,-58" data-om="-120,30">Trolley for line 4<br><b class="flr-w">Waiting <span data-clock="1161">19 min 21 s</span></b></li>
       </ul>
     </div>
 
-    <div class="lfs-f" id="lfs-found" data-k="tag" data-plate="d" data-p=".378,.482">
-      <picture class="lfs-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/lfs/P/s_tag.webp" width="720" height="1280"><img src="assets/lfs/L/s_tag.webp" width="1280" height="720" alt="Close on the AmIGo tag: a small dark grey unit with the word amimotion pressed into its face, fixed to the handle post of a trolley. A point of blue light shines on it." loading="lazy" decoding="async"></picture>
-      <div class="lfs-t">
-        <h2 class="lfs-word" data-p=".38,.708">Found.</h2>
-        <div class="lfs-lines">
-          <p data-p=".396,.474">A small tag rides on the trolley. It sends a short radio pulse.</p>
-        </div>
-      </div>
-      <ul class="lfs-facts lfs-names">
-        <li data-at="tag" data-p=".41,.472" data-o="-330,-96" data-om="-40,-150"><span><strong>AmIGo</strong><br>the tag</span></li>
+    <div class="flr-b" data-ch="Seen">
+      <picture class="flr-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/floor/P/s9.webp" width="780" height="1688"><img src="assets/floor/L/s9.webp" width="1440" height="900" alt="The live map rises above the plant. A thin blue thread runs up from each tagged thing on the floor to its own dot on the map." loading="lazy" decoding="async"></picture>
+      <div class="flr-t"><p class="flr-s">Every tag becomes a dot on one map.</p><p class="flr-a"><b data-k="L1">Tags</b> on the floor. <b data-k="L3">AmIHub</b> on top.</p></div>
+      <ul class="flr-n">
+        <li data-at="L3" data-o="26,-8" data-om="12,-9"><strong>AmIHub</strong> the <span class="flr-wd">live </span>map<br><span class="flr-xy">Where each thing is, and for how long</span></li>
+        <li data-at="L1" data-o="26,-8" data-om="12,-9"><strong>AmIGo</strong> the tag<br><span class="flr-xy">On each thing that moves</span></li>
       </ul>
     </div>
 
-    <div class="lfs-f" data-k="found" data-plate="c" data-p=".482,.706">
-      <picture class="lfs-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/lfs/P/s_found.webp" width="720" height="1280"><img src="assets/lfs/L/s_found.webp" width="1280" height="720" alt="The trolley stands in a cone of white light in the dark hall. Its cartons and bins show their colours again. High on three columns, three small anchors glow, and thin lines of light run from them to the tag on the trolley." loading="lazy" decoding="async"></picture>
-      <div class="lfs-t">
-        <div class="lfs-lines">
-          <p data-p=".51,.696">Anchors on the columns catch it.</p>
-          <p data-p=".6,.696">The tiny gaps between their arrival times give its position, typically to within 10&nbsp;cm.</p>
-        </div>
-      </div>
-      <ul class="lfs-facts lfs-names">
-        <li data-at="tag" data-p=".5,.696" data-o="60,-34" data-om="-30,64"><span><strong>AmIGo</strong><br>the tag</span></li>
-        <li data-at="a0" data-p=".53,.696" data-o="40,-52" data-om="-22,-38"><span><strong>AmIMo</strong><br>the anchor</span></li>
-        <li data-at="hero" data-p=".625,.696" data-o="-210,40" data-om="-96,104"><span><strong>AmIHub</strong><br>works out the position</span></li>
-      </ul>
-    </div>
+    <canvas class="flr-gl" aria-hidden="true"></canvas>
+    <div class="flr-fog" aria-hidden="true"></div>
+    <svg class="flr-ov" aria-hidden="true"></svg>
+    <div class="flr-dots" aria-hidden="true"></div>
+    <svg class="flr-lead" aria-hidden="true"></svg>
+    <div class="flr-scale" aria-hidden="true"><i></i><span></span></div>
 
-    <div class="lfs-f" id="lfs-seen" data-k="seen" data-plate="b" data-p=".706,1">
-      <picture class="lfs-pic"><source media="(max-aspect-ratio:4/5)" srcset="assets/lfs/P/s_seen.webp" width="720" height="1280"><img src="assets/lfs/L/s_seen.webp" width="1280" height="720" alt="The same high view of the plant, now lit. Every trolley, pallet, forklift and AMR stands in its own pool of white light. A few glow amber: the ones that have waited." loading="lazy" decoding="async"></picture>
-      <div class="lfs-t">
-        <h2 class="lfs-word" data-p=".704,.93">Seen.</h2>
-        <div class="lfs-lines">
-          <p data-p=".712,.93">Now tag everything that moves.</p>
-          <p data-p=".75,.93">One live map shows where each thing is, and how long it has waited.</p>
-        </div>
-      </div>
-      <ul class="lfs-facts">
-        <li data-at="worker" data-p=".775,.93" data-pm=".775,.846" data-o="-56,-128" data-om="22,-74"><span>Nearest free forklift:<br><b>35 m</b>, aisle B3.</span></li>
-        <li data-at="free" class="lfs-wait" data-p=".795,.93" data-pm=".79,.846" data-o="44,34" data-om="-20,40"><span>Parked<br><b>2 h 10 min.</b></span></li>
-        <li data-at="queue" class="lfs-wait" data-p=".815,.93" data-pm="2,2" data-o="64,-36" data-om="24,-70"><span><b>3</b> forklifts in aisle B3.<br>Waiting <b>12 min.</b></span></li>
-        <li data-at="dock" class="lfs-wait" data-p=".835,.93" data-pm=".838,.93" data-o="46,-96" data-om="26,-84"><span>Its pallet: line 4.<br>Waiting <b>26 min.</b></span></li>
-      </ul>
-      <div class="lfs-end">
-        <p class="lfs-count" data-p=".94,1"><b>44</b> trolleys. <b>196</b> pallets. <b>8</b> forklifts. <b>5</b> AMRs. All located.</p>
-        <p class="lfs-close" data-p=".952,1">AmIMotion. <br class="lfs-brm">Where work is.<br>Where it waits.</p>
-      </div>
-    </div>
-
-    <canvas class="lfs-gl" aria-hidden="true"></canvas>
-    <div class="lfs-shade" aria-hidden="true"></div>
-    <svg class="lfs-ov" aria-hidden="true"></svg>
-
-    <div class="lfs-ctl">
-      <nav class="lfs-rail" aria-label="Steps of the explainer"><a href="#lfs-lost" data-go="0">Lost</a><a href="#lfs-found" data-go=".39">Found</a><a href="#lfs-seen" data-go=".72">Seen</a></nav>
-      <span class="lfs-right"><a class="lfs-top" href="#hero">Back to top</a><button class="lfs-snd" type="button" aria-pressed="true">Sound on</button><a class="lfs-skip" href="#trio">Skip</a></span>
+    <div class="flr-ctl">
+      <nav class="flr-rail" aria-label="Steps of the explainer"><a href="#flr-lost" data-go="0">Lost</a><a href="#flr-found" data-go="3">Found</a><a href="#flr-seen" data-go="6">Seen</a></nav>
+      <span class="flr-right"><a class="flr-top" href="#hero">Back to top</a><button class="flr-re" type="button">Replay</button><button class="flr-snd" type="button" aria-pressed="true">Sound on</button><a class="flr-skip" href="#trio">Skip</a></span>
     </div>
   </div>
 </section>
@@ -192,6 +184,7 @@
             <details><summary><span>Read more</span></summary><div class="more"><p>Your MES, ERP and WMS connect to it through open REST, MQTT, WebSocket and omlox hub interfaces. Your team, your systems and AI assistants read the same live map. Your MES stays in charge of every job. AmIHub adds where its trolley is and how long it has waited.</p></div></details></div></div>
           </li>
         </ol>
+        <a class="kn-bro" href="/assets/brochure/AmIMotion-brochure.pdf" download="AmIMotion-brochure.pdf" data-ev="brochure"><span class="kn-bro-t">Download the brochure</span><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 2.5v8M4.5 7.2 8 10.7l3.5-3.5M3.5 13.5h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
       <div class="kn-stage" aria-hidden="false">
         <div class="kn-grade" aria-hidden="true"><i class="g0"></i><i class="g1"></i><i class="c1"></i><i class="g2"></i><i class="c2"></i></div>
@@ -389,7 +382,8 @@
   <div class="wordmark" aria-hidden="true"><span>amimotion</span></div>
 </footer>
 
-<script src="js/lfs.js" defer></script>
+<script src="js/wire.js" defer></script>
+<script src="js/floor.js" defer></script>
 <script type="module" src="js/studio.js"></script>
 </body>
 </html>

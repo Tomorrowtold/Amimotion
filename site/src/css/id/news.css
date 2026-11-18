@@ -1,0 +1,53 @@
+/* /company/news/: the newsroom pattern of the best sites. One lead story, its picture large; then a dated list, one
+   hairline per story, the picture small on the right; the press; and what a journalist needs. */
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.news .lead-story,.news .rows,.rows.press,.kit{grid-column:1 / -1}
+.meta{display:flex;gap:14px;margin:0;font-size:.875rem;line-height:1.4;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.meta span{padding-left:14px;border-left:1px solid rgba(11,18,56,.16)}
+.lead-story{scroll-margin-top:110px}
+.lead-story .pic{border-radius:18px;overflow:hidden;background:#0b1238;aspect-ratio:16 / 8}
+.lead-story .pic img{width:100%;height:100%;object-fit:cover;object-position:50% 38%;display:block}
+.lead-w{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,9fr);gap:0 var(--gutter);padding:clamp(22px,2.6vw,36px) 0 clamp(36px,4vw,64px)}
+.lead-w .meta{grid-row:1 / 3;flex-direction:column;gap:4px;padding-top:.5em}
+.lead-w .meta span{padding:0;border:0}
+.lead-w h3{font-size:clamp(1.9rem,1.1rem + 2.1vw,3.1rem);line-height:1.04;letter-spacing:-.03em;margin:0 0 18px;max-width:18em;text-wrap:balance}
+.lead-w p:last-child{font-size:1.125rem;line-height:1.55;color:var(--ink-soft);margin:0;max-width:36em}
+.rows{list-style:none;margin:0 0 var(--s-7);padding:0;border-top:1px solid rgba(11,18,56,.12)}
+.rows li{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,6fr) minmax(0,3fr);gap:0 var(--gutter);align-items:start;padding:clamp(22px,2.4vw,32px) 0;border-bottom:1px solid rgba(11,18,56,.12);scroll-margin-top:110px}
+.rows .meta{flex-direction:column;gap:4px;padding-top:.3em}
+.rows .meta span{padding:0;border:0}
+.rows h3{font-size:clamp(1.25rem,1rem + .7vw,1.6rem);line-height:1.18;letter-spacing:-.015em;margin:0 0 10px;text-wrap:balance}
+.rows .row-w p{margin:0;color:var(--ink-soft);line-height:1.55;max-width:36em}
+.rows .pic{border-radius:12px;overflow:hidden;aspect-ratio:4 / 3;background:#eef1f7}
+.rows .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.rows li:target h3,.lead-story:target h3{color:#4b3df0}
+.press h3 a{color:var(--ink);text-decoration:none;background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;transition:background-size .4s cubic-bezier(.16,1,.3,1)}
+.press h3 a::after{content:"\2197";margin-left:.3em;font-size:.8em;color:var(--ink-soft)}
+.press h3 a:hover,.press h3 a:focus-visible{background-size:100% 1px}
+.press .row-w p{font-size:.9375rem}
+.kit{list-style:none;margin:0 0 var(--s-7);padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter);border-top:1px solid rgba(11,18,56,.12)}
+.kit li{padding-top:22px}
+.kit h3{font-size:.875rem;font-weight:400;color:var(--ink-soft);margin:0 0 8px;letter-spacing:0}
+.kit p{margin:0;font-size:1.125rem}
+.kit a{color:var(--ink);font-weight:500}
+.kit span{font-size:.875rem;color:var(--ink-soft);margin-left:8px}
+@media (max-width:859px){
+  .lead-story .pic{aspect-ratio:4 / 3;border-radius:14px}
+  .lead-w{grid-template-columns:minmax(0,1fr)}
+  .lead-w .meta{grid-row:auto;flex-direction:row;gap:14px;margin-bottom:12px}
+  .lead-w .meta span{padding-left:14px;border-left:1px solid rgba(11,18,56,.16)}
+  .rows li{grid-template-columns:minmax(0,1fr) 96px;gap:12px 16px}
+  .rows .meta{grid-column:1 / -1;flex-direction:row;gap:14px;padding:0}
+  .rows .meta span{padding-left:14px;border-left:1px solid rgba(11,18,56,.16)}
+  .rows .pic{grid-column:2;grid-row:2;border-radius:9px;aspect-ratio:1}
+  .rows .row-w{grid-column:1;grid-row:2}
+  .rows .row-w p{font-size:.9375rem}
+  .press li{grid-template-columns:minmax(0,1fr)}
+  .kit{grid-template-columns:minmax(0,1fr);gap:0}
+  .kit li{padding:18px 0;border-bottom:1px solid rgba(11,18,56,.12)}
+}
+
+/* a story with no picture yet: its words take the picture's column too */
+.rows li:not(:has(.pic)) .row-w{grid-column:2 / -1}
+.rows .row-w p a{color:var(--ink);font-weight:500}
+@media (max-width:859px){.rows li:not(:has(.pic)) .row-w{grid-column:1 / -1}}

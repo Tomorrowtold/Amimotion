@@ -242,7 +242,7 @@
     ],
     [
      "The company",
-     5,
+     6,
      "list"
     ]
    ],
@@ -256,6 +256,11 @@
      "What is AmIMotion?",
      "/what-is-amimotion/",
      "The company in one page"
+    ],
+    [
+     "News",
+     "/company/news/",
+     "Awards, stages and press"
     ],
     [
      "Trust and data",

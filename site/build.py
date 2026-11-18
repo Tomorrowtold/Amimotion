@@ -772,7 +772,7 @@ def build():
     # assets/intro (the old AI-made hero turn) is no longer shipped: nothing may use it
     # shipped: fonts, CAD stills, film files. Not shipped: assets/intro (the old AI-made turn), assets/scene (the dark
     # glowing scene stills, replaced by reserved slots in round 05), vendor (three.js, no longer loaded)
-    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech", "locate", "worlds", "products", "og"):
+    for sub in ("fonts", "img", "home", "film", "photo", "hall", "nav", "tech", "locate", "worlds", "products", "og", "news", "brochure"):
         if (SRC / "assets" / sub).exists(): shutil.copytree(SRC / "assets" / sub, DIST / "assets" / sub)
     # three.js ships again for one use: the homepage locate stage (round 19), loaded lazily, never in the first screen
     (DIST / "assets" / "vendor").mkdir()
@@ -906,6 +906,7 @@ def build():
     kb_pages, kb = [], []
     for u in sorted(public):
         meta, body = pages[u]; i = len(kb_pages); kb_pages.append([u, LABEL.get(u) or titles[u]])
+        if meta.get("guide") == "off": continue   # news names partners and events: the guide never states those (claims gate), so it reads none of that page
         b = re.sub(r"<(script|style|svg|template|figure)\b.*?</\1>", " ", body, flags=re.S)
         kh = text_of(re.search(r"<h1[^>]*>(.*?)</h1>", b, re.S).group(1)).strip() if re.search(r"<h1[^>]*>(.*?)</h1>", b, re.S) else titles[u]
         for q in faq_items(body):
