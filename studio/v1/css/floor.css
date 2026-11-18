@@ -179,4 +179,4 @@
 @media (prefers-reduced-motion:reduce){.flr-on .flr-card.go{animation:none}}
 .flr-shot .flr-card{display:none!important}
 
-html.flr-lock{overflow:hidden}html:has(.flr-on){scrollbar-gutter:stable}
+
