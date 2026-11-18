@@ -1248,67 +1248,72 @@ html.tag-live .hero .hx-act.k-fade,html.tag-live .hero .hx-facts.k-fade{transiti
 @media (max-width:860px){.bs-t{font-size:1.75rem}}
 @media (max-width:860px){.trio .tm-name{font-size:1rem}.trio .tm-role{font-size:.8125rem}}
 
-/* ===== LATEST NEWS, 18 Nov (v3): a card set into the hero's own grid, on the facts' baseline at the right, under the tag:
-   the same white glass as the products card (20px corners, hairline ring, long soft shadow). "Latest news" with its arrow
-   opens the page; 01/09 and two round arrows step through; the headline in the display face, its kind in the accent above,
-   its words rising in; nine segments along the foot fill in the accent while each one stays (7 s). Hover or focus holds it;
-   reduced motion waits for the arrows. Script: js/wire.js. ===== */
-.hero .hx-base{display:flex;align-items:flex-end;justify-content:space-between;gap:32px}
-.hx-news{flex:none;width:clamp(320px,26vw,400px);padding:16px 18px 18px;border-radius:20px;background:rgba(255,255,255,.74);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 0 0 1px rgba(11,18,56,.07),0 1px 2px rgba(11,18,56,.04),0 30px 60px -36px rgba(11,18,56,.45);pointer-events:auto;font-family:var(--text)}
-.hx-news-top{display:flex;align-items:center;gap:6px;margin-bottom:14px}
-.hx-news-k{display:inline-flex;align-items:center;gap:7px;margin-right:auto;color:var(--ink);text-decoration:none;font:500 .82rem/1 var(--text)}
-.hx-news-k svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:transform .4s var(--ease-out)}
-.hx-news-k:hover{color:var(--accent)}.hx-news-k:hover svg{transform:translateX(3px)}
-.hx-news-n{margin-right:6px;color:rgba(61,72,112,.55);font:500 .78rem/1 var(--display);letter-spacing:.02em}
-.hx-news-n b{font-weight:500;color:var(--ink)}
-.hx-news-b{display:grid;place-items:center;width:28px;height:28px;padding:0;border:0;border-radius:50%;background:rgba(11,18,56,.05);color:var(--ink);cursor:pointer;transition:background .25s,color .25s}
-.hx-news-b:hover,.hx-news-b:focus-visible{background:var(--ink);color:#fff}
-.hx-news-b svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.hx-news-b:focus-visible,.hx-news-k:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.hx-news-l{list-style:none;margin:0;padding:0;display:grid;overflow:hidden}
-.hx-news-l li{grid-area:1 / 1;visibility:hidden}
-.hx-news-l li.on,.hx-news-l li.was{visibility:visible}
-.hx-news-l a{display:block;color:var(--ink);text-decoration:none;border-radius:6px}
-.hx-news-l a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-.hx-news-kind{display:block;margin-bottom:6px;color:var(--accent);font:500 .78rem/1 var(--text);letter-spacing:.02em}
-.hx-news-h{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;min-height:3.75em;font:600 1.06rem/1.25 var(--display);letter-spacing:-.012em;transition:color .25s}
-.hx-news-l a:hover .hx-news-h{color:var(--accent)}
-.hx-news.live .hx-news-kind,.hx-news.live .hx-news-h span{display:inline-block;transition:transform .7s var(--ease-out),opacity .5s var(--ease);transition-delay:calc(var(--k,0) * 26ms + 70ms)}
-.hx-news.live .hx-news-kind{display:block;transition-delay:0s}
-.hx-news.live li:not(.on) .hx-news-kind,.hx-news.live li:not(.on) .hx-news-h span{transform:translateY(100%);opacity:0;transition-duration:0s;transition-delay:0s}
-.hx-news.live li.was .hx-news-kind,.hx-news.live li.was .hx-news-h span{transform:translateY(-60%);opacity:0;transition:transform .45s cubic-bezier(.5,0,.75,0),opacity .3s;transition-delay:0s}
-.hx-news.live[data-dir="b"] li:not(.on):not(.was) .hx-news-kind,.hx-news.live[data-dir="b"] li:not(.on):not(.was) .hx-news-h span{transform:translateY(-60%)}
-.hx-news.live[data-dir="b"] li.was .hx-news-kind,.hx-news.live[data-dir="b"] li.was .hx-news-h span{transform:translateY(100%)}
-.hx-news-seg{display:flex;gap:4px;margin-top:16px}
-.hx-news-seg i{position:relative;flex:1;height:2px;border-radius:2px;background:rgba(11,18,56,.1);overflow:hidden}
-.hx-news-seg i::after{content:"";position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:0 50%}
-.hx-news-seg i.done::after{transform:none;background:rgba(11,18,56,.32)}
-.hx-news-seg i.run::after{animation:hx-dwell 7s linear forwards}
-.hx-news:hover .hx-news-seg i.run::after,.hx-news:focus-within .hx-news-seg i.run::after{animation-play-state:paused}
-@keyframes hx-dwell{to{transform:none}}
-html.tag-live .hero .hx-news.k-fade:not(.in){opacity:0;transform:translateY(18px)}
-html.tag-live .hero .hx-news.k-fade{transition:opacity .9s var(--ease) .2s,transform 1.2s var(--ease-out) .2s}
-.hero .hx-news.k-fade{opacity:1}
+/* ===== LATEST NEWS, 18 Nov (v4): four news pods right under the facts, so the hero's foot is one block.
+   Each pod is a machined shell in one of the site's four colours (ink, indigo, located blue, waiting amber), finished like
+   a humanoid robot's panels: a curved gloss, a polished bevel, an inner panel seam, and a white ceramic joint with a small
+   status light. Every 2 s the four pods turn over to the next four headlines in a wave; each shell resizes to its words
+   and a sheen crosses it. Hover or focus holds them; the round button pauses; reduced motion waits. Script: js/wire.js. ===== */
+.hero .hx-base{display:flex;flex-direction:column;align-items:flex-start;gap:clamp(14px,2vh,20px)}
+.hx-pods{display:flex;align-items:center;gap:12px;max-width:100%;pointer-events:auto;font-family:var(--text)}
+.hx-pods-k{flex:none;display:inline-flex;align-items:center;gap:7px;margin-right:4px;color:var(--ink);text-decoration:none;font:500 .875rem/1.2 var(--text);white-space:nowrap}
+.hx-pods-k svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:transform .4s var(--ease-out)}
+.hx-pods-k:hover{color:var(--accent)}.hx-pods-k:hover svg{transform:translateX(3px)}
+.hx-pods-l{list-style:none;margin:0;padding:0;display:flex;align-items:stretch;gap:10px;min-width:0}
+.pod{--c:#0b1238;--hi:#2a3366;--lo:#050a26;--t:#fff;--kt:rgba(255,255,255,.66);--led:#ffb020;flex:0 1 auto;min-width:0;display:flex}
+.pod.p2{--c:#4b3df0;--hi:#6d62ff;--lo:#3527c9;--led:#fff}
+.pod.p3{--c:#1f6bff;--hi:#4a8bff;--lo:#0f50d4;--led:#ffb020}
+.pod.p4{--c:#ffb020;--hi:#ffc95a;--lo:#e8930a;--t:#0b1238;--kt:rgba(11,18,56,.66);--led:#1f6bff}
+.pod a{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;gap:11px;width:100%;min-height:68px;padding:9px 18px 9px 10px;border-radius:20px;color:var(--t);text-decoration:none;
+  background:radial-gradient(130% 110% at 28% -30%,rgba(255,255,255,.42),rgba(255,255,255,0) 52%),linear-gradient(180deg,var(--hi),var(--c) 48%,var(--lo));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.22),0 0 0 1px rgba(11,18,56,.14),0 1px 2px rgba(11,18,56,.16),0 14px 26px -16px rgba(11,18,56,.6);
+  transition:transform .5s var(--ease-out),box-shadow .5s var(--ease-out)}
+.pod a::before{content:"";position:absolute;z-index:-1;inset:3px;border-radius:17px;box-shadow:inset 0 1px 0 rgba(0,0,0,.16),inset 0 -1px 0 rgba(255,255,255,.2);pointer-events:none}
+.pod a::after{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:-60%;width:50%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.38) 50%,rgba(255,255,255,0));transform:translateX(0) skewX(-14deg);opacity:0;pointer-events:none}
+.pod.pod-flash a::after{animation:pod-sheen .9s var(--ease-out)}
+@keyframes pod-sheen{0%{opacity:1;transform:translateX(0) skewX(-14deg)}100%{opacity:1;transform:translateX(420%) skewX(-14deg)}}
+.pod a:hover,.pod a:focus-visible{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.22),0 0 0 1px rgba(11,18,56,.16),0 2px 4px rgba(11,18,56,.16),0 20px 34px -18px rgba(11,18,56,.7)}
+.pod a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.pod-j{flex:none;position:relative;width:26px;height:26px;border-radius:50%;
+  background:radial-gradient(circle at 34% 28%,#fff 0 18%,#eef1f7 38%,#c3c9d8 78%,#9aa3ba);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.7),inset 0 -2px 3px rgba(11,18,56,.22),0 1px 2px rgba(0,0,0,.35)}
+.pod-j::before{content:"";position:absolute;inset:6px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#2a3160,#0b1238 70%);box-shadow:inset 0 1px 1px rgba(255,255,255,.18)}
+.pod-j::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--led);box-shadow:0 0 6px var(--led),0 0 2px var(--led)}
+.pod.pod-flash .pod-j::after{animation:pod-led .9s var(--ease-out)}
+@keyframes pod-led{0%{transform:scale(1)}30%{transform:scale(1.7);box-shadow:0 0 12px var(--led),0 0 3px var(--led)}100%{transform:scale(1)}}
+.pod-t{display:block;min-width:0;max-width:12.5em}
+.pod-k{display:block;margin-bottom:3px;color:var(--kt);font:500 .75rem/1 var(--text);letter-spacing:.01em}
+.pod-h{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font:600 .9rem/1.22 var(--display);letter-spacing:-.008em;text-wrap:balance}
+.hx-pods-p{flex:none;display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:50%;cursor:pointer;color:var(--ink);
+  background:radial-gradient(circle at 34% 28%,#fff 0 22%,#eef1f7 50%,#d3d8e4);box-shadow:inset 0 -1px 2px rgba(11,18,56,.18),0 0 0 1px rgba(11,18,56,.12),0 1px 2px rgba(11,18,56,.14)}
+.hx-pods-p{visibility:hidden}.hx-pods.live .hx-pods-p{visibility:visible}
+.hx-pods-p svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hx-pods-p .i-pl{fill:currentColor;stroke-width:1.2;display:none}
+.hx-pods-p[aria-pressed="true"] .i-pl{display:block}.hx-pods-p[aria-pressed="true"] .i-pa{display:none}
+.hx-pods-p:focus-visible,.hx-pods-k:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+html.tag-live .hero .hx-pods.k-fade:not(.in){opacity:0;transform:translateY(18px)}
+html.tag-live .hero .hx-pods.k-fade{transition:opacity .9s var(--ease) .15s,transform 1.2s var(--ease-out) .15s}
+.hero .hx-pods.k-fade{opacity:1}
 @media (min-width:901px){.hero,.hero-copy{min-height:calc(100svh - 64px)}.hero-copy{gap:clamp(28px,5vh,60px);padding-bottom:max(28px,4vh)}}
 @media (min-width:1500px){.hero .display{font-size:clamp(6.6rem,7.5vw - .5rem,8.5rem)}}
 @media (max-width:1180px) and (min-width:901px){.hero .hx-facts li:nth-child(n+3){display:none}}
+@media (max-width:1240px){.hx-pods{flex-wrap:wrap;row-gap:10px}.hx-pods-k{flex:1;order:-2}.hx-pods-p{order:-1;width:26px;height:26px}.hx-pods-l{flex-basis:100%}}
 .hero .hero-foot{display:none}
-@media (min-width:901px) and (max-height:860px){
-  .hero-copy{gap:clamp(20px,3.4vh,40px)}
-  .hx-news{padding:13px 16px 15px}
-  .hx-news-top{margin-bottom:10px}
-  .hx-news-h{-webkit-line-clamp:2;min-height:2.5em}
-  .hx-news-seg{margin-top:12px}
-}
+@media (min-width:901px) and (max-height:860px){.hero-copy{gap:clamp(20px,3.4vh,40px)}}
+@media (min-width:901px) and (max-height:760px){.hero .hx-facts{display:none}}
 @media (max-width:900px){
-  .hero .hx-base{display:block}
-  .hx-news{width:auto;margin-top:18px;padding:13px 14px 14px;border-radius:16px}
-  .hx-news-top{margin-bottom:10px}
-  .hx-news-h{-webkit-line-clamp:2;min-height:2.5em;font-size:.98rem}
-  .hx-news-seg{margin-top:12px}
-  .hero .hx-facts{display:none!important}
+  .hero .hx-base{margin-top:20px;gap:14px}
+  .hx-pods{width:100%;row-gap:10px}
+  .hx-pods-l{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .pod a{min-height:82px;padding:9px 12px 9px 9px;gap:9px;border-radius:18px}
+  .pod a::before{border-radius:15px}
+  .pod-j{width:22px;height:22px}.pod-j::before{inset:5px}.pod-j::after{width:5px;height:5px;margin:-2.5px 0 0 -2.5px}
+  .pod-t{max-width:none}
+  .pod-h{font-size:.82rem;-webkit-line-clamp:3}
+  .pod-k{font-size:.72rem}
 }
-@media (prefers-reduced-motion:reduce){.hx-news.live .hx-news-kind,.hx-news.live .hx-news-h span{transition:none!important}}
+@media (max-width:639px){.hero .hx-facts{display:none!important}}
+@media (max-width:900px) and (max-height:700px){.hx-pods-l .pod:nth-child(n+3){display:none}}
+@media (prefers-reduced-motion:reduce){.pod a,.pod a::after,.pod-j::after{transition:none!important;animation:none!important}}
 
 /* ===== THE BROCHURE, 18 Nov: one button under the three parts. Ink at rest like the site's buttons; on hover an indigo
    liquid rises through it, its surface turning slowly, and the arrow drops. ===== */
