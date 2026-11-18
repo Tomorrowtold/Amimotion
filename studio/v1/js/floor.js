@@ -11,7 +11,7 @@
   var rail = [].slice.call(S.querySelectorAll('.flr-rail a')), topA = S.querySelector('.flr-top'), sndB = S.querySelector('.flr-snd');
   var Q = new URLSearchParams(location.search), SHOT = !!window.__flrShot, FULL = SHOT || Q.get('flr') === 'full', FORCE_STILLS = Q.get('flr') === 'stills';
   var base = S.getAttribute('data-assets');
-  var WGT = [.9, 1.5, 1.15, 1.1, 1.2, 1.1, 1.45, 1.25, 1.5, .9], SUM = WGT.reduce(function (a, b) { return a + b; }, 0), UNIT = 32;   // vh of scroll per unit
+  var WGT = [.9, 1.5, 1.15, 1.1, 1.2, 1.1, 1.45, 1.25, 1.8], SUM = WGT.reduce(function (a, b) { return a + b; }, 0), UNIT = 32;   // vh of scroll per unit
   var EDGE = [0]; WGT.forEach(function (w) { EDGE.push(EDGE[EDGE.length - 1] + w / SUM); });
   S.style.setProperty('--flr-run', (SUM * UNIT) + 'vh');
   S.classList.add('flr-on');
@@ -173,7 +173,7 @@
     if (i === bi) return; var was = bi; bi = i;
     beats.forEach(function (b, k) { b.classList.toggle('on', k === i); b.classList.toggle('flr-near', Math.abs(k - i) <= 1); });
     rail.forEach(function (a) { var g = +a.getAttribute('data-go'); a.classList.toggle('on', i >= g && (g === 6 || i < g + 3)); });
-    stage.style.setProperty('--end', i === NB - 1 ? 1 : 0);
+    stage.style.setProperty('--end', 0);
     if (was >= 0) snd.beat(i, was);
   }
   rail.forEach(function (a) {
@@ -226,7 +226,7 @@
       pop: function (k) { var n = performance.now(); if (n - lastPop < 45) return; lastPop = n; tone(SC[k % SC.length], 0, .5, .085); },
       pulse: function (d) { tone(1568, 0, .35, .11); tone(784, 0, .5, .05); d.forEach(function (x, i) { tone([1174.7, 1318.5, 1046.5][i], .12 + x * .012, .7, .07); }); },
       fix: function () { tone(659.25, 0, .9, .09); tone(987.77, .09, 1.1, .07); },
-      beat: function (i, was) { if (i === 9 && was === 8) { tone(261.6, 0, 2.2, .07); tone(392, .05, 2.2, .06); tone(659.25, .1, 2.4, .05); } else tone(i > was ? 196 : 174.6, 0, .22, .07, 'triangle'); }
+      beat: function (i, was) { if (i === NB - 1 && was === NB - 2) { tone(261.6, 0, 2.2, .07); tone(392, .05, 2.2, .06); tone(659.25, .1, 2.4, .05); } else tone(i > was ? 196 : 174.6, 0, .22, .07, 'triangle'); }
     };
   })();
 
@@ -589,7 +589,7 @@
     if (searchEl) { var sm = fmt(st.clk * 561, false), wm = Math.round(st.wd) + ' m walked'; if (sm !== searchEl.t) { searchEl.t = sm; searchEl.textContent = sm; } if (wm !== walkedEl.t) { walkedEl.t = wm; walkedEl.textContent = wm; } }
     // --- the ruler: a true length at this distance
     var nk = 0; while (nk < NICE.length - 1 && NICE[nk] * cam.ppm < 56) nk++;
-    var nl = NICE[nk] < 1 ? Math.round(NICE[nk] * 100) + ' cm' : NICE[nk] + ' m'; scaleI.style.width = (NICE[nk] * cam.ppm).toFixed(1) + 'px'; if (nl !== scaleT.t) { scaleT.t = nl; scaleT.textContent = nl; }
+    var nl = NICE[nk] < 1 ? Math.round(NICE[nk] * 100) + ' cm' : NICE[nk] + ' m'; scaleI.style.width = (NICE[nk] * cam.ppm).toFixed(1) + 'px'; scaleEl.style.opacity = (1 - st.l3).toFixed(2); if (nl !== scaleT.t) { scaleT.t = nl; scaleT.textContent = nl; }
     // --- the plant's own grid lines, in metres: what x and y are measured from
     var axa = st.axes * (1 - (st.l1 || 0)) * seg(c.s, 15, 24) * (phone ? 0 : 1); show(axG, axa);
     if (axa > 0) axT.forEach(function (t) {

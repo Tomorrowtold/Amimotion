@@ -12,8 +12,8 @@ process.on('unhandledRejection', e => { console.log('ERR', String(e).slice(0, 30
     await pg.evaluate(() => document.querySelector('.flr').scrollIntoView());
     await pg.waitForFunction(() => window.__flr && window.__flr.ready(), null, { timeout: 120000 });
     await pg.addStyleTag({ content: '.nav,header,.flr-n li{transition:none!important}header,.nav,.cursor{display:none!important}' });
-    const at = [.8, .78, .75, .97, .97, .97, .985, .9, .95, .9];
-    for (let i = 0; i < 10; i++) {
+    const at = [.8, .78, .75, .97, .97, .97, .985, .9, .97];
+    for (let i = 0; i < 9; i++) {
       await pg.evaluate(([i, u]) => window.__flr.seek(i + u, 7.3 + i), [i, at[i]]); await pg.waitForTimeout(1500);
       await (await pg.$('.flr-stage')).screenshot({ path: `${out}/${lay}/s${i + 1}.png` });
     }

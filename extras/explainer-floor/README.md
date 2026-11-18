@@ -12,7 +12,7 @@ Small true details: the ruler at the bottom shows a real length at the present d
   - `wide`, `mid`, `close`, `macro`: the same plant at four distances, each in two states. `clay` is the plant before anything is located. `col` is the plant located.
   - `sprites.webp`: the two AMRs (16 headings, both states) and the walker (4 headings, 8 steps).
   - `depth.png`: how far each point of the wide picture is, so a moving thing passes behind a column correctly.
-  - `s1` to `s10`: the ten finished pictures, for browsers without WebGL, with Save-Data, or too slow. `stills.cjs` takes them from the live section.
+  - `s1` to `s9`: the nine finished pictures, for browsers without WebGL, with Save-Data, or too slow. `stills.cjs` takes them from the live section.
   - `floor.json`: where things are, in metres.
 - `blender/` holds the scripts that made the pictures (Blender as a Python module, Cycles). They need the Poly Haven scans and the tag and anchor CAD, which are not in this repository.
 
