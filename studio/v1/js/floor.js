@@ -92,7 +92,7 @@
     // During a fast fling (a menu jump, a hard flick) the words step back and return the moment the scroll settles.
     var calm = 1 - seg(Math.abs(textFrame.v || 0), 1.6, 4.5); calm = Math.round(calm * 20) / 20;
     blocks.forEach(function (b, k) {
-      var e = k === 0 ? Math.max(seg(ap, .45, .85), seg(tb, 0, .02)) : seg(tb, k, k + .16), x = k < NB - 1 ? seg(tb, k + .84, k + 1) : 0;
+      var e = k === 0 ? Math.max(seg(ap, .45, .85), seg(tb, 0, .02)) : seg(tb, k, k + .16), x = k < NB - 1 ? seg(tb, k + .9, k + 1) : 0;
       var vis = e > 0 && x < 1, uu = k < i ? 1 : k > i ? 0 : u;
       if (vis !== b.vis) { b.vis = vis; b.el.style.visibility = vis ? 'visible' : 'hidden'; }
       if (!vis) return;
@@ -177,6 +177,56 @@
       e.preventDefault(); var g = +a.getAttribute('data-go'); if (done) { unfold(g); return; } var r = S.getBoundingClientRect(), run = r.height - vh;
       window.scrollTo({ top: window.scrollY + r.top + (EDGE[g] + .012) * run, behavior: 'smooth' });
     });
+  });
+
+  // ---- controlled scroll: inside the story one wheel turn, swipe or key moves exactly one sentence on, at a reading pace.
+  // Each sentence has a resting point where its words, its picture and its sound have all arrived. The page glides there
+  // and holds, so nothing can be skipped or half read. Before the first and after the last resting point the page scrolls as usual.
+  var STOP = [.87, .87, .76, .87, .87, .87, .87, .87, .97], stops = STOP.map(function (v, k) { return EDGE[k] + v * (EDGE[k + 1] - EDGE[k]); });
+  var RM = matchMedia('(prefers-reduced-motion: reduce)').matches, glide = null, lastW = 0, lastA = 0, landT = 0, engaged = false, lastY = window.scrollY;
+  // While the story holds the page, the page itself does not scroll (a long flick from above would otherwise carry straight through it).
+  function lock(on) { if (engaged === on) return; engaged = on; document.documentElement.classList.toggle('flr-lock', on); }
+  function guard() {
+    var y = window.scrollY, dy = y - lastY; lastY = y; if (glide) return; var ok = pinned(), last = stops[stops.length - 1];
+    if (!ok) { lock(false); return; }
+    if (!engaged && dy > 0 && p < stops[0]) { lock(true); glideTo(stops[0]); } else if (!engaged && dy < 0 && p > last + .0015) { lock(true); glideTo(last); }
+  }
+  function pinned() { if (done || SHOT || RM || !S.classList.contains('flr-on')) return false; var r = S.getBoundingClientRect(); return r.top <= 2 && r.bottom >= vh - 2; }
+  function nextStop(dir) {
+    var k;
+    if (dir > 0) { for (k = 0; k < stops.length; k++) if (stops[k] > p + .0015) return stops[k]; return null; }
+    for (k = stops.length - 1; k >= 0; k--) if (stops[k] < p - .0015) return stops[k];
+    return p > .0015 ? 0 : null;
+  }
+  function glideTo(pt) {
+    var r = S.getBoundingClientRect(), run = r.height - vh, y0 = window.scrollY, y1 = Math.round(window.scrollY + r.top + pt * run);
+    var d = 1000 * Math.min(2.1, Math.max(1.05, .8 + Math.abs(tbOf(pt) - tbOf(p)) * .85)), t0 = performance.now(), g = glide = {};
+    (function step(now) {
+      if (glide !== g) return; var k = Math.min(1, (now - t0) / d), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      window.scrollTo({ top: y0 + (y1 - y0) * e, behavior: 'instant' }); if (k < 1) requestAnimationFrame(step); else { glide = null; landT = performance.now(); }
+    })(t0);
+  }
+  function intent(dir, ev) { var t = nextStop(dir); if (t === null) { lock(false); return false; } lock(true); if (ev) ev.preventDefault(); if (!glide) glideTo(t); return true; }
+  window.addEventListener('wheel', function (e) {
+    if (e.ctrlKey || !pinned()) { lastW = 0; return; }
+    var dy = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? vh : 1), a = Math.abs(dy), now = performance.now(); if (a < 1) return;
+    // a new turn of the wheel, not the tail of the last flick: a pause, or a push harder than the dying tail
+    var fresh = (now - lastW > 200 && a >= 10) || a > lastA * 1.5 + 6; lastW = now; lastA = a; var dir = dy > 0 ? 1 : -1;
+    if (glide || !fresh || now - landT < 140) { if (glide || (engaged && nextStop(dir) !== null)) e.preventDefault(); return; }
+    intent(dir, e);
+  }, { passive: false });
+  var ty = null, tGo = false;
+  window.addEventListener('touchstart', function (e) { ty = e.touches.length === 1 ? e.touches[0].clientY : null; tGo = false; }, { passive: true });
+  window.addEventListener('touchmove', function (e) {
+    if (ty === null || !pinned()) return; var d = ty - e.touches[0].clientY, dir = d > 0 ? 1 : -1;
+    if (glide || tGo) { e.preventDefault(); return; }
+    if (nextStop(dir) === null) return; e.preventDefault();
+    if (Math.abs(d) > 18) { tGo = true; intent(dir); }
+  }, { passive: false });
+  window.addEventListener('keydown', function (e) {
+    if (!pinned() || e.altKey || e.ctrlKey || e.metaKey || /^(INPUT|TEXTAREA|SELECT)$/.test((e.target || {}).tagName || '')) return;
+    var dir = { ArrowDown: 1, PageDown: 1, ' ': e.shiftKey ? -1 : 1, ArrowUp: -1, PageUp: -1 }[e.key]; if (!dir) return;
+    if (glide) { e.preventDefault(); return; } intent(dir, e);
   });
 
   var reB = S.querySelector('.flr-re'); if (reB) reB.addEventListener('click', function () { unfold(0); });
@@ -668,7 +718,7 @@
     kick();
   }
   function kick() { if (!raf && (onScreen || SHOT)) raf = requestAnimationFrame(tick); }
-  function onScroll() { readScroll(); if (near) start(); if (bi < 0) setBeat(beatOf(p)); kick(); }
+  function onScroll() { readScroll(); guard(); if (near) start(); if (bi < 0) setBeat(beatOf(p)); kick(); }
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', function () { measure(); onScroll(); });
   document.addEventListener('visibilitychange', function () { snd.gate(); kick(); });

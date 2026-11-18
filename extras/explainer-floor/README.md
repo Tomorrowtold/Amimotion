@@ -41,3 +41,9 @@ The section closes on the three layers: tags on the floor, anchors above, AmIHub
 
 - Lost stands under a flat sky: `blender/bay3.py` renders the unlocated (clay) plates with the sun off (`renderall3.sh`). The located plates keep the sun. In `floor.js` sunlight opens around the first located trolley and then crosses the floor (`st.sun`, `uSun`), so shadows and colour arrive with location. No extra pictures are loaded and the shader does one more distance test per pixel.
 - Signals follow the brochure's three steps: the tag sends a pulse a few nanoseconds wide when it moves; every anchor in range records the arrival time and the direction; AmIHub turns timing, direction and the map into a position. Lines leave the tag at one speed, so the nearest anchor is reached first. The moving pulse is drawn to scale (3 ns is about 0.9 m). Arrival times are the true 3D distances divided by the speed of light.
+
+## Round 5: the truck, and a story that moves one sentence at a time
+
+- The truck reads from above: a 40 ft container (corrugation across its length, weathered roof) on a skeletal trailer, coupled to a cab-over tractor in AmIMotion's ink, standing whole on its own apron (`blender/truck2.py`). The wide plates are framed larger (`SCALE=52`, 4405 px) at the same pixels per metre, so nothing is cut at the edge (`renderall4.sh`, then `pack3.py` repacks only the wide plates and updates `floor.json`).
+- Controlled scroll (`floor.js`, "controlled scroll"): inside the story one wheel turn, swipe or key glides to the next resting point, where that sentence's words, picture and sound have all arrived. The page is held while the story runs, so a long flick cannot carry past a sentence. Before the first and after the last resting point the page scrolls as usual. Off for reduced motion.
+- Words, picture, sound and the phone's vibration all follow the one scroll value.

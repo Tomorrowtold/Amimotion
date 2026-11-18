@@ -40,7 +40,7 @@ edge = P.mat('slabedge', (.42, .49, .66, 1), .7)
 slab = P.box('slab', (BX, BY, .5), (BX / 2, BY / 2, -.25), fm, .02); slab.data.materials.append(edge)
 for p in slab.data.polygons:
     if abs(p.normal.z) < .5: p.material_index = 1
-apron = P.box('apron', (9, 7, .5), (-4.5, 10, -.25), fm, .02); apron.data.materials.append(edge)
+apron = P.box('apron', (18.6, 6.4, .5), (-9.3, 10, -.25), fm, .02); apron.data.materials.append(edge)   # the truck stands on its own apron, whole
 for p in apron.data.polygons:
     if abs(p.normal.z) < .5: p.material_index = 1
 paint = mm['paint']; white = P.mat('linewhite', (.9, .92, .97, 1), .6)
@@ -59,7 +59,10 @@ P.box('wallN', (BX, .22, 1.3), (BX / 2, BY - .11, .65), wallm, .01)
 P.box('wallW1', (.22, 7.3, 1.3), (.11, 3.65, .65), wallm, .01); P.box('wallW2', (.22, 7.3, 1.3), (.11, BY - 3.65, .65), wallm, .01)
 # the dock door frame and the truck backed up to it
 P.box('doorL', (.3, .3, 4.2), (.15, 7.45, 2.1), mm['yellow'], .01); P.box('doorR', (.3, .3, 4.2), (.15, 12.55, 2.1), mm['yellow'], .01); P.box('doorT', (.3, 5.4, .35), (.15, 10, 4.2), mm['dark'], .01)
+import truck2; P.b_truck = truck2.b_truck2   # the truck that reads from above
 P.truck(0., 10.)
+for x0, x1 in ((-.6, -17.8),):
+    for yy in (8.2, 11.8): line(x0, yy, x1, yy, .1, white)   # the lane the truck reversed along
 # columns with the real anchors
 ANCH = []
 for x, y in ((6., 13.), (16.5, 2.2), (25.5, 13.)):
