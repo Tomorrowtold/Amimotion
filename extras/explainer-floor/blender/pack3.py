@@ -7,14 +7,23 @@ B = os.environ.get('BAY', '/home/user/x3d/out/bay4'); OUT = sys.argv[1]
 man = json.load(open(f'{OUT}/floor.json'))
 J = {n: json.load(open(f'{B}/{n}_col.json')) for n in ('wide', 'mid', 'close', 'macro')}
 w = J['wide']; P = w['pts']
-man.update(aspect=w['w'] / w['h'], scale=w['scale'], o=P['o'], x=[P['x'][i] - P['o'][i] for i in (0, 1)], y=[P['y'][i] - P['o'][i] for i in (0, 1)], z=[P['z'][i] - P['o'][i] for i in (0, 1)])
+man.update(cam=w['cam'], view=w['view'], aspect=w['w'] / w['h'], scale=w['scale'], o=P['o'], x=[P['x'][i] - P['o'][i] for i in (0, 1)], y=[P['y'][i] - P['o'][i] for i in (0, 1)], z=[P['z'][i] - P['o'][i] for i in (0, 1)])
 for n in ('mid', 'close', 'macro'):
     q = J[n]['pts']; a, b = 'o', 'a0'
     rs = [(P[b][i] - P[a][i]) / (q[b][i] - q[a][i]) for i in (0, 1)]; r0 = [P[a][i] - q[a][i] * rs[i] for i in (0, 1)]
     man[n] = [round(v, 6) for v in (*r0, *rs)]
 LUTC = np.interp(np.arange(256) / 255., [0, .35, .745, 1], [0, .35, .8, 1])
+from scipy import ndimage
+def heal(a):
+    # Black opaque slivers where rack tops meet the back wall (a render artefact): fill each from its nearest real pixel.
+    m = (a[..., :3].astype(int).sum(-1) < 12) & (a[..., 3] > 250); lab, n = ndimage.label(m)
+    if n: sz = ndimage.sum(m, lab, range(1, n + 1)); m = np.isin(lab, 1 + np.nonzero(sz > 20)[0])
+    dk = a[..., :3].astype(int).sum(-1) < 90
+    for _ in range(4): m = m | (ndimage.binary_dilation(m) & dk)
+    m = ndimage.binary_dilation(m, iterations=2) & (a[..., 3] > 250)
+    _, (iy, ix) = ndimage.distance_transform_edt(m, return_indices=True); a[m] = a[iy[m], ix[m]]; return a
 def lift(im):
-    a = np.asarray(im).copy(); a[..., :3] = np.round(LUTC[a[..., :3]] * 255).astype(np.uint8); return Image.fromarray(a, 'RGBA')
+    a = heal(np.asarray(im).copy()); a[..., :3] = np.round(LUTC[a[..., :3]] * 255).astype(np.uint8); return Image.fromarray(a, 'RGBA')
 SZ = dict(L=4405, P=2506)
 for lay, wd in SZ.items():
     for st in ('col', 'clay'):
