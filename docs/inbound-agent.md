@@ -56,7 +56,8 @@ node server/test.js         # 15 checks, no network or key needed
 
 | File | What |
 |---|---|
-| `site/src/js/agent-core.js` | The facts the guide may use, the rules it follows, the claims gate, the tools, lead scoring and the lead summary. **Edit the facts and rules here only.** |
+| `site/src/data/facts.json` | The facts the guide (and the whole site) may state, each with its source and review date, and the barred wording. **Edit facts here only**, then run `python3 site/tools/facts.py sync`. |
+| `site/src/js/agent-core.js` | The rules the guide follows, the claims gate, the tools, lead scoring and the lead summary. Its FACTS block is written from facts.json; the build fails if it drifts. |
 | `site/src/js/agent.js`, `agent.css` | The guide in the page, visitor memory, and the "send to an engineer" form |
 | `site/src/js/magnets.js` | The six magnets. Which page shows which magnet is set in `MAGNETS` in `site/build.py`. |
 | `site/src/desk/index.html` | The lead desk |

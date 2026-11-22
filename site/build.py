@@ -12,6 +12,8 @@ Search and answer engines get everything from the same text the visitor reads:
 - robots.txt that names and welcomes the AI crawlers, sitemap.xml with lastmod and images, llms.txt and
   llms-full.txt, an IndexNow key file, and _headers for the host.
 - The entity description comes from src/data/entity.json, the one wording used everywhere.
+- The supplier facts come from src/data/facts.json (tools/facts.py): the Facts page, /facts.json, the Organization and
+  product facts in JSON-LD, llms.txt and Ask AmIMotion all read it, and the build stops if Ask's copy has drifted.
 
 python3 build.py                       review build: noindex, crawlers disallowed
 python3 build.py --indexable           public build for amimotion.com (only after the launch checklist)
@@ -47,6 +49,7 @@ for _s in NAV["sections"]:
 
 part = lambda n: (SRC / "partials" / n).read_text()
 sys.path.insert(0, str(ROOT / "tools"))
+import facts as FX   # the supplier facts file (src/data/facts.json) and its claims gate
 import purge   # per-page CSS trim (tools/purge.py): keeps only rules a page or a first-party script can use
 JS_WORDS = set().union(*(purge.js_words(f.read_text()) for f in sorted((SRC / "js").rglob("*.js"))))
 # colours live only in core.css: the browser bar colour is read from the --ground token, so a palette swap is one file
@@ -87,21 +90,87 @@ def text_of(fragment):
     return re.sub(r" ([.,;:!?)])", r"\1", t)   # "your <a>baseline</a>." reads "baseline.", not "baseline ."
 
 
+FACTS = FX.load(); FORG = FACTS["organization"]
+if not FX.core_ok(): raise SystemExit("build: Ask's facts in src/js/agent-core.js differ from src/data/facts.json (run python3 tools/facts.py sync)")
+FACTS_PAGE, FACTS_JSON = FACTS["profile"]["page"], FACTS["profile"]["path"]
+# the facts profile, named on every page's Organization so an agent that reads one page finds the dated, sourced list
+DATASET_REF = {"@id": SITE + FACTS_PAGE + "#dataset"}
 ORG = {
-    "@type": "Organization", "@id": SITE + "/#org", "name": "AmIMotion", "alternateName": ENTITY["alternateName"],
-    "legalName": ENTITY["legalName"], "url": SITE + "/",
+    "@type": "Organization", "@id": SITE + "/#org", "name": FORG["name"], "alternateName": ENTITY["alternateName"],
+    "legalName": FORG["legalName"], "url": SITE + "/",
     # the square mark every page already ships as its icon (the launch build copies only files a page references)
-    "logo": {"@type": "ImageObject", "@id": SITE + "/#logo", "url": SITE + "/assets/img/AmIMotion_Icon.svg", "width": 512, "height": 512}, "email": ENTITY["email"],
+    "logo": {"@type": "ImageObject", "@id": SITE + "/#logo", "url": SITE + "/assets/img/AmIMotion_Icon.svg", "width": 512, "height": 512}, "email": FORG["email"],
     "description": ENTITY["long"], "slogan": "Where work is. Where it waits.",
-    "address": {"@type": "PostalAddress", "addressLocality": "Bengaluru", "addressRegion": "Karnataka", "addressCountry": "IN"},
+    "address": {"@type": "PostalAddress", "addressLocality": FORG["addressLocality"], "addressRegion": FORG["addressRegion"], "addressCountry": FORG["addressCountry"]},
     "knowsAbout": ENTITY["knowsAbout"], "sameAs": ENTITY["sameAs"],
     "brand": [{"@type": "Brand", "name": n} for n in ("AmIGo", "AmIMo", "AmIHub")],
     # round 07: the two people the founders approved, no third person (C2, C22); no areaServed (regions open, kit 02 Q18)
     "founder": {"@type": "Person", "@id": SITE + "/#kaushal-kukkar", "name": "Kaushal Kukkar", "jobTitle": "Founder and CEO"},
     "employee": [{"@type": "Person", "@id": SITE + "/#kaushal-kukkar", "name": "Kaushal Kukkar", "jobTitle": "Founder and CEO"},
                  {"@type": "Person", "@id": SITE + "/#vivek-dham", "name": "Vivek Dham", "jobTitle": "CTO"}],
-    "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "email": ENTITY["email"], "availableLanguage": "en"},
+    "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "email": FORG["email"], "availableLanguage": "en"},
+    "subjectOf": DATASET_REF,
 }
+
+
+# ---- supplier facts (src/data/facts.json): structured data and the Facts page, from the same records ----
+def fact_props(subject, visible=None):
+    """PropertyValues for the approved facts about one subject. On a product page only the facts whose key value the
+    page itself shows (visible text), so the structured data never says more than the page does."""
+    out = []
+    for f in FX.approved(FACTS):
+        if subject not in f["subjects"]: continue
+        if visible is not None and f.get("value", "\0") not in visible: continue
+        ev = FX.evidence(f, FACTS, SITE)
+        out.append({"@type": "PropertyValue", "propertyID": f["id"], "name": f["label"], "value": f["claim"],
+                    "url": SITE + FACTS_PAGE + "#" + f["id"], "description": f"Source: {ev['title']}. Last reviewed {f['last_reviewed']}."})
+    return out
+
+
+def fact_date(d):
+    y, m, dd = d.split("-")
+    return f"{int(dd)} {['January','February','March','April','May','June','July','August','September','October','November','December'][int(m) - 1]} {y}"
+
+
+def facts_html():
+    """The Facts page list: one table per group, each fact with its source and the date it was last reviewed."""
+    e = lambda t: html.escape(t, quote=False)
+    out = []
+    for key, title in FACTS["groups"]:
+        rows = [f for f in FX.approved(FACTS) if f["group"] == key]
+        if not rows: continue
+        sid = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
+        tr = []
+        for f in rows:
+            ev = FX.evidence(f, FACTS, "")
+            src = f'<a href="{ev["url"]}">{e(ev["title"])}</a>' if ev.get("url") else e(ev["title"])
+            if ev["type"] == "company statement" and ev.get("url"): src = f'Company statement, <a href="{ev["url"]}">{e(LABEL.get(ev["url"], "on this site"))}</a>'
+            elif ev["type"] == "press report": src = f'Press report: {src}'
+            tr.append(f'<tr id="{f["id"]}"><th scope="row">{e(f["label"])}</th><td><p>{e(f["claim"])}</p>'
+                      f'<p class="fact-src">{src} · Reviewed <time datetime="{f["last_reviewed"]}">{fact_date(f["last_reviewed"])}</time></p></td></tr>')
+        out.append(f'<section class="sec" aria-labelledby="{sid}">\n<h2 id="{sid}"><span>{e(title)}.</span></h2>\n'
+                   f'<table class="spec facts"><tbody>{"".join(tr)}</tbody></table>\n</section>')
+    return "\n\n".join(out)
+
+
+def facts_schema(full):
+    """The Facts page's own nodes: the dataset (with its JSON download) and each product with its facts."""
+    fs = FX.approved(FACTS)
+    g = [{"@type": "Dataset", "@id": SITE + FACTS_PAGE + "#dataset", "name": FACTS["profile"]["name"], "description": FACTS["profile"]["description"],
+          "url": full, "creator": {"@id": SITE + "/#org"}, "publisher": {"@id": SITE + "/#org"}, "about": {"@id": SITE + "/#org"},
+          "inLanguage": "en-IN", "dateModified": max(f["last_reviewed"] for f in fs), "version": FACTS["version"],
+          "isAccessibleForFree": True,
+          "distribution": {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": SITE + FACTS_JSON},
+          "variableMeasured": fact_props("org")}]
+    for k, sub in FACTS["subjects"].items():
+        if k == "org": continue
+        node = {"@type": sub["node"], "@id": SITE + sub["page"] + ("#software" if sub["node"] == "SoftwareApplication" else "#product"),
+                "name": sub["name"].split(" ")[0], "url": SITE + sub["page"], "additionalProperty": fact_props(k), "subjectOf": DATASET_REF}
+        if sub["node"] == "Product": node.update(brand={"@type": "Brand", "name": "AmIMotion"}, manufacturer={"@id": SITE + "/#org"})
+        else: node.update(applicationCategory="BusinessApplication", publisher={"@id": SITE + "/#org"})
+        g.append(node)
+    return g
+
 
 # ---- structured data pulled from the visible page, so it can never drift from what people read ----
 def faq_items(body):
@@ -175,12 +244,12 @@ def page_schema(meta, url, body, titles):
         g.append({"@type": "Product", "@id": full + "#product", "name": meta.get("product", meta.get("title")), "description": meta.get("description"),
                   "brand": {"@type": "Brand", "name": "AmIMotion"}, "manufacturer": {"@id": SITE + "/#org"},
                   "category": meta.get("category", "Real-time location system"), "image": og, "url": full, "mainEntityOfPage": {"@id": full + "#page"},
-                  "additionalProperty": specs_of(body)})
+                  "additionalProperty": specs_of(body) + fact_props(meta.get("id", ""), text_of(body)), "subjectOf": DATASET_REF})
         wp["mainEntity"] = {"@id": full + "#product"}
     if kind == "software":
         g.append({"@type": "SoftwareApplication", "@id": full + "#software", "name": meta.get("product", "AmIHub"), "description": meta.get("description"),
                   "applicationCategory": "BusinessApplication", "operatingSystem": "Runs on an industrial PC inside your plant, with no internet needed", "publisher": {"@id": SITE + "/#org"},
-                  "url": full, "image": og, "mainEntityOfPage": {"@id": full + "#page"}, "additionalProperty": specs_of(body)})
+                  "url": full, "image": og, "mainEntityOfPage": {"@id": full + "#page"}, "additionalProperty": specs_of(body) + fact_props(meta.get("id", ""), text_of(body)), "subjectOf": DATASET_REF})
         wp["mainEntity"] = {"@id": full + "#software"}
     if kind == "article":
         g.append({"@type": "TechArticle", "@id": full + "#article", "headline": meta.get("title"), "description": meta.get("description"),
@@ -193,6 +262,8 @@ def page_schema(meta, url, body, titles):
         g.append({"@type": "DefinedTerm", "@id": full + "#term", "name": meta["term"], "description": meta.get("description"), "inDefinedTermSet": SITE + "/glossary/"})
     if kind == "glossary":
         g.append({"@type": "DefinedTermSet", "@id": full, "name": "Glossary of industrial location terms", "hasDefinedTerm": glossary_of(body, full)})
+    if url == FACTS_PAGE:
+        g.extend(facts_schema(full)); wp["mainEntity"] = DATASET_REF
     faqs = faq_items(body)
     if faqs:
         g.append({"@type": "FAQPage", "@id": full + "#faq", "mainEntity": faqs})
@@ -786,6 +857,9 @@ def build():
         rel = f.relative_to(SRC / "pages")
         meta, body = front(f.read_text()); body = crumb_labels(body, url_for(rel))
         if url_for(rel) == "/": body = wire_turntable(body)
+        if url_for(rel) == FACTS_PAGE:
+            if "<!-- facts:list -->" not in body: raise SystemExit("build: the Facts page has lost its <!-- facts:list --> slot")
+            body = body.replace("<!-- facts:list -->", facts_html())
         # site audit (12 Nov 2026): each page shares its own picture when tools/og.py has made one, and says when its
         # own source last changed (git), not the build date
         slug = url_for(rel).strip("/").replace("/", "-")
@@ -860,7 +934,10 @@ def build():
     (DIST / "robots.txt").write_text(robots + f"\nSitemap: {SITE}/sitemap.xml\n" + (f"\n# For AI assistants: {SITE}/llms.txt (the site in brief) and {SITE}/llms-full.txt (every page as text)\n" if args.indexable else ""))
 
     # llms.txt (index of the site) and llms-full.txt (every page as plain text) for AI assistants
-    facts = "\n".join(f"- {x}" for x in ENTITY["facts"])
+    facts = "\n".join(f"- {f['claim']} (Source: {FX.evidence(f, FACTS, SITE)['title']}. Reviewed {f['last_reviewed']}.)" for f in FX.approved(FACTS))
+    facts += f"\n\nThe same facts as JSON, each with its source and review date: {SITE}{FACTS_JSON} (human-readable: {SITE}{FACTS_PAGE})"
+    # /facts.json: the supplier facts profile at a stable address (tools/facts.py gate checks it against the file)
+    (DIST / FACTS_JSON.lstrip("/")).write_text(json.dumps(FX.profile(SITE), ensure_ascii=False, indent=1) + "\n")
     # the four nav sections and their pages, in nav order, with the nav labels; then every other public page
     listed, sections = set(), []
     for sec in NAV["sections"]:
@@ -933,7 +1010,7 @@ def build():
             {"src": "/assets/img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}]}, indent=1))
     (DIST / ".well-known").mkdir(exist_ok=True)
     expires = (date.today() + timedelta(days=330)).isoformat()
-    (DIST / ".well-known" / "security.txt").write_text(f"Contact: mailto:{ENTITY['email']}\nExpires: {expires}T00:00:00.000Z\nPreferred-Languages: en\nCanonical: {SITE}/.well-known/security.txt\n")
+    (DIST / ".well-known" / "security.txt").write_text(f"Contact: mailto:{FORG['email']}\nExpires: {expires}T00:00:00.000Z\nPreferred-Languages: en\nCanonical: {SITE}/.well-known/security.txt\n")
     if args.indexnow_key: (DIST / f"{args.indexnow_key}.txt").write_text(args.indexnow_key)
     # Security headers for a static host. Every script and style is first-party; inline ones are the per-page CSS, the
     # JSON-LD, the motion flag and the speculation rules, so 'unsafe-inline' stays and nothing else is allowed in.

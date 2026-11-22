@@ -7,4 +7,7 @@ PY=$(command -v python3 || command -v python)
 SITE_BRANCH=WORKTREE LAUNCH=1 STUDIO_WORK="${TMPDIR:-/tmp}/amimotion-build" "$PY" studio/integrate.py
 rm -f studio/out/_headers   # Cloudflare/Netlify file; Vercel reads the same headers from vercel.json
 "$PY" studio/stamp.py studio/out
+# claims gate: every page, /facts.json and Ask AmIMotion must agree with site/src/data/facts.json (fails the build)
+"$PY" site/tools/facts.py selftest
+"$PY" site/tools/facts.py gate studio/out
 echo "Vercel build done: $(find studio/out -type f | wc -l | tr -d ' ') files."

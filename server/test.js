@@ -16,6 +16,13 @@ let ok = 0; const t = async (name, fn) => { try { await fn(); ok++; console.log(
 
 // ---------------------------------------------------------------- the core
 await t('facts and every site passage pass the claims gate', () => { for (const f of C.FACTS) assert.ok(C.gate(f).ok, f); for (const p of KB.passages) assert.ok(C.gate(p[2]).ok, p[2]); });
+await t('Ask facts are the approved facts in facts.json, word for word', () => {
+  const F = JSON.parse(fs.readFileSync(path.join(here, '../site/src/data/facts.json'), 'utf8'));
+  const ok = F.facts.filter((f) => f.status === 'approved');
+  assert.deepEqual(C.FACTS, ok.map((f) => f.claim)); assert.deepEqual(C.FACT_IDS, ok.map((f) => f.id));
+  for (const f of F.facts.filter((x) => x.status === 'held')) assert.ok(!C.FACTS.includes(f.claim), f.id);
+  for (const b of F.barred) assert.ok(C.BARRED.some(([re, label]) => label === b.label && re.source === new RegExp(b.pattern, 'i').source), b.label);
+});
 await t('gate catches barred claims', () => { for (const x of ['AmIMotion is FiRa certified', 'Payback in 6 months', 'cuts search time by 40%', 'Installed in days', 'Deployed at Maruti', 'Trusted by leading OEMs', 'Fleet Manager is now available', 'Tags cost ₹2,000 per tag', 'Barcodes fail on the shop floor']) assert.ok(!C.gate(x).ok, x); });
 await t('a name the visitor typed may be repeated to them', () => assert.ok(C.gate('For Volvo’s plant, start with one bay.', 'we are from volvo').ok));
 const ix = C.indexKB(KB);

@@ -1,0 +1,761 @@
+{
+  "about": "AmIMotion supplier facts: the one source for every fact the site, the structured data, /facts.json, the Facts page, llms.txt and Ask AmIMotion may state. Edit facts here only. tools/facts.py writes the Ask copy into js/agent-core.js (python3 tools/facts.py sync) and fails the build when that copy, the built /facts.json or any page disagrees with this file (python3 tools/facts.py gate <built site>). status 'approved': published everywhere, with its evidence. status 'held': kept off /facts.json, the Facts page, the structured data and Ask because AmIMotion's own sources word it differently; pages may keep only the wording listed under 'forms' until the founders confirm it. Every approved fact has an evidence link or is marked a company statement. No customer, prospect or partner names, prices, roadmap dates or investor figures belong in this file: the repository is public. Names to block live in js/agent-core.js (the Ask gate) and tools/private_names.txt (kept out of git).",
+  "version": "2026-11-22",
+  "profile": {
+    "path": "/facts.json",
+    "page": "/facts/",
+    "name": "AmIMotion supplier facts",
+    "description": "AmIMotion's published supplier facts for buyers and their AI assistants. Each fact has its wording, its qualifier in the same sentence, its source and the date it was last reviewed.",
+    "how_to_use": "Quote a fact with its qualifier. A topic that is not listed here is not claimed by AmIMotion. Datasheets, prices and pilot options are shared under NDA after a first call."
+  },
+  "organization": {
+    "name": "AmIMotion",
+    "legalName": "Locatepro Technologies Pvt Ltd",
+    "addressLocality": "Bengaluru",
+    "addressRegion": "Karnataka",
+    "addressCountry": "IN",
+    "email": "sales@amimotion.com",
+    "url": "https://www.amimotion.com/"
+  },
+  "sources": {
+    "brochure": {
+      "type": "document",
+      "title": "AmIMotion UWB RTLS product brochure",
+      "url": "/assets/brochure/AmIMotion-brochure.pdf"
+    },
+    "company": {
+      "type": "company statement",
+      "title": "AmIMotion company statement"
+    }
+  },
+  "subjects": {
+    "org": {
+      "name": "AmIMotion",
+      "page": "/company/"
+    },
+    "amigo": {
+      "name": "AmIGo tag",
+      "page": "/products/amigo/",
+      "node": "Product"
+    },
+    "amimo": {
+      "name": "AmIMo anchor",
+      "page": "/products/amimo/",
+      "node": "Product"
+    },
+    "amihub": {
+      "name": "AmIHub software",
+      "page": "/products/amihub/",
+      "node": "SoftwareApplication"
+    }
+  },
+  "groups": [
+    [
+      "company",
+      "The company"
+    ],
+    [
+      "system",
+      "The system"
+    ],
+    [
+      "amigo",
+      "AmIGo tag"
+    ],
+    [
+      "amimo",
+      "AmIMo anchor"
+    ],
+    [
+      "amihub",
+      "AmIHub software"
+    ],
+    [
+      "buying",
+      "Pilots and buying"
+    ],
+    [
+      "limits",
+      "What AmIMotion does not claim"
+    ]
+  ],
+  "facts": [
+    {
+      "id": "company-brand",
+      "group": "company",
+      "label": "Company",
+      "subjects": [
+        "org"
+      ],
+      "claim": "AmIMotion is a brand of Locatepro Technologies Pvt Ltd, Bengaluru, India.",
+      "evidence": {
+        "source": "brochure",
+        "page": 8
+      },
+      "status": "approved",
+      "register": "fact base, company",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "company-contact",
+      "group": "company",
+      "label": "Contact",
+      "subjects": [
+        "org"
+      ],
+      "claim": "Sales contact: sales@amimotion.com.",
+      "evidence": {
+        "source": "brochure",
+        "page": 8
+      },
+      "status": "approved",
+      "register": "fact base, company",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "company-category",
+      "group": "company",
+      "label": "What it does",
+      "subjects": [
+        "org"
+      ],
+      "claim": "AmIMotion's category is Industrial Spatial Intelligence. Its commercial focus is WIP (work-in-progress) visibility in manufacturing, built on UWB real-time location (RTLS).",
+      "evidence": {
+        "source": "company",
+        "stated_at": "/industrial-spatial-intelligence/"
+      },
+      "status": "approved",
+      "register": "positioning decision",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "company-india",
+      "group": "company",
+      "label": "Where it is made",
+      "subjects": [
+        "org",
+        "amigo",
+        "amimo"
+      ],
+      "value": "India",
+      "claim": "Designed and built in India.",
+      "evidence": {
+        "source": "brochure",
+        "page": 1
+      },
+      "status": "approved",
+      "register": "green",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "company-leadership",
+      "group": "company",
+      "label": "Leadership",
+      "subjects": [
+        "org"
+      ],
+      "claim": "Kaushal Kukkar is founder and CEO. Vivek Dham is CTO.",
+      "evidence": {
+        "source": "company",
+        "stated_at": "/company/"
+      },
+      "status": "approved",
+      "register": "amber, the titles every source agrees on",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "system-parts",
+      "group": "system",
+      "label": "The system",
+      "subjects": [
+        "org"
+      ],
+      "claim": "A complete UWB real-time location system in three parts: AmIGo tags, AmIMo anchors and AmIHub software.",
+      "evidence": {
+        "source": "brochure",
+        "page": 2
+      },
+      "status": "approved",
+      "register": "green",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "system-accuracy",
+      "group": "system",
+      "label": "Accuracy",
+      "subjects": [
+        "amigo",
+        "amimo",
+        "amihub"
+      ],
+      "value": "±10 cm",
+      "claim": "±10 cm positioning in 3D, typical, with AmIMo anchors. Accuracy depends on the site and is measured in a pilot.",
+      "evidence": {
+        "source": "brochure",
+        "page": 3
+      },
+      "status": "approved",
+      "register": "green, with its qualifier",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "system-radios",
+      "group": "system",
+      "label": "Radios",
+      "subjects": [
+        "amimo"
+      ],
+      "value": "FTM",
+      "claim": "UWB, BLE and Wi-Fi FTM ranging on the same AmIMo anchors. Wi-Fi FTM device support is confirmed per site.",
+      "evidence": {
+        "source": "brochure",
+        "page": 4
+      },
+      "status": "approved",
+      "register": "green",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "amigo-battery",
+      "group": "amigo",
+      "label": "Battery life",
+      "subjects": [
+        "amigo"
+      ],
+      "value": "1 to 3 years",
+      "claim": "AmIGo tag battery life is 1 to 3 years, typical and usage-dependent.",
+      "evidence": {
+        "source": "brochure",
+        "page": 3
+      },
+      "status": "approved",
+      "register": "amber, with its qualifier",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "amimo-cabling",
+      "group": "amimo",
+      "label": "Cabling and power",
+      "subjects": [
+        "amimo"
+      ],
+      "value": "PoE",
+      "claim": "AmIMo anchors need no data or sync cabling: Wi-Fi backhaul (Ethernet option) and power by DC adapter or PoE.",
+      "evidence": {
+        "source": "brochure",
+        "page": 4
+      },
+      "status": "approved",
+      "register": "amber, this wording",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "amimo-coverage",
+      "group": "amimo",
+      "label": "Coverage",
+      "subjects": [
+        "amimo"
+      ],
+      "value": "50 m",
+      "claim": "About 50 m line-of-sight coverage per AmIMo anchor, site-dependent; a site survey sets the final count.",
+      "evidence": {
+        "source": "brochure",
+        "page": 4
+      },
+      "status": "approved",
+      "register": "amber, with its qualifier",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "amihub-hosting",
+      "group": "amihub",
+      "label": "Where it runs",
+      "subjects": [
+        "amihub"
+      ],
+      "value": "internet",
+      "claim": "AmIHub runs on an industrial PC inside your plant, with no internet needed, or in the cloud.",
+      "evidence": {
+        "source": "brochure",
+        "page": 5
+      },
+      "status": "approved",
+      "register": "green",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "amihub-interfaces",
+      "group": "amihub",
+      "label": "Interfaces",
+      "subjects": [
+        "amihub"
+      ],
+      "value": "MQTT",
+      "claim": "AmIHub interfaces: REST, MQTT, WebSocket and an omlox hub interface, to connect with MES, ERP, WMS, SCADA and BI. Specific connectors are confirmed per project.",
+      "evidence": {
+        "source": "brochure",
+        "page": 5
+      },
+      "status": "approved",
+      "register": "green, as interfaces",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "amihub-performance",
+      "group": "amihub",
+      "label": "Latency and scale",
+      "subjects": [
+        "amihub"
+      ],
+      "value": "Under a second",
+      "claim": "Under a second from tag pulse to map, and thousands of tags per site; both indicative.",
+      "evidence": {
+        "source": "brochure",
+        "page": 5
+      },
+      "status": "approved",
+      "register": "amber, indicative",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "amihub-mcp",
+      "group": "amihub",
+      "label": "AI assistants",
+      "subjects": [
+        "amihub"
+      ],
+      "value": "MCP",
+      "claim": "AmIHub has a built-in MCP server, so AI assistants can query live location data. Any action needs a person's approval. This is a described capability, shown in a demo on request.",
+      "evidence": {
+        "source": "brochure",
+        "page": 7
+      },
+      "status": "approved",
+      "register": "amber, described capability",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "buying-pilot",
+      "group": "buying",
+      "label": "Where a pilot starts",
+      "subjects": [
+        "org"
+      ],
+      "claim": "Pilots start in one bay or one line and scale on the same AmIHub.",
+      "evidence": {
+        "source": "brochure",
+        "page": 8
+      },
+      "status": "approved",
+      "register": "green",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "buying-demo",
+      "group": "buying",
+      "label": "Demo",
+      "subjects": [
+        "org"
+      ],
+      "claim": "A live demo on real AmIHub data is available on a discovery call.",
+      "evidence": {
+        "source": "brochure",
+        "page": 8
+      },
+      "status": "approved",
+      "register": "green",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "buying-steps",
+      "group": "buying",
+      "label": "How buying runs",
+      "subjects": [
+        "org"
+      ],
+      "claim": "Buying happens in four steps: a call with a live demo on real AmIHub data; the NDA pack with datasheets, architecture, prices and pilot options; a site survey and a pilot in one bay or line; then plant-wide on the same AmIHub.",
+      "evidence": {
+        "source": "brochure",
+        "page": 8
+      },
+      "status": "approved",
+      "register": "fact base, how AmIMotion sells",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "buying-prices",
+      "group": "buying",
+      "label": "Prices",
+      "subjects": [
+        "org"
+      ],
+      "claim": "Prices are in the NDA pack, after the first call.",
+      "evidence": {
+        "source": "brochure",
+        "page": 8
+      },
+      "status": "approved",
+      "register": "fact base, how AmIMotion sells",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "buying-people",
+      "group": "buying",
+      "label": "What a pilot tags",
+      "subjects": [
+        "org"
+      ],
+      "claim": "A pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project with its own policy.",
+      "evidence": {
+        "source": "company",
+        "stated_at": "/trust/people/"
+      },
+      "status": "approved",
+      "register": "founders' review",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "limits-association",
+      "group": "limits",
+      "label": "Which job is on a carrier",
+      "subjects": [
+        "org"
+      ],
+      "claim": "Location alone does not show which job is on a carrier. You link each carrier to its job, in AmIHub or from your own system.",
+      "evidence": {
+        "source": "company",
+        "stated_at": "/learn/association/"
+      },
+      "status": "approved",
+      "register": "truth rule",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "limits-certification",
+      "group": "limits",
+      "label": "Certification",
+      "subjects": [
+        "org"
+      ],
+      "claim": "AmIMotion claims no formal certification.",
+      "evidence": {
+        "source": "company",
+        "stated_at": "/trust/"
+      },
+      "status": "approved",
+      "register": "never 'certified'",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "limits-customers",
+      "group": "limits",
+      "label": "Customers",
+      "subjects": [
+        "org"
+      ],
+      "claim": "This site names no customer and shows no customer result. References are shared under NDA.",
+      "evidence": {
+        "source": "brochure",
+        "page": 8
+      },
+      "status": "approved",
+      "register": "no customer names",
+      "last_reviewed": "2026-11-22"
+    },
+    {
+      "id": "system-standards",
+      "group": "system",
+      "label": "Standards",
+      "subjects": [
+        "org"
+      ],
+      "claim": "Built on the FiRa and omlox specifications.",
+      "evidence": {
+        "source": "company",
+        "stated_at": "/specs/"
+      },
+      "status": "approved",
+      "register": "founders' wording (review of 29 Oct 2026), chosen by Shiv 22 Nov 2026 over the register's 'compliant'",
+      "last_reviewed": "2026-11-22",
+      "forms": [
+        "built on the FiRa and omlox specifications",
+        "data and device model built on the FiRa and omlox specifications",
+        "FiRa and omlox specifications"
+      ]
+    },
+    {
+      "id": "held-where-it-runs",
+      "group": "company",
+      "label": "Where it runs today",
+      "status": "held",
+      "last_reviewed": "2026-11-22",
+      "claim": "Deployed in automotive manufacturing, robotics and warehousing facilities.",
+      "reason": "The claims register says 'deployed in automotive manufacturing'; the founders' review says 'runs in', never 'deployed', and the site brief says 'manufacturing', not 'automotive'. Left out of the profile until confirmed.",
+      "forms": [
+        "runs in automotive manufacturing, robotics and warehousing facilities"
+      ]
+    },
+    {
+      "id": "held-silicon",
+      "group": "system",
+      "label": "UWB silicon",
+      "status": "held",
+      "last_reviewed": "2026-11-22",
+      "claim": "Built on a named supplier's UWB silicon.",
+      "reason": "The claims register allows naming the silicon supplier with a trademark note, but the site's claims gate bars that supplier's name. Left out until confirmed.",
+      "forms": []
+    },
+    {
+      "id": "held-team",
+      "group": "company",
+      "label": "Team titles and experience",
+      "status": "held",
+      "last_reviewed": "2026-11-22",
+      "claim": "Titles and years of experience beyond 'Kaushal Kukkar, founder and CEO' and 'Vivek Dham, CTO'.",
+      "reason": "AmIMotion's sources give different titles and years for the team. The homepage team section (locked, founders' version) keeps its wording; the profile lists only what every source agrees on.",
+      "forms": [
+        "Sumeer Bhatara Head of Software",
+        "Sumeer Bhatara, Head of Software"
+      ]
+    },
+    {
+      "id": "held-datasheet",
+      "group": "system",
+      "label": "Datasheet values",
+      "status": "held",
+      "last_reviewed": "2026-11-22",
+      "claim": "Radio standard and channels, update rate, operating temperature, mounting height, tag capacity per anchor cell, sensors, positioning modes and export formats.",
+      "reason": "Published in the brochure as indicative values with the final datasheet under NDA, but not in the claims register, so not in the machine profile. The specification pages keep them with their conditions.",
+      "forms": [
+        "Hundreds of active tags per anchor cell (UL-TDoA), indicative"
+      ]
+    }
+  ],
+  "topics": [
+    {
+      "id": "accuracy",
+      "facts": [
+        "system-accuracy"
+      ],
+      "detect": "±\\s?\\d",
+      "forms": [
+        "±\\s?10\\s?cm"
+      ],
+      "require": [
+        "AmIMo|anchor|depend|floor|site|typical"
+      ],
+      "note": "Any ± figure must be ±10 cm and travel with its condition."
+    },
+    {
+      "id": "coverage",
+      "facts": [
+        "amimo-coverage"
+      ],
+      "detect": "\\b\\d+\\s?m\\b[^.]{0,40}\\b(line[- ]of[- ]sight|radius|reach)\\b|\\b(reach(es)?|radius|coverage)\\b[^.]{0,30}\\b\\d+\\s?m\\b",
+      "forms": [
+        "\\b50\\s?m\\b"
+      ],
+      "require": [
+        "site|survey|depend|indicative|racking|steel|count"
+      ]
+    },
+    {
+      "id": "battery",
+      "facts": [
+        "amigo-battery"
+      ],
+      "detect": "\\bbattery\\b[^.]{0,60}\\b\\d+(\\.\\d+)?\\s?(to|–|-)?\\s?\\d*\\s?(years?|months?)\\b|\\b\\d+(\\.\\d+)?\\s?(to|–|-)\\s?\\d+\\s?years?\\b",
+      "forms": [
+        "\\b1\\s?(to|–|-)\\s?3\\s?years?\\b"
+      ],
+      "require": [
+        "typical|use|usage|depend"
+      ]
+    },
+    {
+      "id": "latency-scale",
+      "facts": [
+        "amihub-performance",
+        "held-datasheet"
+      ],
+      "detect": "\\b(sub-second|under a second|latency|thousands of tags|hundreds of (active )?tags|\\d[\\d,]* tags per)\\b",
+      "require": [
+        "indicative"
+      ]
+    },
+    {
+      "id": "standards",
+      "facts": [
+        "system-standards",
+        "limits-certification"
+      ],
+      "detect": "\\b(fira|omlox|fcc|bis)\\b[^.?]{0,40}\\b(complian(t|ce)|certified|conforman(t|ce)|conforms|members?|membership)\\b|\\b(complian(t|ce)|certified|conforman(t|ce)|conforms)\\b[^.?]{0,40}\\b(fira|omlox|fcc|bis)\\b|\\b(amimotion|amigo|amimo|amihub|we|our \\w+)\\b[^.?]{0,30}\\b(holds?|has|have|achieved|received|obtained|awarded)\\b[^.?]{0,20}\\bcertifications?\\b",
+      "allow_negated": true,
+      "note": "Conformance or certification for FiRa, omlox, CE, FCC or BIS may only be stated in the negative.",
+      "questions_pass": true
+    },
+    {
+      "id": "wireless",
+      "facts": [
+        "amimo-cabling"
+      ],
+      "detect": "\\b(fully|completely|100\\s?%)\\s+wireless\\b|\\bwire-?free\\b|\\bcable-?free\\b|\\bno (cables?|cabling|wiring) (at all|needed|required)\\b",
+      "deny_all": true,
+      "questions_pass": true
+    },
+    {
+      "id": "hosting",
+      "facts": [
+        "amihub-hosting"
+      ],
+      "detect": "\\b(cloud tenant we manage|managed cloud|we (host|manage) (it|your|the) |runs? on[- ]device)\\b",
+      "deny_all": true,
+      "note": "Who manages the cloud, and on-device processing, are not settled.",
+      "questions_pass": true
+    },
+    {
+      "id": "where-it-runs",
+      "facts": [
+        "held-where-it-runs"
+      ],
+      "detect": "\\b(deployed|in use|installed|runs|running|live) (at|in|across) [^.]{0,40}\\b(facilit\\w*|OEMs?|carmakers?|automotive|manufacturers?|warehousing|robotics)\\b|\\b(trusted by|customers include)\\b",
+      "forms": [
+        "runs in automotive manufacturing, robotics and warehousing facilities"
+      ]
+    },
+    {
+      "id": "india",
+      "facts": [
+        "company-india"
+      ],
+      "detect": "\\b(designed|made|built|manufactured)\\b[^.]{0,25}\\bIndia\\b",
+      "forms": [
+        "designed and built in (Bengaluru, )?India",
+        "made in India",
+        "Built in India"
+      ]
+    },
+    {
+      "id": "entity",
+      "facts": [
+        "company-brand"
+      ],
+      "detect": "\\bLocatepro\\b",
+      "forms": [
+        "Locatepro Technologies( Pvt Ltd)?(?! ?(Inc|LLC|Limited|GmbH|Private|Corp|Pte))"
+      ]
+    },
+    {
+      "id": "contact",
+      "facts": [
+        "company-contact"
+      ],
+      "detect": "[A-Za-z0-9._%+-]+@amimotion\\.com",
+      "forms": [
+        "\\bsales@amimotion\\.com"
+      ]
+    },
+    {
+      "id": "founding",
+      "facts": [],
+      "detect": "\\b(founded|established|incorporated|started) (in )?(19|20)\\d\\d\\b|\\bsince (19|20)\\d\\d\\b",
+      "deny_all": true,
+      "note": "The founding year differs between sources.",
+      "questions_pass": true
+    },
+    {
+      "id": "team",
+      "facts": [
+        "company-leadership",
+        "held-team"
+      ],
+      "detect": "\\b(Kaushal Kukkar|Vivek Dham|Sumeer Bhatara)\\b[^.]{0,6}\\b(founder|co-?founder|CEO|CTO|CBO|COO|chief|head|director|president|VP)\\b",
+      "forms": [
+        "Kaushal Kukkar,? (is )?(the )?founder and CEO",
+        "Kaushal Kukkar,? (is )?(the )?CEO",
+        "Vivek Dham,? (is )?(the )?CTO",
+        "Sumeer Bhatara,? Head of Software"
+      ]
+    },
+    {
+      "id": "roadmap-modules",
+      "facts": [],
+      "detect": "\\b(AmISense|AmIFleet|AmIFlow|AmISafety|Fleet Manager|Spatial AI|[Bb]ottleneck prediction|[Dd]igital twins?|[Aa]utonomous dispatch)\\b",
+      "allow_negated": true,
+      "note": "Module names and analytics features the plans schedule later are not stated as live.",
+      "case_sensitive": true,
+      "questions_pass": true
+    },
+    {
+      "id": "timing-precision",
+      "facts": [],
+      "detect": "\\b(sub|under a|less than a)[- ]nanosecond\\b",
+      "deny_all": true,
+      "questions_pass": true
+    },
+    {
+      "id": "phones",
+      "facts": [],
+      "detect": "\\b(locat|position|track)\\w* (any |your |compatible )?(phones?|smartphones?|laptops?)\\b|\\b(phones?|laptops?) (can be|are) (located|positioned|tracked)\\b",
+      "deny_all": true,
+      "note": "No phone-location claim.",
+      "questions_pass": true
+    }
+  ],
+  "barred": [
+    {
+      "label": "certified",
+      "pages": false,
+      "pattern": "\\b(amimotion|amigo|amimo|amihub|it|we|our \\w+|the system|tags?|anchors?)\\b[^.]{0,30}\\b(is|are|has been)\\s+(\\w+ )?certified\\b|\\bcertified (by|for|under) (the )?(fira|omlox|fcc|ce|bis)|\\b(fira|omlox|fcc|ce|bis)[ -]certified\\b"
+    },
+    {
+      "label": "compliant",
+      "pages": false,
+      "pattern": "\\b(fira|omlox)\\s+compliant\\b|\\bcompliant with (fira|omlox)\\b"
+    },
+    {
+      "label": "fully wireless",
+      "pattern": "fully wireless|100\\s?% wireless"
+    },
+    {
+      "label": "world’s smallest",
+      "pattern": "world'?s smallest"
+    },
+    {
+      "label": "ROI",
+      "pattern": "\\bROI\\b|\\bpayback\\b|return on investment"
+    },
+    {
+      "label": "percentage outcome",
+      "pattern": "\\b(save|saves|saving|cut|cuts|reduce|reduces)\\b[^.]{0,40}\\b\\d+\\s?%"
+    },
+    {
+      "label": "install in days",
+      "pattern": "install(ed|s)? in (a few )?days|in days\\b"
+    },
+    {
+      "label": "overclaim",
+      "pattern": "tracks every part|eliminates searching|real-time wip tracking of every"
+    },
+    {
+      "label": "deployment claim",
+      "pattern": "\\b(deployed at|trusted by|customers include)\\b"
+    },
+    {
+      "label": "roadmap as live",
+      "pattern": "\\b(fleet manager|spatial ai)\\b[^.]{0,30}\\b(available|live|shipping|ships|launched|in production)\\b"
+    },
+    {
+      "label": "price",
+      "pattern": "(₹|rs\\.?|inr|\\$|usd)\\s?\\d[\\d,.]*\\s*(lakh|crore|k|per (tag|anchor|month|year))"
+    },
+    {
+      "label": "competitor knock",
+      "pattern": "\\bbarcodes? (fail|don'?t work)|rfid (fails|doesn'?t work)"
+    },
+    {
+      "label": "off-scope",
+      "pattern": "healthcare|apparel|posture"
+    }
+  ]
+}

@@ -688,12 +688,23 @@
     "/contact/"
    ]
   },
+  "/facts/": {
+   "parent": "/company/",
+   "next": "/pilot/",
+   "related": [
+    "/specs/",
+    "/trust/",
+    "/developers/",
+    "/contact/"
+   ]
+  },
   "/trust/": {
    "parent": "/company/",
    "next": "/pilot/",
    "related": [
     "/pilot/",
     "/company/",
+    "/facts/",
     "/trust/people/",
     "/privacy/",
     "/developers/",

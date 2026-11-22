@@ -474,7 +474,8 @@ write("/developers/", "AmIHub for developers: REST, MQTT, WebSocket and MCP",
 
 # ---------------- what is AmIMotion ----------------
 ASSOC = "Location alone does not show which job is on a carrier. You link each carrier to its job, in AmIHub or from your own system."
-FACTS = [ASSOC if "association" in x else x for x in ENTITY["facts"]]
+# the approved facts from src/data/facts.json (the one source the Facts page, /facts.json and Ask also read)
+FACTS = [ASSOC if "association" in x else x for x in [f["claim"] for f in json.loads((Path(__file__).resolve().parents[2] / "src" / "data" / "facts.json").read_text())["facts"] if f["status"] == "approved"]]
 write("/what-is-amimotion/", "What is AmIMotion? Spatial intelligence from Bengaluru",
       "AmIMotion, from Bengaluru, India, makes spatial intelligence for factories and warehouses: AmIGo UWB tags, AmIMo anchors and AmIHub software.",
       [
