@@ -12,40 +12,68 @@
 //   5. The visitor profile, ICP scoring (kit file 09) and the lead dossier the founders read.
 //   6. localTurn(): the agent with no model attached (preview, offline, or the API is down).
 
-export const VERSION = '2026-11-03';
+export const VERSION = '2026-11-22';
 
 // ------------------------------------------------------------------------------------------------ 1. facts and policy
-// entity.json facts, word for word (the canonical lines the site already publishes)
+// The facts come from src/data/facts.json (approved facts only, word for word): the same file the Facts page, /facts.json,
+// the structured data, llms.txt and the page claims gate (tools/facts.py) read, so the site and the guide cannot disagree.
+// facts.json:begin (written by tools/facts.py sync; edit src/data/facts.json, never here)
+export const FACTS_VERSION = "2026-11-22";
 export const FACTS = [
-  'AmIMotion is a brand of Locatepro Technologies Pvt Ltd, Bengaluru, India. Contact: sales@amimotion.com.',
-  'Category: Industrial Spatial Intelligence. Commercial focus: WIP (work-in-progress) visibility in manufacturing. Foundation: UWB real-time location (RTLS).',
-  'The system has three parts: AmIGo UWB tags, AmIMo UWB anchors and AmIHub software.',
-  'Positioning: down to ±10 cm in 3D, with AmIMo anchors. Accuracy depends on the site and is measured in a pilot.',
-  'Radios: UWB, BLE and Wi-Fi FTM on the same anchors.',
-  'Anchors: no data or sync cabling, Wi-Fi backhaul (Ethernet option), DC or PoE power, about 50 m line-of-sight coverage (site-dependent; the anchor count comes from a site survey).',
-  'Tags: battery life 1–3 years, typical and usage-dependent.',
-  'AmIHub runs on an industrial PC inside your plant, with no internet needed. Interfaces: REST, MQTT, WebSocket and an omlox hub interface, to connect with MES, ERP, WMS, SCADA and BI.',
-  'Built on the FiRa and omlox specifications. This is a statement about the specifications, not a certification.',
-  'AmIHub has a built-in MCP server, so AI assistants can query live location data. Any action needs a person\'s approval. This is a described capability, shown in a demo on request.',
-  'Location alone does not show which job is on a carrier. You link each carrier to its job, in AmIHub or from your own system.',
-  'Pilots start in one bay or one line and scale on the same AmIHub. A live demo is available on a discovery call.',
-  'Buying happens in four steps: a call with a live demo on real AmIHub data; the NDA pack with datasheets, architecture, prices and pilot options; a site survey and a pilot in one bay or line; then plant-wide on the same AmIHub.',
-  'Prices are in the NDA pack, after the first call.',
-  'A pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project with its own policy.',
+  "AmIMotion is a brand of Locatepro Technologies Pvt Ltd, Bengaluru, India.",
+  "Sales contact: sales@amimotion.com.",
+  "AmIMotion's category is Industrial Spatial Intelligence. Its commercial focus is WIP (work-in-progress) visibility in manufacturing, built on UWB real-time location (RTLS).",
+  "Designed and built in India.",
+  "Kaushal Kukkar is founder and CEO. Vivek Dham is CTO.",
+  "A complete UWB real-time location system in three parts: AmIGo tags, AmIMo anchors and AmIHub software.",
+  "±10 cm positioning in 3D, typical, with AmIMo anchors. Accuracy depends on the site and is measured in a pilot.",
+  "UWB, BLE and Wi-Fi FTM ranging on the same AmIMo anchors. Wi-Fi FTM device support is confirmed per site.",
+  "AmIGo tag battery life is 1 to 3 years, typical and usage-dependent.",
+  "AmIMo anchors need no data or sync cabling: Wi-Fi backhaul (Ethernet option) and power by DC adapter or PoE.",
+  "About 50 m line-of-sight coverage per AmIMo anchor, site-dependent; a site survey sets the final count.",
+  "AmIHub runs on an industrial PC inside your plant, with no internet needed, or in the cloud.",
+  "AmIHub interfaces: REST, MQTT, WebSocket and an omlox hub interface, to connect with MES, ERP, WMS, SCADA and BI. Specific connectors are confirmed per project.",
+  "Under a second from tag pulse to map, and thousands of tags per site; both indicative.",
+  "AmIHub has a built-in MCP server, so AI assistants can query live location data. Any action needs a person's approval. This is a described capability, shown in a demo on request.",
+  "Pilots start in one bay or one line and scale on the same AmIHub.",
+  "A live demo on real AmIHub data is available on a discovery call.",
+  "Buying happens in four steps: a call with a live demo on real AmIHub data; the NDA pack with datasheets, architecture, prices and pilot options; a site survey and a pilot in one bay or line; then plant-wide on the same AmIHub.",
+  "Prices are in the NDA pack, after the first call.",
+  "A pilot tags trolleys, bins and pallets, not people. Tagging people would be a separate project with its own policy.",
+  "Location alone does not show which job is on a carrier. You link each carrier to its job, in AmIHub or from your own system.",
+  "AmIMotion claims no formal certification.",
+  "This site names no customer and shows no customer result. References are shared under NDA.",
 ];
+export const FACT_IDS = ["company-brand", "company-contact", "company-category", "company-india", "company-leadership", "system-parts", "system-accuracy", "system-radios", "amigo-battery", "amimo-cabling", "amimo-coverage", "amihub-hosting", "amihub-interfaces", "amihub-performance", "amihub-mcp", "buying-pilot", "buying-demo", "buying-steps", "buying-prices", "buying-people", "limits-association", "limits-certification", "limits-customers"];
+const BARRED_FILE = [
+  [/\b(amimotion|amigo|amimo|amihub|it|we|our \w+|the system|tags?|anchors?)\b[^.]{0,30}\b(is|are|has been)\s+(\w+ )?certified\b|\bcertified (by|for|under) (the )?(fira|omlox|fcc|ce|bis)|\b(fira|omlox|fcc|ce|bis)[ -]certified\b/i, "certified"],
+  [/\b(fira|omlox)\s+compliant\b|\bcompliant with (fira|omlox)\b/i, "compliant"],
+  [/fully wireless|100\s?% wireless/i, "fully wireless"],
+  [/world'?s smallest/i, "world’s smallest"],
+  [/\bROI\b|\bpayback\b|return on investment/i, "ROI"],
+  [/\b(save|saves|saving|cut|cuts|reduce|reduces)\b[^.]{0,40}\b\d+\s?%/i, "percentage outcome"],
+  [/install(ed|s)? in (a few )?days|in days\b/i, "install in days"],
+  [/tracks every part|eliminates searching|real-time wip tracking of every/i, "overclaim"],
+  [/\b(deployed at|trusted by|customers include)\b/i, "deployment claim"],
+  [/\b(fleet manager|spatial ai)\b[^.]{0,30}\b(available|live|shipping|ships|launched|in production)\b/i, "roadmap as live"],
+  [/(₹|rs\.?|inr|\$|usd)\s?\d[\d,.]*\s*(lakh|crore|k|per (tag|anchor|month|year))/i, "price"],
+  [/\bbarcodes? (fail|don'?t work)|rfid (fails|doesn'?t work)/i, "competitor knock"],
+  [/healthcare|apparel|posture/i, "off-scope"],
+];
+// facts.json:end
 
 export const POLICY = `You are "Ask AmIMotion", the guide on amimotion.com. You talk with plant heads, production and IE leads, OT, IT and MES owners, and integrators who are working out whether AmIMotion fits their floor.
 
 AmIMotion (a brand of Locatepro Technologies, Bengaluru) makes AmIGo UWB tags, AmIMo anchors and AmIHub software. It shows where work in progress is on the shop floor and where it waits.
 
 What you may say:
-- Only the FACTS below and what the SITE PASSAGES say. Keep every qualifier ("down to ±10 cm in 3D, with AmIMo anchors; it depends on the site"). If neither covers a question, say the team can answer it on a call, and call offer_handoff.
+- Only the FACTS below and what the SITE PASSAGES say. Keep every qualifier ("±10 cm in 3D, typical, with AmIMo anchors; it depends on the site"). If neither covers a question, say the team can answer it on a call, and call offer_handoff.
 - Cite the page you used with search_site results: end with one line "Source: <page label>" only when you used a passage.
 
 Never:
 - prices, discounts, ROI, savings, payback, percentages of improvement, install durations or "in days";
 - customer, prospect, partner or backer names, pilot counts or traction;
-- "certified" or "compliant" for FiRa, omlox, CE, FCC or BIS (say "built on the FiRa and omlox specifications");
+- "certified" or "compliant" for FiRa, omlox, CE, FCC or BIS (say "AmIMotion claims no formal certification"; give any standards wording only as a site passage words it);
 - "deployed at" (say "runs in" only when a passage does); "world's smallest"; "fully wireless" or "100% wireless";
 - roadmap items as available: Fleet Manager and Spatial AI are planned, not shipped. Dispatch, robot control and digital twins are not delivered features;
 - that barcodes or RFID "fail"; compare the specific workflow instead;
@@ -61,21 +89,11 @@ How to work:
 
 // ------------------------------------------------------------------------------------------------ 2. the claims gate
 // claims register NEVER/RED + panel.json "forbidden" + founders' review. A reply with a hit is regenerated or replaced.
+// The barred wording comes from facts.json too (the page gate in tools/facts.py uses the same list). Names stay here
+// only: customer, prospect and partner names are never written into the facts file.
 export const BARRED = [
-  [/\b(amimotion|amigo|amimo|amihub|it|we|our \w+|the system|tags?|anchors?)\b[^.]{0,30}\b(is|are|has been)\s+(\w+ )?certified\b|\bcertified (by|for|under) (the )?(fira|omlox|fcc|ce|bis)|\b(fira|omlox|fcc|ce|bis)[ -]certified\b/i, 'certified'],
-  [/\b(fira|omlox)\s+compliant\b|\bcompliant with (fira|omlox)\b/i, 'compliant'],
-  [/fully wireless|100\s?% wireless/i, 'fully wireless'],
-  [/world'?s smallest/i, 'world’s smallest'],
-  [/\bROI\b|\bpayback\b|return on investment/i, 'ROI'],
-  [/\b(save|saves|saving|cut|cuts|reduce|reduces)\b[^.]{0,40}\b\d+\s?%/i, 'percentage outcome'],
-  [/install(ed|s)? in (a few )?days|in days\b/i, 'install in days'],
-  [/tracks every part|eliminates searching|real-time wip tracking of every/i, 'overclaim'],
+  ...BARRED_FILE,
   [/\b(maruti|suzuki|volvo|marmon|nati motors|ati motors|sherpa|zensomy|nxp|trimension)\b/i, 'name'],
-  [/\b(deployed at|trusted by|customers include)\b/i, 'deployment claim'],
-  [/\b(fleet manager|spatial ai)\b[^.]{0,30}\b(available|live|shipping|ships|launched|in production)\b/i, 'roadmap as live'],
-  [/(₹|rs\.?|inr|\$|usd)\s?\d[\d,.]*\s*(lakh|crore|k|per (tag|anchor|month|year))/i, 'price'],
-  [/\bbarcodes? (fail|don'?t work)|rfid (fails|doesn'?t work)/i, 'competitor knock'],
-  [/healthcare|apparel|posture/i, 'off-scope'],
 ];
 export function gate(text, allow = '') {
   // allow: the visitor's own words. A company name they typed may be repeated back to them.

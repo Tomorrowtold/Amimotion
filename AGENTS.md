@@ -10,11 +10,11 @@ AmIMotion (Locatepro Technologies, Bengaluru) makes ultra-wideband indoor positi
 - Most inner pages are generated: edit `site/tools/pagegen/p_*.py` (helpers in lib.py; `write()` keeps descriptions at most 160 characters and titles at most 65), then run `python3 tools/pagegen/run.py`.
 - `python3 build.py` builds `site/dist` (front matter, partials, section bars, JSON-LD, llms.txt, sitemap). `--share` makes relative links; `--indexable` is only for launch.
 - Picture slots: `<div class="card ph mood-X"><p class="ph-brief"><b>Pxx</b> brief…` placeholders. `site/src/data/scenes.json` maps a code to a picture in `site/src/assets/scene/` (stem, alt text, object-position); build.py swaps it in. Briefs stay hidden as the shot list.
-- Always run from `site/`: `python3 tools/pagegen/run.py && python3 build.py && python3 tools/pickability.py dist`. Pickability must report 0 barred claims.
+- Always run from `site/`: `python3 tools/pagegen/run.py && python3 build.py && python3 tools/facts.py gate dist && python3 tools/pickability.py dist`. The facts gate must pass and pickability must report 0 barred claims.
 - Preview: `./preview.sh` from the top folder (http://localhost:8000).
 
 ## The inbound agent
-- `site/src/js/agent-core.js` holds the only facts the guide may state and its claims gate; edit facts there, never in prompts elsewhere. `server/agent-server.js` is the API (Cloudflare Pages via `functions/`). Run `node server/test.js` after any change to it. Setup and hosting: `docs/inbound-agent.md`.
+- `site/src/data/facts.json` holds the only facts the site, the structured data, `/facts.json`, the Facts page (`/facts/`) and the guide may state, each with its source and review date, plus the barred wording. Edit facts there, then run `python3 tools/facts.py sync` (it writes the guide's copy into `site/src/js/agent-core.js`). `python3 tools/facts.py gate dist` is the claims gate: it fails if any page states a governed fact in other wording, without its qualifier, or contradicts the file; `vercel-build.sh` runs it on every build. `server/agent-server.js` is the API (Cloudflare Pages via `functions/`). Run `node server/test.js` after any change to it. Setup and hosting: `docs/inbound-agent.md`.
 
 ## Rules that never move
 - Claims follow the claims register (kept privately by Shiv) and the founders' review (29 Oct 2026): "built on the FiRa and omlox specifications" (never "compliant" or "certified"); "down to ±10 cm" with AmIMo anchors, site-dependent; "runs in", never "deployed"; no "under a nanosecond"; Wi-Fi FTM "device support confirmed per site"; no phone-location claim; never "FCC certified". Milestones are plans, not facts.

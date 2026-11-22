@@ -1,0 +1,8 @@
+/* facts: each row is a fact, then its source and the day it was last reviewed */
+.facts td p{margin:0;max-width:40em}
+.facts td .fact-src{margin-top:var(--s-2);font-size:var(--size-small);line-height:1.45;font-weight:400;color:var(--ink-soft)}
+.facts .fact-src a{color:inherit;text-decoration:underline;text-underline-offset:.15em}
+.facts tr{scroll-margin-top:96px}
+.facts{table-layout:fixed}
+.facts th{width:28%}
+@media (max-width:639px){.facts th{width:auto}}
