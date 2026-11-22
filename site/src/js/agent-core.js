@@ -43,8 +43,9 @@ export const FACTS = [
   "Location alone does not show which job is on a carrier. You link each carrier to its job, in AmIHub or from your own system.",
   "AmIMotion claims no formal certification.",
   "This site names no customer and shows no customer result. References are shared under NDA.",
+  "Built on the FiRa and omlox specifications.",
 ];
-export const FACT_IDS = ["company-brand", "company-contact", "company-category", "company-india", "company-leadership", "system-parts", "system-accuracy", "system-radios", "amigo-battery", "amimo-cabling", "amimo-coverage", "amihub-hosting", "amihub-interfaces", "amihub-performance", "amihub-mcp", "buying-pilot", "buying-demo", "buying-steps", "buying-prices", "buying-people", "limits-association", "limits-certification", "limits-customers"];
+export const FACT_IDS = ["company-brand", "company-contact", "company-category", "company-india", "company-leadership", "system-parts", "system-accuracy", "system-radios", "amigo-battery", "amimo-cabling", "amimo-coverage", "amihub-hosting", "amihub-interfaces", "amihub-performance", "amihub-mcp", "buying-pilot", "buying-demo", "buying-steps", "buying-prices", "buying-people", "limits-association", "limits-certification", "limits-customers", "system-standards"];
 const BARRED_FILE = [
   [/\b(amimotion|amigo|amimo|amihub|it|we|our \w+|the system|tags?|anchors?)\b[^.]{0,30}\b(is|are|has been)\s+(\w+ )?certified\b|\bcertified (by|for|under) (the )?(fira|omlox|fcc|ce|bis)|\b(fira|omlox|fcc|ce|bis)[ -]certified\b/i, "certified"],
   [/\b(fira|omlox)\s+compliant\b|\bcompliant with (fira|omlox)\b/i, "compliant"],

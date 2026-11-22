@@ -463,13 +463,20 @@
       "last_reviewed": "2026-11-22"
     },
     {
-      "id": "held-standards",
+      "id": "system-standards",
       "group": "system",
       "label": "Standards",
-      "status": "held",
+      "subjects": [
+        "org"
+      ],
+      "claim": "Built on the FiRa and omlox specifications.",
+      "evidence": {
+        "source": "company",
+        "stated_at": "/specs/"
+      },
+      "status": "approved",
+      "register": "founders' wording (review of 29 Oct 2026), chosen by Shiv 22 Nov 2026 over the register's 'compliant'",
       "last_reviewed": "2026-11-22",
-      "claim": "FiRa and omlox compliant.",
-      "reason": "AmIMotion's sources word this differently: the claims register says 'compliant'; the founders' review of 29 Oct 2026 says 'built on the FiRa and omlox specifications', never 'compliant' or 'certified'. Left out of the profile until the founders choose one wording.",
       "forms": [
         "built on the FiRa and omlox specifications",
         "data and device model built on the FiRa and omlox specifications",
@@ -579,7 +586,7 @@
     {
       "id": "standards",
       "facts": [
-        "held-standards",
+        "system-standards",
         "limits-certification"
       ],
       "detect": "\\b(fira|omlox|fcc|bis)\\b[^.?]{0,40}\\b(complian(t|ce)|certified|conforman(t|ce)|conforms|members?|membership)\\b|\\b(complian(t|ce)|certified|conforman(t|ce)|conforms)\\b[^.?]{0,40}\\b(fira|omlox|fcc|bis)\\b|\\b(amimotion|amigo|amimo|amihub|we|our \\w+)\\b[^.?]{0,30}\\b(holds?|has|have|achieved|received|obtained|awarded)\\b[^.?]{0,20}\\bcertifications?\\b",
